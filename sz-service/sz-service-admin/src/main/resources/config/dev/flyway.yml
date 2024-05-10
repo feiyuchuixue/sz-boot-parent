@@ -1,0 +1,12 @@
+spring:
+  # flyway配置
+  flyway:
+    # 是否启用flyway进行数据脚本同步
+    enabled: false
+    # 设置db ddl文件所在路径
+    locations: classpath:db
+    # 非空数据库初始化Flyway时需要打开此开关进行Baseline操作
+    baseline-on-migrate: true
+    # 设置flyway ddl版本管理表名称
+    table: t_db_version
+    validate-on-migrate: true

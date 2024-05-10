@@ -1,0 +1,243 @@
+<configuration>
+    <!-- TODO: 目标使用SkyWalking -->
+    <!-- 默认的一些配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <!--服务名称-->
+    <springProperty name="APP_NAME" source="spring.application.name"/>
+    <!-- 定义应用名称，区分应用 -->
+  <!--  <property name="APP_NAME" value="logback-sz-service"/>-->
+    <!-- 定义日志文件的输出路径 -->
+    <property name="LOG_PATH" value="./logs/${APP_NAME}"/>
+    <!-- 定义日志文件名称和路径 -->
+    <property name="LOG_FILE" value="${LOG_PATH}/app.log"/>
+    <!-- 定义警告级别日志文件名称和路径 -->
+    <property name="WARN_LOG_FILE" value="${LOG_PATH}/warn.log"/>
+    <!-- 定义错误级别日志文件名称和路径 -->
+    <property name="ERROR_LOG_FILE" value="${LOG_PATH}/error.log"/>
+    <!-- 定义指定目录service日志文件名称和路径 -->
+    <property name="SERVICE_LOG_FILE" value="${LOG_PATH}/service.log"/>
+    <!-- 定义指定目录HTTP日志文件名称和路径 -->
+    <property name="HTTP_PACKAGE_LOG_FILE" value="${LOG_PATH}/http-package.log"/>
+    <!-- 定义指定类topic方式的日志文件名称和路径 -->
+    <property name="HTTP_TOPIC_LOG_FILE" value="${LOG_PATH}/http-topic.log"/>
+
+    <!-- 文件保留最大天数 -->
+    <property name="MAX_HISTORY" value="60"/>
+    <!-- 文件大小限制 -->
+    <property name="MAX_FILE_SIZE" value="500MB"/>
+    <!-- 文件总大小 -->
+    <property name="TOTAL_SIZE_CAP" value="5000MB"/>
+
+    <!-- 彩色日志格式 -->
+    <!-- value值是日志输出模板， :-是属性名和其默认值之间的分隔符，作用与:相同 -->
+    <!-- 定义日志输出格式的转换规则，%d{yyyy-MM-dd HH:mm:ss.SSS}表示日期和时间，%clr表示将输出文本着色，{faint}表示使用淡色 -->
+    <!-- %5p表示日志级别输出右对齐，左边以空格填充 -->
+    <!-- ${PID:- }表示进程ID，%clr表示将输出文本着色，{magenta}表示使用洋红色 -->
+    <!-- -表示一个分隔符 -->
+    <!-- %t：显示产生该日志的线程名；%15：若字符长度小于15，则左边用空格填充；%.15：若字符长度超过15，截去多余字符 -->
+    <!-- %-40：若字符长度小于40，则右边用空格填充；%.40：若字符长度超过40，截去多余字符；logger{39}对应的是“logging.WARNING”级别。具体来说，Python的logging模块定义了以下几个级别（从低到高）：NOTSET、DEBUG、INFO、WARNING、ERROR、CRITICAL。因此，logger{39}表示的是WARNING级别，即日志记录器会记录所有WARNING级别及以上的日志信息 -->
+    <!-- %m表示日志消息；%n表示换行符；${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}表示异常信息。如果日志输出中包含异常信息，这个规则将会将其转换为字符串，并将其中的换行符替换为空格，以便更容易地在日志输出中显示 -->
+
+    <!-- 彩色日志格式 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 日志文件输出格式pattern-->
+    <property name="CONSOLE_LOG_PATTERN_SIMPLE"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [${APP_NAME}] [%15.15t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <!-- 控制台输出格式（彩色）pattern-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint}  [%clr(${APP_NAME})] %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <!-- 将日志滚动输出到app.log文件中 -->
+    <appender name="APPLICATION"
+              class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <!-- 输出文件目的地 -->
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 过滤的级别 -->
+            <level>INFO</level>
+            <!-- 匹配时的操作：接收（记录） -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 不匹配时的操作：拒绝（不记录） -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 摘取出WARN级别日志输出到warn.log中 -->
+    <appender name="WARN" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <file>${WARN_LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_PATH}/warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>60</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <!-- 日志过滤器，将WARN相关日志过滤出来 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 过滤的级别 -->
+            <level>WARN</level>
+            <!-- 匹配时的操作：接收（记录） -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 不匹配时的操作：拒绝（不记录） -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 摘取出ERROR级别日志输出到error.log中 -->
+    <appender name="ERROR" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <file>${ERROR_LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_PATH}/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <!-- 日志过滤器，将ERROR相关日志过滤出来 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <!-- 配置控制台输出 -->
+    <appender name="CONSOLE" class="com.sz.logger.logbackadvice.SzConsoleAppender">
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 定义指定目录service的appender -->
+    <appender name="SERVICE" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <file>${SERVICE_LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_PATH}/service.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 定义指定目录HTTP-PACKAGE的appender -->
+    <appender name="HTTP-PACKAGE" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <file>${HTTP_PACKAGE_LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_PATH}/http-package.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 定义指定类topic的appender -->
+    <appender name="HTTP-TOPIC" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
+        <file>${HTTP_TOPIC_LOG_FILE}</file>
+        <encoder>
+            <!-- 使用默认的输出格式打印 -->
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件命名格式 -->
+            <fileNamePattern>${LOG_PATH}/http-topic.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 文件保留最大天数 -->
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- 文件大小限制 -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <!-- 文件总大小 -->
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 配置扫描包路径，追加日志到service的appender中 -->
+    <!--若是additivity设为true，则子Logger不止会在自己的appender里输出，还会在root的logger的appender里输出-->
+    <logger name="com.example.logback.service" level="INFO" additivity="true">
+        <appender-ref ref="SERVICE"/>
+    </logger>
+
+    <!-- 配置扫描包路径，追加日志到HTTP-PACKAGE的appender中 -->
+    <!--若是additivity设为true，则子Logger不止会在自己的appender里输出，还会在root的logger的appender里输出-->
+    <logger name="com.example.logback.config" level="INFO" additivity="false">
+        <appender-ref ref="HTTP-PACKAGE"/>
+    </logger>
+
+    <!-- 配置扫描包路径，追加日志到HTTP-TOPIC的appender中 -->
+    <!--若是additivity设为true，则子Logger不止会在自己的appender里输出，还会在root的logger的appender里输出-->
+    <logger name="http-log" level="INFO" additivity="false">
+        <appender-ref ref="HTTP-TOPIC"/>
+    </logger>
+
+
+    <!-- 配置输出级别 -->
+    <root level="INFO">
+        <!-- 加入控制台输出 -->
+        <appender-ref ref="CONSOLE"/>
+        <!-- 加入APPLICATION输出 -->
+        <appender-ref ref="APPLICATION"/>
+        <!-- 加入WARN日志输出 -->
+        <appender-ref ref="WARN"/>
+        <!-- 加入ERROR日志输出 -->
+        <appender-ref ref="ERROR"/>
+    </root>
+</configuration>

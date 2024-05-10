@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysDeptMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysDept">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pid" property="pid"/>
+        <result column="deep" property="deep"/>
+        <result column="sort" property="sort"/>
+        <result column="has_children" property="hasChildren"/>
+        <result column="is_lock" property="isLock"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="remark" property="remark"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        name
+        , pid, deep, sort, has_children, is_lock, del_flag, remark, create_id, update_id, create_time, update_time
+    </sql>
+
+    <select id="iterUpDeptAncestors" resultType="java.lang.Integer">
+        WITH RECURSIVE dept_ancestors AS (
+            SELECT
+                id,
+                pid
+            FROM
+                sys_dept
+            WHERE
+                id = #{deptId} -- 这里的 :dept_id 是你传入的部门ID
+            UNION ALL
+            SELECT
+                d.id,
+                d.pid
+            FROM
+                sys_dept d
+                    JOIN dept_ancestors da ON d.id = da.pid -- 向上遍历，查询祖籍id
+
+        ) SELECT
+            id
+        FROM
+            dept_ancestors;
+    </select>
+
+    <select id="countUsersPerDept" resultType="com.sz.admin.system.pojo.vo.sysdept.TotalDeptVO">
+        SELECT
+            sd.id,
+            sd.NAME,
+            COUNT( sud.id ) AS total
+        FROM
+            sys_dept sd
+                LEFT JOIN sys_user_dept sud ON sd.id = sud.dept_id
+        GROUP BY
+            sd.id,
+            sd.NAME
+    </select>
+
+
+</mapper>

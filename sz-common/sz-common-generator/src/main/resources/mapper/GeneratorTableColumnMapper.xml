@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.generator.mapper.GeneratorTableColumnMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sz.generator.pojo.po.GeneratorTableColumn">
+        <id column="column_id" property="columnId"/>
+        <result column="table_id" property="tableId"/>
+        <result column="column_name" property="columnName"/>
+        <result column="column_comment" property="columnComment"/>
+        <result column="column_type" property="columnType"/>
+        <result column="java_type" property="javaType"/>
+        <result column="java_field" property="javaField"/>
+        <result column="is_pk" property="isPk"/>
+        <result column="is_increment" property="isIncrement"/>
+        <result column="is_required" property="isRequired"/>
+        <result column="is_insert" property="isInsert"/>
+        <result column="is_edit" property="isEdit"/>
+        <result column="is_list" property="isList"/>
+        <result column="is_query" property="isQuery"/>
+        <result column="is_autofill" property="isAutofill"/>
+        <result column="is_unique_valid" property="isUniqueValid"/>
+        <result column="query_type" property="queryType"/>
+        <result column="html_type" property="htmlType"/>
+        <result column="dict_type" property="dictType"/>
+        <result column="sort" property="sort"/>
+        <result column="create_id" property="createId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_id" property="updateId"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="options" property="options"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        column_id
+        , table_id, column_name, column_comment, column_type, java_type, java_field, is_pk, is_increment, is_required, is_insert, is_edit, is_list, is_query, is_autofill, is_unique_valid, query_type, html_type, dict_type, sort, create_id, create_time, update_id, update_time, options
+    </sql>
+
+    <select id="queryAllByTableName" resultType="com.sz.generator.pojo.po.GeneratorTableColumn">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+        generator_table_column gtc,
+        generator_table gt
+        WHERE
+        gtc.table_id = gt.table_id
+        AND gt.table_name IN
+        <foreach collection="tableNames" item="name" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+
+    </select>
+
+</mapper>

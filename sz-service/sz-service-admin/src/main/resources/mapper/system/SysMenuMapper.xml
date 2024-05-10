@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysMenu">
+        <id column="id" property="id"/>
+        <result column="pid" property="pid"/>
+        <result column="path" property="path"/>
+        <result column="name" property="name"/>
+        <result column="title" property="title"/>
+        <result column="icon" property="icon"/>
+        <result column="component" property="component"/>
+        <result column="redirect" property="redirect"/>
+        <result column="sort" property="sort"/>
+        <result column="deep" property="deep"/>
+        <result column="menu_type_cd" property="menuTypeCd"/>
+        <result column="permissions" property="permissions"/>
+        <result column="is_hidden" property="isHidden"/>
+        <result column="has_children" property="hasChildren"/>
+        <result column="is_link" property="isLink"/>
+        <result column="is_full" property="isFull"/>
+        <result column="is_affix" property="isAffix"/>
+        <result column="is_keep_alive" property="isKeepAlive"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden, has_children, is_link, is_full, is_affix, is_keep_alive, create_time, update_time, create_id, update_id, del_flag
+    </sql>
+
+    <select id="getMenuAndChildrenIds" resultType="java.lang.String">
+        WITH RECURSIVE MenuCTE AS (
+        SELECT id, pid
+        FROM sys_menu
+        /* 只查询目录和菜单, 不查询按钮*/
+        WHERE id = #{menuId}
+        <if test=" isShowButton != null and !isShowButton">
+            AND menu_type_cd != '1002003'
+        </if>
+        UNION ALL
+        SELECT sm.id, sm.pid
+        FROM sys_menu sm
+        JOIN MenuCTE cte ON sm.pid = cte.id
+        )
+        SELECT id
+        FROM MenuCTE;
+    </select>
+
+    <!-- 递归查询要删除的节点及其子节点 -->
+    <select id="selectMenuAndChildrenIds" parameterType="java.util.List" resultType="java.lang.String">
+        WITH RECURSIVE MenuCTE AS (
+        SELECT id, pid
+        FROM sys_menu
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND del_flag = 'F'
+        UNION ALL
+        SELECT sm.id, sm.pid
+        FROM sys_menu sm
+        JOIN MenuCTE cte ON sm.pid = cte.id
+        WHERE sm.del_flag = 'F'
+        )
+        SELECT id FROM MenuCTE;
+    </select>
+
+
+    <update id="syncTreeHasChildren">
+        UPDATE sys_menu AS m
+            JOIN (
+            SELECT id,
+            IF(EXISTS (SELECT 1 FROM sys_menu WHERE pid = sub_m.id), 'T', 'F') AS has_children
+            FROM sys_menu AS sub_m
+            WHERE 1=1 and sub_m.del_flag = 'F'
+            ) AS subquery
+        ON m.id = subquery.id
+            SET m.has_children = 'T'
+        WHERE subquery.has_children = 'T';
+    </update>
+    <update id="syncTreeDeep">
+        UPDATE sys_menu AS m
+            JOIN sys_menu AS parent
+        ON m.pid = parent.id
+            SET m.deep = parent.deep + 1
+        WHERE 1=1 and m.del_flag = 'F';
+    </update>
+
+    <update id="removeTree">
+        UPDATE sys_menu AS m
+        SET del_flag = 'T'
+        WHERE m.id IN (SELECT id
+                       FROM (WITH RECURSIVE MenuCTE AS (SELECT id, pid
+                                                        FROM sys_menu
+                                                        WHERE id = #{nodeId}
+                                                        UNION ALL
+                                                        SELECT sm.id, sm.pid
+                                                        FROM sys_menu sm
+                                                                 JOIN MenuCTE cte ON sm.pid = cte.id)
+                             SELECT id
+                             FROM MenuCTE) AS subquery);
+    </update>
+    <update id="updateMenuAndChildrenIsDelete">
+        UPDATE sys_menu
+        SET del_flag = 'T'
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ;
+
+    </update>
+
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sz</groupId>
+    <artifactId>sz-boot-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>sz-common</module>
+        <module>sz-service</module>
+        <module>sz-service/sz-service-admin</module>
+        <module>sz-common/sz-common-security</module>
+        <module>sz-common/sz-common-generator</module>
+        <module>sz-common/sz-common-wechat</module>
+    </modules>
+    <!-- 全局公用dependency版本管理 -->
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
+        <skipTests>true</skipTests>
+        <fastjson.version>2.0.46</fastjson.version>
+        <lombok.version>1.18.30</lombok.version>
+        <mybatis-plus.version>3.5.4.1</mybatis-plus.version>
+        <nacos.version>2021.1</nacos.version>
+        <caffeine.version>3.1.5</caffeine.version>
+        <!-- druid (注意这个版本-1.2.9, 更高版本会有jdk1.8 jar包缺失报错,1.2.11后解决了这个问题)-->
+        <!--<druid.version>1.2.16</druid.version>-->
+        <page-helper.version>6.0.0</page-helper.version>
+        <!--mariadb driver-->
+        <!--<mariadb-driver.version>3.0.7</mariadb-driver.version>-->
+        <mysql.version>8.3.0</mysql.version>
+        <openfeign.version>3.1.3</openfeign.version>
+        <loadbalancer.version>4.0.1</loadbalancer.version>
+        <spring.security.oauth2.version>2.6.8</spring.security.oauth2.version>
+        <spring.security.oauth2.jose.version>5.7.3</spring.security.oauth2.jose.version>
+        <spring-boot.version>2.7.14</spring-boot.version>
+<!--        <jackson-databind.version>2.15.3</jackson-databind.version>
+        <jackson-datatype-jsr310.version>2.16.1</jackson-datatype-jsr310.version>-->
+        <knife4j.version>4.5.0</knife4j.version>
+        <mybatis-flex.version>1.8.6</mybatis-flex.version>
+        <hikari.version>5.1.0</hikari.version>
+    </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.3</version>
+    </parent>
+
+
+    <dependencies>
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- fastjson TODO: 后续弃用fastjson，仅支持jackson-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <!-- Actuator可以帮助你监控和管理Spring Boot应用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- knife4j swagger文档 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- 配置官方Maven中央仓库 -->
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled> <!-- 通常中央仓库不包含snapshots -->
+            </snapshots>
+        </repository>
+
+    </repositories>
+
+</project>

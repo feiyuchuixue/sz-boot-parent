@@ -1,0 +1,82 @@
+package com.sz.admin.system.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
+import com.sz.admin.system.pojo.po.SysDict;
+import com.sz.admin.system.service.SysDictService;
+import com.sz.core.common.constant.GlobalConstant;
+import com.sz.core.common.entity.ApiPageResult;
+import com.sz.core.common.entity.ApiResult;
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * <p>
+ * 字典表 前端控制器
+ * </p>
+ *
+ * @author sz
+ * @since 2023-08-18
+ */
+@Tag(name =  "字典管理")
+@RestController
+@RequestMapping("/sys-dict")
+@RequiredArgsConstructor
+public class SysDictController {
+
+    private final SysDictService sysDictService;
+
+    @Operation(summary = "字典新增")
+    @SaCheckPermission(value = "sys.dict.add_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping
+    public ApiResult create(@Valid @RequestBody SysDictAddDTO dto) {
+        sysDictService.create(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "字典修改")
+    @SaCheckPermission(value = "sys.dict.update_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping
+    public ApiResult update(@Valid @RequestBody SysDictUpDTO dto) {
+        sysDictService.update(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "批量删除")
+    @SaCheckPermission(value = "sys.dict.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @DeleteMapping
+    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+        sysDictService.remove(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "列表查询")
+    @SaCheckPermission(value = "sys.dict.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping
+    public ApiResult<PageResult<SysDict>> list(@Valid SysDictQueryDTO dto) {
+        return ApiPageResult.success(sysDictService.list(dto));
+    }
+
+    @Operation(summary = "系统字典查询-全部")
+    @SaIgnore
+    @GetMapping("dict")
+    public ApiResult listDict() {
+        return ApiResult.success(sysDictService.dictAll());
+    }
+
+    @Operation(summary = "指定类型系统字典查询")
+    @SaIgnore
+    @GetMapping("dict/{typeCode}")
+    public ApiResult getDictDataByType(@PathVariable String typeCode) {
+        return ApiResult.success(sysDictService.getDictByType(typeCode));
+    }
+
+}

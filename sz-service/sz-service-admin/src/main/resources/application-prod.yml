@@ -1,0 +1,4 @@
+server:
+  servlet:
+    context-path: /api/admin
+  port: 9991

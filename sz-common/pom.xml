@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>sz-boot-parent</artifactId>
+        <groupId>com.sz</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>sz-common</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sz-common-db-mysql</module>
+        <module>sz-common-db-mongodb</module>
+        <module>sz-common-core</module>
+        <module>sz-common-log</module>
+        <module>sz-common-db-redis</module>
+        <module>sz-common-mq</module>
+        <module>sz-common-minio</module>
+        <module>sz-common-excel</module>
+    </modules>
+
+</project>

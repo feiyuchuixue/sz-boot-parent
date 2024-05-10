@@ -1,0 +1,12 @@
+/.idea/
+# 忽略所有target文件夹
+/**/target/
+# 排除对nacos下target的忽略
+!/public/nacos/**/target/
+# 忽略nacos运行产生的文件
+/public/nacos/local/bin/work/
+/public/nacos/local/bin/derby.log
+/public/nacos/local/bin/logs/
+/public/nacos/local/data/
+/public/nacos/local/logs/
+/logs/

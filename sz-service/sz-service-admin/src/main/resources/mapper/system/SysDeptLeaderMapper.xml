@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysDeptLeaderMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysDeptLeader">
+        <id column="id" property="id"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="leader_id" property="leaderId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, dept_id, leader_id
+    </sql>
+
+</mapper>

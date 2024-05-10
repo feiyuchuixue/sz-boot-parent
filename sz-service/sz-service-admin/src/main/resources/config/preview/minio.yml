@@ -1,0 +1,5 @@
+minio:
+  endpoint: http://192.168.56.101:9001/
+  access-key: NhQlOFYcyXiQm40DpW56
+  secret-key: O1q6YRp79cTeNrtHT8yHXgcFWcOTDJNpKpRsYMzp
+  bucket-name: sz-boot-parent-local

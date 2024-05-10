@@ -1,0 +1,10 @@
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true
+    jdbc-type-for-null: null
+    auto-mapping-behavior: full
+    auto-mapping-unknown-column-behavior: none
+    cache-enabled: false
+  global-config:
+    deleted-value-of-logic-delete: "T"
+    normal-value-of-logic-delete: "F"
