@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,7 +214,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         root.setName("根部门");
         List<DeptTreeVO> trees = TreeUtils.buildTree(deptTreeVOS, root, excludeNodeId);
         if (appendRoot != null && !appendRoot) {
-            trees = trees.get(0).getChildren();
+            if (trees.get(0).getChildren() == null) {
+                trees = new ArrayList<>();
+            } else {
+                trees = trees.get(0).getChildren();
+            }
         }
         return trees;
     }

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 @RequiredArgsConstructor
 public class SaTokenConfig extends WebMvcConfiguration {
 
+    private final WhitelistProperties whitelistProperties;
 
     @Bean
     public StpLogic getStpLogicJwt() {
@@ -38,10 +39,10 @@ public class SaTokenConfig extends WebMvcConfiguration {
         // 路由拦截鉴权
         registry.addInterceptor(new SaInterceptor(r -> {
             StpUtil.checkLogin();
-        }).isAnnotation(false)).addPathPatterns("/**").excludePathPatterns(WhitelistProperties.whitelist);
+        }).isAnnotation(false)).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
 
         // 打开注解鉴权
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**").excludePathPatterns(WhitelistProperties.whitelist);
+        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
     }
 
 }
