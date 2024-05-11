@@ -160,6 +160,12 @@
                 <artifactId>swagger-annotations</artifactId>
                 <version>2.2.21</version>
             </dependency>
+            <!--为了修复sa-Token-Jwt V1.3.7版本漏洞，后续官方修复后移除此依赖-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-jwt</artifactId>
+                <version>5.8.27</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
