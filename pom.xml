@@ -12,28 +12,26 @@
         <module>sz-common</module>
         <module>sz-service</module>
     </modules>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
     <!-- 全局dependency版本管理 -->
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
         <skipTests>true</skipTests>
-        <page-helper.version>6.1.0</page-helper.version>
-        <mysql.version>8.4.0</mysql.version>
-        <knife4j.version>4.5.0</knife4j.version>
+        <spring-boot.version>3.2.5</spring-boot.version>
         <mybatis-flex.version>1.8.6</mybatis-flex.version>
-        <hikari.version>5.1.0</hikari.version>
-        <apache.commons-collections>4.4</apache.commons-collections>
         <sa-token.version>1.37.0</sa-token.version>
         <mybatis-flex.version>1.8.6</mybatis-flex.version>
         <jackson.version>2.16.1</jackson.version>
     </properties>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
-    </parent>
+
 
     <!--全局通用依赖-->
     <dependencies>
@@ -133,7 +131,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
-                <version>3.2.3</version>
+                <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
