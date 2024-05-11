@@ -32,7 +32,7 @@ public class CorsConfig {
 
     private CorsConfiguration buildConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // todo 推荐，origin设置成准确ip或域名。不要设置为*
+        // TODO: 推荐在生产环境中，origin设置成准确ip或域名。不要设置为*
         corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);

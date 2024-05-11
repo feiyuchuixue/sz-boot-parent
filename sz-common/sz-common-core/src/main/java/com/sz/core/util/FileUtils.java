@@ -24,11 +24,9 @@ import java.nio.file.Paths;
  */
 public class FileUtils {
 
-
     private FileUtils() {
         throw new IllegalStateException("FileUtils class Illegal");
     }
-
 
     public static void downloadTemplateFile(ResourceLoader resourceLoader, HttpServletResponse response, String templateFileName) throws IOException {
         String templatePath = "classpath:/templates/" + templateFileName;

@@ -21,7 +21,6 @@ import java.util.Map;
  */
 public class HttpReqResUtil {
 
-
     /**
      * 获取Ip地址
      *

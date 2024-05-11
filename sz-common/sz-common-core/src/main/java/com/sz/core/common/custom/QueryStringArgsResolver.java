@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * -- 弃用，后续移除
  * @author: sz
  * @date: 2022/8/29 10:52
  * @description: 自定义参数解析器

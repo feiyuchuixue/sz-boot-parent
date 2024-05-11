@@ -505,10 +505,4 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
     }
 
-    public static void main(String[] args) {
-
-        System.out.println("toUnderScoreCase ==" + toUnderScoreCase("Test_abc_edf"));
-
-    }
-
 }

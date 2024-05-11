@@ -72,7 +72,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
                     Class<? extends ExcelDynamicSelect>[] classes = dictFormat.sourceClass();
                     if (classes.length > 0) { // 根据
                         try {
-                            System.out.println("classes name ==" + classes.getClass().getName());
                             ExcelDynamicSelect excelDynamicSelect = classes[0].newInstance();
                             List<String> dynamicSelectSource = excelDynamicSelect.getSource();
                             if (dynamicSelectSource != null && dynamicSelectSource.size() > 0) {

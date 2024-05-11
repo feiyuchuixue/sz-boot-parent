@@ -17,19 +17,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * 将特殊字符进行转义，防止页面恶意代码注入，如script iframe等
-     *
-     * @param str
-     * @return 过滤后字符串
-     */
-    public static String getHtmlInodeByString(String str) {
-        if (null != str && !"".equals(str)) {
-            return str.trim().replace("<", "&lt;").replace(">", "&gt;");
-        }
-        return "";
-    }
-
-    /**
      * @param s
      * @return java.lang.String
      * @describe: 首字母小写

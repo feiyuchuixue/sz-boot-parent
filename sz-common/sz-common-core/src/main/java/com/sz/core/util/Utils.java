@@ -107,10 +107,5 @@ public class Utils {
         return getter.invoke(obj);
     }
 
-    public static void main(String[] args) {
-
-        System.out.println(generateUUIDs());
-
-    }
 
 }

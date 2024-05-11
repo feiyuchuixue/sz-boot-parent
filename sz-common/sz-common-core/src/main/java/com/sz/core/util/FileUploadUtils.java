@@ -14,7 +14,6 @@ import java.util.UUID;
  */
 public class FileUploadUtils {
 
-
     /**
      * 生成文件名
      *

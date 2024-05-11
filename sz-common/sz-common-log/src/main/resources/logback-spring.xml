@@ -1,5 +1,5 @@
 <configuration>
-    <!-- TODO: 目标使用SkyWalking -->
+    <!-- TODO: 临时，后续结合SkyWalking -->
     <!-- 默认的一些配置 -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>

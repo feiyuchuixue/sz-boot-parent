@@ -60,28 +60,4 @@ public class DateUtils {
         // 将 Instant 转换为 LocalDateTime
         return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
-
-    public static void main(String[] args) {
-        // 创建一个 LocalDateTime 对象
-        LocalDateTime localDateTime = LocalDateTime.now();
-
-        // 将 LocalDateTime 转换为 Date
-        Date date = localDateTimeToDate(localDateTime);
-
-        // 将 Date 转换回 LocalDateTime
-        LocalDateTime convertedLocalDateTime = dateToLocalDateTime(date);
-
-        // 打印结果
-        System.out.println("Original LocalDateTime: " + localDateTime);
-        System.out.println("Converted Date: " + date);
-        System.out.println("Converted LocalDateTime: " + convertedLocalDateTime);
-
-
-        Date expiration = new Date(System.currentTimeMillis() + 20000);
-
-        LocalDateTime convertedLocalDateTime2 = dateToLocalDateTime(expiration);
-        System.out.println("Converted convertedLocalDateTime2: " + convertedLocalDateTime);
-    }
-
-
 }

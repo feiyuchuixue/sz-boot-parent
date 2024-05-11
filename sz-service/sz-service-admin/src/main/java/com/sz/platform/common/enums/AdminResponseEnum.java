@@ -18,15 +18,12 @@ public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
     SYS_ROLE_EXISTS(2009, "角色已存在"),
     MENU_PATH_EXISTS(2010, "路由地址已存在"),
 
-     SYS_UPLOAD_FILE_ERROR(2011, "上传文件失败"),
+    SYS_UPLOAD_FILE_ERROR(2011, "上传文件失败"),
 
     MENU_NAME_EXISTS(2012, "路由名称已存在"),
 
     SYS_CONFIG_EXISTS(2013, "参数key已存在"),
-    INVALID_EXISTS(2014,"已存在")
-
-
-    ;
+    INVALID_EXISTS(2014, "已存在");
 
     /**
      * 返回码
@@ -36,6 +33,7 @@ public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
      * 返回消息
      */
     private String message;
+
     AdminResponseEnum(int code, String message) {
         this.code = code;
         this.message = message;

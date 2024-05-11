@@ -77,7 +77,6 @@ public class JsonUtils {
         }
     }
 
-
     public static <T> T parseObject(String text, TypeReference<T> typeReference) {
         if (StringUtils.isBlank(text)) {
             return null;
