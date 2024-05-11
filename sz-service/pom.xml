@@ -12,9 +12,11 @@
     <artifactId>sz-service</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>sz-service-admin</module>
         <module>sz-service-websocket</module>
     </modules>
 
+    <!--sz-service模块下的通用依赖-->
     <dependencies>
         <!-- 全局common-core模块 -->
         <dependency>
@@ -22,7 +24,16 @@
             <artifactId>sz-common-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
+        <!-- Actuator可以帮助你监控和管理Spring Boot应用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- knife4j swagger文档 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <!--springboot maven打包，解决 “jar中没有主清单属性” 的问题-->

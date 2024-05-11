@@ -12,14 +12,17 @@
     <artifactId>sz-common</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>sz-common-db-mysql</module>
-        <module>sz-common-db-mongodb</module>
         <module>sz-common-core</module>
-        <module>sz-common-log</module>
+        <module>sz-common-db-mongodb</module>
+        <module>sz-common-db-mysql</module>
         <module>sz-common-db-redis</module>
-        <module>sz-common-mq</module>
-        <module>sz-common-minio</module>
         <module>sz-common-excel</module>
+        <module>sz-common-generator</module>
+        <module>sz-common-log</module>
+        <module>sz-common-minio</module>
+        <module>sz-common-mq</module>
+        <module>sz-common-security</module>
+        <module>sz-common-wechat</module>
     </modules>
 
 </project>

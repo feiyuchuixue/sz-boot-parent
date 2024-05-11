@@ -12,7 +12,6 @@
     <groupId>com.sz.generator</groupId>
     <artifactId>sz-common-generator</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
