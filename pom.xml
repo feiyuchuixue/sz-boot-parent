@@ -31,8 +31,6 @@
         <jackson.version>2.16.1</jackson.version>
     </properties>
 
-
-
     <!--全局通用依赖-->
     <dependencies>
         <dependency>

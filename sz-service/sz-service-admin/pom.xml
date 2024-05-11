@@ -12,7 +12,7 @@
 
     <!-- 全局公用dependency版本管理 -->
     <properties>
-        <flyway.version>8.5.13</flyway.version>
+        <flyway.version>10.12.0</flyway.version>
     </properties>
 
     <dependencies>
@@ -57,6 +57,7 @@
             <artifactId>sz-common-log</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--redis模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-redis</artifactId>
@@ -67,7 +68,7 @@
             <artifactId>sz-common-excel</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- flyway db ddl; flyway版本和db版本有关系，不要随便升级-->
+        <!-- flyway db ddl; https://documentation.red-gate.com/fd/mysql-184127601.html-->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -83,15 +84,6 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
-
-        <!-- 单元测试-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
     </dependencies>
 
 </project>
