@@ -3,7 +3,6 @@ package com.sz.admin.system.service.impl;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import com.auth0.jwt.interfaces.Claim;
 import com.github.pagehelper.PageHelper;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -366,51 +365,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private String getInitPassword() {
         return SysConfigUtils.getConfValue("sys.user.initPwd");
-    }
-
-    @Deprecated
-    @Override
-    public UserAuthToken refreshToken(RefreshAuthDTO refreshAuthDTO) {
-        String refreshToken = refreshAuthDTO.getRefreshToken();
-        boolean isRefreshTokenValid = redisService.checkRefresh(refreshToken);
-        AdminResponseEnum.NO_HEADER_TOKEN.assertFalse(isRefreshTokenValid);
-
-        String oldAccessToken = redisService.getAuthRefresh(refreshToken);
-        Map<String, Claim> claims = JwtUtils.getInfoFromJwtToken(oldAccessToken).getClaims();
-        long expirationTime = claims.get("exp").asLong();
-
-        // 记录失效的accessToken,并设置超时时间
-        redisService.setAuthInvalidAccess(oldAccessToken, expirationTime);
-
-        boolean isRefreshTokenVerified = true;
-        try {
-            isRefreshTokenVerified = JwtUtils.verifyRefreshToken(refreshToken);
-        } catch (Exception e) {
-            isRefreshTokenVerified = false;
-        }
-        AdminResponseEnum.NO_HEADER_TOKEN.assertFalse(isRefreshTokenVerified);
-
-        // 删除已经刷新的token
-        redisService.clearRefreshToken(refreshToken);
-
-        String username = JwtUtils.getRefreshInfoFromJwtToken(refreshToken).getClaims().get("username").toString();
-        long currentTimeMillis = System.currentTimeMillis();
-        Date expirationAccessToken = new Date(currentTimeMillis + JwtUtils.EXPIRATION);
-        Date expirationRefreshToken = new Date(currentTimeMillis + JwtUtils.REFRESH_EXPIRATION);
-
-        String accessToken = JwtUtils.createAccessToken(UserSubjectEnum.SYSTEM, username, expirationAccessToken);
-        String newRefreshToken = JwtUtils.createRefreshToken(UserSubjectEnum.SYSTEM, username, expirationRefreshToken);
-
-        // 更新最新的refresh_token 和 access_token
-        redisService.setAuthRefresh(newRefreshToken, accessToken);
-
-        UserAuthToken userAuthToken = new UserAuthToken();
-        userAuthToken.setAccessToken(accessToken);
-        userAuthToken.setRefreshToken(newRefreshToken);
-        userAuthToken.setAccessExpire(expirationAccessToken);
-        userAuthToken.setRefreshExpire(expirationRefreshToken);
-
-        return userAuthToken;
     }
 
     @Override

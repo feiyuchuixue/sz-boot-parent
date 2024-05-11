@@ -3,13 +3,11 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.alibaba.fastjson.JSONArray;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserAuthToken;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -67,7 +65,7 @@ public class SysUserController {
     @GetMapping(value = "/menu/list")
     public ApiResult getMenu() {
         String jsonFile = JsonUtils.readJsonFile("sz-service\\sz-service-admin\\src\\main\\resources\\tmp/menu.json");
-        return ApiResult.success(JSONArray.parseArray(jsonFile));
+        return ApiResult.success(jsonFile);
     }
 
     @Operation(summary = "添加用户")
@@ -155,14 +153,6 @@ public class SysUserController {
         tm.setMessage(sb);
         websocketRedisService.sendServiceToWs(tm);
         return ApiResult.success();
-    }
-
-    @Deprecated
-    @Operation(summary = "refresh_token")
-    @PostMapping("refresh")
-    public ApiResult refresh(RefreshAuthDTO dto) {
-        UserAuthToken userAuthToken = sysUserService.refreshToken(dto);
-        return ApiResult.success(userAuthToken);
     }
 
     @Operation(summary = "账户解锁")

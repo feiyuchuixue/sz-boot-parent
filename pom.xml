@@ -27,19 +27,13 @@
         <mybatis-plus.version>3.5.4.1</mybatis-plus.version>
         <nacos.version>2021.1</nacos.version>
         <caffeine.version>3.1.5</caffeine.version>
-        <!-- druid (注意这个版本-1.2.9, 更高版本会有jdk1.8 jar包缺失报错,1.2.11后解决了这个问题)-->
-        <!--<druid.version>1.2.16</druid.version>-->
         <page-helper.version>6.0.0</page-helper.version>
-        <!--mariadb driver-->
-        <!--<mariadb-driver.version>3.0.7</mariadb-driver.version>-->
-        <mysql.version>8.3.0</mysql.version>
+        <mysql.version>8.4.0</mysql.version>
         <openfeign.version>3.1.3</openfeign.version>
         <loadbalancer.version>4.0.1</loadbalancer.version>
         <spring.security.oauth2.version>2.6.8</spring.security.oauth2.version>
         <spring.security.oauth2.jose.version>5.7.3</spring.security.oauth2.jose.version>
         <spring-boot.version>2.7.14</spring-boot.version>
-<!--        <jackson-databind.version>2.15.3</jackson-databind.version>
-        <jackson-datatype-jsr310.version>2.16.1</jackson-datatype-jsr310.version>-->
         <knife4j.version>4.5.0</knife4j.version>
         <mybatis-flex.version>1.8.6</mybatis-flex.version>
         <hikari.version>5.1.0</hikari.version>
@@ -51,19 +45,12 @@
         <version>3.2.3</version>
     </parent>
 
-
     <dependencies>
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!-- fastjson TODO: 后续弃用fastjson，仅支持jackson-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${fastjson.version}</version>
         </dependency>
         <!-- lombok -->
         <dependency>

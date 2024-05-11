@@ -82,6 +82,7 @@
             <artifactId>sz-common-wechat</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--日志模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-log</artifactId>

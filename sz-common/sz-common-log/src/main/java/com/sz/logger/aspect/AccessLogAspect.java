@@ -1,7 +1,6 @@
 package com.sz.logger.aspect;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.fastjson.JSON;
 import com.sz.core.common.entity.AccessRequestLog;
 import com.sz.core.common.entity.AccessResponseLog;
 import com.sz.core.util.HttpReqResUtil;
@@ -129,7 +128,7 @@ public class AccessLogAspect {
 
         // 慢查询打印，大于3s的接口
         if (ms >= 2000) {
-            log.info(" [aop] response log : {}", JSON.toJSON(responseLog));
+            log.info(" [aop] response log : {}", JsonUtils.toJsonString(responseLog));
         }
     }
 

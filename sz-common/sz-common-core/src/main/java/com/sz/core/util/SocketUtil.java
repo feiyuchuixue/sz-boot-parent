@@ -1,7 +1,5 @@
 package com.sz.core.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sz.core.common.entity.SocketBean;
 import com.sz.core.common.entity.SocketResult;
 import com.sz.core.common.entity.TransferMessage;
@@ -15,11 +13,11 @@ import java.util.List;
 public class SocketUtil {
 
     public static SocketBean formatSocketMessage(String message) {
-        return JSON.parseObject(message, SocketResult.class);
+        return JsonUtils.parseObject(message, SocketResult.class);
     }
 
     public static String transferMessage(SocketBean bean) {
-        return JSON.toJSONString(bean, SerializerFeature.WriteMapNullValue);
+        return JsonUtils.toJsonString(bean);
     }
 
     /**
@@ -35,6 +33,5 @@ public class SocketUtil {
         transferMessage.setToUsers(usernames);
         return transferMessage;
     }
-
 
 }

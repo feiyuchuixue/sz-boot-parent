@@ -23,13 +23,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
-            <version>13.1</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
+        <!-- pagehelper 分页-->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
@@ -43,28 +37,27 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapperstruct.version}</version>
         </dependency>
-        <!-- 对象深拷贝，性能较差（相比于）。不支持jdk8后的LocalDate等属性。详见: https://github.com/DozerMapper/dozer -->
+        <!-- apache commons工具包-->
         <dependency>
-            <groupId>com.github.dozermapper</groupId>
-            <artifactId>dozer-core</artifactId>
-            <version>6.5.2</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
         </dependency>
-        <!-- jwt-->
         <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>4.4.0</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.16.1</version>
         </dependency>
         <!-- valid 参数校验 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <!-- jackson组件，支持深拷贝 -->
+        <!-- jackson扩展 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.16.1</version>
+            <version>2.17.0</version>
         </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
@@ -78,9 +71,12 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+        <!-- websocket依赖，以后有可能将websocket相关工具提取到独立模块 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-websocket</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>

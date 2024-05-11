@@ -1,7 +1,7 @@
 package com.sz.redis.listener;
 
-import com.alibaba.fastjson.JSON;
 import com.sz.core.common.entity.TransferMessage;
+import com.sz.core.util.JsonUtils;
 import com.sz.redis.handler.WsToServiceMsgHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class WsToServiceListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         TransferMessage tm = (TransferMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [ws-to-service] tm = " + JSON.toJSONString(tm));
+        log.info(" [ws-to-service] tm = " + JsonUtils.toJsonString(tm));
         // 调用所有实现了TransferMessageHandler接口的处理器
         for (WsToServiceMsgHandler handler : messageHandlers) {
             handler.handlerMsg(tm);

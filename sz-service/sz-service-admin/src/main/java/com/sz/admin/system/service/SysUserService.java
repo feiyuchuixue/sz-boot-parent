@@ -6,12 +6,9 @@ import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserAuthToken;
 import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-
-
 
 /**
  * <p>
@@ -80,11 +77,10 @@ public interface SysUserService extends IService<SysUser> {
 
     /**
      * 重置密码
+     *
      * @param id
      */
     void resetPassword(Long id);
-
-    UserAuthToken refreshToken(RefreshAuthDTO refreshAuthDTO);
 
     void syncUserInfo(Object userId);
 

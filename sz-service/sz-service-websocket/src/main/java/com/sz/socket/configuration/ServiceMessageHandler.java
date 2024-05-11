@@ -1,9 +1,9 @@
 package com.sz.socket.configuration;
 
-import com.alibaba.fastjson.JSON;
 import com.sz.core.common.entity.SocketBean;
 import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.enums.SocketChannelEnum;
+import com.sz.core.util.JsonUtils;
 import com.sz.redis.handler.ServiceToWsMsgHandler;
 import com.sz.socket.sever.WebSocketServer;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
 
     @Override
     public void handleTransferMessage(TransferMessage tm) {
-        log.info(" [service-to-ws] tm = " + JSON.toJSONString(tm));
+        log.info(" [service-to-ws] tm = " + JsonUtils.toJsonString(tm));
         SocketBean tmMessage = tm.getMessage();
         SocketChannelEnum channel = tmMessage.getChannel();
         switch (tmMessage.getScope()) {

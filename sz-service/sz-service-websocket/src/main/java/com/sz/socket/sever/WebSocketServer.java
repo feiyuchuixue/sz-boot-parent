@@ -1,10 +1,10 @@
 package com.sz.socket.sever;
 
-import com.alibaba.fastjson.JSON;
 import com.sz.core.common.entity.SocketBean;
 import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.entity.WsSession;
 import com.sz.core.common.enums.SocketChannelEnum;
+import com.sz.core.util.JsonUtils;
 import com.sz.core.util.SocketUtil;
 import com.sz.redis.WebsocketRedisService;
 import com.sz.socket.cache.SocketManagerCache;
@@ -50,7 +50,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         switch (channel) {
             default:
                 log.warn(" 【websocket】 unknown message: {}, send to service ... ", message);
-                SocketBean sb = JSON.parseObject(message.getPayload(), SocketBean.class);
+                SocketBean sb = JsonUtils.parseObject(message.getPayload(), SocketBean.class);
                 TransferMessage tm = new TransferMessage();
                 tm.setMessage(sb);
                 String channelUsername = websocketRedisService.getUserBySessionId(sid);
@@ -79,7 +79,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         websocketRedisService.addUserToOnlineChat(sid, username);
         System.out.println("当前连接数:" + websocketRedisService.getConnectionCount());
         System.out.println("当前在线人数: " + websocketRedisService.getOnlineUserCount());
-        System.out.println("当前内存中的用户: " + JSON.toJSON(websocketRedisService.getAllOnlineUsernames()));
+        System.out.println("当前内存中的用户: " + JsonUtils.toJsonString(websocketRedisService.getAllOnlineUsernames()));
     }
 
     /**
@@ -116,7 +116,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @SneakyThrows
     public void sendMessage(List<String> usernames, SocketBean socketBean) {
-        log.info(" 定向推送。推送用户范围:{}, message: {}", usernames, JSON.toJSONString(socketBean));
+        log.info(" 定向推送。推送用户范围:{}, message: {}", usernames, JsonUtils.toJsonString(socketBean));
         for (String username : usernames) {
             // 验证当前内存中【用户】是否存在
             boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(username);
@@ -129,7 +129,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                         WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
                         wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
                     } else {
-                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JSON.toJSONString(socketBean), username);
+                        log.info(" websocket定向推送。message: {}。用户:{}推送失败",JsonUtils.toJsonString(socketBean), username);
                     }
                 }
             }
@@ -143,7 +143,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @SneakyThrows
     public void sendMessageToAllUser(SocketBean socketBean) {
-        log.info(" 全员推送。message: {}", JSON.toJSONString(socketBean));
+        log.info(" 全员推送。message: {}", JsonUtils.toJsonString(socketBean));
         List<String> allOnlineUsernames = new ArrayList<>(SocketManagerCache.onlineUserSessionIdMap.keySet());
         for (String username : allOnlineUsernames) {
             List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(username);
@@ -153,7 +153,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                     WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
                     wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
                 } else {
-                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JSON.toJSONString(socketBean), username);
+                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), username);
                 }
             }
         }

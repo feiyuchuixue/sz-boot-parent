@@ -1,12 +1,10 @@
 package com.sz.core.util;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sz.core.common.entity.TransferMessage;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO: 弃用fastjson，首选jackson
+ *
  * @author: sz
  * @date: 2022/10/8 18:59
  * @description:
@@ -101,28 +99,5 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
-
-    public static void main(String[] args) throws JsonProcessingException {
-        String validJson = "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}";
-        String invalidJson = "invalid JSON string";
-        String emptyJson = "";
-        String nullJson = null;
-        String nonJson = "12 3";
-
-        System.out.println("Is valid JSON: " + isJsonValid(validJson)); // 输出 true
-        System.out.println("Is valid JSON: " + isJsonValid(invalidJson)); // 输出 false
-        System.out.println("Is valid JSON: " + isJsonValid(emptyJson)); // 输出 false
-        System.out.println("Is valid JSON: " + isJsonValid(nullJson)); // 输出 false
-        System.out.println("Is valid JSON: " + isJsonValid(nonJson)); // 输出 false
-
-        String jsonString = "{\"notifyUsers\":[\"admin\"],\"message\":{\"data\":\"\",\"channel\":\"KICK_OFF\"}}";
-
-        // 使用 Jackson 库将 JSON 字符串转换成 Java 对象
-        ObjectMapper objectMapper = new ObjectMapper();
-        TransferMessage myObject = objectMapper.readValue(jsonString, TransferMessage.class);
-        System.out.println("aaabb ==" + JSON.toJSONString(myObject));
-
-    }
-
 
 }
