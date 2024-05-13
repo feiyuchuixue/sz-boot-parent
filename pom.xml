@@ -25,7 +25,7 @@
         <java.version>21</java.version>
         <skipTests>true</skipTests>
         <spring-boot.version>3.2.5</spring-boot.version>
-        <sa-token.version>1.37.0</sa-token.version>
+        <sa-token.version>1.38.0</sa-token.version>
         <mybatis-flex.version>1.8.9</mybatis-flex.version>
         <jackson.version>2.16.1</jackson.version>
     </properties>
