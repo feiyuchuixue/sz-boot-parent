@@ -24,11 +24,6 @@
             <artifactId>sz-common-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- Actuator可以帮助你监控和管理Spring Boot应用-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
         <!-- knife4j swagger文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
