@@ -29,3 +29,18 @@ sa-token:
   is-read-cookie: false
   # token前缀
   token-prefix: "Bearer"
+# 接口白名单
+router:
+  whitelist:
+    - "/v3/api-docs/**"
+    - "/auth/login"
+    - "/register"
+    - "/sys-dict/dict"
+    - "/doc.html"
+    - "/webjars/**"
+    - "/swagger-resources"
+    - "/favicon.ico"
+    - "/common/**"
+    - "/swagger-ui.html"
+    - "/www/**"
+    - "/wechat/**"
