@@ -78,8 +78,8 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     }
 
     @Override
-    public TeacherStatisticsVO detail(Object id) {
-        TeacherStatistics teacherStatistics = getById((Serializable) id);
+    public TeacherStatisticsVO detail(Long id) {
+        TeacherStatistics teacherStatistics = getById( id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
         return BeanCopyUtils.springCopy(teacherStatistics, TeacherStatisticsVO.class);
     }
@@ -104,50 +104,17 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     private static QueryWrapper buildQueryWrapper(TeacherStatisticsListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class);
-        if (Utils.isNotNull(dto.getYear())) {
-            wrapper.eq(TeacherStatistics::getYear, dto.getYear());
-        }
-
-        if (Utils.isNotNull(dto.getMonth())) {
-            wrapper.eq(TeacherStatistics::getMonth, dto.getMonth());
-        }
-
-        if (Utils.isNotNull(dto.getDuringTime())) {
-            wrapper.eq(TeacherStatistics::getDuringTime, dto.getDuringTime());
-        }
-
-        if (Utils.isNotNull(dto.getTeacherId())) {
-            wrapper.eq(TeacherStatistics::getTeacherId, dto.getTeacherId());
-        }
-
-        if (Utils.isNotNull(dto.getTeacherCommonType())) {
-            wrapper.eq(TeacherStatistics::getTeacherCommonType, dto.getTeacherCommonType());
-        }
-
-        if (Utils.isNotNull(dto.getTotalTeaching())) {
-            wrapper.eq(TeacherStatistics::getTotalTeaching, dto.getTotalTeaching());
-        }
-
-        if (Utils.isNotNull(dto.getTotalClassCount())) {
-            wrapper.eq(TeacherStatistics::getTotalClassCount, dto.getTotalClassCount());
-        }
-
-        if (Utils.isNotNull(dto.getTotalHours())) {
-            wrapper.eq(TeacherStatistics::getTotalHours, dto.getTotalHours());
-        }
-
-        if (Utils.isNotNull(dto.getCheckStatus())) {
-            wrapper.eq(TeacherStatistics::getCheckStatus, dto.getCheckStatus());
-        }
-
-        if (Utils.isNotNull(dto.getCheckTime())) {
-            wrapper.eq(TeacherStatistics::getCheckTime, dto.getCheckTime());
-        }
-
-        if (Utils.isNotNull(dto.getLastSyncTime())) {
-            wrapper.eq(TeacherStatistics::getLastSyncTime, dto.getLastSyncTime());
-        }
-
+        wrapper.eq(TeacherStatistics::getYear, dto.getYear());
+        wrapper.eq(TeacherStatistics::getMonth, dto.getMonth());
+        wrapper.eq(TeacherStatistics::getDuringTime, dto.getDuringTime());
+        wrapper.eq(TeacherStatistics::getTeacherId, dto.getTeacherId());
+        wrapper.eq(TeacherStatistics::getTeacherCommonType, dto.getTeacherCommonType());
+        wrapper.eq(TeacherStatistics::getTotalTeaching, dto.getTotalTeaching());
+        wrapper.eq(TeacherStatistics::getTotalClassCount, dto.getTotalClassCount());
+        wrapper.eq(TeacherStatistics::getTotalHours, dto.getTotalHours());
+        wrapper.eq(TeacherStatistics::getCheckStatus, dto.getCheckStatus());
+        wrapper.eq(TeacherStatistics::getCheckTime, dto.getCheckTime());
+        wrapper.eq(TeacherStatistics::getLastSyncTime, dto.getLastSyncTime());
         return wrapper;
     }
 

@@ -36,7 +36,7 @@ public interface TeacherStatisticsService extends IService<TeacherStatistics> {
 
     void remove(SelectIdsDTO dto);
 
-    TeacherStatisticsVO detail(Object id);
+    TeacherStatisticsVO detail(Long id);
 
     void importExcel(MultipartFile file);
 

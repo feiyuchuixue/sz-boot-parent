@@ -73,7 +73,7 @@ public class TeacherStatisticsController  {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Object id) {
+    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Long id) {
         return ApiResult.success(teacherStatisticsService.detail(id));
     }
 
