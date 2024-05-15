@@ -6,7 +6,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMapper;
 import com.sz.admin.system.mapper.SysRoleMenuMapper;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleAddDTO;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleQueryDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
@@ -73,7 +73,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public PageResult<SysRole> list(SysRoleQueryDTO dto) {
+    public PageResult<SysRole> list(SysRoleListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create();
         if (Utils.isNotNull(dto.getRoleName())) {
             wrapper.like(SysRole::getRoleName, dto.getRoleName());

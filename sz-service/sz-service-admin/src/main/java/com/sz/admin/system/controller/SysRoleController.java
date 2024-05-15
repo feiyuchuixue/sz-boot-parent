@@ -4,7 +4,7 @@ package com.sz.admin.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleAddDTO;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleQueryDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysRole;
@@ -67,7 +67,7 @@ public class SysRoleController {
     @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiResult<PageResult<SysRole>> listPage(SysRoleQueryDTO dto) {
+    public ApiResult<PageResult<SysRole>> listPage(SysRoleListDTO dto) {
         return ApiPageResult.success(sysRoleService.list(dto));
     }
 

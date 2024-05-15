@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "列表查询")
-public class SysConfigQueryDTO extends PageQuery {
+public class SysConfigListDTO extends PageQuery {
 
     @Schema(description =  "参数名", example = "test")
     private String configName;

@@ -95,7 +95,7 @@ public class SysUserController {
     @Operation(summary = "查询分页列表")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiPageResult<PageResult<SysUserVO>> listPage(SysUserQueryDTO dto) {
+    public ApiPageResult<PageResult<SysUserVO>> listPage(SysUserListDTO dto) {
         return ApiPageResult.success(sysUserService.list(dto));
     }
 

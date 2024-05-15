@@ -2,7 +2,7 @@ package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.core.common.entity.PageResult;
@@ -28,7 +28,7 @@ public interface SysDictTypeService extends IService<SysDictType> {
 
     SysDictType detail(Long id);
 
-    PageResult<SysDictType> list(SysDictTypeQueryDTO dto);
+    PageResult<SysDictType> list(SysDictTypeListDTO dto);
 
     List<SysDictType> selectOptionsType();
 }

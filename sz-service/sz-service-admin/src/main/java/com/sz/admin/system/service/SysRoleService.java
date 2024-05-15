@@ -2,7 +2,7 @@ package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleAddDTO;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleQueryDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.core.common.entity.PageResult;
@@ -26,5 +26,5 @@ public interface SysRoleService extends IService<SysRole> {
 
     void removeByMenuId(SelectIdsDTO dto);
 
-    PageResult<SysRole> list(SysRoleQueryDTO dto);
+    PageResult<SysRole> list(SysRoleListDTO dto);
 }

@@ -3,8 +3,6 @@ package com.sz.admin.system.pojo.dto.sysuser;
 import com.sz.core.common.entity.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
 /**
  * SysUserQueryDTO
@@ -13,7 +11,7 @@ import lombok.experimental.Accessors;
  * @since 2023/8/23
  */
 @Data
-public class SysUserQueryDTO extends PageQuery {
+public class SysUserListDTO extends PageQuery {
 
     @Schema(description = "账户")
     private String username;

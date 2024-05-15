@@ -1,7 +1,7 @@
 package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.sz.admin.system.pojo.dto.sysfile.SysFileQueryDTO;
+import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.ApiPageResult;
@@ -31,7 +31,7 @@ public class SysFileController {
 
     @Operation(summary = "列表查询")
     @GetMapping
-    public ApiPageResult<PageResult<SysFile>> list(SysFileQueryDTO dto) {
+    public ApiPageResult<PageResult<SysFile>> list(SysFileListDTO dto) {
         return ApiPageResult.success(sysFileService.fileList(dto));
     }
 

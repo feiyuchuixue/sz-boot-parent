@@ -2,7 +2,7 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigAddDTO;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigQueryDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.admin.system.service.SysConfigService;
@@ -59,7 +59,7 @@ public class SysConfigController {
     @Operation(summary ="列表查询")
     @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiResult<PageResult<SysConfig>> list(SysConfigQueryDTO dto) {
+    public ApiResult<PageResult<SysConfig>> list(SysConfigListDTO dto) {
         return ApiPageResult.success(sysConfigService.list(dto));
     }
 

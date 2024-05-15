@@ -1,7 +1,7 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
-import com.sz.admin.system.pojo.dto.sysfile.SysFileQueryDTO;
+import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
@@ -25,7 +25,7 @@ public interface SysFileService extends IService<SysFile> {
      * @param dto dto
      * @return {@link List}<{@link SysFile}>
      */
-    PageResult<SysFile> fileList(SysFileQueryDTO dto);
+    PageResult<SysFile> fileList(SysFileListDTO dto);
 
     /**
      * 上传文件

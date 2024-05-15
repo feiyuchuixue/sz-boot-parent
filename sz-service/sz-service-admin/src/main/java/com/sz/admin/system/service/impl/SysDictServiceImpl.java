@@ -8,7 +8,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictMapper;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.pojo.po.SysDictType;
@@ -116,7 +116,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public PageResult<SysDict> list(SysDictQueryDTO dto) {
+    public PageResult<SysDict> list(SysDictListDTO dto) {
         QueryChain<SysDict> chain = QueryChain.of(this.mapper)
                 .select()
                 .from(SysDictTableDef.SYS_DICT)

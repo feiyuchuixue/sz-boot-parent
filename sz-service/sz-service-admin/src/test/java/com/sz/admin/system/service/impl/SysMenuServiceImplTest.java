@@ -1,6 +1,6 @@
 package com.sz.admin.system.service.impl;
 
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuQueryDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.service.SysMenuService;
 import com.sz.core.util.JsonUtils;
@@ -18,7 +18,7 @@ class SysMenuServiceImplTest {
 
     @Test
     void menuList() {
-        SysMenuQueryDTO dto = new SysMenuQueryDTO();
+        SysMenuListDTO dto = new SysMenuListDTO();
         List<SysMenuVO> sysMenuVOS = sysMenuService.menuList(dto);
         System.out.println("sysMenuVOS ==" + JsonUtils.toJsonString(sysMenuVOS));
     }

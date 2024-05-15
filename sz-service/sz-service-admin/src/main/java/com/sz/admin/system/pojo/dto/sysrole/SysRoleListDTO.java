@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "角色查询")
-public class SysRoleQueryDTO extends PageQuery {
+public class SysRoleListDTO extends PageQuery {
 
     @Schema(description =  "角色名称")
     private String roleName;

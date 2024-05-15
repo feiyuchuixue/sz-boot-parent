@@ -10,7 +10,7 @@ import lombok.Data;
  * @since 2023/8/21
  */
 @Data
-public class SysMenuQueryDTO {
+public class SysMenuListDTO {
 
     @Schema(description = "是否查询按钮")
    private boolean isShowButton;

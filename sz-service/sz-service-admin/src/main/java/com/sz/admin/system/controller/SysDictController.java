@@ -3,7 +3,7 @@ package com.sz.admin.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.service.SysDictService;
@@ -61,7 +61,7 @@ public class SysDictController {
     @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.dict.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiResult<PageResult<SysDict>> list(@Valid SysDictQueryDTO dto) {
+    public ApiResult<PageResult<SysDict>> list(@Valid SysDictListDTO dto) {
         return ApiPageResult.success(sysDictService.list(dto));
     }
 

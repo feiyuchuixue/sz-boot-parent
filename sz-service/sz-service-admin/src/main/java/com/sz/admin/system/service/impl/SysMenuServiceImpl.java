@@ -9,7 +9,7 @@ import com.sz.admin.system.mapper.SysMenuMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuQueryDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.po.table.SysMenuTableDef;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
@@ -165,7 +165,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return {@link List}<{@link SysMenuVO}>
      */
     @Override
-    public List<SysMenuVO> menuList(SysMenuQueryDTO dto) {
+    public List<SysMenuVO> menuList(SysMenuListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysMenu::getDelFlag, "F")
                 /* .orderBy(SYS_MENU.DEEP.asc())*/
@@ -244,7 +244,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (childrenIds.size() > 0) {
             sysMenuVOS = menuListTree(childrenIds);
         } else {
-            SysMenuQueryDTO dto = new SysMenuQueryDTO();
+            SysMenuListDTO dto = new SysMenuListDTO();
             dto.setShowButton(isShowButton);
             sysMenuVOS = menuList(dto);
         }
@@ -254,7 +254,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<MenuTreeVO> queryRoleMenuTree() {
-        SysMenuQueryDTO dto = new SysMenuQueryDTO();
+        SysMenuListDTO dto = new SysMenuListDTO();
         dto.setShowButton(true);
         List<SysMenuVO> sysMenuVOS = menuList(dto);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);

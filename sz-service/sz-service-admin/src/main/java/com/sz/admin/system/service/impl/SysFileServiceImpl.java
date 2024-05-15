@@ -5,7 +5,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.CommonFileMapper;
-import com.sz.admin.system.pojo.dto.sysfile.SysFileQueryDTO;
+import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.pojo.po.table.SysFileTableDef;
 import com.sz.admin.system.service.SysFileService;
@@ -46,7 +46,7 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      * @return {@link PageResult}<{@link SysFile}>
      */
     @Override
-    public PageResult<SysFile> fileList(SysFileQueryDTO dto) {
+    public PageResult<SysFile> fileList(SysFileListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create();
         if (Utils.isNotNull(dto.getFilename())) {
             wrapper.where(SysFileTableDef.SYS_FILE.FILENAME.like(dto.getFilename()));

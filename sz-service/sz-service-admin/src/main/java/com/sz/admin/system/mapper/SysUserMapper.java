@@ -1,7 +1,7 @@
 package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
-import com.sz.admin.system.pojo.dto.sysuser.SysUserQueryDTO;
+import com.sz.admin.system.pojo.dto.sysuser.SysUserListDTO;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
@@ -38,7 +38,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param dto
      * @return
      */
-    List<SysUserVO> queryAllSysUserList(SysUserQueryDTO dto);
+    List<SysUserVO> queryAllSysUserList(SysUserListDTO dto);
 
 
     /**
@@ -46,14 +46,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param dto
      * @return
      */
-    List<SysUserVO> querySysUserListByDept(SysUserQueryDTO dto);
+    List<SysUserVO> querySysUserListByDept(SysUserListDTO dto);
 
     /**
      * 查询（未分配部门）用户列表
      * @param dto
      * @return
      */
-    List<SysUserVO> querySysUserListNotDept(SysUserQueryDTO dto);
+    List<SysUserVO> querySysUserListNotDept(SysUserListDTO dto);
 
     /**
      * 查询用户部门信息

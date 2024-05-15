@@ -3,7 +3,7 @@ package com.sz.admin.system.service;
 import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuQueryDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
@@ -49,7 +49,7 @@ public interface SysMenuService extends IService<SysMenu> {
      * @param dto dto
      * @return {@link List}<{@link SysMenuVO}>
      */
-    List<SysMenuVO> menuList(SysMenuQueryDTO dto);
+    List<SysMenuVO> menuList(SysMenuListDTO dto);
 
 
     List<SysMenuVO> findMenuListByUserId(Long userId);

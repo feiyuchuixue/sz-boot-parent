@@ -6,7 +6,7 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuQueryDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
@@ -68,7 +68,7 @@ public class SysMenuController {
     @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.menu.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiResult<List<SysMenuVO>> list(SysMenuQueryDTO dto) {
+    public ApiResult<List<SysMenuVO>> list(SysMenuListDTO dto) {
         return ApiResult.success(sysMenuService.menuList(dto));
     }
 

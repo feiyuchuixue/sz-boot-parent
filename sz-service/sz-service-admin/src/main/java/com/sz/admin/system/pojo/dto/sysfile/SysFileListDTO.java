@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "公共文件搜索")
-public class SysFileQueryDTO extends PageQuery {
+public class SysFileListDTO extends PageQuery {
 
     @Schema(description =  "文件名")
     private String filename;

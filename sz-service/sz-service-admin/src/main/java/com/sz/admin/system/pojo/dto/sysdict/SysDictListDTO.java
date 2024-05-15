@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "列表查询")
-public class SysDictQueryDTO extends PageQuery {
+public class SysDictListDTO extends PageQuery {
 
     @NotZero(message = "sysDictTypeId不能为空")
     @Schema(description =  "关联sys_dict_type id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")

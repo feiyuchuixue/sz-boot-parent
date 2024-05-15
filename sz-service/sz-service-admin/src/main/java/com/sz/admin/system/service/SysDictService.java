@@ -2,7 +2,7 @@ package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.core.common.entity.DictCustomVO;
@@ -28,7 +28,7 @@ public interface SysDictService extends IService<SysDict> {
 
     void remove(SelectIdsDTO dto);
 
-    PageResult<SysDict> list(SysDictQueryDTO dto);
+    PageResult<SysDict> list(SysDictListDTO dto);
 
     Map<String, List<DictCustomVO>> dictList(String typeCode);
 

@@ -6,7 +6,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeQueryDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTypeTableDef;
@@ -69,7 +69,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
-    public PageResult<SysDictType> list(SysDictTypeQueryDTO dto) {
+    public PageResult<SysDictType> list(SysDictTypeListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create();
         if (Utils.isNotNull(dto.getTypeName())) {
             wrapper.where(SysDictTypeTableDef.SYS_DICT_TYPE.TYPE_NAME.like(dto.getTypeName()));

@@ -5,7 +5,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysConfigMapper;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigAddDTO;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigQueryDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.admin.system.pojo.po.table.SysConfigTableDef;
@@ -60,7 +60,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    public PageResult<SysConfig> list(SysConfigQueryDTO dto) {
+    public PageResult<SysConfig> list(SysConfigListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create();
         if (Utils.isNotNull(dto.getConfigName())) {
             wrapper.where(SysConfigTableDef.SYS_CONFIG.CONFIG_NAME.like(dto.getConfigName()));
