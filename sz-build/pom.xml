@@ -19,37 +19,6 @@
     <properties>
         <!-- sz-boot-parent版本 -->
         <revision>0.6.0-SNAPSHOT</revision>
-
-        <java.version>21</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
     </properties>
-
-    <repositories>
-        <repository>
-            <id>public</id>
-            <url>https://maven.aliyun.com/repository/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- 配置官方Maven中央仓库 -->
-        <repository>
-            <id>central</id>
-            <url>https://repo1.maven.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled> <!-- 通常中央仓库不包含snapshots -->
-            </snapshots>
-        </repository>
-    </repositories>
 
 </project>

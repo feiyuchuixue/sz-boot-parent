@@ -13,9 +13,6 @@
     <artifactId>sz-dependencies</artifactId>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.2.5</spring-boot.version>
         <sa-token.version>1.38.0</sa-token.version>
         <mybatis-flex.version>1.8.9</mybatis-flex.version>

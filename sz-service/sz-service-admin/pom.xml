@@ -85,5 +85,4 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
     </dependencies>
-
 </project>
