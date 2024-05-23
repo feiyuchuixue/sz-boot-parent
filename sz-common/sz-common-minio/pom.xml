@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.sz</groupId>
         <artifactId>sz-common</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>sz-common-minio</artifactId>

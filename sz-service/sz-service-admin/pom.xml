@@ -5,7 +5,7 @@
     <parent>
         <artifactId>sz-service</artifactId>
         <groupId>com.sz</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sz-service-admin</artifactId>
@@ -25,48 +25,48 @@
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-mysql</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--minio模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-minio</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--鉴权模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-security</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--代码生成模块-->
         <dependency>
             <groupId>com.sz.generator</groupId>
             <artifactId>sz-common-generator</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--微信模块-->
         <dependency>
             <groupId>com.sz.wechat</groupId>
             <artifactId>sz-common-wechat</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--日志模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-log</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!--redis模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-redis</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.sz.excel</groupId>
             <artifactId>sz-common-excel</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
         <!-- flyway db ddl; https://documentation.red-gate.com/fd/mysql-184127601.html-->
         <dependency>
