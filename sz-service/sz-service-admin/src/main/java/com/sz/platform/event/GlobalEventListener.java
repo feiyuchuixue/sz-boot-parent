@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @ClassName EventListener
+ * @ClassName EventListener 事件监听器
  * @Author sz
  * @Date 2024/2/29 16:27
  * @Version 1.0

@@ -1,7 +1,7 @@
 package com.sz.redis;
 
 /**
- * 公用redis 常量 key
+ * 公用 redis key 常量
  *
  * @ClassName CommonKeyConstants
  * @Author sz
@@ -9,11 +9,6 @@ package com.sz.redis;
  * @Version 1.0
  */
 public class CommonKeyConstants {
-
-    /**
-     * 用户信息key
-     */
-    public static final String USER_INFO = "user_info:${user_name}";
 
     /**
      * 字典信息
@@ -25,6 +20,9 @@ public class CommonKeyConstants {
      */
     public static final String SYS_CONFIG = "sys_config";
 
+    /**
+     * sa-token token信息
+     */
     public static final String TOKEN_SESSION = "Authorization:login:token-session:${token}";
 
     /**
