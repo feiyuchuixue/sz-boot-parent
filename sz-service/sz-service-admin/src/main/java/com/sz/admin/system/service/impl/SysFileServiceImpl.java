@@ -14,7 +14,7 @@ import com.sz.core.util.FileUploadUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.minio.MinioService;
-import com.sz.platform.common.enums.AdminResponseEnum;
+import com.sz.platform.enums.AdminResponseEnum;
 import io.minio.ObjectWriteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

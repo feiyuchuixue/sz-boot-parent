@@ -1,11 +1,9 @@
 package com.sz.redis;
 
+/**
+ * 业务级 redis key 常量管理
+ */
 public class RedisKeymapConstants {
-
-    /**
-     * 字典信息
-     */
-    public final static String SYS_DICT = "sys_dict";
 
 
 }

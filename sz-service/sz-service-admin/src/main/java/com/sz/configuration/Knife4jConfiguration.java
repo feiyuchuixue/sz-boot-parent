@@ -17,7 +17,8 @@ public class Knife4jConfiguration {
                         .version("1.0")
                         .description("Sz-Admin RESTful APIs")
                         .termsOfService("http://127.0.0.1:9991")
-                        .license(new License().name("Apache 2.0")
+                        .license(new License()
+                                .name("Apache 2.0")
                                 .url("http://127.0.0.1:9991")));
     }
 

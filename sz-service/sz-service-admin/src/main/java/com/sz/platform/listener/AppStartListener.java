@@ -25,7 +25,7 @@ public class AppStartListener implements CommandLineRunner, RedisTemplateClient 
     public void run(String... args) throws Exception {
         log.info(" ===================== app is running finish ... =====================");
 
-        // TODO  do something
+        // TODO something
     }
 
     @Override

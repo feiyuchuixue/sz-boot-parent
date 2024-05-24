@@ -1,4 +1,4 @@
-package com.sz.platform.common.enums;
+package com.sz.platform.enums;
 
 import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
 

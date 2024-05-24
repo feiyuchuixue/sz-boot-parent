@@ -24,7 +24,7 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
-import com.sz.platform.common.enums.AdminResponseEnum;
+import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.redis.RedisService;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;

@@ -27,12 +27,11 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
-import com.sz.platform.common.enums.AdminResponseEnum;
+import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.CommonKeyConstants;
 import com.sz.redis.RedisCache;
-import com.sz.redis.RedisService;
 import com.sz.redis.RedisUtils;
 import com.sz.security.core.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final SysUserRoleMapper sysUserRoleMapper;
 
-    private final RedisService redisService;
 
     private final RedisCache redisCache;
 
@@ -161,7 +159,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .ne(SysUser::getId, dto.getId());
         // 检查用户名是否冲突
         CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
-        redisService.clearUserInfo(user.getUsername());
+        redisCache.clearUserInfo(user.getUsername());
         updateById(user);
     }
 
@@ -346,7 +344,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getOldPwd(), sysUser.getPwd()));
         sysUser.setPwd(getEncoderPwd(dto.getNewPwd()));
         updateById(sysUser);
-        redisService.clearUserInfo(sysUser.getUsername());
+        redisCache.clearUserInfo(sysUser.getUsername());
     }
 
     /**

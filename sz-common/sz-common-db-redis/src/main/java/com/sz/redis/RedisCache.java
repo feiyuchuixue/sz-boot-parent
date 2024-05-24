@@ -1,6 +1,7 @@
 package com.sz.redis;
 
 import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -86,6 +87,14 @@ public class RedisCache {
         Long increment = redisTemplate.opsForValue().increment(key, 1);
         redisTemplate.expire(key, 30, TimeUnit.MINUTES);
         return increment;
+    }
+
+    public String getUserInfoKey(String username) {
+        return StringUtils.replacePlaceholders(CommonKeyConstants.TOKEN_SESSION, username);
+    }
+
+    public void clearUserInfo(String username) {
+        redisTemplate.delete(getUserInfoKey(username));
     }
 
 
