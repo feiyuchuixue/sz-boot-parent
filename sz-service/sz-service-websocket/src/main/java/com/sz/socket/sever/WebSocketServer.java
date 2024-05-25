@@ -8,9 +8,13 @@ import com.sz.core.util.JsonUtils;
 import com.sz.core.util.SocketUtil;
 import com.sz.redis.WebsocketRedisService;
 import com.sz.socket.cache.SocketManagerCache;
+import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -20,18 +24,19 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.sz.socket.cache.SocketManagerCache.LOGIN_ID;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class WebSocketServer extends TextWebSocketHandler {
-    private static WebsocketRedisService websocketRedisService;
 
-    @Autowired
-    public void setRedisService(WebsocketRedisService websocketRedisService) {
-        WebSocketServer.websocketRedisService = websocketRedisService;
-    }
+    private final WebsocketRedisService websocketRedisService;
+
+    private final ServerState serverState;
 
     /**
      * 接受客户端消息
@@ -42,7 +47,11 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        System.out.println("handleTextMessage 0..");
+        if (serverState.isShuttingDown()) {
+            log.warn("Service is shutting down. Ignoring new messages.");
+            return;
+        }
+
         String sid = session.getId();
         SocketBean socketBean = SocketUtil.formatSocketMessage(message.getPayload());
         SocketChannelEnum channel = socketBean.getChannel();
@@ -71,6 +80,11 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        if (serverState.isShuttingDown()) {
+            log.warn("Service is shutting down. Rejecting new connection.");
+            session.close(CloseStatus.SERVICE_RESTARTED);
+            return;
+        }
         String sid = session.getId();
         WsSession wsSession = new WsSession(sid, "", session);
         String username = (String) session.getAttributes().get(LOGIN_ID);
@@ -91,6 +105,10 @@ public class WebSocketServer extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        if (serverState.isShuttingDown()) {
+            log.warn("Service is shutting down. Skipping cleanup for closed connection.");
+            return;
+        }
         String username = (String) session.getAttributes().get(LOGIN_ID);
         log.info("【websocket消息】连接断开，username:[{}]", username);
         if (session != null && session.isOpen()) {
@@ -129,7 +147,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                         WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
                         wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
                     } else {
-                        log.info(" websocket定向推送。message: {}。用户:{}推送失败",JsonUtils.toJsonString(socketBean), username);
+                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), username);
                     }
                 }
             }
@@ -157,6 +175,28 @@ public class WebSocketServer extends TextWebSocketHandler {
                 }
             }
         }
+    }
+
+    public void disconnectAll() {
+        ConcurrentHashMap<String, WsSession> onlineSessionMap = SocketManagerCache.onlineSessionMap;
+        for (Map.Entry<String, WsSession> sessionEntry : onlineSessionMap.entrySet()) {
+            String sid = sessionEntry.getKey();
+            WsSession wsSession = sessionEntry.getValue();
+            // 清理 redis
+            websocketRedisService.removeUserBySessionId(sid);
+            // 断开websocket 连接 ...
+            WebSocketSession session = wsSession.getSession();
+            if (session != null) {
+                try {
+                    wsSession.getSession().close(CloseStatus.SERVICE_RESTARTED);
+                    log.info(" 优雅退出，关闭 websocket 连接 ...");
+                } catch (IOException e) {
+                    log.error("【websocket消息】连接断开异常，error: {}", e);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
     }
 
 }

@@ -2,6 +2,7 @@ package com.sz.redis;
 
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.TransferMessage;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -85,26 +86,25 @@ public class WebsocketRedisService {
      * @param sessionId
      */
     public void removeUserBySessionId(String sessionId) {
-        String onlineUserKey = WEBSOCKET_ONLINE_USER;
-        String onlineSidKey = WEBSOCKET_ONLINE_SID;
         // 查找sessionId对应的用户名
-        String username = (String) redisTemplate.opsForHash().get(onlineSidKey, sessionId);
+        String username = (String) redisTemplate.opsForHash().get(WEBSOCKET_ONLINE_SID, sessionId);
         if (username != null) {
             // 从在线用户列表中删除sessionId
-            if (redisTemplate.opsForHash().hasKey(onlineUserKey, username)) {
-                List<String> sids = (List<String>) redisTemplate.opsForHash().get(onlineUserKey, username);
+            if (redisTemplate.opsForHash().hasKey(WEBSOCKET_ONLINE_USER, username)) {
+                List<String> sids = (List<String>) redisTemplate.opsForHash().get(WEBSOCKET_ONLINE_USER, username);
+                System.out.println("sids =="+ sids);
                 sids.remove(sessionId);
 
                 // 如果用户不再有任何会话，则从在线用户列表中删除该用户
                 if (sids.isEmpty()) {
-                    redisTemplate.opsForHash().delete(onlineUserKey, username);
+                    redisTemplate.opsForHash().delete(WEBSOCKET_ONLINE_USER, username);
                 } else {
-                    redisTemplate.opsForHash().put(onlineUserKey, username, sids);
+                    redisTemplate.opsForHash().put(WEBSOCKET_ONLINE_USER, username, sids);
                 }
             }
 
             // 删除sessionId映射
-            redisTemplate.opsForHash().delete(onlineSidKey, sessionId);
+            redisTemplate.opsForHash().delete(WEBSOCKET_ONLINE_SID, sessionId);
         }
     }
 
