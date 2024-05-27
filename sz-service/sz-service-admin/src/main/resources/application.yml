@@ -1,0 +1,39 @@
+spring:
+  threads:
+    virtual:
+      # 启用虚拟线程
+      enabled: true
+  profiles:
+    active: local
+  config:
+    import:
+      - classpath:config/${spring.profiles.active}/flyway.yml
+      - classpath:config/${spring.profiles.active}/knife4j.yml
+      - classpath:config/${spring.profiles.active}/minio.yml
+      - classpath:config/${spring.profiles.active}/mybatis-flex.yml
+      - classpath:config/${spring.profiles.active}/mysql.yml
+      - classpath:config/${spring.profiles.active}/page-helper.yml
+      - classpath:config/${spring.profiles.active}/redis.yml
+      - classpath:config/${spring.profiles.active}/sa-token.yml
+  mvc:
+    path-match:
+      matching-strategy: ant_path_matcher
+  application:
+    name: admin-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+# 生成工具
+generator:
+  path:
+    web:
+    api: E://code//Gitlab//sz-framework//sz-admin
+# 微信生态
+wechat:
+  # 小程序
+  mini:
+    app-id: your_app_id
+    app-secret: your_app_secret
+app:
+  version: @project.version@

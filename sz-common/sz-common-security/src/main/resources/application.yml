@@ -1,0 +1,13 @@
+router:
+  whitelist:
+    - "/v3/api-docs/**"
+    - "/auth/login"
+    - "/register"
+    - "/sys-dict/dict"
+    - "/doc.html"
+    - "/webjars/**"
+    - "/swagger-resources"
+    - "/favicon.ico"
+    - "/common/**"
+    - "/swagger-ui.html"
+    - "/www/**"
