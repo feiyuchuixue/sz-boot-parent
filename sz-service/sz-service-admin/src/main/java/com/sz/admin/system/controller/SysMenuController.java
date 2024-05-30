@@ -109,8 +109,8 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.findPermission());
     }
 
-    @Operation(summary = "菜单预览")
-    @SaCheckPermission(value = "sys.menu.preview_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @Operation(summary = "导出sql")
+    @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("sql/export")
     public ApiResult exportMenuSql(@RequestBody SelectIdsDTO dto, HttpServletResponse response) {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
