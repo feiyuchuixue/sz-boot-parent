@@ -29,6 +29,8 @@ sa-token:
   is-read-cookie: false
   # token前缀
   token-prefix: "Bearer"
+  # 同一账号最大登录数量，-1代表不限
+  max-login-count: -1
 # 接口白名单
 router:
   whitelist:
