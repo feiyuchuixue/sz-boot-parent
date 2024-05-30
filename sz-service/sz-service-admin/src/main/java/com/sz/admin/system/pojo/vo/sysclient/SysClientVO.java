@@ -16,4 +16,7 @@ import lombok.Data;
 @Schema(description = "SysClient返回vo")
 public class SysClientVO extends ClientVO {
 
+    @Schema(description = "是否锁定")
+    private String isLock;
+
 }

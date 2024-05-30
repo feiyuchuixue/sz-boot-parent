@@ -69,4 +69,7 @@ public class SysClient implements Serializable {
     @Schema(description ="备注")
     private String remark;
 
+    @Schema(description = "是否锁定")
+    private String isLock;
+
 }
