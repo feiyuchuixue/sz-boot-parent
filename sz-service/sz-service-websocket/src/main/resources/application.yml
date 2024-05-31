@@ -9,10 +9,7 @@ spring:
     active: local
   config:
     import:
-      - classpath:config/${spring.profiles.active}/page-helper.yml
       - classpath:config/${spring.profiles.active}/redis.yml
-      - classpath:config/${spring.profiles.active}/mybatis-plus.yml
-      - classpath:config/${spring.profiles.active}/mysql.yml
   application:
     name: websocket-service
 # 开启redis监听
