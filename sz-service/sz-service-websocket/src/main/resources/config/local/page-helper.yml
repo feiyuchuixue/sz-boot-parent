@@ -1,5 +1,5 @@
 page-helper:
-  helperDialect: mariadb
+  helperDialect: mysql
   reasonable: false
   supportMethodsArguments: true
   params: count=countSql
