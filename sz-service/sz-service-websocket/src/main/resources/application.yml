@@ -3,6 +3,10 @@ server:
   shutdown: graceful
 
 spring:
+  threads:
+    virtual:
+      # 启用虚拟线程
+      enabled: true
   profiles:
     active: local
   config:
