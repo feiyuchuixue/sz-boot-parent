@@ -39,7 +39,7 @@ public class TestController {
     }
 
     @PostMapping("push/all")
-    @Operation(summary = "向（全体用户）发送升级公告（socket）")
+    @Operation(summary = "全体推送-升级公告（socket）")
     public ApiResult sendUpgradeMsg() {
         SocketBean bean = new SocketBean<>();
         bean.setData("【全体推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
@@ -54,7 +54,7 @@ public class TestController {
     }
 
     @PostMapping("push/user")
-    @Operation(summary = "向（指定用户）发送升级公告（socket）")
+    @Operation(summary = "定向推送-升级公告（socket）")
     public ApiResult sendMsg() {
         SocketBean bean = new SocketBean<>();
         bean.setData("【定向推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
