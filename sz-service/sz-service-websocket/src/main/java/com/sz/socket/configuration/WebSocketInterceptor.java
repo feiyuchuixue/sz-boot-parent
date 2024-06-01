@@ -27,7 +27,6 @@ import static com.sz.socket.cache.SocketManagerCache.SEC_WEBSOCKET_PROTOCOL_HEAD
 @Slf4j
 public class WebSocketInterceptor implements HandshakeInterceptor {
 
-
     private final RedisTemplate redisTemplate;
 
     /**
@@ -44,11 +43,9 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
         ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
         ServletServerHttpResponse serverHttpResponse = (ServletServerHttpResponse) response;
         String authorization = serverHttpRequest.getServletRequest().getHeader(SEC_WEBSOCKET_PROTOCOL_HEADER);
-        System.out.println("authorization ==" + authorization);
         String keyt = StpUtil.getStpLogic().getConfigOrGlobal().getJwtSecretKey();
         if (Utils.isNotNull(authorization)) {
             JWT jwt = SaJwtUtil.parseToken(authorization, "login", keyt, false);
-            // System.out.println("timeout ==" + SaJwtUtil.getTimeout(authorization,"login",keyt));
             if(!jwt.verify()){
                 return false;
             }
