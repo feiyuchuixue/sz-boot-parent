@@ -19,7 +19,7 @@
 - 代码仓库：
     - 前端：**[sz-admin](https://github.com/feiyuchuixue/sz-admin.git)**
     - 后端：**[sz-boot-parent](https://github.com/feiyuchuixue/sz-boot-parent.git)**
-    - 部署：**[sz_deploy](https://github.com/feiyuchuixue/sz_deploy.git)**
+    - 部署：**[sz-deploy](https://github.com/feiyuchuixue/sz-deploy.git)**
 
 ## 系统要求
 
