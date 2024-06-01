@@ -8,13 +8,9 @@ import com.sz.core.util.JsonUtils;
 import com.sz.core.util.SocketUtil;
 import com.sz.redis.WebsocketRedisService;
 import com.sz.socket.cache.SocketManagerCache;
-import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -86,11 +82,12 @@ public class WebSocketServer extends TextWebSocketHandler {
             return;
         }
         String sid = session.getId();
-        WsSession wsSession = new WsSession(sid, "", session);
-        String username = (String) session.getAttributes().get(LOGIN_ID);
+        String loginId = (String) session.getAttributes().get(LOGIN_ID);
+        WsSession wsSession = new WsSession(sid, loginId, session);
+
         SocketManagerCache.onlineSessionMap.put(sid, wsSession);
-        SocketManagerCache.addOnlineSid(username, sid);
-        websocketRedisService.addUserToOnlineChat(sid, username);
+        SocketManagerCache.addOnlineSid(loginId, sid);
+        websocketRedisService.addUserToOnlineChat(sid, loginId);
         System.out.println("当前连接数:" + websocketRedisService.getConnectionCount());
         System.out.println("当前在线人数: " + websocketRedisService.getOnlineUserCount());
         System.out.println("当前内存中的用户: " + JsonUtils.toJsonString(websocketRedisService.getAllOnlineUsernames()));
@@ -109,8 +106,8 @@ public class WebSocketServer extends TextWebSocketHandler {
             log.warn("Service is shutting down. Skipping cleanup for closed connection.");
             return;
         }
-        String username = (String) session.getAttributes().get(LOGIN_ID);
-        log.info("【websocket消息】连接断开，username:[{}]", username);
+        String loginId = (String) session.getAttributes().get(LOGIN_ID);
+        log.info("【websocket消息】连接断开，loginId:[{}]", loginId);
         if (session != null && session.isOpen()) {
             try {
                 String sid = session.getId();
@@ -127,19 +124,19 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     /**
-     * 根据username 推送消息
+     * 根据loginId 推送消息
      *
-     * @param usernames
+     * @param loginIds
      * @param socketBean
      */
     @SneakyThrows
-    public void sendMessage(List<String> usernames, SocketBean socketBean) {
-        log.info(" 定向推送。推送用户范围:{}, message: {}", usernames, JsonUtils.toJsonString(socketBean));
-        for (String username : usernames) {
+    public void sendMessage(List<String> loginIds, SocketBean socketBean) {
+        log.info(" 定向推送。推送用户范围:{}, message: {}", loginIds, JsonUtils.toJsonString(socketBean));
+        for (String loginId : loginIds) {
             // 验证当前内存中【用户】是否存在
-            boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(username);
+            boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(loginId);
             if (existsUsername) {
-                List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(username);
+                List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(loginId);
                 for (String notifyUserSid : notifyUserSids) {
                     // 验证当前内存中【session】是否存在
                     boolean existsUserSession = SocketManagerCache.onlineSessionMap.containsKey(notifyUserSid);
@@ -147,7 +144,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                         WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
                         wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
                     } else {
-                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), username);
+                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), loginId);
                     }
                 }
             }
@@ -155,7 +152,7 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
     /**
-     * 根据username 推送消息
+     * 根据loginId 推送消息
      *
      * @param socketBean
      */
@@ -163,15 +160,15 @@ public class WebSocketServer extends TextWebSocketHandler {
     public void sendMessageToAllUser(SocketBean socketBean) {
         log.info(" 全员推送。message: {}", JsonUtils.toJsonString(socketBean));
         List<String> allOnlineUsernames = new ArrayList<>(SocketManagerCache.onlineUserSessionIdMap.keySet());
-        for (String username : allOnlineUsernames) {
-            List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(username);
+        for (String loginId : allOnlineUsernames) {
+            List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(loginId);
             for (String notifyUserSid : notifyUserSids) {
                 boolean existsUserSession = SocketManagerCache.onlineSessionMap.containsKey(notifyUserSid);
                 if (existsUserSession) {
                     WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
                     wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
                 } else {
-                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), username);
+                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), loginId);
                 }
             }
         }

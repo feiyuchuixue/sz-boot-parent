@@ -24,19 +24,19 @@ public class SocketManagerCache {
     public static ConcurrentHashMap<String, WsSession> onlineSessionMap = new ConcurrentHashMap<String, WsSession>();
 
     /**
-     * username <==> sid 关系; 1对多,一个用户有可能在多个浏览器上登录
+     * loginId <==> sid 关系; 1对多,一个用户有可能在多个浏览器上登录
      */
     public static ConcurrentHashMap<String, List<String>> onlineUserSessionIdMap = new ConcurrentHashMap<String, List<String>>();
 
-    public static void addOnlineSid(String username, String sid) {
-        if (onlineUserSessionIdMap.containsKey(username)) {
-            List<String> sidArray = onlineUserSessionIdMap.get(username);
+    public static void addOnlineSid(String loginId, String sid) {
+        if (onlineUserSessionIdMap.containsKey(loginId)) {
+            List<String> sidArray = onlineUserSessionIdMap.get(loginId);
             sidArray.add(sid);
-            onlineUserSessionIdMap.put(username, sidArray);
+            onlineUserSessionIdMap.put(loginId, sidArray);
         } else {
             List<String> sidArray = new ArrayList<>();
             sidArray.add(sid);
-            onlineUserSessionIdMap.put(username, sidArray);
+            onlineUserSessionIdMap.put(loginId, sidArray);
         }
     }
 
@@ -47,11 +47,11 @@ public class SocketManagerCache {
      */
     public static void removeUserSession(String sid) {
         WsSession wsSession = onlineSessionMap.get(sid);
-        String username = wsSession.getUsername();
-        if (onlineUserSessionIdMap.containsKey(username)) {
-            List<String> sids = onlineUserSessionIdMap.get(username);
+        String loginId = wsSession.getLoginId();
+        if (onlineUserSessionIdMap.containsKey(loginId)) {
+            List<String> sids = onlineUserSessionIdMap.get(loginId);
             sids.remove(sid);
-            onlineUserSessionIdMap.put(username, sids);
+            onlineUserSessionIdMap.put(loginId, sids);
         }
     }
 

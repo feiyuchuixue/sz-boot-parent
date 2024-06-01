@@ -16,15 +16,15 @@ public class WsSession {
     @Schema(description = "sid,自定义生成的uuid")
     private String sid;
 
-    @Schema(description = "username")
-    private String username;
+    @Schema(description = "loginId")
+    private String loginId;
 
     @Schema(description = "socket-session")
     private WebSocketSession session;
 
-    public WsSession(String sid, String username, WebSocketSession session) {
+    public WsSession(String sid, String loginId, WebSocketSession session) {
         this.sid = sid;
-        this.username = username;
+        this.loginId = loginId;
         this.session = session;
     }
 }
