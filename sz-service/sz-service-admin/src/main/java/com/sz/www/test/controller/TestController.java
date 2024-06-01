@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @ClassName 网站测试
  * @Author sz
@@ -35,21 +38,37 @@ public class TestController {
         return ApiPageResult.success("这是一条测试信息");
     }
 
-
-    @PostMapping
-    @Operation(summary = "发送升级公告（socket）")
+    @PostMapping("push/all")
+    @Operation(summary = "向（全体用户）发送升级公告（socket）")
     public ApiResult sendUpgradeMsg() {
         SocketBean bean = new SocketBean<>();
-        bean.setData("系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
+        bean.setData("【全体推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
+        bean.setChannel(SocketChannelEnum.UPGRADE_CHANNEL);
+        bean.setScope(MessageTransferScopeEnum.SOCKET_CLIENT);
+        TransferMessage msg = new TransferMessage();
+        msg.setMessage(bean);
+        msg.setFromUser("system");
+        msg.setToPushAll(true);
+        websocketRedisService.sendServiceToWs(msg);
+        return ApiResult.success();
+    }
+
+    @PostMapping("push/user")
+    @Operation(summary = "向（指定用户）发送升级公告（socket）")
+    public ApiResult sendMsg() {
+        SocketBean bean = new SocketBean<>();
+        bean.setData("【定向推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
         bean.setChannel(SocketChannelEnum.UPGRADE_CHANNEL);
         bean.setScope(MessageTransferScopeEnum.SOCKET_CLIENT);
 
         TransferMessage msg = new TransferMessage();
         msg.setMessage(bean);
         msg.setFromUser("system");
-        msg.setToPushAll(true);
+        msg.setToPushAll(false);
+        List<String> toUsers = new ArrayList<>();
+        toUsers.add("1"); // 向 loginId = 1 的用户推送消息。既 admin 账号
+        msg.setToUsers(toUsers);
         websocketRedisService.sendServiceToWs(msg);
-
         return ApiResult.success();
     }
 
