@@ -1,8 +1,9 @@
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">Sz-Admin</h1>
 <h4 align="center">基于SpringBoot3、Vue3的轻量级脚手架</h4>
 <p align="center">
-<a><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg"></a>
+<a href="https://github.com/feiyuchuixue/sz-boot-parent/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg"></a>
 </p>
+
 # 简介
 
 > 接触了很多优秀的开源和闭源项目，在使用过程中也发现一些问题，不甘满足的我遂产生了想法：于是利用休息时间编写了一套后台管理系统，它**灵活、简洁、高效**，拥抱最新的技术，因此**Sz-Admin**便诞生了，也意为升职Admin，升职加薪节节高。
@@ -89,4 +90,4 @@
 
 ## 参与讨论
 
-<img alt="代码生成配置1" src="https://minio.szadmin.cn/public/img/wechat.webp"/>
+<img alt="加入群聊" src="https://minio.szadmin.cn/public/img/wechat.webp"/>
