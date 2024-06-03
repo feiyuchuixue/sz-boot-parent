@@ -18,9 +18,15 @@
 - 文档地址：https://szadmin.cn/md/Help/doc/start.html
 - 预览地址：https://preview.szadmin.cn
 - 代码仓库：
-    - 前端：**[sz-admin](https://github.com/feiyuchuixue/sz-admin.git)**
-    - 后端：**[sz-boot-parent](https://github.com/feiyuchuixue/sz-boot-parent.git)**
-    - 部署：**[sz-deploy](https://github.com/feiyuchuixue/sz-deploy.git)**
+    - 前端：
+      - **Github**：**[sz-admin](https://github.com/feiyuchuixue/sz-admin.git)**
+      - **Gitee**：**[sz-admin](https://gitee.com/feiyuchuixue/sz-admin.git)**
+    - 后端：
+      - **Github**：**[sz-boot-parent](https://github.com/feiyuchuixue/sz-boot-parent.git)**
+      - **Gitee**：**[sz-boot-parent](https://gitee.com/feiyuchuixue/sz-boot-parent.git)**
+    - 部署：
+      - **Github**：**[sz-deploy](https://github.com/feiyuchuixue/sz-deploy.git)**
+      - **Gitee**：**[sz-deploy](https://gitee.com/feiyuchuixue/sz-deploy.git)**
 
 ## 系统要求
 
