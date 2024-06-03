@@ -16,7 +16,10 @@ import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.po.SysUserRole;
-import com.sz.admin.system.pojo.vo.sysuser.*;
+import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
+import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO;
 import com.sz.admin.system.service.SysPermissionService;
 import com.sz.admin.system.service.SysUserDeptService;
 import com.sz.admin.system.service.SysUserService;
@@ -26,7 +29,10 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
-import com.sz.core.util.*;
+import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.PageUtils;
+import com.sz.core.util.SysConfigUtils;
+import com.sz.core.util.Utils;
 import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -37,10 +43,14 @@ import com.sz.security.core.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +70,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final SysUserRoleMapper sysUserRoleMapper;
 
-
     private final RedisCache redisCache;
 
     private final SysPermissionService sysPermissionService;
@@ -68,6 +77,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final EventPublisher eventPublisher;
 
     private final SysUserDeptService userDeptService;
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
 
 
     /**
@@ -387,7 +399,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         boolean hasKey = RedisUtils.hasKey(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         Object value = RedisUtils.getValue(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         long count = hasKey ? Long.parseLong(String.valueOf(value)) : 0;
-        CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= 5));
+        if (!"preview".equals(activeProfile)) { // 预览环境不做账号锁定
+            CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= 5));
+        }
         SysUserVO userVo = getSysUserByUsername(username);
         Long userId = userVo.getId();
         // 用户状态校验（禁用状态校验）
