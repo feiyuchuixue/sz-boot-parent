@@ -65,6 +65,11 @@ public class Utils {
         return (isNotNull(obj) && !(UNKNOWN).equals(obj)) ? (Integer.valueOf(obj.toString())) : 0;
     }
 
+    public static Long getLongVal(Object obj) {
+        return (isNotNull(obj) && !(UNKNOWN).equals(obj)) ? (Long.valueOf(obj.toString())) : 0L;
+    }
+
+
     public static String getStringVal(Object obj) {
         if (isNotNull(obj) && !(UNKNOWN).equals(obj)) {
             return obj.toString();

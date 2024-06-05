@@ -62,7 +62,6 @@ public class PasswordStrategy implements IAuthStrategy {
         Map<String, Object> extraData = new HashMap<>();
         extraData.put("clientId", clientId);
         extraData.put("userId", userId);
-        extraData.put("deptId", "");
         return extraData;
     }
 

@@ -400,7 +400,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Object value = RedisUtils.getValue(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         long count = hasKey ? Long.parseLong(String.valueOf(value)) : 0;
         if (!"preview".equals(activeProfile)) { // 预览环境不做账号锁定
-            CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= 5));
+            String maxErrCnt = SysConfigUtils.getConfValue("sys.pwd.errCnt");
+            CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= Utils.getIntVal(maxErrCnt)));
         }
         SysUserVO userVo = getSysUserByUsername(username);
         Long userId = userVo.getId();
@@ -442,8 +443,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     private void validatePassword(String password, String hashedPassword, String username) {
+        String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
         boolean checkpwed = BCrypt.checkpw(password, hashedPassword);
-        if (!checkpwed) redisCache.countPwdErr(username);
+        if (!checkpwed) redisCache.countPwdErr(username, Utils.getLongVal(timeout).longValue());
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(checkpwed);
     }
 
