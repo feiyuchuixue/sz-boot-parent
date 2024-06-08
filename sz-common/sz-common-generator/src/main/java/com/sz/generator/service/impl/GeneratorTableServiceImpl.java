@@ -198,7 +198,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             CodeGenTempResult result = webTemplate.buildTemplate(true);
             messages.add(result.getOutputMessage());
         }
-        if (("1").equals(detailVO.getGeneratorInfo().getMenuInitType())) { // 菜单初始化类型为1时，生成菜单
+
+        if (shouldInitializeMenu(detailVO)) {
             initMenu(detailVO, model, true);
         }
         return messages;
@@ -253,7 +254,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 CodeGenTempResult webTmpRes = webTemplate.buildTemplate(false);
                 addFileToZip(zip, webTmpRes, model);
             }
-            if (("1").equals(detailVO.getGeneratorInfo().getMenuInitType())) {
+            if (shouldInitializeMenu(detailVO)) {
                 List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
                 if (!menuCreateDTOS.isEmpty()) {
                     model.put("sysMenuList", menuCreateDTOS);
@@ -280,7 +281,23 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         // 处理 Web 模板
         handleTemplates(BuildTemplateUtils.getWebTemplates(configurer, rootPathWeb, detailVO, model), previews, model);
         // 处理 Sql模板
-        handleSqlMenuTemplate(detailVO, previews, model);
+        if (shouldInitializeMenu(detailVO)) {
+            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
+            if (!menuCreateDTOS.isEmpty()) {
+                model.put("sysMenuList", menuCreateDTOS);
+                MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
+                CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
+                String relativePath = sqlTmpRes.getRelativePath();
+                String templateProcess = renderTemplateString(sqlTmpRes, model);
+                String fileName = Paths.get(relativePath).getFileName().toString();
+                GeneratorPreviewVO previewVO = new GeneratorPreviewVO();
+                previewVO.setCode(templateProcess);
+                previewVO.setName(fileName);
+                previewVO.setLanguage(sqlTmpRes.getLanguage());
+                previewVO.setAlias(sqlTmpRes.getAlias());
+                previews.add(previewVO);
+            }
+        }
 
         return previews;
     }
@@ -306,26 +323,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
     }
 
-    private void handleSqlMenuTemplate(GeneratorDetailVO detailVO, List<GeneratorPreviewVO> previews, Map<String, Object> model) throws IOException {
-        if ("1".equals(detailVO.getGeneratorInfo().getMenuInitType())) {
-            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
-            if (!menuCreateDTOS.isEmpty()) {
-                model.put("sysMenuList", menuCreateDTOS);
-                MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
-                CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
-                String relativePath = sqlTmpRes.getRelativePath();
-                String templateProcess = renderTemplateString(sqlTmpRes, model);
-                String fileName = Paths.get(relativePath).getFileName().toString();
-                GeneratorPreviewVO previewVO = new GeneratorPreviewVO();
-                previewVO.setCode(templateProcess);
-                previewVO.setName(fileName);
-                previewVO.setLanguage(sqlTmpRes.getLanguage());
-                previewVO.setAlias(sqlTmpRes.getAlias());
-                previews.add(previewVO);
-            }
-        }
-    }
-
     private void addFileToZip(ZipOutputStream zip, CodeGenTempResult tempResult, Map<String, Object> model) throws IOException {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(renderTemplate(tempResult, model))) {
             String relativePath = tempResult.getRelativePath();
@@ -347,18 +344,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         } catch (TemplateException e) {
             throw new IOException("Error rendering template", e);
         }
-    }
-
-    private static void packageToZip(CodeGenTempResult controllerRes, Map<String, Object> model, ZipOutputStream zip) throws TemplateException, IOException {
-        Template template = controllerRes.getTemplate();
-        StringWriter writer = new StringWriter();
-        template.process(model, writer);
-        // 添加到zip
-        zip.putNextEntry(new ZipEntry(controllerRes.getRelativePath()));
-        IOUtils.write(writer.toString(), zip, "UTF-8");
-        IOUtils.closeQuietly(writer);
-        zip.flush();
-        zip.closeEntry();
     }
 
     /**
@@ -440,7 +425,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         createDTO.setPath(path);
         createDTO.setName(routerName);
-        createDTO.setTitle(detailVO.getGeneratorInfo().getFunctionName()); // 教师统计
+        createDTO.setTitle(detailVO.getGeneratorInfo().getFunctionName()); // eg: 教师统计
         createDTO.setIcon("");
         createDTO.setComponent(component);
         createDTO.setSort(count + 1);
@@ -457,7 +442,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         dto.setPid(btnParentId);
         dto.setPath("");
         dto.setName("");
-        dto.setTitle(btnName); // 教师统计
+        dto.setTitle(btnName); // eg: 教师统计
         dto.setIcon("");
         dto.setComponent("");
         dto.setMenuTypeCd("1002003"); // 菜单类型：按钮
@@ -483,6 +468,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             detailVOS.add(detail);
         }
         return detailVOS;
+    }
+
+    private boolean shouldInitializeMenu(GeneratorDetailVO detailVO) {
+        return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType()) || (("server").equals(detailVO.getGeneratorInfo().getGenerateType())));
     }
 
 }
