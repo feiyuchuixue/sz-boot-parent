@@ -51,8 +51,12 @@ public class BuildTemplateUtils {
                     new ServiceImplCodeBuilder(configurer, rootPath, detailVO, model),
                     new MapperCodeBuilder(configurer, rootPath, detailVO, model),
                     new MapperXmlCodeBuilder(configurer, rootPath, detailVO, model),
+                    new PoCodeBuilder(configurer, rootPath, detailVO, model)
+            );
+            case "db" -> Arrays.asList(
                     new PoCodeBuilder(configurer, rootPath, detailVO, model),
-                    new VoCodeBuilder(configurer, rootPath, detailVO, model)
+                    new MapperCodeBuilder(configurer, rootPath, detailVO, model),
+                    new MapperXmlCodeBuilder(configurer, rootPath, detailVO, model)
             );
             default -> Collections.emptyList();
         };
@@ -68,15 +72,16 @@ public class BuildTemplateUtils {
      * @return
      */
     public static List<AbstractCodeGenerationTemplate> getWebTemplates(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
-        if ("all".equals(detailVO.getGeneratorInfo().getGenerateType())) {
-            return Arrays.asList(
-                    new IndexCodeBuilder(configurer, rootPath, detailVO, model),
-                    new FormCodeBuilder(configurer, rootPath, detailVO, model),
-                    new InterfaceCodeBuilder(configurer, rootPath, detailVO, model),
-                    new ModulesCodeBuilder(configurer, rootPath, detailVO, model)
-            );
-        }
-        return Collections.emptyList();
+        List<AbstractCodeGenerationTemplate> list = new ArrayList<>(Arrays.asList(
+                new IndexCodeBuilder(configurer, rootPath, detailVO, model),
+                new FormCodeBuilder(configurer, rootPath, detailVO, model),
+                new InterfaceCodeBuilder(configurer, rootPath, detailVO, model),
+                new ModulesCodeBuilder(configurer, rootPath, detailVO, model)
+        ));
+        return switch (detailVO.getGeneratorInfo().getGenerateType()) {
+            case "all" -> list;
+            default -> Collections.emptyList();
+        };
     }
 
 }
