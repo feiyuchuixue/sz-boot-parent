@@ -78,15 +78,17 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
 
     /**
      * 菜单唯一性校验
+     *
      * @param name
      * @param path
      * @param component
      * @return
      */
-    int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component);
+    int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component, @Param("pid") String pid);
 
     /**
      * 按钮唯一性校验
+     *
      * @param permissions
      * @return
      */

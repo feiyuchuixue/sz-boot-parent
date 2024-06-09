@@ -124,6 +124,7 @@
         WHERE NAME = #{name}
           AND path = #{path}
           AND component = #{component}
+          AND pid = #{pid}
           AND menu_type_cd != '1002003'
 	      AND del_flag = 'F'
     </select>
