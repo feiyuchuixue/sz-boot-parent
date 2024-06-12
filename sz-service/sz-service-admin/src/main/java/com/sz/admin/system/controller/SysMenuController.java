@@ -11,6 +11,7 @@ import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.service.SysMenuService;
+import com.sz.admin.system.service.SysPermissionService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -21,7 +22,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -32,13 +35,15 @@ import java.util.List;
  * @since 2022-10-01
  */
 
-@Tag(name =  "系统菜单管理")
+@Tag(name = "系统菜单管理")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/sys-menu")
 public class SysMenuController {
 
     private final SysMenuService sysMenuService;
+
+    private final SysPermissionService sysPermissionService;
 
     @Operation(summary = "添加菜单")
     @SaCheckPermission(value = "sys.menu.create_btn", orRole = GlobalConstant.SUPER_ROLE)
@@ -114,6 +119,14 @@ public class SysMenuController {
     @PostMapping("sql/export")
     public ApiResult exportMenuSql(@RequestBody SelectIdsDTO dto, HttpServletResponse response) {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
+    }
+
+    @Operation(summary = "查询用户角色",description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
+    @SaIgnore
+    @GetMapping("/user/roles")
+    public ApiResult<List<String>> findUserRoles() {
+        Set<String> roles = sysPermissionService.getRoles(StpUtil.getLoginIdAsLong());
+        return ApiResult.success(new ArrayList<>(roles));
     }
 
 }
