@@ -1,6 +1,8 @@
 package com.sz.mysql;
 
 import com.github.pagehelper.PageInterceptor;
+import com.mybatisflex.core.dialect.DbType;
+import com.mybatisflex.core.dialect.DialectFactory;
 import com.sz.logger.PrintSQL;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisFlexConfiguration {
 
     public MybatisFlexConfiguration() {
+        DialectFactory.registerDialect(DbType.MYSQL,new PermissionDialect());
         PrintSQL.print();
     }
 

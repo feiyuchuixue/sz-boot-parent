@@ -19,6 +19,7 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
+import com.sz.mysql.SzServiceImpl;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
+public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
@@ -62,7 +63,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
-        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
+        Page<TeacherStatisticsVO> page = pageAsScope(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
         return PageUtils.getPageResult(page);
     }
 
