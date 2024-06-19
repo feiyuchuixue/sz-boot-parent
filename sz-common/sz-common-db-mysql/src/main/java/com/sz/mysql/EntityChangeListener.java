@@ -24,14 +24,16 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
 
     @Override
     public void onInsert(Object o) {
-        setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
         setPropertyIfPresent(o, "createTime", LocalDateTime.now());
+        if (!StpUtil.isLogin()) return;
+        setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
     }
 
     @Override
     public void onUpdate(Object o) {
-        setPropertyIfPresent(o, "updateId", StpUtil.getLoginIdAsLong());
         setPropertyIfPresent(o, "updateTime", LocalDateTime.now());
+        if (!StpUtil.isLogin()) return;
+        setPropertyIfPresent(o, "updateId", StpUtil.getLoginIdAsLong());
     }
 
     @Override
