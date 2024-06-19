@@ -1,7 +1,6 @@
 package com.sz.admin.teacher.pojo.vo;
 
 
-import com.sz.excel.annotation.CellMerge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -9,16 +8,14 @@ import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.sz.excel.annotation.DictFormat;
-import com.sz.excel.convert.ExcelDictConvert;
 
 /**
  * <p>
  * TeacherStatistics查询返回
  * </p>
  *
- * @author sz
- * @since 2024-02-19
+ * @author sz-admin
+ * @since 2024-06-19
  */
 @Data
 @Schema(description = "TeacherStatistics返回vo")
@@ -26,9 +23,8 @@ public class TeacherStatisticsVO {
 
     @ExcelIgnore
     @Schema(description =  "id")
-    private Integer id;
+    private Long id;
 
-    @CellMerge
     @ExcelProperty(value = "统计年限")
     @Schema(description =  "统计年限")
     private String year;
@@ -41,13 +37,11 @@ public class TeacherStatisticsVO {
     @Schema(description =  "统计年月")
     private String duringTime;
 
-    @CellMerge
     @ExcelProperty(value = "教师id")
     @Schema(description =  "教师id")
     private String teacherId;
 
-    @ExcelProperty(value = "讲师区分类型", converter = ExcelDictConvert.class)
-    @DictFormat(dictType = "account_status")
+    @ExcelProperty(value = "讲师区分类型")
     @Schema(description =  "讲师区分类型")
     private Integer teacherCommonType;
 
@@ -63,8 +57,7 @@ public class TeacherStatisticsVO {
     @Schema(description =  "课时总数")
     private BigDecimal totalHours;
 
-    @ExcelProperty(value = "核对状态", converter = ExcelDictConvert.class)
-    @DictFormat(dictType = "account_status")
+    @ExcelProperty(value = "核对状态")
     @Schema(description =  "核对状态")
     private Integer checkStatus;
 

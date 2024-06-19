@@ -28,8 +28,8 @@ import jakarta.servlet.http.HttpServletResponse;
  * 教师统计总览表 Controller
  * </p>
  *
- * @author sz
- * @since 2024-02-19
+ * @author sz-admin
+ * @since 2024-06-19
  */
 @Tag(name =  "教师统计总览表")
 @RestController
@@ -73,7 +73,7 @@ public class TeacherStatisticsController  {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Long id) {
+    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Object id) {
         return ApiResult.success(teacherStatisticsService.detail(id));
     }
 

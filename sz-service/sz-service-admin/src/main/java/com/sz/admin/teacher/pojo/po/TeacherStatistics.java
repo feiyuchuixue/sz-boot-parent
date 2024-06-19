@@ -15,8 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 * 教师统计总览表
 * </p>
 *
-* @author sz
-* @since 2024-02-19
+* @author sz-admin
+* @since 2024-06-19
 */
 @Data
 @Table(value = "teacher_statistics", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
@@ -27,7 +27,7 @@ public class TeacherStatistics implements Serializable {
 
     @Id(keyType = KeyType.Auto)
     @Schema(description ="id")
-    private Integer id;
+    private Long id;
 
     @Schema(description ="统计年限")
     private String year;

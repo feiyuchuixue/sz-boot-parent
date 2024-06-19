@@ -12,15 +12,15 @@ import org.springframework.format.annotation.DateTimeFormat;
  * TeacherStatistics添加DTO
  * </p>
  *
- * @author sz
- * @since 2024-02-19
+ * @author sz-admin
+ * @since 2024-06-19
  */
 @Data
 @Schema(description = "TeacherStatistics修改DTO")
 public class TeacherStatisticsUpdateDTO {
 
     @Schema(description =  "id")
-    private Integer id;
+    private Long id;
 
     @Schema(description =  "统计年限")
     private String year;

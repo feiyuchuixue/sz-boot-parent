@@ -12,8 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
  * TeacherStatistics添加DTO
  * </p>
  *
- * @author sz
- * @since 2024-02-19
+ * @author sz-admin
+ * @since 2024-06-19
  */
 @Data
 @Schema(description = "TeacherStatistics添加DTO")
