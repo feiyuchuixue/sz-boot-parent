@@ -39,7 +39,7 @@ public class DataScope {
     private DataScopeEnum scope;
 
     /**
-     * 指定权限控制的字段名，用于确定数据权限的具体作用对象。
+     * 指定权限控制的字段名，用于确定数据权限的具体作用对象。 蛇形，例如： create_id
      */
     @Schema(description = "字段名")
     private String columnName;

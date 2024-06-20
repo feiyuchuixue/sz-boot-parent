@@ -16,6 +16,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         throw new IllegalStateException("StringUtils class Illegal");
     }
 
+    private static final char SEPARATOR = '_';
+
     /**
      * @param s
      * @return java.lang.String
@@ -134,5 +136,30 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return result.toString();
     }
 
+    public static String toCamelCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean toUpperCase = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '_') {
+                // Set flag to uppercase next valid character
+                toUpperCase = true;
+            } else {
+                // Append character either in uppercase or lowercase based on the flag
+                if (toUpperCase) {
+                    result.append(Character.toUpperCase(c));
+                    toUpperCase = false;
+                } else {
+                    result.append(Character.toLowerCase(c));
+                }
+            }
+        }
+        return result.toString();
+    }
 
 }

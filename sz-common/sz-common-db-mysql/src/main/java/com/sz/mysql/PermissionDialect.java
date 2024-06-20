@@ -6,7 +6,9 @@ import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
  * @Date 2024/6/17 10:36
  * @Version 1.0
  */
+@Slf4j
 public class PermissionDialect extends CommonsDialectImpl {
 
     // 数据权限是否仅针对查询有效
@@ -55,20 +58,24 @@ public class PermissionDialect extends CommonsDialectImpl {
             // 多表查询
             System.out.println(" 多表查询");
         }
-        System.out.println("dataScopes");
-        for (DataScope ds : dataScopes) {
+        for (DataScope scope : dataScopes) {
             // 忽略 ALL 权限
-            if (DataScopeEnum.ALL.equals(ds.getScope())) {
+            if (DataScopeEnum.ALL.equals(scope.getScope())) {
                 continue;
             }
             DataAccessService accessService = SpringApplicationContextUtils.getBean(DataAccessService.class);
-            List<?> accessibleIds = accessService.getAccessibleIds(ds.getScope());
+            List<?> accessibleIds = accessService.getAccessibleIds(scope.getScope());
             // 忽略无效范围ID
             if (accessibleIds == null || accessibleIds.isEmpty()) {
                 continue;
             }
+            // 忽略无效字段
+            boolean fieldExists = isFieldExists(scope.getTableClass(), StringUtils.toCamelCase(scope.getColumnName()));
+            if (!fieldExists) {
+                continue;
+            }
 
-            String simpleName = ds.getTableClass().getSimpleName(); // eg: TeacherStatics
+            String simpleName = scope.getTableClass().getSimpleName(); // eg: TeacherStatics
             String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
             if (queryTableMap.containsKey(tableName)) {
                 QueryTable table = queryTableMap.get(tableName);
@@ -77,7 +84,7 @@ public class PermissionDialect extends CommonsDialectImpl {
                         new QueryColumn(
                                 table.getSchema(),
                                 table.getName(),
-                                ds.getColumnName(),
+                                scope.getColumnName(),
                                 table.getAlias())
                         , SqlConsts.IN,
                         accessibleIds);
@@ -86,4 +93,19 @@ public class PermissionDialect extends CommonsDialectImpl {
         }
         super.prepareAuth(queryWrapper, operateType);
     }
+
+    private boolean isFieldExists(Class<?> clazz, String fieldName) {
+        try {
+            // 尝试获取类中的字段
+            Field field = clazz.getDeclaredField(fieldName);
+            // 检查字段是否为null
+            if (field != null) {
+                return true;
+            }
+        } catch (NoSuchFieldException e) {
+            log.warn(" [DataScope]: Filed `{}` not found.", fieldName);
+        }
+        return false;
+    }
+
 }
