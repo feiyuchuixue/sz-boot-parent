@@ -33,6 +33,8 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
+import com.sz.mysql.DataAccessService;
+import com.sz.mysql.DataScopeEnum;
 import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -64,7 +66,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService, DataAccessService {
 
     private final SysRoleMapper sysRoleMapper;
 
@@ -455,4 +457,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
 
+    @Override
+    public List<?> getAccessibleIds(DataScopeEnum scope) {
+        List<Object> accessibleIds = new ArrayList<>();
+        // TODO: 测试数据, 记得删除
+        accessibleIds.add(1);
+        accessibleIds.add(2);
+        return accessibleIds;
+    }
 }

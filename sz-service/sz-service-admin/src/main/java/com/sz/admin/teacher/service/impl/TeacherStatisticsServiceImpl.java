@@ -16,10 +16,10 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
-import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
-import com.sz.mysql.SzServiceImpl;
+import com.sz.mysql.DataScopeEnum;
+import com.sz.mysql.DataScopeHelper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
+public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
@@ -63,7 +63,8 @@ public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatistic
 
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
-        Page<TeacherStatisticsVO> page = pageAsScope(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
+        DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class);
+        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
         return PageUtils.getPageResult(page);
     }
 
@@ -80,7 +81,7 @@ public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatistic
 
     @Override
     public TeacherStatisticsVO detail(Long id) {
-        TeacherStatistics teacherStatistics = getById( id);
+        TeacherStatistics teacherStatistics = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
         return BeanCopyUtils.springCopy(teacherStatistics, TeacherStatisticsVO.class);
     }
@@ -104,7 +105,7 @@ public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatistic
     }
 
     private static QueryWrapper buildQueryWrapper(TeacherStatisticsListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class);
+        QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class).as("aaa");
         wrapper.eq(TeacherStatistics::getYear, dto.getYear());
         wrapper.eq(TeacherStatistics::getMonth, dto.getMonth());
         wrapper.eq(TeacherStatistics::getDuringTime, dto.getDuringTime());
