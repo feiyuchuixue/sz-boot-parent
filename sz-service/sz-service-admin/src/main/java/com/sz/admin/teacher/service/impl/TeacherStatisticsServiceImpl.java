@@ -1,6 +1,9 @@
 package com.sz.admin.teacher.service.impl;
 
+import com.mybatisflex.core.constant.SqlConsts;
 import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryColumn;
+import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
@@ -8,6 +11,7 @@ import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
+import com.sz.admin.teacher.pojo.po.Teacher;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
@@ -18,6 +22,7 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
+import com.sz.mysql.DataScope;
 import com.sz.mysql.DataScopeEnum;
 import com.sz.mysql.DataScopeHelper;
 import jakarta.servlet.ServletOutputStream;
@@ -28,7 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.sz.admin.teacher.pojo.po.table.TeacherStatisticsTableDef.TEACHER_STATISTICS;
+import static com.sz.admin.teacher.pojo.po.table.TeacherTableDef.TEACHER;
 
 /**
  * <p>
@@ -63,8 +72,30 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
-        DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class);
-        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
+
+/*        QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class);
+        // wrapper.and(queryCondition);
+        wrapper.leftJoin(Teacher.class)
+                        .on(TEACHER_STATISTICS.TEACHER_ID.eq(TEACHER.ID));*/
+                        //.where(TEACHER.AREA_ID.in("1"));
+        //wrapper.in(TeacherStatistics::getTeacherId,  testIds);
+        // DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class);
+        //DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT,TeacherStatistics.class,"create_id"),new DataScope(DataScopeEnum.DEPT,Teacher.class,"area_id"));
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(TEACHER_STATISTICS.ALL_COLUMNS,TEACHER.AGE)
+                .from(TEACHER_STATISTICS)
+                .leftJoin(TEACHER)
+                .on(TEACHER_STATISTICS.TEACHER_ID.eq(TEACHER.ID));
+        // 数据权限
+         DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class);
+        //DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT,TeacherStatistics.class,"create_id"),new DataScope(DataScopeEnum.DEPT,Teacher.class,"area_id"));
+        // 查询条件
+        // wrapper.and(queryCondition);
+        // 排序
+        // wra)
+
+        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), wrapper, TeacherStatisticsVO.class);
+        // Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
         return PageUtils.getPageResult(page);
     }
 

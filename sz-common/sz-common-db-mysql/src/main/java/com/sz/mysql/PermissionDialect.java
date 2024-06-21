@@ -9,7 +9,7 @@ import com.sz.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,18 +40,38 @@ public class PermissionDialect extends CommonsDialectImpl {
 
         DataScope[] dataScopes = DataScopeHelper.getDataScope();
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-        System.out.println("queryTables ==" + queryTables.toString());
         List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
+        System.out.println("queryTables ==" + queryTables);
+        System.out.println("joinTables ==" + joinTables);
+        System.out.println("isJoin ==" + CPI.getJoins(queryWrapper));
+/*
+
+        // 判断是否是isJoin
+        boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
         if (queryTables == null || queryTables.isEmpty()) {
             return;
         }
+        Map<String, QueryTable> tableMap = new HashMap<>();
         Map<String, QueryTable> queryTableMap = queryTables.stream()
                 .collect(Collectors.toMap(
                         QueryTable::getName, // 作为键的函数
                         Function.identity()   // 保持值不变，即QueryTable对象本身
                 ));
+
+        Map<String, QueryTable> joinTableMap = joinTables.stream()
+                .collect(Collectors.toMap(
+                        QueryTable::getName, // 作为键的函数
+                        Function.identity()   // 保持值不变，即QueryTable对象本身
+                ));
+        if(!isJoin){
+            tableMap.putAll(queryTableMap);
+        }else {
+            tableMap.putAll(queryTableMap);
+            tableMap.putAll(joinTableMap);
+        }
+
         // 单表查询
-        if (queryTables.size() == 1) {
+        if (tableMap.size() == 1) {
             System.out.println(" 单表查询");
 
         } else {
@@ -77,20 +97,20 @@ public class PermissionDialect extends CommonsDialectImpl {
 
             String simpleName = scope.getTableClass().getSimpleName(); // eg: TeacherStatics
             String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
-            if (queryTableMap.containsKey(tableName)) {
-                QueryTable table = queryTableMap.get(tableName);
+*//*            if (tableMap.containsKey(tableName)) {
+                QueryTable table = tableMap.get(tableName);
                 // 构造 in 查询 condition
                 QueryCondition queryCondition = QueryCondition.create(
                         new QueryColumn(
                                 table.getSchema(),
                                 table.getName(),
                                 scope.getColumnName(),
-                                table.getAlias())
-                        , SqlConsts.IN,
+                                table.getAlias()),
+                        SqlConsts.IN,
                         accessibleIds);
                 queryWrapper.and(queryCondition);
-            }
-        }
+            }*//*
+        }*/
         super.prepareAuth(queryWrapper, operateType);
     }
 
@@ -103,7 +123,7 @@ public class PermissionDialect extends CommonsDialectImpl {
                 return true;
             }
         } catch (NoSuchFieldException e) {
-            log.warn(" [DataScope]: Filed `{}` not found.", fieldName);
+            log.error(" [DataScope]: Entity `{}` Filed `{}` not found.", clazz.getSimpleName(), fieldName);
         }
         return false;
     }

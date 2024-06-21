@@ -95,7 +95,10 @@ public class PageUtils {
     }
 
     public static Page getPage(PageQuery query) {
-        return Page.of(query.getPage(), query.getLimit());
+        Page<Object> page = Page.of(query.getPage(), query.getLimit());
+        // page.setOptimizeCountQuery(false);
+        return page;
+        // return Page.of(query.getPage(), query.getLimit());
     }
 
     public static <T> PageResult<T> getPageResult(Page<T> page) {

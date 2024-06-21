@@ -20,7 +20,7 @@ public class DataScope {
     public DataScope() {
     }
 
-    public DataScope(DataScopeEnum scope, String columnName, Class<?> tableClass) {
+    public DataScope(DataScopeEnum scope, Class<?> tableClass, String columnName) {
         this.scope = scope;
         this.columnName = columnName;
         this.tableClass = tableClass;
