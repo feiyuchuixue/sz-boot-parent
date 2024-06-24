@@ -35,7 +35,7 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
     @Override
     public void customize(FlexGlobalConfig flexGlobalConfig) {
         // 注册查询权限监听方言
-       // DialectFactory.registerDialect(DbType.MYSQL, new PermissionDialect());
+       DialectFactory.registerDialect(DbType.MYSQL, new PermissionDialect());
     }
 
 }

@@ -2,11 +2,13 @@ package com.sz.admin.teacher.service.impl;
 
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
+import com.sz.admin.teacher.pojo.po.Teacher;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
@@ -17,7 +19,9 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
-import com.sz.mysql.SzServiceImpl;
+import com.sz.mysql.DataScope;
+import com.sz.mysql.DataScopeEnum;
+import com.sz.mysql.DataScopeHelper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
+
+import static com.sz.admin.teacher.pojo.po.table.TeacherStatisticsTableDef.TEACHER_STATISTICS;
+import static com.sz.admin.teacher.pojo.po.table.TeacherTableDef.TEACHER;
 
 /**
  * <p>
@@ -38,7 +45,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
+public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
@@ -61,10 +68,17 @@ public class TeacherStatisticsServiceImpl extends SzServiceImpl<TeacherStatistic
 
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
-        // 数据权限
-        // DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class);
-        // DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT,TeacherStatistics.class,"create_id"),new DataScope(DataScopeEnum.DEPT,Teacher.class,"area_id"));
-        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(TEACHER_STATISTICS.ALL_COLUMNS,TEACHER.AGE)
+                .from(TEACHER_STATISTICS)
+                .leftJoin(TEACHER)
+                .on(TEACHER_STATISTICS.TEACHER_ID.eq(TEACHER.ID));
+        // TODO：数据权限测试 -- 单表、多表
+        // DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class); // 单条件
+        DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT,TeacherStatistics.class,"create_id"),new DataScope(DataScopeEnum.DEPT,Teacher.class,"area_id")); // 多条件
+
+        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), wrapper, TeacherStatisticsVO.class); // 调试sql
+        // Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 原sql
         return PageUtils.getPageResult(page);
     }
 

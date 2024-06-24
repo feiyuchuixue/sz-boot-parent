@@ -14,13 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 经过验证 CommonsDialectImpl方式实现的数据权限皆存在一些问题，因此暂时启用。
+ * 自定义方言 -- 数据权限
  * @ClassName PermissionDialect
  * @Author sz
  * @Date 2024/6/17 10:36
  * @Version 1.0
  */
-@Deprecated
 @Slf4j
 public class PermissionDialect extends CommonsDialectImpl {
 
@@ -41,7 +40,6 @@ public class PermissionDialect extends CommonsDialectImpl {
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
         List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
         queryTables.toString(); // 经过测试，这条语句必须有，否者分页查询的结果不对！！！原理未知。
-
         if (queryTables == null || queryTables.isEmpty()) {
             return;
         }
@@ -92,12 +90,11 @@ public class PermissionDialect extends CommonsDialectImpl {
                                 table.getAlias()),
                         SqlConsts.IN,
                         accessibleIds);
-                queryWrapper.where(queryCondition);
+               queryWrapper.where(queryCondition);
             }
         }
         // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
-        // 此操作应在数据处理完成后立即执行，以确保数据的一致性和准确性。
-        DataScopeHelper.clearDataScope();
+        // DataScopeHelper.clearDataScope();
         super.prepareAuth(queryWrapper, operateType);
     }
 
