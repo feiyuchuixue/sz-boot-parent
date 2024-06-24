@@ -81,6 +81,9 @@ public class SzServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
                 }
             }
         }
+        if (dataScopes == null || dataScopes.length == 0) {
+            return;
+        }
         for (DataScope scope : dataScopes) {
             // 忽略 ALL 权限
             if (DataScopeEnum.ALL.equals(scope.getScope())) {
