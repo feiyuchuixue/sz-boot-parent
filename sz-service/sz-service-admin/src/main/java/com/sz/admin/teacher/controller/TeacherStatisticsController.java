@@ -1,6 +1,7 @@
 package com.sz.admin.teacher.controller;
 
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,7 +65,8 @@ public class TeacherStatisticsController  {
     }
 
     @Operation(summary = "列表查询")
-    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @SaIgnore
+    // @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<TeacherStatisticsVO>> list(TeacherStatisticsListDTO dto) {
         return ApiPageResult.success(teacherStatisticsService.page(dto));
