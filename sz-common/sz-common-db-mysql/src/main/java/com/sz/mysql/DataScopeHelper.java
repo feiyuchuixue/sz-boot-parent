@@ -29,7 +29,9 @@ public class DataScopeHelper {
     }
 
     public static void clearDataScope() {
-        LOCAL_DATA_SCOPE.remove();
+        if (LOCAL_DATA_SCOPE != null) {
+            LOCAL_DATA_SCOPE.remove();
+        }
     }
 
 }

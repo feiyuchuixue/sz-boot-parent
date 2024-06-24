@@ -96,7 +96,7 @@ public class PageUtils {
 
     public static Page getPage(PageQuery query) {
         Page<Object> page = Page.of(query.getPage(), query.getLimit());
-        // page.setOptimizeCountQuery(false);
+        page.setOptimizeCountQuery(false);
         return page;
         // return Page.of(query.getPage(), query.getLimit());
     }

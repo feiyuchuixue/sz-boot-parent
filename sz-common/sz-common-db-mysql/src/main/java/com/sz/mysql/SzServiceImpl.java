@@ -1,12 +1,14 @@
 package com.sz.mysql;
 
+import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.constant.SqlConsts;
-import com.mybatisflex.core.dialect.OperateType;
-import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.*;
+import com.mybatisflex.core.service.IService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -14,34 +16,51 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 经过验证 CommonsDialectImpl方式实现的数据权限皆存在一些问题，因此暂时启用。
- * @ClassName PermissionDialect
+ * @ClassName SzServiceImpl
  * @Author sz
- * @Date 2024/6/17 10:36
+ * @Date 2024/6/17 16:44
  * @Version 1.0
  */
-@Deprecated
 @Slf4j
-public class PermissionDialect extends CommonsDialectImpl {
+public class SzServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 
-    // 数据权限仅对查询有效
-    private static boolean isSelectOnly = true;
+    @Autowired
+    protected M mapper;
 
-    private boolean shouldSkipAuth(OperateType operateType) {
-        return (isSelectOnly && operateType != OperateType.SELECT) || !DataScopeHelper.isDataScope();
+    @Override
+    public BaseMapper<T> getMapper() {
+        return mapper;
     }
 
     @Override
-    public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
-        if (shouldSkipAuth(operateType)) {
-            super.prepareAuth(queryWrapper, operateType);
-            return;
-        }
+    public List<T> list(QueryWrapper query) {
+        dataScopeQuery(query);
+        //获取当前用户信息，为 queryWrapper 添加额外的条件
+        return IService.super.list(query);
+    }
+
+    @Override
+    public <R> List<R> listAs(QueryWrapper query, Class<R> asType) {
+        dataScopeQuery(query);
+        return IService.super.listAs(query, asType);
+    }
+
+    @Override
+    public Page<T> page(Page<T> page, QueryWrapper query) {
+        dataScopeQuery(query);
+        return IService.super.page(page, query);
+    }
+
+    @Override
+    public <R> Page<R> pageAs(Page<R> page, QueryWrapper query, Class<R> asType) {
+        dataScopeQuery(query);
+        return IService.super.pageAs(page, query, asType);
+    }
+
+    private void dataScopeQuery(QueryWrapper queryWrapper) {
         DataScope[] dataScopes = DataScopeHelper.getDataScope();
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
         List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-        queryTables.toString(); // 经过测试，这条语句必须有，否者分页查询的结果不对！！！原理未知。
-
         if (queryTables == null || queryTables.isEmpty()) {
             return;
         }
@@ -98,11 +117,11 @@ public class PermissionDialect extends CommonsDialectImpl {
         // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
         // 此操作应在数据处理完成后立即执行，以确保数据的一致性和准确性。
         DataScopeHelper.clearDataScope();
-        super.prepareAuth(queryWrapper, operateType);
     }
 
     /**
      * 字段有效性校验
+     *
      * @param clazz
      * @param fieldName
      * @return
@@ -120,5 +139,6 @@ public class PermissionDialect extends CommonsDialectImpl {
         }
         return false;
     }
+
 
 }

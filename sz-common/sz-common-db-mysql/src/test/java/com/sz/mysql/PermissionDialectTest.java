@@ -1,9 +1,7 @@
 package com.sz.mysql;
 
-import com.mybatisflex.core.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ClassName PermissionDialectTest
