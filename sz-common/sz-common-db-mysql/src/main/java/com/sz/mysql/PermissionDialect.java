@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * 自定义方言 -- 数据权限
+ *
  * @ClassName PermissionDialect
  * @Author sz
  * @Date 2024/6/17 10:36
@@ -23,11 +24,8 @@ import java.util.Map;
 @Slf4j
 public class PermissionDialect extends CommonsDialectImpl {
 
-    // 数据权限仅对查询有效
-    private static boolean isSelectOnly = true;
-
     private boolean shouldSkipAuth(OperateType operateType) {
-        return (isSelectOnly && operateType != OperateType.SELECT) || !DataScopeHelper.isDataScope();
+        return operateType != OperateType.SELECT || !DataScopeHelper.isDataScope();
     }
 
     @Override
@@ -36,70 +34,76 @@ public class PermissionDialect extends CommonsDialectImpl {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
-        DataScope[] dataScopes = DataScopeHelper.getDataScope();
-        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-        List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-        queryTables.toString(); // 经过测试，这条语句必须有，否者分页查询的结果不对！！！原理未知。
-        if (queryTables == null || queryTables.isEmpty()) {
-            return;
-        }
-        // 判断是否是isJoin
-        boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
-        Map<String, QueryTable> tableMap = new HashMap<>();
-        for (QueryTable queryTable : queryTables) {
-            // TODO 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构 queryTables ==[SELECT * FROM TABLE]
-            if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) {
+        try {
+            DataScope[] dataScopes = DataScopeHelper.getDataScope();
+            List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
+            List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
+            queryTables.toString(); // 经过测试，这条语句必须有，否者分页查询的结果不对！！！原理未知。
+            if (queryTables.isEmpty()) {
                 return;
             }
-            tableMap.put(queryTable.getName(), queryTable);
-        }
-        if (isJoin) {
-            for (QueryTable joinTable : joinTables) {
-                if (joinTable.getName() != null && !("").equals(joinTable.getName().trim())) {
-                    tableMap.put(joinTable.getName(), joinTable);
+            // 判断是否是isJoin
+            boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
+            Map<String, QueryTable> tableMap = new HashMap<>();
+            for (QueryTable queryTable : queryTables) {
+                // TODO 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构 queryTables ==[SELECT * FROM TABLE]
+                if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) {
+                    return;
+                }
+                tableMap.put(queryTable.getName(), queryTable);
+            }
+            if (isJoin) {
+                for (QueryTable joinTable : joinTables) {
+                    if (joinTable.getName() != null && !("").equals(joinTable.getName().trim())) {
+                        tableMap.put(joinTable.getName(), joinTable);
+                    }
                 }
             }
+            for (DataScope scope : dataScopes) {
+                // 忽略 ALL 权限
+                if (DataScopeEnum.ALL.equals(scope.getScope())) {
+                    continue;
+                }
+                // 根据scope 获取可访问的 ID 列表
+                DataAccessService accessService = SpringApplicationContextUtils.getBean(DataAccessService.class);
+                List<?> accessibleIds = accessService.getAccessibleIds(scope.getScope());
+                // 忽略无效范围ID
+                if (accessibleIds == null || accessibleIds.isEmpty()) {
+                    continue;
+                }
+                // 忽略无效字段
+                boolean fieldExists = isFieldExists(scope.getTableClass(), StringUtils.toCamelCase(scope.getColumnName()));
+                if (!fieldExists) {
+                    continue;
+                }
+                String simpleName = scope.getTableClass().getSimpleName(); // eg: TeacherStatics
+                String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
+                if (tableMap.containsKey(tableName)) {
+                    QueryTable table = tableMap.get(tableName);
+                    // 构造 in 查询 condition
+                    QueryCondition queryCondition = QueryCondition.create(
+                            new QueryColumn(
+                                    table.getSchema(),
+                                    table.getName(),
+                                    scope.getColumnName(),
+                                    table.getAlias()),
+                            SqlConsts.IN,
+                            accessibleIds);
+                    queryWrapper.where(queryCondition);
+                }
+            }
+        } catch (Exception e) {
+            log.error(" PermissionDialect Exception :" + e.getMessage());
+        } finally {
+            // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
+            DataScopeHelper.clearDataScope();
+            super.prepareAuth(queryWrapper, operateType);
         }
-        for (DataScope scope : dataScopes) {
-            // 忽略 ALL 权限
-            if (DataScopeEnum.ALL.equals(scope.getScope())) {
-                continue;
-            }
-            // 根据scope 获取可访问的 ID 列表
-            DataAccessService accessService = SpringApplicationContextUtils.getBean(DataAccessService.class);
-            List<?> accessibleIds = accessService.getAccessibleIds(scope.getScope());
-            // 忽略无效范围ID
-            if (accessibleIds == null || accessibleIds.isEmpty()) {
-                continue;
-            }
-            // 忽略无效字段
-            boolean fieldExists = isFieldExists(scope.getTableClass(), StringUtils.toCamelCase(scope.getColumnName()));
-            if (!fieldExists) {
-                continue;
-            }
-            String simpleName = scope.getTableClass().getSimpleName(); // eg: TeacherStatics
-            String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
-            if (tableMap.containsKey(tableName)) {
-                QueryTable table = tableMap.get(tableName);
-                // 构造 in 查询 condition
-                QueryCondition queryCondition = QueryCondition.create(
-                        new QueryColumn(
-                                table.getSchema(),
-                                table.getName(),
-                                scope.getColumnName(),
-                                table.getAlias()),
-                        SqlConsts.IN,
-                        accessibleIds);
-               queryWrapper.where(queryCondition);
-            }
-        }
-        // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
-        // DataScopeHelper.clearDataScope();
-        super.prepareAuth(queryWrapper, operateType);
     }
 
     /**
      * 字段有效性校验
+     *
      * @param clazz
      * @param fieldName
      * @return
