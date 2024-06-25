@@ -17,7 +17,7 @@ import com.sz.excel.convert.ExcelDictConvert;
 
 /**
  * <p>
- * ${poClassName}查询返回
+ * ${poClassName}返回vo
  * </p>
  *
  * @author ${author}

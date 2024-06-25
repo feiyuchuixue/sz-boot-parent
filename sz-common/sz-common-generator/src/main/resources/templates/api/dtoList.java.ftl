@@ -10,7 +10,7 @@ import ${pkg};
 
 /**
  * <p>
- * ${poClassName}添加DTO
+ * ${poClassName}查询DTO
  * </p>
  *
  * @author ${author}

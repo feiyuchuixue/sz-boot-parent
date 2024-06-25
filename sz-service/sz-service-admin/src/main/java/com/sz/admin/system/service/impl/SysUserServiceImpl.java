@@ -49,10 +49,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -82,7 +80,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
-
 
     /**
      * 获取认证账户信息接角色信息
@@ -114,28 +111,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .eq(SysUser::getId, userId);
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
-        SysUserVO sysUserVO = new SysUserVO();
-        BeanCopyUtils.springCopy(one, sysUserVO);
+        SysUserVO sysUserVO = BeanCopyUtils.copy(one, SysUserVO.class);
         return sysUserVO;
-    }
-
-    /**
-     * 用户注册
-     *
-     * @param dto
-     */
-    @Override
-    public void register(RegisterUserDTO dto) {
-        int usernameCount = this.mapper.validUsername(dto.getUsername());
-        // 断言: 用户名已存在
-        CommonResponseEnum.USERNAME_EXISTS.assertTrue(usernameCount > 0);
-        String encodePwd = BCrypt.hashpw(dto.getPwd(), BCrypt.gensalt(10));
-        SysUser sysUser = new SysUser();
-        sysUser.setUsername(dto.getUsername());
-        sysUser.setPwd(encodePwd);
-        sysUser.setPhone(dto.getPhone());
-        sysUser.setNickname(dto.getNickName());
-        save(sysUser);
     }
 
     /**
@@ -144,8 +121,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param dto 用户信息
      */
     @Override
-    public void create(SysUserAddDTO dto) {
-        SysUser user = BeanCopyUtils.springCopy(dto, SysUser.class);
+    public void create(SysUserCreateDTO dto) {
+        SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysUser::getUsername, dto.getUsername());
         CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
@@ -153,6 +130,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setPwd(encodePwd);
         user.setAccountStatusCd("1000001");
         user.setUserTagCd("1001003");
+        user.setDataScope(DataScopeEnum.ALL.getCode());
         save(user);
     }
 
@@ -162,42 +140,31 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param dto 用户信息
      */
     @Override
-    public void update(SysUserAddDTO dto) {
-        SysUser user = BeanCopyUtils.springCopy(dto, SysUser.class);
+    public void update(SysUserUpdateDTO dto) {
+        SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
         // 检查用户是否存在
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysUser::getId, dto.getId());
-        AdminResponseEnum.INVALID_USER.assertTrue(count(wrapper) < 1);
-        wrapper = QueryWrapper.create()
-                .eq(SysUser::getUsername, dto.getUsername())
-                .ne(SysUser::getId, dto.getId());
-        // 检查用户名是否冲突
-        CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
-        redisCache.clearUserInfo(user.getUsername());
+        SysUser one = getOne(wrapper);
+        AdminResponseEnum.INVALID_USER.assertNull(one);
+        redisCache.clearUserInfo(one.getUsername());
         updateById(user);
     }
 
 
     /**
-     * 删除用户
+     * 删除用户 (逻辑删除，保留数据关系。如部门、权限、角色等)
      *
      * @param dto 用户id数组
      */
     @Override
     @Transactional
     public void remove(SelectIdsDTO dto) {
-        List<Long> ids = (List<Long>) dto.getIds();
         QueryWrapper wrapper = QueryWrapper.create()
                 .in(SysUser::getId, dto.getIds());
         // 检查用户是否存在
         AdminResponseEnum.INVALID_ID.assertTrue(count(wrapper) < 1);
-        UpdateChain.of(SysUser.class)
-                .set(SysUser::getDelFlag, "T")
-                .where(SysUser::getId).in(dto.getIds())
-                .update();
-        // userDeptService.unbind(ids); // 解绑_用户-部门关系
-        // 解绑_用户-leader关系
-        // 解绑_用户-角色关系
+        removeByIds((Collection<? extends Serializable>) dto.getIds());
     }
 
     /**

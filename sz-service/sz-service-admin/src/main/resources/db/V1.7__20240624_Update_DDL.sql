@@ -24,3 +24,12 @@ UPDATE `teacher_statistics` SET `create_id` = '7' WHERE `id` = 4;
 
 -- 修改sys_user表，增加data_scope字段
 ALTER TABLE `sys_user` ADD COLUMN `data_scope` int(2) DEFAULT NULL COMMENT '数据权限(详见DataScopeEnum) 0：全部; 1：仅本部门数据; 2：本部门及以下数据; 3：仅本人数据; 4：自定义数据;';
+
+-- 修改sys_user表，更新历史用户data_scope初始值
+UPDATE `sys_user` SET `data_scope` = '0' WHERE `id` = 1;
+UPDATE `sys_user` SET `data_scope` = '0' WHERE `id` = 2;
+
+-- 修改sys_user表，create_time、update_time字段
+ALTER TABLE `sys_user`
+    MODIFY COLUMN `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    MODIFY COLUMN `update_time` datetime DEFAULT NULL COMMENT '更新时间';
