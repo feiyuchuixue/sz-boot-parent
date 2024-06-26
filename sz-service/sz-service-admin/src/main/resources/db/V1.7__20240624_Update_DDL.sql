@@ -33,3 +33,12 @@ UPDATE `sys_user` SET `data_scope` = '0' WHERE `id` = 2;
 ALTER TABLE `sys_user`
     MODIFY COLUMN `create_time` datetime DEFAULT NULL COMMENT '创建时间',
     MODIFY COLUMN `update_time` datetime DEFAULT NULL COMMENT '更新时间';
+
+-- 修改sys_dept表，添加data_scope字段
+ALTER TABLE `sys_dept` ADD COLUMN `data_scope` int(2) DEFAULT NULL COMMENT '数据权限(详见DataScopeEnum) 0：全部; 1：仅本部门数据; 2：本部门及以下数据; 3：仅本人数据; 4：自定义数据;';
+
+-- 修改sys_dept表，更新历史用户data_scope初始值
+UPDATE `sys_dept` SET `data_scope` = '0';
+
+-- 新增系统参数 sys.dept.dataScopeDefault
+INSERT INTO `sz_admin_preview`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `is_lock`, `create_id`, `create_time`, `update_id`, `update_time`, `remark`) VALUES (5, '默认部门数据权限', 'sys.dept.dataScopeDefault', '3', 'T', 1, '2024-06-26 17:05:31', NULL, NULL, '数据权限可选项（0：全部; 1：仅本部门数据; 2：本部门及以下数据; 3：仅本人数据;）');
