@@ -69,17 +69,22 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create()
-                .select(TEACHER_STATISTICS.ALL_COLUMNS,TEACHER.AGE)
+                .select(TEACHER_STATISTICS.ALL_COLUMNS, TEACHER.AGE)
                 .from(TEACHER_STATISTICS)
                 .leftJoin(TEACHER)
                 .on(TEACHER_STATISTICS.TEACHER_ID.eq(TEACHER.ID));
         // TODO：数据权限测试 -- 单表、多表
         // DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class); // 单条件
-        DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT,TeacherStatistics.class,"create_id"),new DataScope(DataScopeEnum.DEPT,Teacher.class,"area_id")); // 多条件
-
-        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), wrapper, TeacherStatisticsVO.class); // 调试sql
+        try {
+            DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT, TeacherStatistics.class, "create_id"), new DataScope(DataScopeEnum.DEPT, Teacher.class, "area_id")); // 多条件
+            Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), wrapper, TeacherStatisticsVO.class); // 调试sql
+            return PageUtils.getPageResult(page);
+        } finally {
+            DataScopeHelper.clearDataScope();
+        }
+        // listAs(wrapper, TeacherStatisticsVO.class);
         // Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 原sql
-        return PageUtils.getPageResult(page);
+
     }
 
     @Override

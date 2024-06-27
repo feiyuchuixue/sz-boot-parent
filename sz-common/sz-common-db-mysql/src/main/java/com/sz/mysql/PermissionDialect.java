@@ -38,10 +38,15 @@ public class PermissionDialect extends CommonsDialectImpl {
             DataScope[] dataScopes = DataScopeHelper.getDataScope();
             List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
             List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-            queryTables.toString(); // 经过测试，这条语句必须有，否者分页查询的结果不对！！！原理未知。
             if (queryTables.isEmpty()) {
                 return;
             }
+            for (QueryTable queryTable : queryTables) {
+                if (queryTable instanceof SelectQueryTable){
+                    prepareAuth(((SelectQueryTable) queryTable).getQueryWrapper(),operateType);
+                }
+            }
+
             // 判断是否是isJoin
             boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
             Map<String, QueryTable> tableMap = new HashMap<>();

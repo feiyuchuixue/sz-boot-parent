@@ -3,11 +3,13 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.service.SysDataScopeService;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -43,6 +45,8 @@ public class SysUserController {
     private final WebsocketRedisService websocketRedisService;
 
     private final SysDeptService sysDeptService;
+
+    private final SysDataScopeService sysDataScopeService;
 
     @Operation(summary = "根据账户名获取用户信息", hidden = true)
     @SaIgnore
@@ -159,6 +163,13 @@ public class SysUserController {
     @Operation(summary = "账户管理-部门树形列表")
     public ApiResult<List<DeptTreeVO>> tree() {
         return ApiResult.success(sysDeptService.getDepartmentTreeWithAdditionalNodes());
+    }
+
+    @Operation(summary = "用户-数据权限信息查询")
+    @SaCheckPermission(value = {"sys.user.create_btn", "sys.user.update_btn"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("/menu")
+    public ApiResult findDeptDataScopeById(@RequestParam(required = false) Integer deptId) {
+        return ApiPageResult.success(sysDataScopeService.findDeptDataScope(deptId, "1007002"));
     }
 
 }

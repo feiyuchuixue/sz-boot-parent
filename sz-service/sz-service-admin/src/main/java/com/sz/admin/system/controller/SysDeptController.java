@@ -2,14 +2,17 @@ package com.sz.admin.system.controller;
 
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
+import com.sz.admin.system.service.SysDataScopeService;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.core.common.constant.GlobalConstant;
+import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +38,8 @@ import java.util.List;
 public class SysDeptController {
 
     private final SysDeptService sysDeptService;
+
+    private final SysDataScopeService sysDataScopeService;
 
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.dept.create", orRole = GlobalConstant.SUPER_ROLE)
@@ -81,13 +86,20 @@ public class SysDeptController {
             @RequestParam(required = false) Integer excludeNodeId,
             @Parameter(description = "是否添加根节点")
             @RequestParam(required = false) Boolean appendRoot) {
-        return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot,false));
+        return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot, false));
     }
 
     @Operation(summary = "负责人穿梭框-全部用户")
     @GetMapping("/leader")
     public ApiResult<SysDeptLeaderVO> leader() {
         return ApiResult.success(sysDeptService.findSysUserDeptLeader());
+    }
+
+    @Operation(summary = "部门-数据权限信息查询")
+    @SaCheckPermission(value = {"sys.dept.create", "sys.dept.update"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("/menu")
+    public ApiResult findDeptDataScopeById(@RequestParam(required = false) Integer deptId) {
+        return ApiPageResult.success(sysDataScopeService.findDeptDataScope(deptId, "1006001"));
     }
 
 }

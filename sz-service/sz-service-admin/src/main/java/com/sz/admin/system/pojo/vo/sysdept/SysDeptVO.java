@@ -42,6 +42,7 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     @Schema(description = "备注")
     private String remark;
 
+
     @Schema(description = "是否锁定")
     private String isLock;
 

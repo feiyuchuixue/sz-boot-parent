@@ -130,7 +130,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setPwd(encodePwd);
         user.setAccountStatusCd("1000001");
         user.setUserTagCd("1001003");
-        user.setDataScope(DataScopeEnum.ALL.getCode());
+        user.setDataScopeCd("1006001");
         save(user);
     }
 

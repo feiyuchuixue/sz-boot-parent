@@ -86,7 +86,7 @@ public class SysUser implements Serializable {
     @Schema(description = "更新人")
     private Long updateId;
 
-    @Schema(description = "数据权限(详见DataScopeEnum) 0：全部; 1：仅本部门数据; 2：本部门及以下数据; 3：仅本人数据; 4：自定义数据;")
-    private String dataScope;
+    @Schema(description = "数据权限，data_scope")
+    private String dataScopeCd;
 
 }
