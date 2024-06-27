@@ -30,17 +30,22 @@ public class PermissionDialect extends CommonsDialectImpl {
 
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
+        System.out.println("queryWrapper 1111111111111");
         if (shouldSkipAuth(operateType)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
         try {
+
+
             DataScope[] dataScopes = DataScopeHelper.getDataScope();
             List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
             List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
             if (queryTables.isEmpty()) {
                 return;
             }
+
+
             for (QueryTable queryTable : queryTables) {
                 if (queryTable instanceof SelectQueryTable){
                     prepareAuth(((SelectQueryTable) queryTable).getQueryWrapper(),operateType);
@@ -64,6 +69,7 @@ public class PermissionDialect extends CommonsDialectImpl {
                     }
                 }
             }
+
             for (DataScope scope : dataScopes) {
                 // 忽略 ALL 权限
                 if (DataScopeEnum.ALL.equals(scope.getScope())) {
@@ -85,6 +91,27 @@ public class PermissionDialect extends CommonsDialectImpl {
                 String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
                 if (tableMap.containsKey(tableName)) {
                     QueryTable table = tableMap.get(tableName);
+
+                    QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
+                    if (whereQueryCondition != null) {
+                        boolean b = whereQueryCondition.checkEffective();
+                        if (b) {
+                            String sql = whereQueryCondition.toSql(queryTables, new PermissionDialect());
+                            System.out.println("sql2 ==" + sql);
+                            QueryColumn column = whereQueryCondition.getColumn();
+                            String logic = whereQueryCondition.getLogic();
+
+                            boolean isSameTable = table.getSchema().equals(column.getTable().getSchema()) && table.getName().equals(column.getTable().getName()) && table.getAlias().equals(column.getTable().getAlias());
+                            boolean isSameQuery = scope.getColumnName().equals(column.getName()) && logic.equals(SqlConsts.IN);
+                            if(!isSameTable || !isSameQuery){
+                                System.out.println("相同");
+                            }
+
+                            System.out.println(column.toString());
+                        }
+                        System.out.println("b2 ==" + b);
+                    }
+
                     // 构造 in 查询 condition
                     QueryCondition queryCondition = QueryCondition.create(
                             new QueryColumn(
@@ -101,7 +128,7 @@ public class PermissionDialect extends CommonsDialectImpl {
             log.error(" PermissionDialect Exception :" + e.getMessage());
         } finally {
             // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
-            DataScopeHelper.clearDataScope();
+            // DataScopeHelper.clearDataScope();
             super.prepareAuth(queryWrapper, operateType);
         }
     }
