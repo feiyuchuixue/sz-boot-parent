@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.sz.admin.sysdatascope.pojo.po.table.SysDataScopeTableDef.SYS_DATA_SCOPE;
+import static com.sz.admin.system.pojo.po.table.SysDataScopeTableDef.SYS_DATA_SCOPE;
 
 
 /**
