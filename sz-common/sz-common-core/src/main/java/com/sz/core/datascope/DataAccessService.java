@@ -1,5 +1,4 @@
-package com.sz.mysql;
-
+package com.sz.core.datascope;
 import java.util.List;
 
 /**
@@ -14,5 +13,5 @@ public interface DataAccessService {
      * @param scope
      * @return
      */
-    List<?> getAccessibleIds(DataScopeEnum scope);
+    List<?> getAccessibleIds(String scope);
 }

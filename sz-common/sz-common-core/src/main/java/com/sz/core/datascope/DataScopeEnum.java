@@ -1,4 +1,4 @@
-package com.sz.mysql;
+package com.sz.core.datascope;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

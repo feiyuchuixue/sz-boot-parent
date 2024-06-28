@@ -19,9 +19,9 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
-import com.sz.mysql.DataScope;
-import com.sz.mysql.DataScopeEnum;
-import com.sz.mysql.DataScopeHelper;
+import com.sz.core.datascope.DataScope;
+import com.sz.core.datascope.DataScopeEnum;
+import com.sz.core.datascope.DataScopeHelper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -76,15 +76,13 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         // TODO：数据权限测试 -- 单表、多表
         // DataScopeHelper.startDataScope(DataScopeEnum.DEPT,TeacherStatistics.class); // 单条件
         try {
-            DataScopeHelper.startDataScope(new DataScope(DataScopeEnum.DEPT, TeacherStatistics.class, "create_id"), new DataScope(DataScopeEnum.DEPT, Teacher.class, "area_id")); // 多条件
+            DataScopeHelper.startDataScope(new DataScope("1006004", TeacherStatistics.class, "create_id"), new DataScope("1006004", Teacher.class, "area_id")); // 多条件
             Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), wrapper, TeacherStatisticsVO.class); // 调试sql
             return PageUtils.getPageResult(page);
         } finally {
             DataScopeHelper.clearDataScope();
         }
-        // listAs(wrapper, TeacherStatisticsVO.class);
         // Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 原sql
-
     }
 
     @Override

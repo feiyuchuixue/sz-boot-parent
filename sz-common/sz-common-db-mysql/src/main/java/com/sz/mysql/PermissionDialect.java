@@ -4,6 +4,10 @@ import com.mybatisflex.core.constant.SqlConsts;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
+import com.sz.core.datascope.DataAccessService;
+import com.sz.core.datascope.DataScope;
+import com.sz.core.datascope.DataScopeEnum;
+import com.sz.core.datascope.DataScopeHelper;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,39 +27,35 @@ import java.util.Map;
  */
 @Slf4j
 public class PermissionDialect extends CommonsDialectImpl {
-
-    private boolean shouldSkipAuth(OperateType operateType) {
-        return operateType != OperateType.SELECT || !DataScopeHelper.isDataScope();
-    }
-
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
-        System.out.println("queryWrapper 1111111111111");
-        if (shouldSkipAuth(operateType)) {
+        if (!DataScopeHelper.isDataScope()) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
         try {
-
+            if (operateType != OperateType.SELECT) {
+                // TODO check dataScope
+                super.prepareAuth(queryWrapper, operateType);
+                return;
+            }
             DataScope[] dataScopes = DataScopeHelper.getDataScope();
             List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
             List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-            if (queryTables.isEmpty()) {
+            if (queryTables == null || queryTables.isEmpty()) {
                 return;
             }
-
+            // 对子查询语句进行处理 例如： select count(1) from (select * from table where ...)
             for (QueryTable queryTable : queryTables) {
-                if (queryTable instanceof SelectQueryTable){
-                    prepareAuth(((SelectQueryTable) queryTable).getQueryWrapper(),operateType);
+                if (queryTable instanceof SelectQueryTable) {
+                    prepareAuth(((SelectQueryTable) queryTable).getQueryWrapper(), operateType);
                 }
             }
-
             // 判断是否是isJoin
             boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
             Map<String, QueryTable> tableMap = new HashMap<>();
             for (QueryTable queryTable : queryTables) {
-                // TODO 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构 queryTables ==[SELECT * FROM TABLE]
-                if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) {
+                if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) {  // TODO 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构 queryTables ==[SELECT * FROM TABLE]
                     return;
                 }
                 tableMap.put(queryTable.getName(), queryTable);
@@ -67,7 +67,6 @@ public class PermissionDialect extends CommonsDialectImpl {
                     }
                 }
             }
-
             for (DataScope scope : dataScopes) {
                 // 忽略 ALL 权限
                 if (DataScopeEnum.ALL.equals(scope.getScope())) {
@@ -76,13 +75,9 @@ public class PermissionDialect extends CommonsDialectImpl {
                 // 根据scope 获取可访问的 ID 列表
                 DataAccessService accessService = SpringApplicationContextUtils.getBean(DataAccessService.class);
                 List<?> accessibleIds = accessService.getAccessibleIds(scope.getScope());
-                // 忽略无效范围ID
-                if (accessibleIds == null || accessibleIds.isEmpty()) {
-                    continue;
-                }
-                // 忽略无效字段
                 boolean fieldExists = isFieldExists(scope.getTableClass(), StringUtils.toCamelCase(scope.getColumnName()));
-                if (!fieldExists) {
+                // 忽略无效范围ID，忽略无效字段
+                if (accessibleIds == null || accessibleIds.isEmpty() || !fieldExists) {
                     continue;
                 }
                 String simpleName = scope.getTableClass().getSimpleName(); // eg: TeacherStatics
@@ -90,78 +85,21 @@ public class PermissionDialect extends CommonsDialectImpl {
                 if (tableMap.containsKey(tableName)) {
                     QueryTable table = tableMap.get(tableName);
                     QueryCondition queryCondition = QueryCondition.create(
-                            new QueryColumn(
-                                    table.getSchema(),
-                                    table.getName(),
-                                    scope.getColumnName(),
-                                    table.getAlias()),
+                            new QueryColumn(table.getSchema(), table.getName(), scope.getColumnName(), table.getAlias()),
                             SqlConsts.IN,
                             accessibleIds);
-                    QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
-
-           /*         if (whereQueryCondition == null){
-                        System.out.println("111111111111111111111111");
-                        // 构造 in 查询 condition
-                        QueryCondition queryCondition = QueryCondition.create(
-                                new QueryColumn(
-                                        table.getSchema(),
-                                        table.getName(),
-                                        scope.getColumnName(),
-                                        table.getAlias()),
-                                SqlConsts.IN,
-                                accessibleIds);
-                    }else {
-                        String sql = whereQueryCondition.toSql(queryTables, new DmDialect());
-                        System.out.println("sql ==" + sql);
-                        System.out.println("22222222222222222222222222");
-                        QueryCondition queryCondition = QueryCondition.create(
-                                new QueryColumn(
-                                        table.getSchema(),
-                                        table.getName(),
-                                        scope.getColumnName(),
-                                        table.getAlias()),
-                                SqlConsts.IN,
-                                accessibleIds);
-
-
-
-                    }*/
-
-
-                    queryWrapper.and(queryCondition);
-                    // QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
-
-
-       /*             if (whereQueryCondition != null) {
-                        boolean b = whereQueryCondition.checkEffective();
-                        if (b) {
-                            String sql = whereQueryCondition.toSql(queryTables, new PermissionDialect());
-                            System.out.println("sql1 ==" + sql);
-                            QueryColumn column = whereQueryCondition.getColumn();
-                            String logic = whereQueryCondition.getLogic();
-                            System.out.println("column ==" + column.toString());
-                            String sql2 = queryCondition.toSql(queryTables, new PermissionDialect());
-                            System.out.println("sql2 ===" + sql2);
-                 *//*           boolean isSameTable = table.getSchema().equals(column.getTable().getSchema()) && table.getName().equals(column.getTable().getName()) && (table.getAlias()!= null && column.getTable().getAlias()!= null &&  table.getAlias().equals(column.getTable().getAlias()));
-                            boolean isSameQuery = scope.getColumnName().equals(column.getName()) && logic.equals(SqlConsts.IN);
-                            if(!isSameTable || !isSameQuery){
-                                System.out.println("相同");
-                                queryWrapper.where(queryCondition);
-                            }*//*
-
-                        }
-                        System.out.println("b2 ==" + b);
+                    String key = scope.getColumnName();
+                    Object context = CPI.getContext(queryWrapper, key);
+                    if (!Boolean.TRUE.equals(context)) { // 防止重复append
+                        queryWrapper.where(queryCondition);
+                        CPI.putContext(queryWrapper, key, true);
                     }
-*/
-
                 }
             }
         } catch (Exception e) {
             log.error(" PermissionDialect Exception :" + e.getMessage());
             e.printStackTrace();
         } finally {
-            // 清除数据作用域以避免分页场景中的SQL语句重复拼接问题。
-            // DataScopeHelper.clearDataScope();
             super.prepareAuth(queryWrapper, operateType);
         }
     }

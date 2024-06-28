@@ -1,4 +1,4 @@
-package com.sz.mysql;
+package com.sz.core.datascope;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 
@@ -9,10 +9,10 @@ import com.alibaba.ttl.TransmittableThreadLocal;
  * @Version 1.0
  */
 public class DataScopeHelper {
-    //protected static ThreadLocal<DataScope[]> LOCAL_DATA_SCOPE = new ThreadLocal<>();
+    // protected static ThreadLocal<DataScope[]> LOCAL_DATA_SCOPE = new ThreadLocal<>();
     protected static TransmittableThreadLocal<DataScope[]> LOCAL_DATA_SCOPE = new TransmittableThreadLocal<>();
 
-    public static void startDataScope(DataScopeEnum scope, Class<?> clazz) {
+    public static void startDataScope(String scope, Class<?> clazz) {
         LOCAL_DATA_SCOPE.set(new DataScope[]{new DataScope(scope, clazz)});
     }
 

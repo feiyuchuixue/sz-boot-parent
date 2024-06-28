@@ -33,8 +33,8 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
-import com.sz.mysql.DataAccessService;
-import com.sz.mysql.DataScopeEnum;
+import com.sz.core.datascope.DataAccessService;
+import com.sz.core.datascope.DataScopeEnum;
 import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -425,7 +425,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 
     @Override
-    public List<?> getAccessibleIds(DataScopeEnum scope) {
+    public List<?> getAccessibleIds(String scope) {
         List<Object> accessibleIds = new ArrayList<>();
         // TODO: 测试数据, 记得删除
         accessibleIds.add(1);

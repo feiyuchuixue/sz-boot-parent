@@ -66,7 +66,7 @@ public class TeacherStatisticsController  {
 
     @Operation(summary = "列表查询")
     @SaIgnore
-    // @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<TeacherStatisticsVO>> list(TeacherStatisticsListDTO dto) {
         return ApiPageResult.success(teacherStatisticsService.page(dto));

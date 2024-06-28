@@ -45,10 +45,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>transmittable-thread-local</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-core</artifactId>

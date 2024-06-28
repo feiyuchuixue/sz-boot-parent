@@ -1,4 +1,4 @@
-package com.sz.mysql;
+package com.sz.core.datascope;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -13,20 +13,20 @@ import lombok.Data;
 public class DataScope {
 
     {
-        scope = DataScopeEnum.ALL; // 默认查询全部数据，不限制
-        columnName = "create_id"; // 默认字段名
+        scope = "1006001"; // 默认查询全部数据，不限制
+        columnName = " "; // 默认字段名
     }
 
     public DataScope() {
     }
 
-    public DataScope(DataScopeEnum scope, Class<?> tableClass, String columnName) {
+    public DataScope(String scope, Class<?> tableClass, String columnName) {
         this.scope = scope;
         this.columnName = columnName;
         this.tableClass = tableClass;
     }
 
-    public DataScope(DataScopeEnum scope, Class<?> tableClass) {
+    public DataScope(String scope, Class<?> tableClass) {
         this.scope = scope;
         this.tableClass = tableClass;
     }
@@ -36,7 +36,7 @@ public class DataScope {
      * 数据权限范围类型，定义了不同的数据访问级别。
      */
     @Schema(description = "数据权限范围类型")
-    private DataScopeEnum scope;
+    private String scope;
 
     /**
      * 指定权限控制的字段名，用于确定数据权限的具体作用对象。 蛇形，例如： create_id
