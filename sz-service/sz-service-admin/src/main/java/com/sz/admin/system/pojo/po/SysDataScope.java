@@ -2,12 +2,15 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
 
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
 import com.sz.mysql.EntityChangeListener;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.format.annotation.DateTimeFormat;
 /**
 * <p>
@@ -35,10 +38,12 @@ public class SysDataScope implements Serializable {
     private Integer relationId;
 
     @Schema(description ="关联部门")
-    private Object deptOptions;
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<Long> deptOptions;
 
     @Schema(description ="关联用户")
-    private Object userOptions;
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<Long> userOptions;
 
     @Schema(description ="创建人")
     private Long createId;

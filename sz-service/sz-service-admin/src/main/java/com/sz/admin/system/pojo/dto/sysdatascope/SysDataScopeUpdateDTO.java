@@ -4,6 +4,8 @@ package com.sz.admin.system.pojo.dto.sysdatascope;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * <p>
  * SysDataScope修改DTO
@@ -23,10 +25,10 @@ public class SysDataScopeUpdateDTO {
     private Long relationId;
 
     @Schema(description =  "关联部门")
-    private Object deptOptions;
+    private List<Long> deptOptions;
 
     @Schema(description =  "关联用户")
-    private Object userOptions;
+    private List<Long> userOptions;
 
 
 }
