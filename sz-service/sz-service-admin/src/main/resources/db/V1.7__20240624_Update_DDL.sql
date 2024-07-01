@@ -45,10 +45,11 @@ INSERT INTO `sz_admin_preview`.`sys_config` (`id`, `config_name`, `config_key`, 
 
 -- 新增自定义数据权限
 CREATE TABLE `sys_data_scope` (
-                                  `id` INT NOT NULL,
+                                  `id` INT NOT NULL AUTO_INCREMENT,
                                   `relation_type_cd` VARCHAR (10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型，data_scope_relation_type',
                                   `relation_id` INT DEFAULT NULL COMMENT '关联表id',
-                                  `options` JSON DEFAULT NULL COMMENT '关联内容',
+                                  `dept_options` JSON DEFAULT NULL COMMENT '关联部门',
+                                  `user_options` JSON DEFAULT NULL COMMENT '关联用户',
                                   `create_id` INT DEFAULT NULL,
                                   `create_time` DATETIME DEFAULT NULL,
                                   PRIMARY KEY (`id`)

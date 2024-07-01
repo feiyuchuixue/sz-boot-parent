@@ -7,9 +7,9 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictMapper;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
@@ -61,7 +61,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public void create(SysDictAddDTO dto) {
+    public void create(SysDictCreateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
         QueryWrapper wrapper;
         long count = QueryChain.of(sysDictTypeMapper)
@@ -85,7 +85,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public void update(SysDictUpDTO dto) {
+    public void update(SysDictUpdateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
         long count = QueryChain.of(this.mapper)
                 .select()

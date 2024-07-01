@@ -2,7 +2,7 @@ package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
@@ -27,14 +27,14 @@ public interface SysMenuService extends IService<SysMenu> {
      *
      * @param dto dto
      */
-    void create(SysMenuAddDTO dto);
+    void create(SysMenuCreateDTO dto);
 
     /**
      * 更新
      *
      * @param dto dto
      */
-    void update(SysMenuAddDTO dto);
+    void update(SysMenuCreateDTO dto);
 
     /**
      * 删除菜单

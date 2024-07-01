@@ -1,9 +1,9 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigAddDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigCreateDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpdateDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -18,9 +18,9 @@ import com.sz.core.common.entity.SelectIdsDTO;
  */
 public interface SysConfigService extends IService<SysConfig> {
 
-    void create(SysConfigAddDTO dto);
+    void create(SysConfigCreateDTO dto);
 
-    void update(SysConfigUpDTO dto);
+    void update(SysConfigUpdateDTO dto);
 
     PageResult<SysConfig> list(SysConfigListDTO queryDTO);
 

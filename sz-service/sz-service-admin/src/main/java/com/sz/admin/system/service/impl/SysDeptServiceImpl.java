@@ -8,9 +8,11 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDeptLeaderMapper;
 import com.sz.admin.system.mapper.SysDeptMapper;
 import com.sz.admin.system.mapper.SysUserMapper;
+import com.sz.admin.system.pojo.dto.sysdatascope.SysDataScopeUpdateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
+import com.sz.admin.system.pojo.po.SysDataScope;
 import com.sz.admin.system.pojo.po.SysDept;
 import com.sz.admin.system.pojo.po.SysDeptLeader;
 import com.sz.admin.system.pojo.po.SysUser;
@@ -18,15 +20,14 @@ import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
 import com.sz.admin.system.pojo.vo.sysdept.TotalDeptVO;
+import com.sz.admin.system.service.SysDataScopeService;
 import com.sz.admin.system.service.SysDeptClosureService;
 import com.sz.admin.system.service.SysDeptLeaderService;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.PageUtils;
-import com.sz.core.util.TreeUtils;
+import com.sz.core.util.*;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     private final SysDeptClosureService deptClosureService;
 
+    private final SysDataScopeService sysDataScopeService;
+
     @Transactional
     @Override
     public void create(SysDeptCreateDTO dto) {
@@ -85,7 +88,13 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 设置负责人
         deptLeaderService.syncLeader(deptId, dto.getLeaders());
         deptClosureService.create(deptId, pid);
-
+        // 设置数据权限
+        SysDataScopeUpdateDTO updateDTO = new SysDataScopeUpdateDTO();
+        updateDTO.setRelationTypeCd("1007001");
+        updateDTO.setRelationId(sysDept.getId());
+        updateDTO.setUserOptions(dto.getUserIds());
+        updateDTO.setDeptOptions(dto.getDeptIds());
+        sysDataScopeService.updateDataScope(updateDTO);
     }
 
     @Transactional
@@ -158,6 +167,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 查询指定部门的负责人
         List<Long> leaderIds = QueryChain.of(leaderMapper).select(SYS_DEPT_LEADER.LEADER_ID).eq(SysDeptLeader::getDeptId, id).listAs(Long.class);
         deptVO.setLeaders(leaderIds);
+        if (Utils.isNotNull(deptVO.getDataScopeCd()) && ("1006005").equals(deptVO.getDataScopeCd())) {
+            SysDataScope jsonOption = sysDataScopeService.getJsonOption(Utils.getIntVal(id), "1007001");
+            System.out.println("jsonOption ==" + JsonUtils.toJsonString(jsonOption));
+        }
         return deptVO;
     }
 

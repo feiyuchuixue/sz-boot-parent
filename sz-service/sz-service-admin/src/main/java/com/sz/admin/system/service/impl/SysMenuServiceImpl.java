@@ -8,7 +8,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysMenuMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.po.table.SysMenuTableDef;
@@ -72,7 +72,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Transactional
     @Override
-    public void create(SysMenuAddDTO dto) {
+    public void create(SysMenuCreateDTO dto) {
         SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
         menu.setId(Utils.generateUUIDs());
         QueryWrapper wrapper;
@@ -117,7 +117,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Transactional
     @Override
-    public void update(SysMenuAddDTO dto) {
+    public void update(SysMenuCreateDTO dto) {
         QueryWrapper wrapper;
         SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
         // 菜单是否存在

@@ -67,4 +67,7 @@ public class SysDept implements Serializable {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "数据权限")
+    private String dataScopeCd;
+
 }

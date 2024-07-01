@@ -22,6 +22,8 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
 
     {
         leaders = new ArrayList<>();
+        deptIds = new ArrayList<>();
+        userIds = new ArrayList<>();
     }
 
     @Schema(description = "ID")
@@ -42,7 +44,6 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     @Schema(description = "备注")
     private String remark;
 
-
     @Schema(description = "是否锁定")
     private String isLock;
 
@@ -54,5 +55,14 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
 
     @Schema(description = "负责人信息")
     private String leaderInfo;
+
+    @Schema(description = "数据权限")
+    private String dataScopeCd;
+
+    @Schema(description = "数据权限-自定义: 部门项1")
+    private List<Integer> deptIds;
+
+    @Schema(description = "数据权限-自定义: 用户项")
+    private List<Integer> userIds;
 
 }

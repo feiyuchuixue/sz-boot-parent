@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "菜单添加")
-public class SysMenuAddDTO {
+public class SysMenuCreateDTO {
 
     @Schema(description =  "菜单id（修改菜单时必填）")
     private String id;

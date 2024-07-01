@@ -4,9 +4,9 @@ package com.sz.admin.system.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysConfigMapper;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigAddDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigCreateDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpdateDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.admin.system.pojo.po.table.SysConfigTableDef;
 import com.sz.admin.system.service.SysConfigService;
@@ -40,7 +40,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     private final RedisCache redisCache;
 
     @Override
-    public void create(SysConfigAddDTO dto) {
+    public void create(SysConfigCreateDTO dto) {
         SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
         QueryWrapper wrapper = QueryWrapper.create()
                 .where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(sysConfig.getConfigKey()));
@@ -49,7 +49,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    public void update(SysConfigUpDTO dto) {
+    public void update(SysConfigUpdateDTO dto) {
         SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
         QueryWrapper wrapper = QueryWrapper.create()
                 .where(SysConfigTableDef.SYS_CONFIG.ID.ne(dto.getId()))

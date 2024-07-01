@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "参数修改")
-public class SysConfigUpDTO {
+public class SysConfigUpdateDTO {
 
     @NotZero
     @Schema(description =  "参数id", requiredMode = Schema.RequiredMode.REQUIRED)

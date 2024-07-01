@@ -95,11 +95,11 @@ public class SysDeptController {
         return ApiResult.success(sysDeptService.findSysUserDeptLeader());
     }
 
-    @Operation(summary = "部门-数据权限信息查询")
+ /*   @Operation(summary = "部门-数据权限信息查询")
     @SaCheckPermission(value = {"sys.dept.create", "sys.dept.update"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/datascope")
     public ApiResult findDeptDataScopeById(@RequestParam(required = false) Integer deptId) {
         return ApiPageResult.success(sysDataScopeService.findDeptDataScope(deptId, "1006001"));
     }
-
+*/
 }

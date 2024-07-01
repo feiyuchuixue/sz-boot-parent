@@ -8,8 +8,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Schema(description = "字典添加")
-public class SysDictAddDTO {
+@Schema(description = "字典修改")
+public class SysDictUpdateDTO {
+
+    @NotNull(message = "id不能为空")
+    @Schema(description =  "id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
+    private Long id;
 
     @NotNull(message = "sysDictTypeId不能为空")
     @Schema(description =  "关联sys_dict_type id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")

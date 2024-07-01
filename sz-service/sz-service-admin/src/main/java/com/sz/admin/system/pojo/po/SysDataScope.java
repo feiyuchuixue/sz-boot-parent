@@ -25,7 +25,7 @@ public class SysDataScope implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Schema(description ="")
+    @Schema(description ="ID")
     private Long id;
 
     @Schema(description ="关联类型，data_scope_relation_type")
@@ -34,13 +34,16 @@ public class SysDataScope implements Serializable {
     @Schema(description ="关联表id")
     private Integer relationId;
 
-    @Schema(description ="关联内容")
-    private String options;
+    @Schema(description ="关联部门")
+    private Object deptOptions;
 
-    @Schema(description ="")
+    @Schema(description ="关联用户")
+    private Object userOptions;
+
+    @Schema(description ="创建人")
     private Long createId;
 
-    @Schema(description ="")
+    @Schema(description ="创建时间")
     private LocalDateTime createTime;
 
 }

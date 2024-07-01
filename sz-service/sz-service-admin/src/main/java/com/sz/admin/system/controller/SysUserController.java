@@ -9,6 +9,7 @@ import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDataScopeService;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserService;
@@ -16,7 +17,6 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.valid.annotation.NotZero;
-import com.sz.core.util.JsonUtils;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -165,11 +165,18 @@ public class SysUserController {
         return ApiResult.success(sysDeptService.getDepartmentTreeWithAdditionalNodes());
     }
 
-    @Operation(summary = "用户-数据权限信息查询")
+  /*  @Operation(summary = "用户-数据权限信息查询")
     @SaCheckPermission(value = {"sys.user.create_btn", "sys.user.update_btn"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")
     public ApiResult findDeptDataScopeById(@RequestParam(required = false) Integer deptId) {
         return ApiPageResult.success(sysDataScopeService.findDeptDataScope(deptId, "1007002"));
+    }*/
+
+    @Operation(summary = "用户信息-下拉列表")
+    @SaCheckPermission(value = {"sys.user.query_table", "sys.dept.query_table"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("options")
+    public ApiResult<List<UserOptionVO>> getUserOptions() {
+        return ApiResult.success(sysUserService.getUserOptions());
     }
 
 }

@@ -3,18 +3,12 @@ package com.sz.admin.system.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDataScopeMapper;
-import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
+import com.sz.admin.system.pojo.dto.sysdatascope.SysDataScopeUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDataScope;
-import com.sz.admin.system.pojo.vo.sysdatascope.SysDataScopeVO;
-import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
 import com.sz.admin.system.service.SysDataScopeService;
-import com.sz.admin.system.service.SysDeptService;
-import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.Utils;
+import com.sz.core.util.BeanCopyUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.sz.admin.system.pojo.po.table.SysDataScopeTableDef.SYS_DATA_SCOPE;
 
@@ -31,9 +25,9 @@ import static com.sz.admin.system.pojo.po.table.SysDataScopeTableDef.SYS_DATA_SC
 @RequiredArgsConstructor
 public class SysDataScopeServiceImpl extends ServiceImpl<SysDataScopeMapper, SysDataScope> implements SysDataScopeService {
 
-    private final SysDeptService SysDeptService;
+    //private final SysDeptService SysDeptService;
 
-    @Override
+/*    @Override
     public SysDataScopeVO findDeptDataScope(Integer relationId, String relationTypeCd) {
         SysDataScopeVO sysDataScopeVO = new SysDataScopeVO();
         List<SysDeptVO> deptVOS = SysDeptService.list(new SysDeptListDTO());
@@ -43,6 +37,27 @@ public class SysDataScopeServiceImpl extends ServiceImpl<SysDataScopeMapper, Sys
         // listAs()
         // Todo:  get json option
         return sysDataScopeVO;
+    }*/
+
+    @Override
+    public SysDataScope getJsonOption(Integer relationId, String relationTypeCd) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_SCOPE.RELATION_TYPE_CD.eq(relationTypeCd)).and(SYS_DATA_SCOPE.RELATION_ID.eq(relationId));
+        return getOne(wrapper);
     }
+
+    @Override
+    public void updateDataScope(SysDataScopeUpdateDTO dto) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_SCOPE.RELATION_TYPE_CD.eq(dto.getRelationTypeCd())).and(SYS_DATA_SCOPE.RELATION_ID.eq(dto.getRelationId()));
+        SysDataScope one = getOne(wrapper);
+        if (one == null) {
+            SysDataScope dataScope = BeanCopyUtils.copy(dto, SysDataScope.class);
+            save(dataScope);
+        }else {
+         one.setUserOptions(dto.getUserOptions());
+         one.setDeptOptions(dto.getDeptOptions());
+         updateById(one);
+        }
+    }
+
 
 }

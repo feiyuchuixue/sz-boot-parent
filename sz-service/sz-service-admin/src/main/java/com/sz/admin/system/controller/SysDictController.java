@@ -2,9 +2,9 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -37,7 +37,7 @@ public class SysDictController {
     @Operation(summary = "字典新增")
     @SaCheckPermission(value = "sys.dict.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysDictAddDTO dto) {
+    public ApiResult create(@Valid @RequestBody SysDictCreateDTO dto) {
         sysDictService.create(dto);
         return ApiResult.success();
     }
@@ -45,7 +45,7 @@ public class SysDictController {
     @Operation(summary = "字典修改")
     @SaCheckPermission(value = "sys.dict.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysDictUpDTO dto) {
+    public ApiResult update(@Valid @RequestBody SysDictUpdateDTO dto) {
         sysDictService.update(dto);
         return ApiResult.success();
     }

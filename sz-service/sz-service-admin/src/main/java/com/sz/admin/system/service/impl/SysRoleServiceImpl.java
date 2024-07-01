@@ -5,9 +5,9 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMapper;
 import com.sz.admin.system.mapper.SysRoleMenuMapper;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleAddDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
 import com.sz.admin.system.service.SysRoleService;
@@ -38,7 +38,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     private final SysRoleMenuMapper sysRoleMenuMapper;
 
     @Override
-    public void create(SysRoleAddDTO dto) {
+    public void create(SysRoleCreateDTO dto) {
         SysRole sysRole = BeanCopyUtils.springCopy(dto, SysRole.class);
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysRole::getRoleName, dto.getRoleName());
@@ -47,7 +47,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public void update(SysRoleUpDTO dto) {
+    public void update(SysRoleUpdateDTO dto) {
         SysRole sysRole = BeanCopyUtils.springCopy(dto, SysRole.class);
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysRole::getRoleName, dto.getRoleName())

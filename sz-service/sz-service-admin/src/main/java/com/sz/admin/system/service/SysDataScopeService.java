@@ -1,6 +1,7 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.sysdatascope.SysDataScopeUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDataScope;
 import com.sz.admin.system.pojo.vo.sysdatascope.SysDataScopeVO;
 
@@ -16,5 +17,9 @@ import com.sz.admin.system.pojo.vo.sysdatascope.SysDataScopeVO;
 public interface SysDataScopeService extends IService<SysDataScope> {
 
 
-    SysDataScopeVO findDeptDataScope(Integer deptId, String relationTypeCd);
+    /*SysDataScopeVO findDeptDataScope(Integer deptId, String relationTypeCd);*/
+
+    SysDataScope getJsonOption(Integer relationId, String relationTypeCd);
+
+    void updateDataScope(SysDataScopeUpdateDTO dto);
 }

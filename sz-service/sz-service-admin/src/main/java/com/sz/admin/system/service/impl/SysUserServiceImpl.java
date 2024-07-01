@@ -16,10 +16,7 @@ import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.po.SysUserRole;
-import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
-import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO;
+import com.sz.admin.system.pojo.vo.sysuser.*;
 import com.sz.admin.system.service.SysPermissionService;
 import com.sz.admin.system.service.SysUserDeptService;
 import com.sz.admin.system.service.SysUserService;
@@ -29,12 +26,11 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
+import com.sz.core.datascope.DataAccessService;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
-import com.sz.core.datascope.DataAccessService;
-import com.sz.core.datascope.DataScopeEnum;
 import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -52,6 +48,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 
 /**
  * <p>
@@ -423,7 +421,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         userDeptService.bind(dto);
     }
 
-
     @Override
     public List<?> getAccessibleIds(String scope) {
         List<Object> accessibleIds = new ArrayList<>();
@@ -432,4 +429,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         accessibleIds.add(2);
         return accessibleIds;
     }
+
+    @Override
+    public List<UserOptionVO> getUserOptions() {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.USERNAME, SYS_USER.NICKNAME);
+        return listAs(wrapper, UserOptionVO.class);
+    }
+
 }
