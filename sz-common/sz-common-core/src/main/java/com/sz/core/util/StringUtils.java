@@ -16,6 +16,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         throw new IllegalStateException("StringUtils class Illegal");
     }
 
+    private static final char SEPARATOR = '_';
+
     /**
      * @param s
      * @return java.lang.String
@@ -113,5 +115,51 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return str.substring(start, end);
     }
 
+    public static String toSnakeCase(String camelCase) {
+        if (camelCase == null || camelCase.isEmpty()) {
+            return camelCase;
+        }
+
+        StringBuilder result = new StringBuilder();
+        result.append(camelCase.substring(0, 1).toLowerCase()); // 将首字母转小写并添加到结果
+
+        for (int i = 1; i < camelCase.length(); i++) {
+            char c = camelCase.charAt(i);
+            if (Character.isUpperCase(c)) {
+                // 如果当前字符是大写字母，添加下划线并转换为小写
+                result.append("_").append(Character.toLowerCase(c));
+            } else {
+                // 否则，直接添加当前字符
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    public static String toCamelCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean toUpperCase = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '_') {
+                // Set flag to uppercase next valid character
+                toUpperCase = true;
+            } else {
+                // Append character either in uppercase or lowercase based on the flag
+                if (toUpperCase) {
+                    result.append(Character.toUpperCase(c));
+                    toUpperCase = false;
+                } else {
+                    result.append(Character.toLowerCase(c));
+                }
+            }
+        }
+        return result.toString();
+    }
 
 }
