@@ -31,14 +31,14 @@ public interface SysUserService extends IService<SysUser> {
      *
      * @param dto 用户信息
      */
-    void create(SysUserAddDTO dto);
+    void create(SysUserCreateDTO dto);
 
     /**
      * 更新用户
      *
      * @param dto 用户信息
      */
-    void update(SysUserAddDTO dto);
+    void update(SysUserUpdateDTO dto);
 
     /**
      * 删除用户

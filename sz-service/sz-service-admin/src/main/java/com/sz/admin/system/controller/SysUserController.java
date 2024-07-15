@@ -14,7 +14,6 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.valid.annotation.NotZero;
-import com.sz.core.util.JsonUtils;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,14 +43,6 @@ public class SysUserController {
 
     private final SysDeptService sysDeptService;
 
-    @Operation(summary = "用户注册", description = "系统用户注册")
-    @SaIgnore
-    @PostMapping("register")
-    public ApiResult register(@RequestBody RegisterUserDTO dto) {
-        sysUserService.register(dto);
-        return ApiResult.success();
-    }
-
     @Operation(summary = "根据账户名获取用户信息", hidden = true)
     @SaIgnore
     @GetMapping("/accountName/{accountName}")
@@ -60,18 +51,10 @@ public class SysUserController {
         return ApiResult.success(user);
     }
 
-    @Deprecated
-    @Operation(summary = "临时获取menu", description = "临时获取menu")
-    @GetMapping(value = "/menu/list")
-    public ApiResult getMenu() {
-        String jsonFile = JsonUtils.readJsonFile("sz-service\\sz-service-admin\\src\\main\\resources\\tmp/menu.json");
-        return ApiResult.success(jsonFile);
-    }
-
     @Operation(summary = "添加用户")
     @SaCheckPermission(value = "sys.user.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysUserAddDTO dto) {
+    public ApiResult create(@Valid @RequestBody SysUserCreateDTO dto) {
         sysUserService.create(dto);
         return ApiResult.success();
     }
@@ -79,7 +62,7 @@ public class SysUserController {
     @Operation(summary = "修改用户")
     @SaCheckPermission(value = "sys.user.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysUserAddDTO dto) {
+    public ApiResult update(@Valid @RequestBody SysUserUpdateDTO dto) {
         sysUserService.update(dto);
         return ApiResult.success();
     }

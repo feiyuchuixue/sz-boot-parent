@@ -5,6 +5,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
+import com.sz.mysql.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
  * @since 2023-08-24
  */
 @Data
-@Table("sys_user")
+@Table(value = "sys_user", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 @Schema(description = "系统用户表")
 public class SysUser implements Serializable {
 
@@ -42,14 +43,17 @@ public class SysUser implements Serializable {
     @Schema(description = "昵称")
     private String nickname;
 
+    @Schema(description = "性别(0 未知 1 男 2 女)")
+    private Integer sex;
+
+    @Schema(description = "生日")
+    private String birthday;
+
     @Schema(description = "头像地址")
     private String logo;
 
     @Schema(description = "年龄")
     private Integer age;
-
-    @Schema(description = "性别(0 未知 1 男 2 女)")
-    private Integer sex;
 
     @Schema(description = "身份证")
     private String idCard;
@@ -76,7 +80,10 @@ public class SysUser implements Serializable {
     @Schema(description = "是否删除")
     private String delFlag;
 
-    @Schema(description = "生日")
-    private String birthday;
+    @Schema(description = "创建人")
+    private Long createId;
+
+    @Schema(description = "更新人")
+    private Long updateId;
 
 }
