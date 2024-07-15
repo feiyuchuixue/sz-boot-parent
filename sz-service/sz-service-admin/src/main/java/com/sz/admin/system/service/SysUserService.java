@@ -6,9 +6,12 @@ import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,8 +26,6 @@ public interface SysUserService extends IService<SysUser> {
     SysUserVO getSysUserByUsername(String username);
 
     SysUserVO getSysUserByUserId(Long userId);
-
-    void register(RegisterUserDTO dto);
 
     /**
      * 创建用户
@@ -91,4 +92,6 @@ public interface SysUserService extends IService<SysUser> {
     void unlock(SelectIdsDTO dto);
 
     void bindUserDept(UserDeptDTO dto);
+
+    List<UserOptionVO> getUserOptions();
 }

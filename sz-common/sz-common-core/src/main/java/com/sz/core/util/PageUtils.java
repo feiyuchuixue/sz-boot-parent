@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.mybatisflex.core.paginate.Page;
 import com.sz.core.common.entity.PageQuery;
 import com.sz.core.common.entity.PageResult;
+import com.sz.core.datascope.SimpleDataScopeHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,6 @@ public class PageUtils {
         return new PageResult<>(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getPages(), pageInfo.getTotal(), replaceList, param);
     }
 
-
     /**
      * 根据list和count结果构建PageResult对象
      *
@@ -95,7 +95,9 @@ public class PageUtils {
     }
 
     public static Page getPage(PageQuery query) {
-        return Page.of(query.getPage(), query.getLimit());
+        Page<Object> page = Page.of(query.getPage(), query.getLimit());
+        if (SimpleDataScopeHelper.isDataScope()) page.setOptimizeCountQuery(false); // 数据权限时，关闭优化查询。
+        return page;
     }
 
     public static <T> PageResult<T> getPageResult(Page<T> page) {
@@ -106,7 +108,6 @@ public class PageUtils {
         if (param == null) param = new HashMap<>(1);
         return new PageResult<>(page.getPageNumber(), page.getPageSize(), page.getTotalPage(), page.getTotalRow(), page.getRecords(), param);
     }
-
 
     /**
      * 根据list和count结果构建PageResult对象

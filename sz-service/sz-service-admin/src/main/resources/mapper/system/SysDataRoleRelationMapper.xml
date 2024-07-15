@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysDataRoleRelationMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysDataRoleRelation">
+        <id column="id" property="id"/>
+        <result column="role_id" property="roleId"/>
+        <result column="relation_type_cd" property="relationTypeCd"/>
+        <result column="relation_id" property="relationId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        role_id, relation_type_cd, relation_id
+    </sql>
+
+</mapper>

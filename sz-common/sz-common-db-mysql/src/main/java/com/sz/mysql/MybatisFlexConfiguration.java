@@ -1,7 +1,12 @@
 package com.sz.mysql;
 
 import com.github.pagehelper.PageInterceptor;
+import com.mybatisflex.core.FlexGlobalConfig;
+import com.mybatisflex.core.dialect.DbType;
+import com.mybatisflex.core.dialect.DialectFactory;
+import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import com.sz.logger.PrintSQL;
+import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +17,10 @@ import org.springframework.context.annotation.Configuration;
  * @Version 1.0
  */
 @Configuration
-public class MybatisFlexConfiguration {
+public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
+
+    @Resource
+    private  DataScopeProperties dataScopeProperties;
 
     public MybatisFlexConfiguration() {
         PrintSQL.print();
@@ -26,6 +34,14 @@ public class MybatisFlexConfiguration {
     @Bean
     public PageInterceptor pageInterceptor() {
         return new PageInterceptor();
+    }
+
+    @Override
+    public void customize(FlexGlobalConfig flexGlobalConfig) {
+        if (dataScopeProperties.isEnable()) {
+            // 注册查询权限监听方言
+            DialectFactory.registerDialect(DbType.MYSQL, new SimplePermissionDialect());
+        }
     }
 
 }

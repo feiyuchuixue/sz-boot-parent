@@ -3,12 +3,15 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDeptService;
+import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
@@ -42,6 +45,8 @@ public class SysUserController {
     private final WebsocketRedisService websocketRedisService;
 
     private final SysDeptService sysDeptService;
+
+    private final SysUserDataRoleService sysUserDataRoleService;
 
     @Operation(summary = "根据账户名获取用户信息", hidden = true)
     @SaIgnore
@@ -159,5 +164,29 @@ public class SysUserController {
     public ApiResult<List<DeptTreeVO>> tree() {
         return ApiResult.success(sysDeptService.getDepartmentTreeWithAdditionalNodes());
     }
+
+    @Operation(summary = "用户信息-下拉列表")
+    @SaCheckPermission(value = {"sys.user.query_table", "sys.dept.query_table"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("options")
+    public ApiResult<List<UserOptionVO>> getUserOptions() {
+        return ApiResult.success(sysUserService.getUserOptions());
+    }
+
+
+    @Operation(summary = "用户数据角色信息查询-（穿梭框）")
+    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("datarole")
+    public ApiResult findUserDataRole(@NotZero @RequestParam Long userId) {
+        return ApiPageResult.success(sysUserDataRoleService.queryRoleMenu(userId));
+    }
+
+    @Operation(summary = "用户数据角色信息修改 -（穿梭框）")
+    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping("datarole")
+    public ApiResult changeDataUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
+        sysUserDataRoleService.changeRole(dto);
+        return ApiPageResult.success();
+    }
+
 
 }

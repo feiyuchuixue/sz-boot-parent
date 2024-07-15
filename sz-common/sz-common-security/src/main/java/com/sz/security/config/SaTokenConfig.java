@@ -5,6 +5,7 @@ import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.core.common.configuration.WebMvcConfiguration;
+import com.sz.security.core.interceptor.MySaInterceptor;
 import com.sz.security.pojo.WhitelistProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +37,13 @@ public class SaTokenConfig extends WebMvcConfiguration {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 路由拦截鉴权
+        // 路由拦截鉴权 - 登录校验
         registry.addInterceptor(new SaInterceptor(r -> {
             StpUtil.checkLogin();
         }).isAnnotation(false)).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
 
         // 打开注解鉴权
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
+        registry.addInterceptor(new MySaInterceptor()).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
     }
 
 }

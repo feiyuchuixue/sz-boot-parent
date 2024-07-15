@@ -2,23 +2,12 @@ package com.sz.security.core.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
-import cn.dev33.satoken.jwt.SaJwtUtil;
-import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.json.JSONObject;
 import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.entity.SocketBean;
-import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.common.enums.MessageTransferScopeEnum;
-import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.exception.GlobalExceptionHandler;
-import com.sz.redis.WebsocketRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @ClassName SaExceptionHandler
@@ -29,8 +18,6 @@ import java.util.List;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class SaExceptionHandler extends GlobalExceptionHandler {
-
-    private final WebsocketRedisService websocketRedisService;
 
     @ExceptionHandler(NotLoginException.class)
     public ApiResult handlerNotLoginException(NotLoginException e) {
@@ -58,24 +45,6 @@ public class SaExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(NotPermissionException.class)
     public ApiResult handlerNotPermissionException(NotPermissionException e) {
         return ApiResult.error(CommonResponseEnum.INVALID_PERMISSION);
-    }
-
-    private void sendWsClose() {
-        String tokenValue = StpUtil.getTokenValue();
-        String keyt = StpUtil.getStpLogic().getConfigOrGlobal().getJwtSecretKey();
-        JSONObject payload = SaJwtUtil.getPayloadsNotCheck(tokenValue, StpUtil.getLoginType(), keyt);
-        String loginId = payload.getStr("loginId");
-        TransferMessage tm = new TransferMessage();
-        SocketBean socketBean = new SocketBean<>();
-        socketBean.setChannel(SocketChannelEnum.CLOSE);
-        socketBean.setScope(MessageTransferScopeEnum.SERVER);
-        tm.setMessage(socketBean);
-        tm.setFromUser("system");
-        tm.setToPushAll(false);
-        List userIds = new ArrayList();
-        userIds.add(loginId);
-        tm.setToUsers(userIds);
-        websocketRedisService.sendServiceToWs(tm);
     }
 
 }

@@ -1,86 +1,98 @@
 package com.sz.admin.teacher.service.impl;
 
-import com.mybatisflex.spring.service.impl.ServiceImpl;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import com.sz.admin.teacher.service.TeacherStatisticsService;
-import com.sz.admin.teacher.pojo.po.TeacherStatistics;
-import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.PageUtils;
-import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.Utils;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
+import com.sz.admin.teacher.pojo.po.TeacherStatistics;
+import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
+import com.sz.admin.teacher.service.TeacherStatisticsService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-import java.io.Serializable;
-import java.util.List;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
-import org.springframework.web.multipart.MultipartFile;
+import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.datascope.SimpleDataScopeHelper;
+import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.PageUtils;
+import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
+import com.sz.excel.utils.ExcelUtils;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import com.sz.excel.utils.ExcelUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
  * 教师统计总览表 服务实现类
  * </p>
  *
- * @author sz-admin
- * @since 2024-06-19
+ * @author sz
+ * @since 2024-02-19
  */
 @Service
 @RequiredArgsConstructor
 public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
-    @Override
-    public void create(TeacherStatisticsCreateDTO dto){
-        TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
 
+    @Override
+    public void create(TeacherStatisticsCreateDTO dto) {
+        TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+        // 唯一性校验
         save(teacherStatistics);
     }
 
     @Override
-    public void update(TeacherStatisticsUpdateDTO dto){
-        TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+    public void update(TeacherStatisticsUpdateDTO dto) {
+        TeacherStatistics teacherStatistics = BeanCopyUtils.springCopy(dto, TeacherStatistics.class);
         QueryWrapper wrapper;
         // id有效性校验
         wrapper = QueryWrapper.create()
-            .eq(TeacherStatistics::getId, dto.getId());
+                .eq(TeacherStatistics::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
-
+        // 唯一性校验
         saveOrUpdate(teacherStatistics);
     }
 
     @Override
-    public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto){
-        Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class);
-        return PageUtils.getPageResult(page);
+    public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
+        try {
+            SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
+            Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 调试sql
+            return PageUtils.getPageResult(page);
+        } finally {
+            SimpleDataScopeHelper.clearDataScope();
+        }
     }
 
     @Override
-    public List<TeacherStatisticsVO> list(TeacherStatisticsListDTO dto){
-        return listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
+    public List<TeacherStatisticsVO> list(TeacherStatisticsListDTO dto) {
+        try {
+            SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
+            return listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
+        } finally {
+            SimpleDataScopeHelper.clearDataScope();
+        }
     }
 
     @Override
-    public void remove(SelectIdsDTO dto){
+    public void remove(SelectIdsDTO dto) {
         CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
-        removeByIds(dto.getIds());
+        removeById((Serializable) dto.getIds());
     }
 
     @Override
-    public TeacherStatisticsVO detail(Object id){
-        TeacherStatistics teacherStatistics = getById((Serializable) id);
+    public TeacherStatisticsVO detail(Long id) {
+        TeacherStatistics teacherStatistics = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
-        return BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+        return BeanCopyUtils.springCopy(teacherStatistics, TeacherStatisticsVO.class);
     }
 
     @SneakyThrows
@@ -98,7 +110,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response) {
         List<TeacherStatisticsVO> list = list(dto);
         ServletOutputStream os = response.getOutputStream();
-        ExcelUtils.exportExcel(list, "教师统计总览表", TeacherStatisticsVO.class, os);
+        ExcelUtils.exportExcel(list, "教师统计", TeacherStatisticsVO.class, os, true);
     }
 
     private static QueryWrapper buildQueryWrapper(TeacherStatisticsListDTO dto) {
@@ -112,8 +124,11 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         wrapper.eq(TeacherStatistics::getTotalClassCount, dto.getTotalClassCount());
         wrapper.eq(TeacherStatistics::getTotalHours, dto.getTotalHours());
         wrapper.eq(TeacherStatistics::getCheckStatus, dto.getCheckStatus());
-        wrapper.eq(TeacherStatistics::getCheckTime, dto.getCheckTime());
         wrapper.eq(TeacherStatistics::getLastSyncTime, dto.getLastSyncTime());
+        if (Utils.isNotNull(dto.getCheckTimeStart()) && Utils.isNotNull(dto.getCheckTimeEnd())) {
+            wrapper.between(TeacherStatistics::getCheckTime, dto.getCheckTimeStart(), dto.getCheckTimeEnd());
+        }
         return wrapper;
     }
+
 }

@@ -73,7 +73,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
      */
     @Override
     public SysRoleMenuVO queryRoleMenu(Integer roleId) {
-        List<MenuTreeVO> menuTreeVOS = sysMenuService.queryRoleMenuTree();
+        List<MenuTreeVO> menuTreeVOS = sysMenuService.queryRoleMenuTree(true);
         QueryWrapper wrapper = QueryWrapper.create()
                 .select(SysRoleMenu::getMenuId)
                 .eq(SysRoleMenu::getRoleId, roleId);

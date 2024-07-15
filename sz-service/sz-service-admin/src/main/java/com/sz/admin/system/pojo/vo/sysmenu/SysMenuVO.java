@@ -55,6 +55,9 @@ public class SysMenuVO {
     private String isAffix;
 
     @JsonIgnore
+    private String useDataScope;
+
+    @JsonIgnore
     private String isKeepAlive;
 
     @Schema(description ="元数据")
@@ -91,5 +94,8 @@ public class SysMenuVO {
 
         @Schema(description = "当前路由是否缓存")
         private String isKeepAlive;
+
+        @Schema(description = "菜单是否开启数据权限")
+        private String useDataScope;
     }
 }

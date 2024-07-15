@@ -94,4 +94,7 @@ public class SysMenu implements Serializable {
     @Schema(description = "删除与否")
     @Column(isLogicDelete = true)
     private String delFlag;
+
+    @Schema(description = "菜单是否开启数据权限")
+    private String useDataScope;
 }
