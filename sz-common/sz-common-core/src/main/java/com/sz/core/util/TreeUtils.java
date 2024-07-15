@@ -93,7 +93,7 @@ public class TreeUtils {
                 parent.setChildren(new ArrayList<>());
             }
             // 如果部门的父级ID等于当前父部门的ID，并且部门的ID不等于排除节点的ID
-            if (dept.getPid().equals(parent.getId()) && !dept.getId().equals(excludeNodeId)/* && !dept.getPid().equals(excludeNodeId)*/) {
+            if (dept.getPid().equals(parent.getId()) && !dept.getId().toString().equals(excludeNodeId.toString()) ) {
                 // 递归构建子部门的子部门
                 constructTreeRecursiveExcludeNode(dept, allDepts, excludeNodeId);
 
