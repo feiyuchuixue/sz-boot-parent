@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "参数添加")
-public class SysConfigAddDTO {
+public class SysConfigCreateDTO {
 
     @Schema(description =  "参数名")
     private String configName;
