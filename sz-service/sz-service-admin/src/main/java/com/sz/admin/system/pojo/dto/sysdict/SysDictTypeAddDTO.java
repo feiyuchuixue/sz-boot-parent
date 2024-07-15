@@ -19,4 +19,7 @@ public class SysDictTypeAddDTO {
     @Schema(description =  "备注")
     private String remark;
 
+    @Schema(description = "字典类型")
+    private String type;
+
 }

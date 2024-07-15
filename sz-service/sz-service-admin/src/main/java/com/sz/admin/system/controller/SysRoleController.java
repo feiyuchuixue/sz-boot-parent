@@ -3,9 +3,9 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleAddDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
-import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpDTO;
+import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.service.SysRoleMenuService;
@@ -43,7 +43,7 @@ public class SysRoleController {
     @Operation(summary = "角色新增")
     @SaCheckPermission(value = "sys.role.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysRoleAddDTO dto) {
+    public ApiResult create(@Valid @RequestBody SysRoleCreateDTO dto) {
         sysRoleService.create(dto);
         return ApiResult.success();
     }
@@ -51,7 +51,7 @@ public class SysRoleController {
     @Operation(summary = "角色修改")
     @SaCheckPermission(value = "sys.role.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysRoleUpDTO dto) {
+    public ApiResult update(@Valid @RequestBody SysRoleUpdateDTO dto) {
         sysRoleService.update(dto);
         return ApiResult.success();
     }

@@ -1,12 +1,11 @@
 package com.sz.admin.system.pojo.po;
 
-import com.mybatisflex.annotation.*;
-
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
-import com.sz.mysql.EntityChangeListener;
 /**
 * <p>
 * 部门祖籍关系表
@@ -16,7 +15,7 @@ import com.sz.mysql.EntityChangeListener;
 * @since 2024-03-28
 */
 @Data
-@Table(value = "sys_dept_closure", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+@Table(value = "sys_dept_closure")
 @Schema(description = "部门祖籍关系表")
 public class SysDeptClosure implements Serializable {
 
