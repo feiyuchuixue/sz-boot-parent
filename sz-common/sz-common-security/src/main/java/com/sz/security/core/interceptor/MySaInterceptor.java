@@ -54,8 +54,9 @@ public class MySaInterceptor extends SaInterceptor {
 
         } catch (StopMatchException e) {
             // StopMatchException 异常代表：停止匹配，进入Controller
-
+            ControlThreadLocal.clearDataScope();
         } catch (BackResultException e) {
+            ControlThreadLocal.clearDataScope();
             // BackResultException 异常代表：停止匹配，向前端输出结果
             // 		请注意此处默认 Content-Type 为 text/plain，如果需要返回 JSON 信息，需要在 back 前自行设置 Content-Type 为 application/json
             // 		例如：SaHolder.getResponse().setHeader("Content-Type", "application/json;charset=UTF-8");

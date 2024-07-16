@@ -150,11 +150,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                 .where(SYS_DATA_ROLE.DATA_SCOPE_CD.isNotNull())
                 .listAs(SysUserDataMetaVO.class);
 
-        System.out.println("metaVOList ==" + JsonUtils.toJsonString(metaVOList));
         // 聚合菜单下的权限规则 （一次聚合）
         Map<String, List<SysUserDataMetaVO>> menuMap = metaVOList.stream()
                 .collect(Collectors.groupingBy(SysUserDataMetaVO::getMenuId));
-        System.out.println("一次聚合 menuMap ==" + JsonUtils.toJsonString(menuMap));
         // 根据最小权限规则生成最终规则映射 （二次聚合）
         for (Map.Entry<String, List<SysUserDataMetaVO>> entry : menuMap.entrySet()) {
             String menuId = entry.getKey();
@@ -164,8 +162,6 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                     .orElse(null);
             ruleMap.put(menuId, metaVO != null ? metaVO.getDataScopeCd() : "");
         }
-        System.out.println("二次聚合 ruleMap ==" + JsonUtils.toJsonString(ruleMap));
-
         buildCustomScope(sysUser, findMenuIds, ruleMap);
         return ruleMap;
     }
