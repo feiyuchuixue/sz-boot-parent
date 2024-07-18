@@ -47,8 +47,13 @@ public class TeacherStatisticsListDTO extends PageQuery {
     @Schema(description =  "核对状态")
     private Integer checkStatus;
 
-    @Schema(description =  "核对时间")
-    private LocalDateTime checkTime;
+    @Schema(description =  "核对时间开始")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime checkTimeStart;
+
+    @Schema(description =  "核对时间结束")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime checkTimeEnd;
 
     @Schema(description =  "最近一次同步时间")
     private LocalDateTime lastSyncTime;

@@ -33,5 +33,7 @@ public class SysDictTypeVO {
     @Schema(description =  "更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "字典类型")
+    private String type;
 
 }

@@ -1,9 +1,9 @@
 package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigAddDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigCreateDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
-import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpDTO;
+import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpdateDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.admin.system.service.SysConfigService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -35,7 +35,7 @@ public class SysConfigController {
     @Operation(summary ="新增")
     @SaCheckPermission(value = "sys.config.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@RequestBody SysConfigAddDTO dto) {
+    public ApiResult create(@RequestBody SysConfigCreateDTO dto) {
         sysConfigService.create(dto);
         return ApiResult.success();
     }
@@ -43,7 +43,7 @@ public class SysConfigController {
     @Operation(summary ="修改")
     @SaCheckPermission(value = "sys.config.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@RequestBody SysConfigUpDTO dto) {
+    public ApiResult update(@RequestBody SysConfigUpdateDTO dto) {
         sysConfigService.update(dto);
         return ApiResult.success();
     }

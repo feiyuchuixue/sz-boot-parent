@@ -9,9 +9,10 @@
         <result column="pwd" property="pwd"/>
         <result column="phone" property="phone"/>
         <result column="nickname" property="nickname"/>
+        <result column="sex" property="sex"/>
+        <result column="birthday" property="birthday"/>
         <result column="logo" property="logo"/>
         <result column="age" property="age"/>
-        <result column="sex" property="sex"/>
         <result column="id_card" property="idCard"/>
         <result column="email" property="email"/>
         <result column="account_status_cd" property="accountStatusCd"/>
@@ -20,12 +21,13 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="del_flag" property="delFlag"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , username, pwd, phone, nickname, logo, age, sex, id_card, email, account_status_cd, user_tag_cd, last_login_time, create_time, update_time, del_flag
+        username, pwd, phone, nickname, sex, birthday, logo, age, id_card, email, account_status_cd, user_tag_cd, last_login_time, create_time, update_time, del_flag, create_id, update_id
     </sql>
 
     <!--查询（部门）用户列表-->

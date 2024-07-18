@@ -1,35 +1,34 @@
 package com.sz.admin.teacher.controller;
 
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import lombok.RequiredArgsConstructor;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.springframework.web.bind.annotation.*;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
+import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
+import com.sz.admin.teacher.service.TeacherStatisticsService;
+import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.constant.GlobalConstant;
-
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.admin.teacher.service.TeacherStatisticsService;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
-import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
-import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
  * 教师统计总览表 Controller
  * </p>
  *
- * @author sz-admin
- * @since 2024-06-19
+ * @author sz
+ * @since 2024-02-19
  */
 @Tag(name =  "教师统计总览表")
 @RestController
@@ -73,13 +72,13 @@ public class TeacherStatisticsController  {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Object id) {
+    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Long id) {
         return ApiResult.success(teacherStatisticsService.detail(id));
     }
 
     @Operation(summary = "导入")
     @Parameters({
-      @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
+            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
     })
     @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/import")

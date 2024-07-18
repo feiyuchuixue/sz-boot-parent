@@ -1,5 +1,6 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDeptClosureMapper;
@@ -78,6 +79,23 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
                 .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(nodeId))
                 .where(SYS_DEPT_CLOSURE.DESCENDANT_ID.ne(nodeId));
         return list(wrapper);
+    }
+
+    /**
+     * 查询指定祖籍节点的所有子孙节点
+     *
+     * @param ancestorIds
+     * @return
+     */
+    @Override
+    public List<Long> descendants(List<Long> ancestorIds) {
+        if (ancestorIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(QueryMethods.distinct(SYS_DEPT_CLOSURE.DESCENDANT_ID))
+                .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.in(ancestorIds));
+        return listAs(wrapper, Long.class);
     }
 
     /**

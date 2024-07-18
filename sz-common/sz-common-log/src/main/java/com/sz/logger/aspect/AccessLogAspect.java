@@ -21,7 +21,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -51,84 +50,91 @@ public class AccessLogAspect {
     }
 
     @Before("methodArgs()")
-    public void doBefore(JoinPoint joinPoint) throws IOException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String contentType = request.getContentType();
-        // GET请求地址栏参数
-        String queryString = request.getQueryString();
-        Map<String, Object> urlParams = HttpReqResUtil.getUrlParams(queryString);
-        // POST请求获取body体
-        String body = HttpReqResUtil.getBody(request);
-        // FORM表单参数
-        Map<String, Object> parameter = HttpReqResUtil.getParameter(request);
-        if (Arrays.stream(joinPoint.getArgs()).anyMatch(arg -> arg instanceof MultipartFile)) {
-            // 忽略包含MultipartFile的请求
-            return;
+    public void doBefore(JoinPoint joinPoint) {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String contentType = request.getContentType();
+            // GET请求地址栏参数
+            String queryString = request.getQueryString();
+            Map<String, Object> urlParams = HttpReqResUtil.getUrlParams(queryString);
+            // POST请求获取body体
+            String body = HttpReqResUtil.getBody(request);
+            // FORM表单参数
+            Map<String, Object> parameter = HttpReqResUtil.getParameter(request);
+            if (Arrays.stream(joinPoint.getArgs()).anyMatch(arg -> arg instanceof MultipartFile)) {
+                // 忽略包含MultipartFile的请求
+                return;
+            }
+
+            String requestURI = request.getRequestURI();
+            Object[] args = joinPoint.getArgs();
+            filterAndConvertArguments(args);
+
+            AccessRequestLog requestLog = AccessRequestLog.builder()
+                    .traceId("")
+                    .url(request.getRequestURI())
+                    .timestamp(System.currentTimeMillis())
+                    .method(request.getMethod())
+                    .ip(HttpReqResUtil.getIpAdrress(request))
+                    .param(urlParams)
+                    .body(body)
+                    .form(parameter)
+                    .requestBody(args)
+                    .type("request")
+                    .contentType(contentType)
+                    .build();
+            List<String> whitelist = whitelistProperties.getWhitelist();
+            if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {
+                requestLog.setUserId(StpUtil.getLoginIdAsString());
+            }
+            log.info(" [aop] request log : {}", JsonUtils.toJsonString(requestLog));
+            //设置请求开始时间
+            request.setAttribute(SEND_TIME, System.currentTimeMillis());
+        } catch (Exception e) {
+            log.error("Error in doBefore method", e);
         }
-
-        String requestURI = request.getRequestURI();
-        Object[] args = joinPoint.getArgs();
-        filterAndConvertArguments(args);
-
-        AccessRequestLog requestLog = AccessRequestLog.builder()
-                .traceId("")
-                .url(request.getRequestURI())
-                .timestamp(System.currentTimeMillis())
-                .method(request.getMethod())
-                .ip(HttpReqResUtil.getIpAdrress(request))
-                .param(urlParams)
-                .body(body)
-                .form(parameter)
-                .requestBody(args)
-                .type("request")
-                .contentType(contentType)
-                .build();
-        List<String> whitelist = whitelistProperties.getWhitelist();
-        if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {
-            requestLog.setUserId(StpUtil.getLoginIdAsString());
-        }
-        log.info(" [aop] request log : {}", JsonUtils.toJsonString(requestLog));
-
-        //设置请求开始时间
-        request.setAttribute(SEND_TIME, System.currentTimeMillis());
     }
 
     @AfterReturning(returning = "returnValue", pointcut = "methodArgs()")
     public void doAfterReturning(JoinPoint joinPoint, Object returnValue) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        if (Arrays.stream(joinPoint.getArgs()).anyMatch(arg -> arg instanceof MultipartFile)) {
-            // 忽略包含MultipartFile的请求
-            return;
-        }
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            if (Arrays.stream(joinPoint.getArgs()).anyMatch(arg -> arg instanceof MultipartFile)) {
+                // 忽略包含MultipartFile的请求
+                return;
+            }
 
-        // GET请求地址栏参数
-        String queryString = request.getQueryString();
-        Map<String, Object> urlParams = HttpReqResUtil.getUrlParams(queryString);
-        // FORM表单参数
-        Map<String, Object> parameter = HttpReqResUtil.getParameter(request);
-        long sendTime = (long) request.getAttribute(SEND_TIME);
-        long ms = System.currentTimeMillis() - sendTime;
-        AccessResponseLog responseLog = AccessResponseLog.builder()
-                .timestamp(System.currentTimeMillis())
-                .traceId("")
-                .param(JsonUtils.toJsonString(urlParams))
-                .form(JsonUtils.toJsonString(parameter))
-                .reqBody(joinPoint.getArgs())
-                .resBody(returnValue)
-                .method(request.getMethod())
-                .url(request.getRequestURI())
-                .ms(ms)
-                .build();
-        String requestURI = request.getRequestURI();
-        List<String> whitelist = whitelistProperties.getWhitelist();
-        whitelist.add("/auth/logout"); // 退出登录接口也需要排除掉，因为logout的service方法先执行，在切面获取userId时已经失效了。
-        if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {
-            responseLog.setUserId(StpUtil.getLoginIdAsString());
-        }
+            // GET请求地址栏参数
+            String queryString = request.getQueryString();
+            Map<String, Object> urlParams = HttpReqResUtil.getUrlParams(queryString);
+            // FORM表单参数
+            Map<String, Object> parameter = HttpReqResUtil.getParameter(request);
+            long sendTime = (long) request.getAttribute(SEND_TIME);
+            long ms = System.currentTimeMillis() - sendTime;
+            AccessResponseLog responseLog = AccessResponseLog.builder()
+                    .timestamp(System.currentTimeMillis())
+                    .traceId("")
+                    .param(JsonUtils.toJsonString(urlParams))
+                    .form(JsonUtils.toJsonString(parameter))
+                    .reqBody(joinPoint.getArgs())
+                    .resBody(returnValue)
+                    .method(request.getMethod())
+                    .url(request.getRequestURI())
+                    .ms(ms)
+                    .build();
+            String requestURI = request.getRequestURI();
+            List<String> whitelist = whitelistProperties.getWhitelist();
+            whitelist.add("/auth/logout"); // 退出登录接口也需要排除掉，因为logout的service方法先执行，在切面获取userId时已经失效了。
+            if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {
+                responseLog.setUserId(StpUtil.getLoginIdAsString());
+            }
 
-        // 慢查询打印，大于3s的接口
-        if (ms >= 2000) {
-            log.info(" [aop] response log : {}", JsonUtils.toJsonString(responseLog));
+            // 慢查询打印，大于3s的接口
+            if (ms >= 2000) {
+                log.info(" [aop] response log : {}", JsonUtils.toJsonString(responseLog));
+            }
+        } catch (Exception e) {
+            log.error("Error in doAfterReturning method", e);
         }
     }
 

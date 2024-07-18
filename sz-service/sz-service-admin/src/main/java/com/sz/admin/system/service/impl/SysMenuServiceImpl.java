@@ -2,15 +2,17 @@ package com.sz.admin.system.service.impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysMenuMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
+import com.sz.admin.system.pojo.po.SysUserDataRole;
 import com.sz.admin.system.pojo.po.table.SysMenuTableDef;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
@@ -20,27 +22,31 @@ import com.sz.admin.system.service.SysRoleService;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.entity.UserPermissionChangeMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
 import com.sz.platform.enums.AdminResponseEnum;
+import com.sz.platform.event.PermissionChangeEvent;
+import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.RedisService;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.sz.admin.system.pojo.po.table.SysDataRoleMenuTableDef.SYS_DATA_ROLE_MENU;
 import static com.sz.admin.system.pojo.po.table.SysMenuTableDef.SYS_MENU;
 import static com.sz.admin.system.pojo.po.table.SysRoleMenuTableDef.SYS_ROLE_MENU;
+import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER_DATA_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 
 
@@ -53,6 +59,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROL
  * @since 2022-10-01
  */
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
@@ -65,6 +72,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private final GeneratorTableService generatorTableService;
 
+    private final EventPublisher eventPublisher;
+
     /**
      * 创建菜单
      *
@@ -72,7 +81,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Transactional
     @Override
-    public void create(SysMenuAddDTO dto) {
+    public void create(SysMenuCreateDTO dto) {
         SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
         menu.setId(Utils.generateUUIDs());
         QueryWrapper wrapper;
@@ -117,7 +126,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Transactional
     @Override
-    public void update(SysMenuAddDTO dto) {
+    public void update(SysMenuCreateDTO dto) {
         QueryWrapper wrapper;
         SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
         // 菜单是否存在
@@ -253,9 +262,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    public List<MenuTreeVO> queryRoleMenuTree() {
+    public List<MenuTreeVO> queryRoleMenuTree(boolean isShowButton) {
         SysMenuListDTO dto = new SysMenuListDTO();
-        dto.setShowButton(true);
+        dto.setShowButton(isShowButton);
         List<SysMenuVO> sysMenuVOS = menuList(dto);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
         return menuTreeVOS;
@@ -400,18 +409,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return permissions;
     }
 
-    /**
-     * 查询某一个用户的按钮权限
-     *
-     * @param userId
-     * @return
-     */
-    @Override
-    public List<String> findPermission(Long userId) {
-        List<String> permissions = sysUserRoleMapper.queryPermissionByUserId(userId);
-        return permissions;
-    }
-
     @Override
     public List<String> findPermissionsByUserId(Long userId) {
         QueryWrapper queryWrapper = QueryWrapper.create()
@@ -436,6 +433,74 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .ne(SysMenu::getPermissions, "");
 
         return listAs(queryWrapper, String.class);
+    }
+
+    @Override
+    public Map<String, String> getBtnMenuByPermissions(Collection<String> permissions) {
+        Map<String, String> btnMenuMap = new HashMap<>();
+        if (permissions.isEmpty()) {
+            return btnMenuMap;
+        }
+        try {
+            QueryWrapper wrapper = QueryWrapper.create()
+                    .from(SYS_MENU)
+                    .where(SYS_MENU.PERMISSIONS.in(permissions));
+            List<SysMenu> list = list(wrapper);
+            if (list.isEmpty()) {
+                return btnMenuMap;
+            }
+            List<String> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toList());
+            QueryWrapper checkWrapper = QueryWrapper.create()
+                    .select(SYS_MENU.ID)
+                    .from(SYS_MENU).where(SYS_MENU.ID.in(pids));
+            List<String> existsMenuIds = listAs(checkWrapper, String.class);
+            for (SysMenu menu : list) {
+                if (existsMenuIds.contains(menu.getPid()) || existsMenuIds.contains(menu.getId())) { // 过滤脏数据
+                    String key = menu.getPermissions();
+                    String value;
+                    if (("1002002").equals(menu.getMenuTypeCd())) {
+                        value = menu.getId();
+                    } else {
+                        value = menu.getPid();
+                    }
+                    btnMenuMap.put(key, value);
+                }
+            }
+        } catch (Exception e) {
+            log.error(" sync menuButton info err ", e);
+        }
+        return btnMenuMap;
+    }
+
+    @Override
+    public List<MenuTreeVO> queryDataRoleMenu() {
+        QueryWrapper wrapper = QueryWrapper.create()
+                .where(SYS_MENU.USE_DATA_SCOPE.eq("T"))
+                .where(SYS_MENU.MENU_TYPE_CD.eq("1002002"));
+        List<SysMenu> list = list(wrapper);
+        List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
+        return menuTreeVOS;
+    }
+
+    @Override
+    public void changeMenuDataScope(String menuId) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.ID.eq(menuId));
+        SysMenu menu = getOne(wrapper);
+        CommonResponseEnum.INVALID_ID.assertNull(menu);
+        if (("F").equals(menu.getUseDataScope())) {
+            menu.setUseDataScope("T");
+        } else {
+            menu.setUseDataScope("F");
+        }
+        updateById(menu);
+        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class)
+                .select(SYS_USER_DATA_ROLE.USER_ID)
+                .from(SYS_USER_DATA_ROLE)
+                .leftJoin(SYS_DATA_ROLE_MENU)
+                .on(SYS_DATA_ROLE_MENU.ROLE_ID.eq(SYS_USER_DATA_ROLE.ROLE_ID))
+                .where(SYS_DATA_ROLE_MENU.MENU_ID.eq(menuId))
+                .listAs(Long.class);
+        eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));
     }
 
 }

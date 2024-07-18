@@ -24,5 +24,7 @@ public interface SysDeptClosureService extends IService<SysDeptClosure> {
     @Transactional
     void remove(Long nodeId);
 
+    List<Long> descendants(List<Long> ancestorIds);
+
     void move(Long nodeId, Long newNodeId);
 }

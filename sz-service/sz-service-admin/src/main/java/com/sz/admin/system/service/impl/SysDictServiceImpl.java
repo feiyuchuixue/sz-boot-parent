@@ -1,15 +1,16 @@
 package com.sz.admin.system.service.impl;
 
 
+import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictMapper;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictAddDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
-import com.sz.admin.system.pojo.dto.sysdict.SysDictUpDTO;
+import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -61,7 +63,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public void create(SysDictAddDTO dto) {
+    public void create(SysDictCreateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
         QueryWrapper wrapper;
         long count = QueryChain.of(sysDictTypeMapper)
@@ -72,20 +74,25 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         wrapper = QueryWrapper.create()
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
                 .where(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()));
-        CommonResponseEnum.EXISTS.assertTrue(count(wrapper) > 0);
+        CommonResponseEnum.EXISTS.message("字典已存在").assertTrue(count(wrapper) > 0);
         SysDictType sysDictType = sysDictTypeService.detail(dto.getSysDictTypeId());
         String typeCode = sysDictType.getTypeCode();
         wrapper = QueryWrapper.create()
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
-        Long dictCount = count(wrapper);
-        Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), dictCount.intValue());
+        AtomicReference<Long> dictCount = new AtomicReference<>(0L);
+        QueryWrapper finalWrapper = wrapper;
+        // 跳过逻辑删除，查询真实count数
+        LogicDeleteManager.execWithoutLogicDelete(() -> {
+            dictCount.set(count(finalWrapper));
+        });
+        Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), dictCount.get().intValue());
         sysDict.setId(generateCustomId);
         save(sysDict);
         redisCache.clearDict(typeCode); // 清除redis缓存
     }
 
     @Override
-    public void update(SysDictUpDTO dto) {
+    public void update(SysDictUpdateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
         long count = QueryChain.of(this.mapper)
                 .select()

@@ -1,27 +1,26 @@
 package com.sz.admin.teacher.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
-import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
-import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
-import org.springframework.web.multipart.MultipartFile;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * <p>
  * 教师统计总览表 Service
  * </p>
  *
- * @author sz-admin
- * @since 2024-06-19
+ * @author sz
+ * @since 2024-02-19
  */
 public interface TeacherStatisticsService extends IService<TeacherStatistics> {
 
@@ -35,10 +34,9 @@ public interface TeacherStatisticsService extends IService<TeacherStatistics> {
 
     void remove(SelectIdsDTO dto);
 
-    TeacherStatisticsVO detail(Object id);
+    TeacherStatisticsVO detail(Long id);
 
     void importExcel(MultipartFile file);
 
     void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response);
-
 }

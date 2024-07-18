@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.dto.sysrole;
 
-import com.sz.core.common.valid.annotation.NotZero;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -10,11 +9,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "角色添加")
-public class SysRoleUpDTO {
-
-    @NotZero
-    @Schema(description =  "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long id;
+public class SysRoleCreateDTO {
 
     @Schema(description =  "角色名称")
     private String roleName;

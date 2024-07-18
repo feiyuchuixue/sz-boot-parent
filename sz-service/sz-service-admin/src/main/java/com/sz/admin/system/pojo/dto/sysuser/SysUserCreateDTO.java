@@ -4,16 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * SysUserAddDTO
+ * SysUserCreateDTO
  *
  * @author sz
  * @since 2023/8/23
  */
 @Data
-public class SysUserAddDTO {
-
-    @Schema(description = "用户id（修改时必填）")
-    private Long id;
+@Schema(description = "SysUser添加DTO")
+public class SysUserCreateDTO {
 
     @Schema(description = "账户", requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;

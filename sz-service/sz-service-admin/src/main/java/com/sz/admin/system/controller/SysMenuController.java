@@ -5,7 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
-import com.sz.admin.system.pojo.dto.sysmenu.SysMenuAddDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
@@ -48,16 +48,15 @@ public class SysMenuController {
     @Operation(summary = "添加菜单")
     @SaCheckPermission(value = "sys.menu.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysMenuAddDTO dto) {
+    public ApiResult create(@Valid @RequestBody SysMenuCreateDTO dto) {
         sysMenuService.create(dto);
         return ApiResult.success();
     }
 
-    @SaIgnore
     @Operation(summary = "修改菜单")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysMenuAddDTO dto) {
+    public ApiResult update(@Valid @RequestBody SysMenuCreateDTO dto) {
         sysMenuService.update(dto);
         return ApiResult.success();
     }
@@ -78,7 +77,7 @@ public class SysMenuController {
     }
 
     @Operation(summary = "详情")
-    @SaIgnore
+    @SaCheckPermission(value = "sys.menu.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
     public ApiResult<SysMenu> detail(@PathVariable String id) {
         return ApiResult.success(sysMenuService.detail(id));
@@ -121,7 +120,7 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
     }
 
-    @Operation(summary = "查询用户角色",description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
+    @Operation(summary = "查询用户角色", description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
     @SaIgnore
     @GetMapping("/user/roles")
     public ApiResult<List<String>> findUserRoles() {
@@ -129,4 +128,11 @@ public class SysMenuController {
         return ApiResult.success(new ArrayList<>(roles));
     }
 
+    @Operation(summary = "修改数据权限状态")
+    @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping("/datarole/change/{id}")
+    public ApiResult changeDataRole(@PathVariable String id) {
+        sysMenuService.changeMenuDataScope(id);
+        return ApiResult.success();
+    }
 }

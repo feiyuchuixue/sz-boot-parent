@@ -4,14 +4,17 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.annotation.InsertListener;
 import com.mybatisflex.annotation.SetListener;
 import com.mybatisflex.annotation.UpdateListener;
+import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 数据表change事件处理
- *
+ * <p>
  * 约定：强制数据表类型 `create_id` int,`create_time` datetime,`update_id` int,`update_time` datetime
  *
  * @ClassName MybatisInsertListener
@@ -25,8 +28,14 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
     @Override
     public void onInsert(Object o) {
         setPropertyIfPresent(o, "createTime", LocalDateTime.now());
-        if (!StpUtil.isLogin()) return;
-        setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
+        if (StpUtil.isLogin()) {
+            setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
+            LoginUser loginUser = LoginUtils.getLoginUser();
+            List<Long> deptOptions = loginUser.getDepts();
+            if (deptOptions.isEmpty()) return;
+            setPropertyIfPresent(o, "deptScope", deptOptions);
+        }
+
     }
 
     @Override

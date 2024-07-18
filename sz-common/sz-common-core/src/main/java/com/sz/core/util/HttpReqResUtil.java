@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,21 +69,20 @@ public class HttpReqResUtil {
      * @param param
      * @return
      */
-    @SneakyThrows
     public static Map<String, Object> getUrlParams(String param) {
-        Map<String, Object> map = new HashMap<>(0);
-        if (param != null && !("").equals(param)) {
+        Map<String, Object> map = new HashMap<>();
+        if (param != null && !param.isEmpty()) {
             String[] params = param.split("&");
-            for (int i = 0; i < params.length; i++) {
-                int replaceLen = params[i].replace("=", "").length();
-                int len = params[i].length();
-                String[] p = params[i].split("=");
+            for (String paramPair : params) {
+                String[] p = paramPair.split("=", 2); // Limit the split to 2 parts
                 if (p.length == 2) {
-                    if (len - replaceLen == 1) {
-                        map.put(p[0], new URI(p[1]).getPath());
-                    } else {
-                        map.put(p[0], new URI(p[1] + "=").getPath());
-                    }
+                    String key = URLDecoder.decode(p[0], StandardCharsets.UTF_8);
+                    String value = URLDecoder.decode(p[1], StandardCharsets.UTF_8);
+                    map.put(key, value);
+                } else if (p.length == 1) {
+                    // Handle case where there is a key without a value
+                    String key = URLDecoder.decode(p[0], StandardCharsets.UTF_8);
+                    map.put(key, "");
                 }
             }
         }

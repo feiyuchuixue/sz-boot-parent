@@ -3,18 +3,20 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDeptService;
+import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.valid.annotation.NotZero;
-import com.sz.core.util.JsonUtils;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,13 +46,7 @@ public class SysUserController {
 
     private final SysDeptService sysDeptService;
 
-    @Operation(summary = "用户注册", description = "系统用户注册")
-    @SaIgnore
-    @PostMapping("register")
-    public ApiResult register(@RequestBody RegisterUserDTO dto) {
-        sysUserService.register(dto);
-        return ApiResult.success();
-    }
+    private final SysUserDataRoleService sysUserDataRoleService;
 
     @Operation(summary = "根据账户名获取用户信息", hidden = true)
     @SaIgnore
@@ -60,18 +56,10 @@ public class SysUserController {
         return ApiResult.success(user);
     }
 
-    @Deprecated
-    @Operation(summary = "临时获取menu", description = "临时获取menu")
-    @GetMapping(value = "/menu/list")
-    public ApiResult getMenu() {
-        String jsonFile = JsonUtils.readJsonFile("sz-service\\sz-service-admin\\src\\main\\resources\\tmp/menu.json");
-        return ApiResult.success(jsonFile);
-    }
-
     @Operation(summary = "添加用户")
     @SaCheckPermission(value = "sys.user.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysUserAddDTO dto) {
+    public ApiResult create(@Valid @RequestBody SysUserCreateDTO dto) {
         sysUserService.create(dto);
         return ApiResult.success();
     }
@@ -79,7 +67,7 @@ public class SysUserController {
     @Operation(summary = "修改用户")
     @SaCheckPermission(value = "sys.user.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysUserAddDTO dto) {
+    public ApiResult update(@Valid @RequestBody SysUserUpdateDTO dto) {
         sysUserService.update(dto);
         return ApiResult.success();
     }
@@ -176,5 +164,29 @@ public class SysUserController {
     public ApiResult<List<DeptTreeVO>> tree() {
         return ApiResult.success(sysDeptService.getDepartmentTreeWithAdditionalNodes());
     }
+
+    @Operation(summary = "用户信息-下拉列表")
+    @SaCheckPermission(value = {"sys.user.query_table", "sys.dept.query_table"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("options")
+    public ApiResult<List<UserOptionVO>> getUserOptions() {
+        return ApiResult.success(sysUserService.getUserOptions());
+    }
+
+
+    @Operation(summary = "用户数据角色信息查询-（穿梭框）")
+    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("datarole")
+    public ApiResult findUserDataRole(@NotZero @RequestParam Long userId) {
+        return ApiPageResult.success(sysUserDataRoleService.queryRoleMenu(userId));
+    }
+
+    @Operation(summary = "用户数据角色信息修改 -（穿梭框）")
+    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping("datarole")
+    public ApiResult changeDataUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
+        sysUserDataRoleService.changeRole(dto);
+        return ApiPageResult.success();
+    }
+
 
 }
