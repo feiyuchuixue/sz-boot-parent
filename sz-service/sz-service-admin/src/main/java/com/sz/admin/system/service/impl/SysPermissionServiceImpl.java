@@ -134,17 +134,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                         SYS_USER_DATA_ROLE.USER_ID,
                         SYS_USER_DATA_ROLE.ROLE_ID,
                         SYS_DATA_ROLE.DATA_SCOPE_CD,
-                        SYS_DATA_ROLE_MENU.MENU_ID,
-                        SYS_DATA_ROLE_RELATION.RELATION_ID
+                        SYS_DATA_ROLE_MENU.MENU_ID
                 )
                 .from(SYS_USER_DATA_ROLE)
                 .leftJoin(SYS_DATA_ROLE).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE.ID))
                 .leftJoin(SYS_DATA_ROLE_MENU).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_MENU.ROLE_ID))
-                .leftJoin(SYS_DATA_ROLE_RELATION).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_RELATION.ROLE_ID))
                 .leftJoin(SYS_MENU).on(SYS_MENU.ID.eq(SYS_DATA_ROLE_MENU.MENU_ID)).where(SYS_MENU.USE_DATA_SCOPE.eq("T"))
                 .where(SYS_USER_DATA_ROLE.USER_ID.eq(sysUser.getId()))
-                .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq("1007001"))
-                .where(SYS_DATA_ROLE_RELATION.RELATION_ID.in(depts))
                 .where(SYS_DATA_ROLE.DATA_SCOPE_CD.ne("1006005"))
                 .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds))
                 .where(SYS_DATA_ROLE.DATA_SCOPE_CD.isNotNull())
@@ -187,36 +183,41 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                 .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds))
                 .listAs(SysUserDataMetaVO.class);
 
-        Set<Long> customUserIds = new HashSet<>();
-        Set<Long> customDeptIds = new HashSet<>();
+        Map<String, Set<Long>> deptRuleMap = new HashMap<>(); // 自定义部门rule
+        Map<String, Set<Long>> userRuleMap = new HashMap<>(); // 自定义用户rule
         for (SysUserDataMetaVO metaVO : customMetaList) {
             String menuId = metaVO.getMenuId();
-            if (("1007001").equals(metaVO.getRelationTypeCd())) { // 自定义菜单
-                if (ruleMap.containsKey(menuId)) { // 如果规则中已经存在当前menuId的规则，判断权限大小。以最大范围原则进行取值。
-                    if (("1006004").equals(ruleMap.get(menuId))) { // 仅本人时，替换选用自定义权限,否则不替换 ！！！
-                        ruleMap.put(metaVO.getMenuId(), metaVO.getDataScopeCd());
-                    }
+            Long relationId = metaVO.getRelationId();
+            if (("1007001").equals(metaVO.getRelationTypeCd())) {
+                Set<Long> deptIds;
+                if (deptRuleMap.containsKey(menuId)) {
+                    deptIds = deptRuleMap.get(menuId);
+                    deptIds.add(relationId);
                 } else {
-                    ruleMap.put(metaVO.getMenuId(), metaVO.getDataScopeCd());
+                   deptIds = new HashSet<>();
+                    deptIds.add(relationId);
+                    deptRuleMap.put(menuId, deptIds);
                 }
-                customDeptIds.add(metaVO.getRelationId());
-            } else { // 自定义用户
-                customUserIds.add(metaVO.getRelationId());
-                if (ruleMap.containsKey(menuId)) {
-                    if (("1006004").equals(ruleMap.get(menuId))) { // 仅本人时，替换选用自定义权限,否则不替换 ！！！
-                        ruleMap.put(metaVO.getMenuId(), metaVO.getDataScopeCd());
-                    }
+            }
+
+            if (("1007002").equals(metaVO.getRelationTypeCd())) {
+                Set<Long> userIds;
+                if (userRuleMap.containsKey(menuId)) {
+                    userIds = userRuleMap.get(menuId);
+                    userIds.add(relationId);
                 } else {
-                    ruleMap.put(menuId, metaVO.getDataScopeCd());
+                    userIds = new HashSet<>();
+                    userIds.add(relationId);
+                    userRuleMap.put(menuId, userIds);
                 }
             }
         }
         // 将自定义权限添加到规则映射中
-        if (!customUserIds.isEmpty()) {
-            ruleMap.put("customUser", JsonUtils.toJsonString(customUserIds));
+        if (!userRuleMap.isEmpty()) {
+            ruleMap.put("userRule", JsonUtils.toJsonString(userRuleMap));
         }
-        if (!customDeptIds.isEmpty()) {
-            ruleMap.put("customDept", JsonUtils.toJsonString(customDeptIds));
+        if (!deptRuleMap.isEmpty()) {
+            ruleMap.put("deptRule", JsonUtils.toJsonString(deptRuleMap));
         }
     }
 

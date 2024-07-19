@@ -33,7 +33,7 @@ public class TeacherStatistics implements Serializable {
 
     @Id(keyType = KeyType.Auto)
     @Schema(description = "id")
-    private Integer id;
+    private Long id;
 
     @Schema(description = "统计年限")
     private String year;

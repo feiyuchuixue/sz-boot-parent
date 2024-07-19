@@ -92,7 +92,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public TeacherStatisticsVO detail(Long id) {
         TeacherStatistics teacherStatistics = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
-        return BeanCopyUtils.springCopy(teacherStatistics, TeacherStatisticsVO.class);
+        return BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
     }
 
     @SneakyThrows

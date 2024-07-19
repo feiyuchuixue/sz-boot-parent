@@ -20,8 +20,8 @@ public class LoginUser {
         permissionAndMenuIds = new HashMap<>();
         ruleMap = new HashMap<>();
         depts = new ArrayList<>();
-        customUserIds = new ArrayList<>();
-        customDeptIds = new ArrayList<>();
+        userRuleMap = new HashMap<>();
+        deptRuleMap = new HashMap<>();
     }
 
     @Schema(description = "基础用户信息")
@@ -45,10 +45,11 @@ public class LoginUser {
     @Schema(description = "菜单的查询规则")
     private Map<String, String> ruleMap;
 
-    @Schema(description = "自定义userId")
-    private List<Long> customUserIds;
+    @Schema(description = "自定义userRule")
+    private Map<String, Set<Long>> userRuleMap;
 
-    @Schema(description = "自定义deptId")
-    private List<Long> customDeptIds;
+    @Schema(description = "自定义deptRule")
+    private Map<String, Set<Long>> deptRuleMap;
+
 
 }

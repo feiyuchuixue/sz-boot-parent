@@ -10,9 +10,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author: sz
  * @date: 2022/10/8 18:59
  * @description:
@@ -87,6 +87,17 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static Map<String, Object> jsonToMap(String jsonString) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public static <T> List<T> parseArray(String text, Class<T> clazz) {
         if (StringUtils.isEmpty(text)) {
