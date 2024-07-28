@@ -1,9 +1,11 @@
 package com.sz.generator.core.util;
 
+import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.core.GeneratorConstants;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
+import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
 
@@ -18,17 +20,22 @@ import java.util.Arrays;
 public class GeneratorUtils {
 
     public static GeneratorTable initGeneratorTable(TableResult table) {
+
+        GeneratorProperties prop = SpringApplicationContextUtils.getBean(GeneratorProperties.class);
+        String author = prop.getGlobal().getAuthor();
+        String packages = prop.getGlobal().getPackages();
+
         GeneratorTable generatorTable = new GeneratorTable();
         generatorTable.setTableName(table.getTableName());
         generatorTable.setTableComment(table.getTableComment());
-        generatorTable.setPackageName("com.sz.admin");
+        generatorTable.setPackageName(packages);
         generatorTable.setModuleName(table.getTableName().replace("_", ""));
         generatorTable.setClassName(GeneratorUtils.toUpCase(table.getTableName()));
         generatorTable.setCamelClassName(StringUtils.toCamelCase(table.getTableName()));
         generatorTable.setTplCategory(GeneratorConstants.TPL_CRUD);
         generatorTable.setBusinessName(GeneratorUtils.toCamelCase(table.getTableName()));
         generatorTable.setFunctionName(table.getTableComment());
-        generatorTable.setFunctionAuthor("sz-admin");
+        generatorTable.setFunctionAuthor(author);
         generatorTable.setType("0");
         generatorTable.setPath("/");
         generatorTable.setParentMenuId("0"); // 默认父级菜单id设置为根目录
@@ -61,9 +68,13 @@ public class GeneratorUtils {
         if (!isNotPrimaryKey(tableColumn.getIsPk()) && (("int").equals(tableColumn.getColumnType()) || ("bigint").equals(tableColumn.getColumnType()))) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
         }
-        // 【约定】： 使用create_id 和 update_id change更新时，强制类型Long
-        if (("create_id").equals(columnName) || ("update_id").equals(columnName)) {
+        // 【约定】： 使用create_id, update_id, delete_id change更新时，强制类型Long
+        if (("create_id").equals(columnName) || ("update_id").equals(columnName) || ("delete_id").equals(columnName)) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
+        }
+        // 【约定】： 使用del_flag 作为逻辑删除标识字段
+        if ("del_flag".equals(columnName)){
+            tableColumn.setIsLogicDel(GeneratorConstants.REQUIRE);
         }
 
         if (tableColumn.getHtmlType() == null) {
@@ -179,12 +190,14 @@ public class GeneratorUtils {
                 tableColumn.setHtmlType(GeneratorConstants.HTML_TIME);
                 tableColumn.setJavaTypePackage("java.time.LocalTime");
                 tableColumn.setSearchType("time-picker");
+                tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
             case "DATE":
                 tableColumn.setJavaType(GeneratorConstants.TYPE_LOCALDATE);
                 tableColumn.setHtmlType(GeneratorConstants.HTML_DATE);
                 tableColumn.setJavaTypePackage("java.time.LocalDate");
                 tableColumn.setSearchType("date-picker");
+                tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
             case "TIMESTAMP":
             case "DATETIME":
@@ -192,6 +205,7 @@ public class GeneratorUtils {
                 tableColumn.setHtmlType(GeneratorConstants.HTML_DATETIME);
                 tableColumn.setJavaTypePackage("java.time.LocalDateTime");
                 tableColumn.setSearchType("date-picker");
+                tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
             case "TINYINT":
             case "SMALLINT":

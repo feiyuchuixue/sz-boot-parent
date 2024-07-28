@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInterceptor;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.dialect.DbType;
 import com.mybatisflex.core.dialect.DialectFactory;
+import com.mybatisflex.core.logicdelete.LogicDeleteProcessor;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import com.sz.logger.PrintSQL;
 import jakarta.annotation.Resource;
@@ -34,6 +35,11 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
     @Bean
     public PageInterceptor pageInterceptor() {
         return new PageInterceptor();
+    }
+
+    @Bean
+    public LogicDeleteProcessor logicDeleteProcessor(){
+        return new EntityLogicDeleteListener();
     }
 
     @Override

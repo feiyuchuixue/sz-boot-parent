@@ -54,22 +54,22 @@ public class GeneratorConstants {
     /**
      * 不需要插入的字段
      */
-    public static final String[] COLUMNNAME_NOT_INSERT = {"create_id", "create_time", "del_flag", "update_id", "update_time"};
+    public static final String[] COLUMNNAME_NOT_INSERT = {"create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
 
     /**
      * 页面不需要编辑字段
      */
-    public static final String[] COLUMNNAME_NOT_EDIT = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time"};
+    public static final String[] COLUMNNAME_NOT_EDIT = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
 
     /**
      * 页面不需要显示的列表字段
      */
-    public static final String[] COLUMNNAME_NOT_LIST = {"create_id", "create_time", "del_flag", "update_id", "update_time"};
+    public static final String[] COLUMNNAME_NOT_LIST = {"create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
 
     /**
      * 页面不需要查询字段
      */
-    public static final String[] COLUMNNAME_NOT_QUERY = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark"};
+    public static final String[] COLUMNNAME_NOT_QUERY = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark","delete_id","delete_time"};
 
     /**
      * 根据insert事件自动填充的字段
