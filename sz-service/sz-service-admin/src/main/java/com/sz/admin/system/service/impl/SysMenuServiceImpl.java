@@ -389,11 +389,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public MenuPermissionVO hasExistsPermissions(MenuPermissionDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create();
-        if (Utils.isNotNull(dto.getId())) {
-            wrapper.ne(SysMenu::getId, dto.getId());
-        }
-        Long count = count(wrapper.eq(SysMenu::getPermissions, dto.getPermissions()));
+        QueryWrapper wrapper = QueryWrapper.create()
+                .ne(SysMenu::getId, dto.getId())
+                .eq(SysMenu::getPermissions, dto.getPermissions());
+        Long count = count(wrapper);
         MenuPermissionVO permissionVO = new MenuPermissionVO();
         permissionVO.setPermissionCount(count.intValue());
         return permissionVO;
