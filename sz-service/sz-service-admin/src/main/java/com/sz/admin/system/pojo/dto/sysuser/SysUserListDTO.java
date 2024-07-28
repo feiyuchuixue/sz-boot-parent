@@ -28,13 +28,4 @@ public class SysUserListDTO extends PageQuery {
     @Schema(description = "电话")
     private String phone;
 
-    @Schema(description = "账户状态")
-    private String accountStatusCd;
-
-    @Schema(description = "开始时间")
-    private String startDate;
-
-    @Schema(description = "结束时间")
-    private String endDate;
-
 }

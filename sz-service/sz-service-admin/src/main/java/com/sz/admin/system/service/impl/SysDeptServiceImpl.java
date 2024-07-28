@@ -1,5 +1,6 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.mybatisflex.core.query.QueryMethods.*;
@@ -146,8 +148,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
-        removeById((Serializable) dto.getIds());
+        List<Long> ids = (List<Long>) dto.getIds();
+        CommonResponseEnum.INVALID_ID.assertTrue(ids.isEmpty());
+        // 根据要删除的id，获取所有子集id
+        List<Long> descendants = deptClosureService.descendants(ids);
+        removeByIds(descendants);
     }
 
     @Override
@@ -180,13 +185,17 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         DeptTreeVO unset = new DeptTreeVO();
         unset.setId(-2L);
         unset.setName("未设置部门");
+
         QueryWrapper wrapper = QueryWrapper.create()
                 .from(SYS_USER)
                 .leftJoin(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID))
                 .leftJoin(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID))
-                .where(SYS_USER_DEPT.USER_ID.isNull())
-                .where(SYS_USER.DEL_FLAG.ne("T")); // 左联查sys_user del_flag 为空或为F
-        unset.setUserTotal(count(wrapper));
+                .where(SYS_USER_DEPT.USER_ID.isNull().or(SYS_DEPT.DEL_FLAG.eq("T"))); // 左联查sys_user del_flag 为空或为F
+        AtomicReference<Long> total = new AtomicReference<>(0L);
+        LogicDeleteManager.execWithoutLogicDelete(() ->
+                total.set(count(wrapper))
+        );
+        unset.setUserTotal(total.get());
         return unset;
     }
 

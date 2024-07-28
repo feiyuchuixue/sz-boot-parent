@@ -73,8 +73,7 @@
         sys_dept sd ON sud.dept_id = sd.id
         <where>
             su.del_flag = 'F'
-           /* AND sd.del_flag = 'F'*/
-            AND sdc.descendant_id IS NULL
+            AND ( sdc.descendant_id IS NULL OR sd.del_flag ='T' )
             <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
             <if test="username != null and username != ''">AND su.username = #{username}</if>
             <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
