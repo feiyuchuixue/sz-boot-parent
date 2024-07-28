@@ -27,8 +27,16 @@ spring:
 # 生成工具
 generator:
   path:
+    # 前端项目地址
     web:
+    # 后端项目地址，默认自动检测springboot项目路径，无需配置。
     api: E://code//Gitlab//sz-framework//sz-admin
+  # 模块名，指定代码生成的模块
+  module-name: sz-service
+  service-name: sz-service-admin
+  global:
+    author: sz-admin
+    packages: com.sz.admin
 # 微信生态
 wechat:
   # 小程序

@@ -97,6 +97,9 @@ public class GeneratorDetailVO {
 
         @Schema(description ="生成类型")
         private String generateType;
+
+        @Schema(description = "是否自动填充(1 是)")
+        private String isAutofill;
     }
 
     @Data

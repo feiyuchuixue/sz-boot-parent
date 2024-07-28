@@ -12,11 +12,9 @@ import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
 <#if GeneratorInfo.hasImport == "1">
-import ${dtoPkg}.${dtoImportClassName};
 import org.springframework.web.multipart.MultipartFile;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 </#if>
 </#if>

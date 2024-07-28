@@ -13,7 +13,10 @@ import com.sz.generator.core.builder.sql.MenuSqlCodeBuilder;
 import com.sz.generator.core.util.BuildTemplateUtils;
 import com.sz.generator.core.util.GeneratorUtils;
 import com.sz.generator.mapper.GeneratorTableMapper;
-import com.sz.generator.pojo.dto.*;
+import com.sz.generator.pojo.dto.DbTableQueryDTO;
+import com.sz.generator.pojo.dto.ImportTableDTO;
+import com.sz.generator.pojo.dto.MenuCreateDTO;
+import com.sz.generator.pojo.dto.SelectTablesDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.property.GeneratorProperties;
@@ -84,8 +87,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String pathApi = "";
         String pathWeb = "";
         if (SpringApplicationContextUtils.isLocalEnv()) {
+            String moduleName = generatorProperties.getModuleName();
+            String serviceName = generatorProperties.getServiceName();
             String projectRootPath = System.getProperty("user.dir");
-            pathApi = projectRootPath + File.separator + "sz-service" + File.separator + "sz-service-admin";
+            // pathApi = projectRootPath + File.separator + "sz-service" + File.separator + "sz-service-admin";
+            pathApi = projectRootPath + File.separator + moduleName + File.separator + serviceName;
             pathWeb = generatorProperties.getPath().getWeb();
         }
 
@@ -368,11 +374,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String listPermission = model.get("listPermission").toString(); // eg: sys.user.query_table
         MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep, listPermission);
         menus.add(menuDto);
-        int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
-        String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
-        CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
-
         if (isInsertDB) {
+            int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
+            String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
+            CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
             this.mapper.insertMenu(menuDto);
         }
         if (("0").equals(detailVO.getGeneratorInfo().getBtnPermissionType())) {
@@ -382,10 +387,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String createPermission = model.get("createPermission").toString();
         String updatePermission = model.get("updatePermission").toString();
         String removePermission = model.get("removePermission").toString();
-        int btnCount = this.mapper.selectMenuCount(menuId);
-        MenuCreateDTO bthCreateDto = buildBtn(menuId, "新增", createPermission, btnCount + 1, menuDeep);
-        MenuCreateDTO btnUpdateDto = buildBtn(menuId, "修改", updatePermission, btnCount + 2, menuDeep);
-        MenuCreateDTO btnRemoveDto = buildBtn(menuId, "删除", removePermission, btnCount + 3, menuDeep);
+        int btnCount = this.mapper.selectMenuCount(menuId) * 100;
+        MenuCreateDTO bthCreateDto = buildBtn(menuId, "新增", createPermission, btnCount + 100, menuDeep);
+        MenuCreateDTO btnUpdateDto = buildBtn(menuId, "修改", updatePermission, btnCount + 200, menuDeep);
+        MenuCreateDTO btnRemoveDto = buildBtn(menuId, "删除", removePermission, btnCount + 300, menuDeep);
         menus.add(bthCreateDto);
         menus.add(btnUpdateDto);
         menus.add(btnRemoveDto);
@@ -394,13 +399,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         this.mapper.insertMenu(btnRemoveDto);
         if ("1".equals(detailVO.getGeneratorInfo().getHasImport())) {
             String importPermission = model.get("importPermission").toString();
-            MenuCreateDTO btnImportDto = buildBtn(menuId, "导入", importPermission, btnCount + 4, menuDeep);
+            MenuCreateDTO btnImportDto = buildBtn(menuId, "导入", importPermission, btnCount + 400, menuDeep);
             menus.add(btnImportDto);
             this.mapper.insertMenu(btnImportDto);
         }
         if ("1".equals(detailVO.getGeneratorInfo().getHasExport())) {
             String exportPermission = model.get("exportPermission").toString();
-            MenuCreateDTO btnExportDto = buildBtn(menuId, "导出", exportPermission, btnCount + 5, menuDeep);
+            MenuCreateDTO btnExportDto = buildBtn(menuId, "导出", exportPermission, btnCount + 500, menuDeep);
             menus.add(btnExportDto);
             this.mapper.insertMenu(btnExportDto);
         }
@@ -419,7 +424,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         createDTO.setTitle(detailVO.getGeneratorInfo().getFunctionName()); // eg: 教师统计
         createDTO.setIcon("");
         createDTO.setComponent(component);
-        createDTO.setSort(count + 1);
+        createDTO.setSort(count * 100 + 100);
         createDTO.setDeep(parentDeep);
         createDTO.setMenuTypeCd("1002002"); // 菜单
         createDTO.setPermissions(permission);
@@ -462,7 +467,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private boolean shouldInitializeMenu(GeneratorDetailVO detailVO) {
-        return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType()) || (("server").equals(detailVO.getGeneratorInfo().getGenerateType())));
+        return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType()));
     }
 
 }

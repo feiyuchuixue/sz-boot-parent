@@ -147,4 +147,7 @@ public class GeneratorTable implements Serializable {
      */
     private String generateType;
 
+    // 是否自动填充(1 是)
+    private String isAutofill;
+
 }

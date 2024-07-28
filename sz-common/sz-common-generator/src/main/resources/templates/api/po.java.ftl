@@ -19,7 +19,11 @@ import ${pkg};
 * @since ${datetime}
 */
 @Data
+<#if GeneratorInfo.isAutofill == "1">
 @Table(value = "${tableName}", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+<#else>
+@Table(value = "${tableName}")
+</#if>
 @Schema(description = "${tableComment}")
 public class ${poClassName} implements Serializable {
 
@@ -37,7 +41,7 @@ public class ${poClassName} implements Serializable {
     </#if>
     <#-- 逻辑删除 -->
     <#if field.isLogicDel == "1">
-     @Column(isLogicDelete = true)
+    @Column(isLogicDelete = true)
     </#if>
     @Schema(description ="${field.columnComment}")
     private ${field.javaType} ${field.javaField};
