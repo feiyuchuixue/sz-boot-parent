@@ -116,7 +116,7 @@ public class SysMenuController {
     @Operation(summary = "导出sql")
     @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("sql/export")
-    public ApiResult exportMenuSql(@RequestBody SelectIdsDTO dto, HttpServletResponse response) {
+    public ApiResult exportMenuSql(@RequestBody SelectIdsDTO dto) {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
     }
 

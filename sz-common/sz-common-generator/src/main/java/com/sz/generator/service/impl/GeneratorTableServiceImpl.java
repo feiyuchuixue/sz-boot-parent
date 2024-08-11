@@ -470,4 +470,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType()));
     }
 
+    @Override
+    public Template getDictSqlTemplate() throws IOException {
+        return configurer.getConfiguration().getTemplate(File.separator + "sql" + File.separator + "dictImport.sql.ftl");
+    }
+
 }

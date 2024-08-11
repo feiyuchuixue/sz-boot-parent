@@ -79,4 +79,11 @@ public class SysDictController {
         return ApiResult.success(sysDictService.getDictByType(typeCode));
     }
 
+    @Operation(summary = "导出sql")
+    @SaCheckPermission(value = "sys.dict.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("sql/export")
+    public ApiResult<String> exportDictSql(@RequestBody SelectIdsDTO dto) {
+        return ApiResult.success(sysDictService.exportDictSql(dto));
+    }
+
 }

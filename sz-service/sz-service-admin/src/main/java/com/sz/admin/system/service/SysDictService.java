@@ -8,6 +8,7 @@ import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.core.common.entity.DictCustomVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -35,4 +36,7 @@ public interface SysDictService extends IService<SysDict> {
     Map<String, List<DictCustomVO>> dictAll();
 
     List<DictCustomVO> getDictByType(String typeCode);
+
+    @SneakyThrows
+    String exportDictSql(SelectIdsDTO dto);
 }

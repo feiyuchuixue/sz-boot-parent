@@ -26,14 +26,20 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.StreamUtils;
 import com.sz.core.util.Utils;
+import com.sz.generator.service.GeneratorTableService;
 import com.sz.redis.RedisCache;
+import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYPE;
 
 
 /**
@@ -53,6 +59,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     private final SysDictTypeService sysDictTypeService;
 
     private final RedisCache redisCache;
+
+    private final GeneratorTableService generatorTableService;
 
     private static Long generateCustomId(Long firstPart, int secondPart) {
         secondPart += 1;
@@ -222,4 +230,39 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         }
         return new HashMap<>();
     }
+
+    @SneakyThrows
+    @Override
+    public String exportDictSql(SelectIdsDTO dto) {
+        String generatedContent = "";
+        if (Utils.isNotNull(dto.getIds())) {
+            List<SysDictType> dictTypeList = QueryChain.of(SysDictType.class)
+                    .where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
+
+            QueryWrapper queryWrapper =  QueryWrapper.create()
+                    .in(SysDict::getSysDictTypeId,dto.getIds())
+                    .orderBy(SysDict::getSysDictTypeId).asc()
+                    .orderBy(SysDict::getSort).asc();
+
+            List<SysDict> dictList = list(queryWrapper);
+            if (Utils.isNotNull(dictList) && Utils.isNotNull(dictTypeList)) {
+                Map<String, Object> dataModel = new HashMap<>();
+                dataModel.put("dictTypeList", dictTypeList);
+                dataModel.put("dictList", dictList);
+                Template template = generatorTableService.getDictSqlTemplate();
+                StringWriter writer = new StringWriter();
+                try {
+                    template.process(dataModel, writer);
+                    generatedContent = writer.toString();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                finally {
+                    writer.close();
+                }
+            }
+        }
+        return generatedContent;
+    }
+
 }

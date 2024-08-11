@@ -79,4 +79,6 @@ public interface GeneratorTableService extends IService<GeneratorTable> {
 
     @Transactional
     void remove(SelectTablesDTO dto);
+
+    Template getDictSqlTemplate() throws IOException;
 }
