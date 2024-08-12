@@ -5,6 +5,7 @@ import type { ${interfaceNamespace} } from '@${interfacePkg}/${interfaceClassNam
 <#if GeneratorInfo.hasImport == "1">
 import type { UploadRawFile } from "element-plus/es/components/upload/src/upload";
 </#if>
+
 /**
 * 查询列表
 * @param params
@@ -60,8 +61,8 @@ export const ${funImport} = (params : UploadRawFile) => {
   return http.upload(ADMIN_MODULE + `/${router}/import`, params)
 }
 </#if>
-<#if GeneratorInfo.hasExport == "1">
 
+<#if GeneratorInfo.hasExport == "1">
 /**
 * 导出excel
 * @param params
@@ -69,5 +70,7 @@ export const ${funImport} = (params : UploadRawFile) => {
 */
 export const ${funExport}  = (params: ${interfaceNamespace}.Query) => {
   return http.download(ADMIN_MODULE + `/${router}/export`, params)
+<#compress>
 }
+</#compress>
 </#if>

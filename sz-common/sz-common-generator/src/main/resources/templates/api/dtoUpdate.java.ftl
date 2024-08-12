@@ -1,6 +1,5 @@
 package ${dtoPkg};
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 <#list importPackages as pkg>
@@ -37,5 +36,4 @@ public class ${dtoUpdateClassName} {
 
   </#if>
 </#list>
-
 }

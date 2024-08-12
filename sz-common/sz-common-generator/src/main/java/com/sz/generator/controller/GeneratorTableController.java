@@ -11,6 +11,7 @@ import com.sz.generator.pojo.dto.SelectTablesDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.vo.GenCheckedInfoVO;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import com.sz.generator.pojo.vo.GeneratorPreviewVO;
 import com.sz.generator.service.GeneratorTableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -108,7 +109,7 @@ public class GeneratorTableController {
     @SaCheckPermission(value = "generator.preview", orRole = GlobalConstant.SUPER_ROLE)
     @Operation(summary = "预览")
     @GetMapping("preview/{tableName}")
-    public ApiResult preview(@PathVariable String tableName) throws IOException {
+    public ApiResult<List<GeneratorPreviewVO>> preview(@PathVariable String tableName) throws IOException {
         return ApiResult.success(generatorTableService.preview(tableName));
     }
 

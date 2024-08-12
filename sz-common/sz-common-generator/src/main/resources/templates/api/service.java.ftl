@@ -1,5 +1,6 @@
 package ${servicePkg};
 
+<#compress>
 import com.mybatisflex.core.service.IService;
 import ${poPkg}.${poClassName};
 <#if GeneratorInfo.generateType != "service">
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletResponse;
 </#if>
 </#if>
+</#compress>
+
 
 /**
  * <p>

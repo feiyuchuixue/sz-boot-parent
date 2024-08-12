@@ -1,6 +1,5 @@
 package ${dtoPkg};
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import com.sz.core.common.entity.PageQuery;
@@ -47,5 +46,4 @@ public class ${dtoListClassName} extends PageQuery {
 
 </#if>
 </#list>
-
 }

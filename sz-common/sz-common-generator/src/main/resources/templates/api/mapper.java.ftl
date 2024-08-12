@@ -3,7 +3,6 @@ package ${mapperPkg};
 import com.mybatisflex.core.BaseMapper;
 import ${poPkg}.${poClassName};
 
-
 /**
 * <p>
 * ${tableComment} Mapper 接口

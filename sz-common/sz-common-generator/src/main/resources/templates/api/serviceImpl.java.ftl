@@ -1,5 +1,6 @@
 package ${serviceImplPkg};
 
+<#compress>
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ import lombok.SneakyThrows;
 
 import ${voPkg}.${voClassName};
 </#if>
+</#compress>
+
 
 /**
  * <p>

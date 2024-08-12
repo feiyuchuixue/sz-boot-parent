@@ -1,5 +1,6 @@
 package ${poPkg};
 
+<#compress>
 import com.mybatisflex.annotation.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,6 +11,9 @@ import com.sz.mysql.EntityChangeListener;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
+</#compress>
+
+
 /**
 * <p>
 * ${tableComment}
