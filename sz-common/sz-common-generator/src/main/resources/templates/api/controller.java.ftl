@@ -112,7 +112,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${exportPermission}", orRole = GlobalConstant.SUPER_ROLE)
   </#if>
     @PostMapping("/export")
-    public void exportExcel(${dtoListClassName} dto, HttpServletResponse response) {
+    public void exportExcel(@RequestBody ${dtoListClassName} dto, HttpServletResponse response) {
         ${serviceName}.exportExcel(dto, response);
     }
 </#if>

@@ -89,7 +89,7 @@ public class TeacherStatisticsController  {
     @Operation(summary = "导出")
     @SaCheckPermission(value = "teacher.statistics.export", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/export")
-    public void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response) {
+    public void exportExcel(@RequestBody TeacherStatisticsListDTO dto, HttpServletResponse response) {
         teacherStatisticsService.exportExcel(dto, response);
     }
 
