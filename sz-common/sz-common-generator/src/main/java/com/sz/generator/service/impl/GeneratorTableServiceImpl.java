@@ -362,11 +362,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             return menus;
         }
         String menuId = Utils.generateUUIDs(); // 按钮父级id,菜单id
-        int menuDeep = 0;
+        int menuDeep;
         String parentMenuId = detailVO.getGeneratorInfo().getParentMenuId();
         SysMenuResult sysMenuResult = this.mapper.selectSysMenuByPid(parentMenuId);
         if (sysMenuResult != null) {
             menuDeep = sysMenuResult.getDeep() + 1;
+        } else {
+            menuDeep = 1;
         }
         String routerName = model.get("indexDefineOptionsName").toString(); // eg: TeacherStatisticsView
         String path = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName(); // eg: /test/teacherStatistics
