@@ -177,6 +177,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         List<GeneratorTableColumn> columns = BeanCopyUtils.copyList(detailColumns, GeneratorTableColumn.class);
         for (int i = 0; i < columns.size(); i++) {
             columns.get(i).setSort(i + 1);
+            columns.get(i).setSearchType(columns.get(i).getHtmlType());
         }
         // 更新column设置
         generatorTableColumnService.updateBatchTableColumns(columns);
