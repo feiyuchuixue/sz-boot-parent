@@ -11,6 +11,9 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.sz.excel.convert.ExcelDictConvert;
 import com.sz.excel.annotation.DictFormat;
 </#if>
+<#if hasDateFormat == true>
+import org.springframework.format.annotation.DateTimeFormat;
+</#if>
 /**
  * <p>
  * ${poClassName}导入DTO

@@ -6,7 +6,9 @@ import com.sz.core.common.entity.PageQuery;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
-
+<#if hasDateFormat == true>
+import org.springframework.format.annotation.DateTimeFormat;
+</#if>
 /**
  * <p>
  * ${poClassName}查询DTO

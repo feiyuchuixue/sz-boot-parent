@@ -13,6 +13,9 @@ import com.sz.excel.annotation.DictFormat;
 import com.sz.excel.convert.ExcelDictConvert;
   </#if>
 </#if>
+<#if hasDateFormat == true>
+import org.springframework.format.annotation.DateTimeFormat;
+</#if>
 
 /**
  * <p>

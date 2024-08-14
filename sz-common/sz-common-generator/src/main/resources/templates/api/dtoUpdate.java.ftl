@@ -5,6 +5,9 @@ import lombok.Data;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
+<#if hasDateFormat == true>
+import org.springframework.format.annotation.DateTimeFormat;
+</#if>
 
 /**
  * <p>

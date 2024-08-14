@@ -10,6 +10,7 @@ import ${mapperPkg}.${mapperClassName};
 <#if GeneratorInfo.generateType != "service">
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.query.QueryChain;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.BeanCopyUtils;
@@ -55,15 +56,16 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     @Override
     public void create(${dtoCreateClassName} dto){
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
-
+<#if hasUniqueValidField == true>
+        long count;
 <#list columns as field>
     <#if field.isUniqueValid == "1" && field.isInsert == "1" >
         // 唯一性校验
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
-        CommonResponseEnum.EXISTS.message("${field.javaField}已存在").assertTrue(count(wrapper) > 0);
+        count = QueryChain.of(${poClassName}.class).eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}()).count();
+        CommonResponseEnum.EXISTS.message("${field.javaField}已存在").assertTrue(count > 0);
     </#if>
 </#list>
+</#if>
         save(${camelClassName});
     }
 
@@ -81,17 +83,16 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     </#if>
 </#list>
 
+<#if hasUniqueValidField == true>
+        // 唯一性校验
+        long count;
 <#list columns as field>
     <#if field.isUniqueValid == "1" && field.isEdit == "1">
-        // 唯一性校验
-        wrapper = QueryWrapper.create()
-        <#list pkColumns as pkField>
-                .ne(${poClassName}::get${pkField.upCamelField}, dto.get${pkField.upCamelField}())
-        </#list>
-                .eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
-        CommonResponseEnum.EXISTS.message("${field.javaField}已存在").assertTrue(count(wrapper) > 0);
+        count = QueryChain.of(${poClassName}.class).eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}())<#list pkColumns as pkField>.ne(${poClassName}::get${pkField.upCamelField}, dto.get${pkField.upCamelField}())</#list>.count();
+        CommonResponseEnum.EXISTS.message("${field.javaField}已存在").assertTrue(count > 0);
     </#if>
 </#list>
+</#if>
         saveOrUpdate(${camelClassName});
     }
 
