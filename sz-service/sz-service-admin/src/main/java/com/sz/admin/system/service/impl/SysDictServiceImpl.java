@@ -239,28 +239,22 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
             List<SysDictType> dictTypeList = QueryChain.of(SysDictType.class)
                     .where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
 
-            QueryWrapper queryWrapper =  QueryWrapper.create()
-                    .in(SysDict::getSysDictTypeId,dto.getIds())
+            QueryWrapper queryWrapper = QueryWrapper.create()
+                    .in(SysDict::getSysDictTypeId, dto.getIds())
                     .orderBy(SysDict::getSysDictTypeId).asc()
                     .orderBy(SysDict::getSort).asc();
-
             List<SysDict> dictList = list(queryWrapper);
-            if (Utils.isNotNull(dictList) && Utils.isNotNull(dictTypeList)) {
-                Map<String, Object> dataModel = new HashMap<>();
-                dataModel.put("dictTypeList", dictTypeList);
-                dataModel.put("dictList", dictList);
-                Template template = generatorTableService.getDictSqlTemplate();
-                StringWriter writer = new StringWriter();
-                try {
-                    template.process(dataModel, writer);
-                    generatedContent = writer.toString();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                finally {
-                    writer.close();
-                }
+            Map<String, Object> dataModel = new HashMap<>();
+            dataModel.put("dictTypeList", dictTypeList);
+            dataModel.put("dictList", dictList);
+            Template template = generatorTableService.getDictSqlTemplate();
+            try (StringWriter writer = new StringWriter()) {
+                template.process(dataModel, writer);
+                generatedContent = writer.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         }
         return generatedContent;
     }
