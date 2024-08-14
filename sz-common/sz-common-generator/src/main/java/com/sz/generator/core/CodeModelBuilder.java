@@ -48,6 +48,7 @@ public class CodeModelBuilder {
     public CodeModelBuilder builderImportPackage(GeneratorDetailVO detailVO) {
         List<GeneratorDetailVO.Column> columns = detailVO.getColumns();
         Set<String> importPackages = new TreeSet<>();
+        boolean hasUniqueValidField = false;
         boolean hasDateFormat = false;
         for (GeneratorDetailVO.Column column : columns) {
             String javaTypePackage = column.getJavaTypePackage();
@@ -57,11 +58,16 @@ public class CodeModelBuilder {
             if (("LocalDateTime").equals(column.getJavaType())) {
                 hasDateFormat = true;
             }
+            if (("1").equals(column.getIsUniqueValid())) {
+                hasUniqueValidField = true;
+            }
         }
         if (hasDateFormat) {
             importPackages.add("org.springframework.format.annotation.DateTimeFormat");
         }
         model.put("importPackages", importPackages);
+        model.put("hasUniqueValidField",hasUniqueValidField);
+        model.put("hasDateFormat",hasDateFormat);
         return this;
     }
 
@@ -145,7 +151,7 @@ public class CodeModelBuilder {
         model.put("interfaceClassName", detailVO.getGeneratorInfo().getBusinessName());
         model.put("interfaceNamespace", "I" + detailVO.getBaseInfo().getClassName());
 
-        String modulesPkg =SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
+        String modulesPkg = SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
         model.put("modulesPkg", modulesPkg);
         model.put("modulesClassName", detailVO.getGeneratorInfo().getBusinessName());
 
