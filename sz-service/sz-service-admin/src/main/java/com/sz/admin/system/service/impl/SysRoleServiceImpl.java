@@ -1,6 +1,7 @@
 package com.sz.admin.system.service.impl;
 
 
+import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMapper;
@@ -19,7 +20,6 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 
@@ -39,36 +39,37 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public void create(SysRoleCreateDTO dto) {
-        SysRole sysRole = BeanCopyUtils.springCopy(dto, SysRole.class);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysRole::getRoleName, dto.getRoleName());
-        CommonResponseEnum.EXISTS.message("role已存在").assertTrue(count(wrapper) > 0);
+        SysRole sysRole = BeanCopyUtils.copy(dto, SysRole.class);
+        long count;
+        count = QueryChain.of(SysRole.class).eq(SysRole::getRoleName, dto.getRoleName()).count();
+        CommonResponseEnum.EXISTS.message("roleName已存在").assertTrue(count > 0);
+        count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions()).count();
+        CommonResponseEnum.EXISTS.message("permissions已存在").assertTrue(count > 0);
         save(sysRole);
     }
 
     @Override
     public void update(SysRoleUpdateDTO dto) {
-        SysRole sysRole = BeanCopyUtils.springCopy(dto, SysRole.class);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysRole::getRoleName, dto.getRoleName())
-                .ne(SysRole::getId, dto.getId());
-        CommonResponseEnum.EXISTS.message("role已存在").assertTrue(count(wrapper) > 0);
+        SysRole sysRole = BeanCopyUtils.copy(dto, SysRole.class);
+        long count;
+        count = QueryChain.of(SysRole.class).eq(SysRole::getRoleName, dto.getRoleName())
+                .ne(SysRole::getId, dto.getId()).count();
+        CommonResponseEnum.EXISTS.message("roleName已存在").assertTrue(count > 0);
+        count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions())
+                .ne(SysRole::getId, dto.getId()).count();
+        CommonResponseEnum.EXISTS.message("permissions已存在").assertTrue(count > 0);
         updateById(sysRole);
     }
 
-    @Transactional
     @Override
     public void remove(SelectIdsDTO dto) {
         removeById((Serializable) dto.getIds());
-        QueryWrapper wrapper = QueryWrapper.create()
-                .in(SysRoleMenu::getRoleId, dto.getIds());
-        sysRoleMenuMapper.deleteByQuery(wrapper);
     }
 
     @Override
-    public void removeByMenuId(SelectIdsDTO dto){
+    public void removeByMenuId(SelectIdsDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create()
-                .in(SysRoleMenu::getMenuId,dto.getIds());
+                .in(SysRoleMenu::getMenuId, dto.getIds());
         sysRoleMenuMapper.deleteByQuery(wrapper);
     }
 

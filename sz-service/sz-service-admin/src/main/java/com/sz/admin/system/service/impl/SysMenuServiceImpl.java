@@ -160,7 +160,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             this.mapper.syncTreeDeep();
             this.mapper.syncTreeHasChildren();
             // 同时删除角色
-            sysRoleService.removeByMenuId(new SelectIdsDTO(list));
+            // sysRoleService.removeByMenuId(new SelectIdsDTO(list));
             // 发布Permission 变更通知
             UserPermissionChangeMessage message = new UserPermissionChangeMessage(null, true);
             redisService.sendPermissionChangeMsg(message);
