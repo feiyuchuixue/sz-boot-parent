@@ -66,8 +66,8 @@ public class CodeModelBuilder {
             importPackages.add("org.springframework.format.annotation.DateTimeFormat");
         }
         model.put("importPackages", importPackages);
-        model.put("hasUniqueValidField",hasUniqueValidField);
-        model.put("hasDateFormat",hasDateFormat);
+        model.put("hasUniqueValidField", hasUniqueValidField);
+        model.put("hasDateFormat", hasDateFormat);
         return this;
     }
 
