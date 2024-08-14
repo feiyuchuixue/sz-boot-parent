@@ -5,6 +5,7 @@ import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 /**
 * <p>
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @Schema(description = "部门祖籍关系表")
 public class SysDeptClosure implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

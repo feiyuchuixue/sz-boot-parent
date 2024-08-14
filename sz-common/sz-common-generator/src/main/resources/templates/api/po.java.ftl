@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.io.Serial;
 import com.sz.mysql.EntityChangeListener;
 <#list importPackages as pkg>
 import ${pkg};
@@ -31,6 +32,7 @@ import ${pkg};
 @Schema(description = "${tableComment}")
 public class ${poClassName} implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
 <#-- ----------  BEGIN 字段循环遍历  ---------->

@@ -5,6 +5,7 @@ import com.mybatisflex.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import com.sz.mysql.EntityChangeListener;
 /**
@@ -20,6 +21,7 @@ import com.sz.mysql.EntityChangeListener;
 @Schema(description = "系统数据角色-菜单表")
 public class SysDataRoleMenu implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)

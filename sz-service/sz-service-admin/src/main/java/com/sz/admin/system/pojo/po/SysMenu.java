@@ -8,6 +8,7 @@ import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 @Schema(description = "系统菜单表")
 public class SysMenu implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

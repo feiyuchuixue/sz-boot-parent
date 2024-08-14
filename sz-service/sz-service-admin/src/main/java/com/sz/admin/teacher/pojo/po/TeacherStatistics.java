@@ -6,6 +6,7 @@ import com.mybatisflex.core.handler.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.sz.mysql.EntityChangeListener;
@@ -29,6 +30,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "教师统计总览表")
 public class TeacherStatistics implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)

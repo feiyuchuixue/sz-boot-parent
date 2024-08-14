@@ -22,4 +22,7 @@ public class SysRoleUpdateDTO {
     @Schema(description =  "备注")
     private String remark;
 
+    @Schema(description = "标识")
+    private String permissions;
+
 }
