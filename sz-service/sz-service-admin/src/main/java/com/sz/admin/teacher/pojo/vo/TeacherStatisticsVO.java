@@ -1,6 +1,8 @@
 package com.sz.admin.teacher.pojo.vo;
 
 
+import com.sz.excel.annotation.DictFormat;
+import com.sz.excel.convert.ExcelDictConvert;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -41,9 +43,10 @@ public class TeacherStatisticsVO {
     @Schema(description =  "教师id")
     private String teacherId;
 
-    @ExcelProperty(value = "讲师区分类型")
+    @ExcelProperty(value = "讲师区分类型" ,converter = ExcelDictConvert.class)
     @Schema(description =  "讲师区分类型")
-    private Integer teacherCommonType;
+    @DictFormat(dictType = "account_status")
+    private String teacherCommonType;
 
     @ExcelProperty(value = "授课总数")
     @Schema(description =  "授课总数")
@@ -57,8 +60,9 @@ public class TeacherStatisticsVO {
     @Schema(description =  "课时总数")
     private BigDecimal totalHours;
 
-    @ExcelProperty(value = "核对状态")
+    @ExcelProperty(value = "核对状态" ,converter = ExcelDictConvert.class)
     @Schema(description =  "核对状态")
+    @DictFormat(dictType = "account_status")
     private Integer checkStatus;
 
     @ExcelProperty(value = "核对时间")
@@ -74,6 +78,11 @@ public class TeacherStatisticsVO {
     @ExcelProperty(value = "备注")
     @Schema(description =  "备注")
     private String remark;
+
+    @ExcelProperty(value = "创建人" ,converter = ExcelDictConvert.class)
+    @Schema(description =  "创建人")
+    @DictFormat(isUser = true)
+    private String createId;
 
 
 }

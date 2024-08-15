@@ -6,6 +6,7 @@ import com.alibaba.excel.util.ClassUtils;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
+import com.sz.core.common.entity.UserOptionVO;
 import com.sz.core.common.service.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
@@ -18,10 +19,13 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * excel下拉项
@@ -49,6 +53,8 @@ public class ExcelDownHandler implements SheetWriteHandler {
      */
     private int currentOptionsColumnIndex;
 
+    public static Map<Long,UserOptionVO> userOptionVOMap = new ConcurrentHashMap<>();
+
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
         Sheet sheet = writeSheetHolder.getSheet();
@@ -74,7 +80,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
                         try {
                             ExcelDynamicSelect excelDynamicSelect = classes[0].newInstance();
                             List<String> dynamicSelectSource = excelDynamicSelect.getSource();
-                            if (dynamicSelectSource != null && dynamicSelectSource.size() > 0) {
+                            if (dynamicSelectSource != null && !dynamicSelectSource.isEmpty()) {
                                 options = dynamicSelectSource;
                             }
                         } catch (InstantiationException | IllegalAccessException e) {
@@ -83,13 +89,15 @@ public class ExcelDownHandler implements SheetWriteHandler {
                     } else if (StringUtils.isNotBlank(dictType)) { // 根据dictType渲染下拉
                         DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
                         Map<String, String> allDictByDictType = dictService.getAllDict(dictType);
-                        if (allDictByDictType.size() > 0) {
+                        if (allDictByDictType != null && !allDictByDictType.isEmpty()) {
                             options = new ArrayList<>(allDictByDictType.keySet());
                         }
                     } else if (StringUtils.isNotBlank(converterExp)) { // 根据converterExp渲染下拉
                         options = ExcelUtils.listByExp(converterExp, separator);
+                    } else if (dictFormat.isUser()) {
+                        options = userFormatHandlerAdapter();
                     }
-                    if (options.size() > 0) {
+                    if (options != null && !options.isEmpty()) {
                         dropDownWithSheet(helper, workbook, sheet, index, options);
                     }
                 }
@@ -193,6 +201,21 @@ public class ExcelDownHandler implements SheetWriteHandler {
         String columnNext = StringUtils.subWithLength(EXCEL_COLUMN_NAME, thisCircleColumnIndex, 1);
         // 将二者拼接即为最终的栏位名
         return columnPrefix + columnNext;
+    }
+
+    private List<String> userFormatHandlerAdapter() {
+        try {
+            Class<?> classzz = Class.forName("com.sz.admin.system.service.SysUserService");
+            Object bean = SpringApplicationContextUtils.getBean(classzz);
+            Method method = classzz.getMethod("getUserOptions");
+            Object invoke = method.invoke(bean);
+            List<UserOptionVO> optionVOS = (List<UserOptionVO>) invoke;
+            userOptionVOMap = optionVOS.stream().collect(Collectors.toMap(UserOptionVO::getId, o -> o));
+            return optionVOS.stream().map(UserOptionVO::getNickname).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("不能格式化数据:", e.getMessage());
+        }
+        return null;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.sz.admin.system.pojo.vo.sysuser;
+package com.sz.core.common.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

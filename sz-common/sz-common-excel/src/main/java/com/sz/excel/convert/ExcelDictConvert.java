@@ -6,6 +6,7 @@ import com.alibaba.excel.metadata.GlobalConfiguration;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
+import com.sz.core.common.entity.UserOptionVO;
 import com.sz.core.common.service.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
@@ -18,6 +19,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.sz.excel.core.ExcelDownHandler.userOptionVOMap;
 
 /**
  * 字典格式化转换处理
@@ -87,6 +90,9 @@ public class ExcelDictConvert implements Converter<Object> {
 
         if (StringUtils.isBlank(dictType) && StringUtils.isNoneBlank(anno.readConverterExp())) { // 使用readConverterExp来构建字典模板
             label = ExcelUtils.convertByExp(dictValue, anno.readConverterExp(), anno.separator());
+        } else if (anno.isUser()) {
+            UserOptionVO userOptionVO = userOptionVOMap.get(Long.parseLong(dictValue));
+            label = userOptionVO.getNickname();
         } else { // 使用dictType 获取字典类型
             DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
             String dictLabel = dictService.getDictLabel(dictType, dictValue, anno.separator());

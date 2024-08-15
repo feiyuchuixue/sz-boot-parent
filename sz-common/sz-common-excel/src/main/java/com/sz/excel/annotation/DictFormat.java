@@ -34,11 +34,17 @@ public @interface DictFormat {
      *
      * @return
      */
-    boolean isSelected() default true;
+    boolean isSelected() default false;
 
     /**
      * 动态下拉内容( 适用于导出模版的场景)
      */
     Class<? extends ExcelDynamicSelect>[] sourceClass() default {};
+
+    /**
+     * 是否是用户id字段
+     * @return 将id自动转换为用户名称
+     */
+    boolean isUser() default false;
 
 }
