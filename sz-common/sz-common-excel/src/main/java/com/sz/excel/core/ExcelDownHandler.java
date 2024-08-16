@@ -8,6 +8,7 @@ import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.sz.core.common.entity.UserOptionVO;
 import com.sz.core.common.service.DictService;
+import com.sz.core.common.service.UserOptionService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.excel.annotation.DictFormat;
@@ -19,7 +20,6 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +52,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
      * 当前单选进度
      */
     private int currentOptionsColumnIndex;
-
-    public static Map<Long,UserOptionVO> userOptionVOMap = new ConcurrentHashMap<>();
 
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -204,18 +202,9 @@ public class ExcelDownHandler implements SheetWriteHandler {
     }
 
     private List<String> userFormatHandlerAdapter() {
-        try {
-            Class<?> classzz = Class.forName("com.sz.admin.system.service.SysUserService");
-            Object bean = SpringApplicationContextUtils.getBean(classzz);
-            Method method = classzz.getMethod("getUserOptions");
-            Object invoke = method.invoke(bean);
-            List<UserOptionVO> optionVOS = (List<UserOptionVO>) invoke;
-            userOptionVOMap = optionVOS.stream().collect(Collectors.toMap(UserOptionVO::getId, o -> o));
-            return optionVOS.stream().map(UserOptionVO::getNickname).collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("不能格式化数据:", e.getMessage());
-        }
-        return null;
+        UserOptionService optionService = SpringApplicationContextUtils.getBean(UserOptionService.class);
+        List<UserOptionVO> userOptions = optionService.getUserOptions();
+        return userOptions.stream().map(UserOptionVO::getNickname).collect(Collectors.toList());
     }
 
 }
