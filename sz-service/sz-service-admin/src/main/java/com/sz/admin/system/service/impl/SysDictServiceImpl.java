@@ -14,7 +14,6 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
-import com.sz.admin.system.pojo.vo.sysdict.DictVO;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.entity.DictCustomVO;
@@ -27,6 +26,7 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.StreamUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
+import com.sz.platform.factory.DictLoaderFactory;
 import com.sz.redis.RedisCache;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +61,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     private final RedisCache redisCache;
 
     private final GeneratorTableService generatorTableService;
+
+    private final DictLoaderFactory dictLoaderFactory;
 
     private static Long generateCustomId(Long firstPart, int secondPart) {
         secondPart += 1;
@@ -145,43 +147,28 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public Map<String, List<DictCustomVO>> dictList(String typeCode) {
-        Map<String, List<DictCustomVO>> dictMap = new HashMap<>();
-        if (!Utils.isNotNull(typeCode)) {
-            return dictMap;
+        Map<String, List<DictCustomVO>> result = new HashMap<>();
+        Map<String, List<DictCustomVO>> allDict = dictLoaderFactory.loadAllDict();
+        if (allDict.containsKey(typeCode)) {
+            return dictLoaderFactory.loadAllDict();
         }
-        if (redisCache.hasKey() && redisCache.hasHashKey(typeCode)) {
-            List<DictCustomVO> dictVOs = redisCache.getDictByType(typeCode);
-            dictMap = dictVOs.stream()
-                    .collect(Collectors.groupingBy(
-                            DictCustomVO::getSysDictTypeCode,
-                            LinkedHashMap::new,
-                            Collectors.toList()
-                    ));
-        } else {
-            List<DictVO> dictVOS = this.mapper.listDict(typeCode);
-            List<DictCustomVO> dictCustomVOS = BeanCopyUtils.copyList(dictVOS, DictCustomVO.class);
-            if (dictVOS.size() > 0) {
-                redisCache.setDict(typeCode, dictCustomVOS);
-            }
-            dictMap = dictCustomVOS.stream()
+        // 如果查询不到，从数据库中获取，并赋值
+        List<DictCustomVO> dictCustomVOS = this.mapper.listDict(typeCode);
+        if (!dictCustomVOS.isEmpty()) {
+            redisCache.setDict(typeCode, dictCustomVOS);
+            result = dictCustomVOS.stream()
                     .collect(Collectors.groupingBy(
                             DictCustomVO::getSysDictTypeCode,
                             LinkedHashMap::new,
                             Collectors.toList()
                     ));
         }
-        return dictMap;
+        return result;
     }
 
     @Override
     public Map<String, List<DictCustomVO>> dictAll() {
-        List<DictVO> dictVOS = this.mapper.listDict("");
-        Map<String, List<DictCustomVO>> dictMap = dictVOS.stream()
-                .collect(Collectors.groupingBy(DictVO::getSysDictTypeCode,
-                        LinkedHashMap::new, // 使用 LinkedHashMap 作为分组的容器,有序解决乱序问题
-                        Collectors.mapping(dictVO -> BeanCopyUtils.copy(dictVO, DictCustomVO.class), Collectors.toList())));
-        redisCache.putAllDict(dictMap);
-        return dictMap;
+        return dictLoaderFactory.loadAllDict();
     }
 
     @Override
@@ -190,8 +177,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         if (redisCache.hasHashKey(typeCode)) {
             dictVOS = redisCache.getDictByType(typeCode);
         } else {
-            List<DictVO> voList = this.mapper.listDict(typeCode);
-            dictVOS = BeanCopyUtils.copyList(voList, DictCustomVO.class);
+            dictVOS = this.mapper.listDict(typeCode);
             if (Utils.isNotNull(dictVOS)) {
                 redisCache.setDict(typeCode, dictVOS);
             }

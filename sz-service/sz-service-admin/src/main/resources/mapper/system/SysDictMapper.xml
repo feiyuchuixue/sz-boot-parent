@@ -29,13 +29,13 @@
         sd.alias
     </sql>
 
-    <select id="listDict" resultType="com.sz.admin.system.pojo.vo.sysdict.DictVO">
+    <select id="listDict" resultType="com.sz.core.common.entity.DictCustomVO">
         SELECT
         <include refid="Custom_Column_Join_List"></include>
         FROM sys_dict_type AS sdt
         LEFT JOIN sys_dict AS sd
         ON sdt.id = sd.sys_dict_type_id
-        where 1=1
+        where sdt.del_flag = 'F' and sd.del_flag = 'F'
         <if test="typeCode != null and typeCode != ''">
             and sdt.type_code = #{typeCode}
         </if>
