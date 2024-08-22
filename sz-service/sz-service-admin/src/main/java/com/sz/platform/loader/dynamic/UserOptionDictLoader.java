@@ -1,8 +1,10 @@
-package com.sz.platform.loader;
+package com.sz.platform.loader.dynamic;
 
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysUserService;
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
+import com.sz.platform.enums.DynamicDictEnum;
+import com.sz.platform.loader.DictLoader;
 import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,45 +23,50 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
-public class DynamicUserOptionDictLoader implements DictLoader {
+public class UserOptionDictLoader implements DictLoader {
 
     private final RedisCache redisCache;
 
     private final SysUserService sysUserService;
 
     @Override
-    public String getDynamicTypeCode() {
-        return "user_options";
+    public DynamicDictEnum getDynamicTypeCode() {
+        return DynamicDictEnum.DYNAMIC_USER_OPTIONS;
     }
 
     @Override
-    public Map<String, List<DictCustomVO>> loadDict() {
-        if (redisCache.hasHashKey(getPrefixedDynamicTypeCode())) {
-            return Map.of(getPrefixedDynamicTypeCode(), redisCache.getDictByType(getPrefixedDynamicTypeCode()));
+    public Map<String, List<DictVO>> loadDict() {
+        String key = getDynamicTypeCode().getTypeCode();
+        String name = getDynamicTypeCode().getName();
+        if (redisCache.hasHashKey(key)) {
+            return Map.of(key, redisCache.getDictByType(key));
         }
 
-        DictCustomVO dictCustomVO;
-        List<DictCustomVO> list = new ArrayList<>();
+        DictVO dictVO;
+        List<DictVO> list = new ArrayList<>();
         List<UserOptionVO> userOptions = sysUserService.getUserOptions();
         for (int i = 0; i < userOptions.size(); i++) {
             UserOptionVO option = userOptions.get(i);
-            dictCustomVO = DictCustomVO.builder()
+            dictVO = DictVO.builder()
                     .id(option.getId().toString())
                     .codeName(option.getNickname())
                     .alias(option.getUsername())
                     .sort(i + 1)
-                    .sysDictTypeCode(getPrefixedDynamicTypeCode())
-                    .sysDictTypeName("用户信息")
+                    .sysDictTypeCode(key)
+                    .sysDictTypeName(name)
+                    .callbackShowStyle("primary")
                     .isDynamic(true)
+                    .isLock("F")
+                    .isShow("T")
                     .build();
-            list.add(dictCustomVO);
+            list.add(dictVO);
         }
-        redisCache.setDict(getPrefixedDynamicTypeCode(), list);
-        return Map.of(getPrefixedDynamicTypeCode(), list);
+        redisCache.setDict(key, list);
+        return Map.of(key, list);
     }
 
     @Override
-    public List<DictCustomVO> getDict(String typeCode) {
+    public List<DictVO> getDict(String typeCode) {
         return loadDict().get(typeCode);
     }
 

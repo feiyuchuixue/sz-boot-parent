@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DictCustomVO {
+public class DictVO {
 
     {
         isDynamic = false;
