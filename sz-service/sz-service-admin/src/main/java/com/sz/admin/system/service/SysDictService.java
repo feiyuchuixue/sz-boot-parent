@@ -5,7 +5,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import lombok.SneakyThrows;
@@ -31,11 +31,11 @@ public interface SysDictService extends IService<SysDict> {
 
     PageResult<SysDict> list(SysDictListDTO dto);
 
-    Map<String, List<DictCustomVO>> dictList(String typeCode);
+    Map<String, List<DictVO>> dictList(String typeCode);
 
-    Map<String, List<DictCustomVO>> dictAll();
+    Map<String, List<DictVO>> dictAll();
 
-    List<DictCustomVO> getDictByType(String typeCode);
+    List<DictVO> getDictByType(String typeCode);
 
     @SneakyThrows
     String exportDictSql(SelectIdsDTO dto);

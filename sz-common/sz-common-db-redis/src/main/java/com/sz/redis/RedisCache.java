@@ -1,6 +1,6 @@
 package com.sz.redis;
 
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
 import com.sz.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,23 +24,23 @@ public class RedisCache {
     private final RedisTemplate redisTemplate;
 
     // ---------------sys_dict相关----------------
-    public void setDict(String dictType, List<DictCustomVO> list) {
+    public void setDict(String dictType, List<DictVO> list) {
         redisTemplate.opsForHash().put(CommonKeyConstants.SYS_DICT, dictType, list);
         redisTemplate.expire(CommonKeyConstants.SYS_DICT, 2, TimeUnit.HOURS);
     }
 
-    public void putAllDict(Map<String, List<DictCustomVO>> dictMap) {
+    public void putAllDict(Map<String, List<DictVO>> dictMap) {
         redisTemplate.opsForHash().putAll(CommonKeyConstants.SYS_DICT, dictMap);
         redisTemplate.expire(CommonKeyConstants.SYS_DICT, 2, TimeUnit.HOURS);
     }
 
-    public Map<String, List<DictCustomVO>> getAllDict() {
+    public Map<String, List<DictVO>> getAllDict() {
         return redisTemplate.opsForHash().entries(CommonKeyConstants.SYS_DICT);
     }
 
-    public List<DictCustomVO> getDictByType(String dictType) {
+    public List<DictVO> getDictByType(String dictType) {
         if (hasHashKey(dictType)) {
-            return (List<DictCustomVO>) redisTemplate.opsForHash().get(CommonKeyConstants.SYS_DICT, dictType);
+            return (List<DictVO>) redisTemplate.opsForHash().get(CommonKeyConstants.SYS_DICT, dictType);
         } else {
             return new ArrayList<>();
         }

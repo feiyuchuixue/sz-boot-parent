@@ -12,6 +12,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
+import com.sz.admin.system.pojo.vo.sysdict.DictTypeVO;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -20,6 +21,8 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
+import com.sz.platform.factory.DictLoaderFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -38,8 +41,10 @@ import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYP
  * @since 2023-08-18
  */
 @Service
+@RequiredArgsConstructor
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements SysDictTypeService {
 
+    private final DictLoaderFactory dictLoaderFactory;
 
     @Override
     public void create(SysDictTypeAddDTO dto) {
@@ -107,10 +112,14 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
-    public List<SysDictType> selectOptionsType() {
+    public List<DictTypeVO> findDictType() {
         QueryWrapper wrapper = QueryWrapper.create().orderBy(SYS_DICT_TYPE.CREATE_TIME.desc());
-        return list(wrapper);
+        return listAs(wrapper, DictTypeVO.class);
     }
 
+    @Override
+    public List<DictTypeVO> selectDictTypeOptions() {
+        return dictLoaderFactory.getAllDictType();
+    }
 
 }

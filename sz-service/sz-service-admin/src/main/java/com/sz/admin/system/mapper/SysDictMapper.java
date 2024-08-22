@@ -2,7 +2,7 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysDict;
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface SysDictMapper extends BaseMapper<SysDict> {
 
-    List<DictCustomVO> listDict(@Param("typeCode") String typeCode);
+    List<DictVO> listDict(@Param("typeCode") String typeCode);
 
 
 }

@@ -1,7 +1,8 @@
 package com.sz.platform.loader;
 
 import com.sz.admin.system.mapper.SysDictMapper;
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
+import com.sz.platform.enums.DynamicDictEnum;
 import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,23 +29,23 @@ public class DefaultStaticDictLoader implements DictLoader {
     private final SysDictMapper sysDictMapper;
 
     @Override
-    public String getDynamicTypeCode() {
-        return "";
+    public DynamicDictEnum getDynamicTypeCode() {
+        return null;
     }
 
     @Override
-    public Map<String, List<DictCustomVO>> loadDict() {
+    public Map<String, List<DictVO>> loadDict() {
         if (redisCache.hasKey()) {
             return redisCache.getAllDict();
         }
 
         // 查询所有字典
-        List<DictCustomVO> dictVOS = sysDictMapper.listDict("");
+        List<DictVO> dictVOS = sysDictMapper.listDict("");
         if (dictVOS.isEmpty()) {
             return Map.of();
         }
-        Map<String, List<DictCustomVO>> result = dictVOS.stream()
-                .collect(Collectors.groupingBy(DictCustomVO::getSysDictTypeCode,
+        Map<String, List<DictVO>> result = dictVOS.stream()
+                .collect(Collectors.groupingBy(DictVO::getSysDictTypeCode,
                         LinkedHashMap::new, // 使用 LinkedHashMap 作为分组的容器,有序解决乱序问题
                         Collectors.toList()));
         redisCache.putAllDict(result);
@@ -52,12 +53,12 @@ public class DefaultStaticDictLoader implements DictLoader {
     }
 
     @Override
-    public List<DictCustomVO> getDict(String typeCode) {
+    public List<DictVO> getDict(String typeCode) {
         if (redisCache.hasHashKey(typeCode)) {
-            return redisCache.getDictByType(getPrefixedDynamicTypeCode());
+            return redisCache.getDictByType(typeCode);
         }
 
-        List<DictCustomVO> list = sysDictMapper.listDict(typeCode);
+        List<DictVO> list = sysDictMapper.listDict(typeCode);
         if (list.isEmpty()) {
             return List.of();
         }

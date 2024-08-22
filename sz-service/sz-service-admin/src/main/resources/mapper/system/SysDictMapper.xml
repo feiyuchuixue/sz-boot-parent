@@ -29,7 +29,7 @@
         sd.alias
     </sql>
 
-    <select id="listDict" resultType="com.sz.core.common.entity.DictCustomVO">
+    <select id="listDict" resultType="com.sz.core.common.entity.DictVO">
         SELECT
         <include refid="Custom_Column_Join_List"></include>
         FROM sys_dict_type AS sdt

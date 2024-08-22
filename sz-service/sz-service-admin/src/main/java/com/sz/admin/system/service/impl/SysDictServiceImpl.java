@@ -16,7 +16,7 @@ import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.admin.system.service.SysDictTypeService;
-import com.sz.core.common.entity.DictCustomVO;
+import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
@@ -146,19 +146,19 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public Map<String, List<DictCustomVO>> dictList(String typeCode) {
-        Map<String, List<DictCustomVO>> result = new HashMap<>();
-        Map<String, List<DictCustomVO>> allDict = dictLoaderFactory.loadAllDict();
+    public Map<String, List<DictVO>> dictList(String typeCode) {
+        Map<String, List<DictVO>> result = new HashMap<>();
+        Map<String, List<DictVO>> allDict = dictLoaderFactory.loadAllDict();
         if (allDict.containsKey(typeCode)) {
             return dictLoaderFactory.loadAllDict();
         }
         // 如果查询不到，从数据库中获取，并赋值
-        List<DictCustomVO> dictCustomVOS = this.mapper.listDict(typeCode);
-        if (!dictCustomVOS.isEmpty()) {
-            redisCache.setDict(typeCode, dictCustomVOS);
-            result = dictCustomVOS.stream()
+        List<DictVO> dictVOS = this.mapper.listDict(typeCode);
+        if (!dictVOS.isEmpty()) {
+            redisCache.setDict(typeCode, dictVOS);
+            result = dictVOS.stream()
                     .collect(Collectors.groupingBy(
-                            DictCustomVO::getSysDictTypeCode,
+                            DictVO::getSysDictTypeCode,
                             LinkedHashMap::new,
                             Collectors.toList()
                     ));
@@ -167,13 +167,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public Map<String, List<DictCustomVO>> dictAll() {
+    public Map<String, List<DictVO>> dictAll() {
         return dictLoaderFactory.loadAllDict();
     }
 
     @Override
-    public List<DictCustomVO> getDictByType(String typeCode) {
-        List<DictCustomVO> dictVOS = new ArrayList<>();
+    public List<DictVO> getDictByType(String typeCode) {
+        List<DictVO> dictVOS = new ArrayList<>();
         if (redisCache.hasHashKey(typeCode)) {
             dictVOS = redisCache.getDictByType(typeCode);
         } else {
@@ -187,34 +187,25 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public String getDictLabel(String dictType, String dictValue, String separator) {
-        Map<String, List<DictCustomVO>> dictMap = dictList(dictType);
-        if (dictMap.containsKey(dictType)) {
-            List<DictCustomVO> dictLists = dictMap.get(dictType);
-            Map<String, String> map = StreamUtils.toMap(dictLists, DictCustomVO::getId, DictCustomVO::getCodeName); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
-            return map.getOrDefault(dictValue, "");
-        }
-        return "";
+        List<DictVO> dictLists = dictLoaderFactory.getDictByType(dictType);
+        Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getId, DictVO::getCodeName); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
+        return map.getOrDefault(dictValue, "");
     }
 
     @Override
     public String getDictValue(String dictType, String dictLabel, String separator) {
-        Map<String, List<DictCustomVO>> dictMap = dictList(dictType);
-        if (dictMap.containsKey(dictType)) {
-            List<DictCustomVO> dictLists = dictMap.get(dictType);
-            Map<String, String> map = StreamUtils.toMap(dictLists, DictCustomVO::getCodeName, DictCustomVO::getId); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
-            return map.getOrDefault(dictLabel, "");
-        }
-        return "";
+        List<DictVO> dictLists = dictLoaderFactory.getDictByType(dictType);
+        Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getCodeName, DictVO::getId); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
+        return map.getOrDefault(dictLabel, "");
     }
 
     @Override
     public Map<String, String> getAllDict(String dictType) {
-        Map<String, List<DictCustomVO>> dictMap = dictList(dictType);
-        if (dictMap.containsKey(dictType)) {
-            List<DictCustomVO> dictLists = dictMap.get(dictType);
-            return StreamUtils.toMap(dictLists, DictCustomVO::getCodeName, DictCustomVO::getId);
+        List<DictVO> dictLists = dictLoaderFactory.getDictByType(dictType);
+        if (dictLists.isEmpty()) {
+            return new HashMap<>();
         }
-        return new HashMap<>();
+        return StreamUtils.toMap(dictLists, DictVO::getCodeName, DictVO::getId);
     }
 
     @SneakyThrows
