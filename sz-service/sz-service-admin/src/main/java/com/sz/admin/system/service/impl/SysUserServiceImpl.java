@@ -25,7 +25,6 @@ import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
-import com.sz.core.common.service.UserOptionService;
 import com.sz.core.util.*;
 import com.sz.mysql.DataScopeProperties;
 import com.sz.platform.enums.AdminResponseEnum;
@@ -59,7 +58,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService, UserOptionService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     private final SysRoleMapper sysRoleMapper;
 

@@ -14,7 +14,7 @@ import com.sz.admin.system.pojo.vo.sysdatarole.SysDataRoleMenuVO;
 import com.sz.admin.system.pojo.vo.sysdatarole.SysDataRoleVO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
-import com.sz.core.common.entity.UserOptionVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.*;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;

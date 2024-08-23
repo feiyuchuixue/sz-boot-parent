@@ -41,10 +41,4 @@ public @interface DictFormat {
      */
     Class<? extends ExcelDynamicSelect>[] sourceClass() default {};
 
-    /**
-     * 是否是用户id字段
-     * @return 将id自动转换为用户名称
-     */
-    boolean isUser() default false;
-
 }

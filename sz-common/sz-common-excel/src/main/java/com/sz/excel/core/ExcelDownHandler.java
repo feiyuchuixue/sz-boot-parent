@@ -6,9 +6,7 @@ import com.alibaba.excel.util.ClassUtils;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
-import com.sz.core.common.entity.UserOptionVO;
 import com.sz.core.common.service.DictService;
-import com.sz.core.common.service.UserOptionService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.excel.annotation.DictFormat;
@@ -24,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * excel下拉项
@@ -92,8 +88,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
                         }
                     } else if (StringUtils.isNotBlank(converterExp)) { // 根据converterExp渲染下拉
                         options = ExcelUtils.listByExp(converterExp, separator);
-                    } else if (dictFormat.isUser()) {
-                        options = userFormatHandlerAdapter();
                     }
                     if (options != null && !options.isEmpty()) {
                         dropDownWithSheet(helper, workbook, sheet, index, options);
@@ -199,12 +193,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
         String columnNext = StringUtils.subWithLength(EXCEL_COLUMN_NAME, thisCircleColumnIndex, 1);
         // 将二者拼接即为最终的栏位名
         return columnPrefix + columnNext;
-    }
-
-    private List<String> userFormatHandlerAdapter() {
-        UserOptionService optionService = SpringApplicationContextUtils.getBean(UserOptionService.class);
-        List<UserOptionVO> userOptions = optionService.getUserOptions();
-        return userOptions.stream().map(UserOptionVO::getNickname).collect(Collectors.toList());
     }
 
 }

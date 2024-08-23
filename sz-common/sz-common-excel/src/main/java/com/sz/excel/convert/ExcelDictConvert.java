@@ -6,9 +6,7 @@ import com.alibaba.excel.metadata.GlobalConfiguration;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
-import com.sz.core.common.entity.UserOptionVO;
 import com.sz.core.common.service.DictService;
-import com.sz.core.common.service.UserOptionService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.core.util.Utils;
@@ -19,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 字典格式化转换处理
@@ -89,13 +85,6 @@ public class ExcelDictConvert implements Converter<Object> {
         String label = "";
         if (StringUtils.isBlank(dictType) && StringUtils.isNoneBlank(anno.readConverterExp())) { // 使用readConverterExp来构建字典模板
             label = ExcelUtils.convertByExp(dictValue, anno.readConverterExp(), anno.separator());
-        } else if (anno.isUser()) {
-            UserOptionService optionService = SpringApplicationContextUtils.getBean(UserOptionService.class);
-            List<UserOptionVO> userOptions = optionService.getUserOptions();
-            Map<Long, UserOptionVO> optionsMap = userOptions.stream().collect(Collectors.toMap(UserOptionVO::getId, o -> o));
-            if (optionsMap.containsKey(Utils.getLongVal(dictValue))) {
-                label = optionsMap.get(Utils.getLongVal(dictValue)).getNickname();
-            }
         } else { // 使用dictType 获取字典类型
             DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
             label = dictService.getDictLabel(dictType, dictValue, anno.separator());
