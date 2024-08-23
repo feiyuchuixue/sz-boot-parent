@@ -8,15 +8,15 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.core.common.constant.GlobalConstant;
-import com.sz.core.common.entity.ApiPageResult;
-import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.core.common.entity.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
  * @author sz
  * @since 2023-08-18
  */
-@Tag(name =  "字典管理")
+@Tag(name = "字典管理")
 @RestController
 @RequestMapping("/sys-dict")
 @RequiredArgsConstructor
@@ -68,14 +68,14 @@ public class SysDictController {
     @Operation(summary = "系统字典查询-全部")
     @SaIgnore
     @GetMapping("dict")
-    public ApiResult listDict() {
+    public ApiResult<Map<String, List<DictVO>>> listDict() {
         return ApiResult.success(sysDictService.dictAll());
     }
 
     @Operation(summary = "指定类型系统字典查询")
     @SaIgnore
     @GetMapping("dict/{typeCode}")
-    public ApiResult getDictDataByType(@PathVariable String typeCode) {
+    public ApiResult<List<DictVO>> getDictDataByType(@PathVariable String typeCode) {
         return ApiResult.success(sysDictService.getDictByType(typeCode));
     }
 

@@ -2,7 +2,7 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysDict;
-import com.sz.admin.system.pojo.vo.sysdict.DictVO;
+import com.sz.core.common.entity.DictVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

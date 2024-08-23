@@ -1,4 +1,4 @@
-package com.sz.platform.listener;
+package com.sz.platform.handler;
 
 import com.sz.core.common.entity.UserPermissionChangeMessage;
 import com.sz.core.util.JsonUtils;

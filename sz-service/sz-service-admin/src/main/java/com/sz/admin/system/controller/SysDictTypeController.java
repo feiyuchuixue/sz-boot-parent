@@ -6,6 +6,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
+import com.sz.admin.system.pojo.vo.sysdict.DictTypeVO;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiPageResult;
@@ -77,8 +78,8 @@ public class SysDictTypeController {
     @Operation(summary = "下拉字典类型查询")
     @SaIgnore
     @GetMapping("selectOptionsType")
-    public ApiResult<List<SysDictType>> selectOptionType() {
-        return ApiResult.success(sysDictTypeService.selectOptionsType());
+    public ApiResult<List<DictTypeVO>> selectOptionType() {
+        return ApiResult.success(sysDictTypeService.selectDictTypeOptions());
     }
 
 

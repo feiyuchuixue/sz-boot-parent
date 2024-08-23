@@ -67,6 +67,6 @@ public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
 
     @Override
     public String getMessage() {
-        return this.message;
+        return message;
     }
 }

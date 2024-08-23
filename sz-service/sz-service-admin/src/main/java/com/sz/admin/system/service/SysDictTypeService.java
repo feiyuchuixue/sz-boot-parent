@@ -5,6 +5,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
+import com.sz.admin.system.pojo.vo.sysdict.DictTypeVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 
@@ -30,5 +31,7 @@ public interface SysDictTypeService extends IService<SysDictType> {
 
     PageResult<SysDictType> list(SysDictTypeListDTO dto);
 
-    List<SysDictType> selectOptionsType();
+    List<DictTypeVO> findDictType();
+
+    List<DictTypeVO> selectDictTypeOptions();
 }

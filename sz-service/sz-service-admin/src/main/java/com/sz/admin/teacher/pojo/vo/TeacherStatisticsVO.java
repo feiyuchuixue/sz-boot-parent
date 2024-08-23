@@ -43,10 +43,10 @@ public class TeacherStatisticsVO {
     @Schema(description =  "教师id")
     private String teacherId;
 
-    @ExcelProperty(value = "讲师区分类型" ,converter = ExcelDictConvert.class)
-    @Schema(description =  "讲师区分类型")
+    @ExcelProperty(value = "讲师区分类型", converter = ExcelDictConvert.class)
     @DictFormat(dictType = "account_status")
-    private String teacherCommonType;
+    @Schema(description =  "讲师区分类型")
+    private Integer teacherCommonType;
 
     @ExcelProperty(value = "授课总数")
     @Schema(description =  "授课总数")
