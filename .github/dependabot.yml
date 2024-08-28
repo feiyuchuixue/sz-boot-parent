@@ -9,3 +9,5 @@ updates:
     directory: "/sz-dependencies" # Location of package manifests
     schedule:
       interval: "weekly"
+    target-branch: dev    # 指定要检查的目标分支
+    open-pull-requests-limit: 10  # 限制同时打开的PR数量
