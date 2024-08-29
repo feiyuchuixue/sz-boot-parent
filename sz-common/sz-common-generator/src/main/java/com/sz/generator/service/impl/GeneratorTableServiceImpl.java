@@ -238,38 +238,41 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     public byte[] downloadZip(SelectTablesDTO dto) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
-        List<String> tableNames = dto.getTableNames();
-        // 根据id 获取要导入的表detail
-        List<GeneratorDetailVO> detailVOS = getDetailsForTables(tableNames);
+        try {
+            List<String> tableNames = dto.getTableNames();
+            // 根据id 获取要导入的表detail
+            List<GeneratorDetailVO> detailVOS = getDetailsForTables(tableNames);
 
-        for (GeneratorDetailVO detailVO : detailVOS) {
-            CodeModelBuilder modelBuilder = new CodeModelBuilder();
-            String rootPathApi = detailVO.getGeneratorInfo().getPathApi();
-            String rootPathWeb = detailVO.getGeneratorInfo().getPathWeb();
-            Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO).builderVue(detailVO).getModel();
+            for (GeneratorDetailVO detailVO : detailVOS) {
+                CodeModelBuilder modelBuilder = new CodeModelBuilder();
+                String rootPathApi = detailVO.getGeneratorInfo().getPathApi();
+                String rootPathWeb = detailVO.getGeneratorInfo().getPathWeb();
+                Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO).builderVue(detailVO).getModel();
 
-            List<AbstractCodeGenerationTemplate> apiTemplates = BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model);
-            for (AbstractCodeGenerationTemplate apiTemplate : apiTemplates) {
-                CodeGenTempResult apiTmpRes = apiTemplate.buildTemplate(false);
-                addFileToZip(zip, apiTmpRes, model);
-            }
+                List<AbstractCodeGenerationTemplate> apiTemplates = BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model);
+                for (AbstractCodeGenerationTemplate apiTemplate : apiTemplates) {
+                    CodeGenTempResult apiTmpRes = apiTemplate.buildTemplate(false);
+                    addFileToZip(zip, apiTmpRes, model);
+                }
 
-            List<AbstractCodeGenerationTemplate> webTemplates = BuildTemplateUtils.getWebTemplates(configurer, rootPathWeb, detailVO, model);
-            for (AbstractCodeGenerationTemplate webTemplate : webTemplates) {
-                CodeGenTempResult webTmpRes = webTemplate.buildTemplate(false);
-                addFileToZip(zip, webTmpRes, model);
-            }
-            if (shouldInitializeMenu(detailVO)) {
-                List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
-                if (!menuCreateDTOS.isEmpty()) {
-                    model.put("sysMenuList", menuCreateDTOS);
-                    MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
-                    CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
-                    addFileToZip(zip, sqlTmpRes, model);
+                List<AbstractCodeGenerationTemplate> webTemplates = BuildTemplateUtils.getWebTemplates(configurer, rootPathWeb, detailVO, model);
+                for (AbstractCodeGenerationTemplate webTemplate : webTemplates) {
+                    CodeGenTempResult webTmpRes = webTemplate.buildTemplate(false);
+                    addFileToZip(zip, webTmpRes, model);
+                }
+                if (shouldInitializeMenu(detailVO)) {
+                    List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
+                    if (!menuCreateDTOS.isEmpty()) {
+                        model.put("sysMenuList", menuCreateDTOS);
+                        MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
+                        CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
+                        addFileToZip(zip, sqlTmpRes, model);
+                    }
                 }
             }
+        } finally {
+            zip.close();
         }
-
         return outputStream.toByteArray();
     }
 
