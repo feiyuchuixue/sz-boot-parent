@@ -1,4 +1,4 @@
-package com.sz.admin.system.service.impl.strategy;
+package com.sz.platform.strategy;
 
 import com.sz.security.pojo.ClientVO;
 import com.sz.security.pojo.LoginInfo;

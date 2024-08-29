@@ -1,4 +1,4 @@
-package com.sz.admin.system.service.impl.strategy;
+package com.sz.platform.strategy;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
