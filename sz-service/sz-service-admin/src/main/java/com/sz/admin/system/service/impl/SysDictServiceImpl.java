@@ -85,8 +85,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
                 .where(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()));
         CommonResponseEnum.EXISTS.message("字典已存在").assertTrue(count(wrapper) > 0);
-        SysDictType sysDictType = sysDictTypeService.detail(dto.getSysDictTypeId());
-        String typeCode = sysDictType.getTypeCode();
+
         wrapper = QueryWrapper.create()
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
         AtomicReference<Long> dictCount = new AtomicReference<>(0L);
@@ -98,7 +97,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), dictCount.get().intValue());
         sysDict.setId(generateCustomId);
         save(sysDict);
-        redisCache.clearDict(typeCode); // 清除redis缓存
+        upCache(dto.getSysDictTypeId());
     }
 
     @Override
@@ -114,10 +113,14 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         CommonResponseEnum.EXISTS.message(SysDictTableDef.SYS_DICT.CODE_NAME.getName() + "已存在").assertTrue(count > 0);
         sysDict.setId(dto.getId());
         saveOrUpdate(sysDict);
+        upCache(dto.getSysDictTypeId());
+    }
 
-        SysDictType sysDictType = sysDictTypeService.detail(dto.getSysDictTypeId());
+    private void upCache(Long dictTypeId) {
+        SysDictType sysDictType = sysDictTypeService.detail(dictTypeId);
         String typeCode = sysDictType.getTypeCode();
         redisCache.clearDict(typeCode); // 清除redis缓存
+        dictLoaderFactory.getDictByType(typeCode); // 更新缓存
     }
 
     @Override

@@ -5,8 +5,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.EntityChangeListener;
-import com.sz.platform.listener.TableSysUserChangeListener;
+import com.sz.platform.listener.TableSysUserListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -23,7 +22,7 @@ import java.time.LocalDateTime;
  * @since 2023-08-24
  */
 @Data
-@Table(value = "sys_user", onInsert = TableSysUserChangeListener.class, onUpdate = TableSysUserChangeListener.class)
+@Table(value = "sys_user", onInsert = TableSysUserListener.class, onUpdate = TableSysUserListener.class)
 @Schema(description = "系统用户表")
 public class SysUser implements Serializable {
 

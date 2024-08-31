@@ -6,6 +6,7 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.core.common.enums.TrueFalseEnum;
+import com.sz.mysql.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
  * @since 2023-08-18
  */
 @Data
-@Table("sys_dict_type")
+@Table(value = "sys_dict_type", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 @Schema(description = "字典类型")
 public class SysDictType implements Serializable {
 
