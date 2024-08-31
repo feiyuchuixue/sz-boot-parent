@@ -14,7 +14,7 @@ import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_USER_OPTIONS;
  * @Date 2024/8/22 10:00
  * @Version 1.0
  */
-public class TableSysUserChangeListener extends EntityChangeListener {
+public class TableSysUserListener extends EntityChangeListener {
 
     @Override
     public void onInsert(Object o) {
