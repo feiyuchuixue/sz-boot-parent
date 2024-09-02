@@ -37,6 +37,5 @@ public interface SysDictService extends IService<SysDict> {
 
     List<DictVO> getDictByType(String typeCode);
 
-    @SneakyThrows
     String exportDictSql(SelectIdsDTO dto);
 }

@@ -125,8 +125,12 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
 
     private static QueryWrapper buildQueryWrapper(SysDataRoleListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create().from(SysDataRole.class);
-        wrapper.like(SysDataRole::getRoleName, dto.getRoleName());
-        wrapper.eq(SysDataRole::getIsLock, dto.getIsLock());
+        if(Utils.isNotNull(dto.getRoleName())){
+            wrapper.like(SysDataRole::getRoleName, dto.getRoleName());
+        }
+        if(Utils.isNotNull(dto.getIsLock())){
+            wrapper.eq(SysDataRole::getIsLock, dto.getIsLock());
+        }
         return wrapper;
     }
 

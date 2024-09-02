@@ -148,16 +148,24 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     <#if field.isQuery == "1">
         <#-- 等于-->
         <#if field.queryType == "EQ">
-        wrapper.eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.eq(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--不等于-->
         <#elseif field.queryType == "NEQ" >
-        wrapper.ne(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.ne(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--大于-->
         <#elseif field.queryType == "GT" >
-        wrapper.gt(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.gt(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--小于-->
         <#elseif field.queryType == "LT" >
-        wrapper.lt(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.lt(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--BETWEEN-->
         <#elseif field.queryType == "BETWEEN" >
         if (Utils.isNotNull(dto.get${field.upCamelField}Start()) && Utils.isNotNull(dto.get${field.upCamelField}End())) {
@@ -165,13 +173,19 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
         }
         <#--大于等于-->
         <#elseif field.queryType == "GTE" >
-        wrapper.gte(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.gte(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--小于等于-->
         <#elseif field.queryType == "LTE" >
-        wrapper.lte(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.lte(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         <#--模糊-->
         <#elseif field.queryType == "LIKE" >
-        wrapper.like(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        if (Utils.isNotNull(dto.get${field.upCamelField}())) {
+            wrapper.like(${poClassName}::get${field.upCamelField}, dto.get${field.upCamelField}());
+        }
         </#if>
     </#if>
 </#list>

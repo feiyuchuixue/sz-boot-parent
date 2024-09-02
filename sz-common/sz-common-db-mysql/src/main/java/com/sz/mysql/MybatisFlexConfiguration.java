@@ -5,6 +5,7 @@ import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.dialect.DbType;
 import com.mybatisflex.core.dialect.DialectFactory;
 import com.mybatisflex.core.logicdelete.LogicDeleteProcessor;
+import com.mybatisflex.core.query.QueryColumnBehavior;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import com.sz.logger.PrintSQL;
 import jakarta.annotation.Resource;
@@ -24,6 +25,7 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
     private  DataScopeProperties dataScopeProperties;
 
     public MybatisFlexConfiguration() {
+        QueryColumnBehavior.setIgnoreFunction(QueryColumnBehavior.IGNORE_NONE);// 关闭全局null参数忽略设置
         PrintSQL.print();
     }
 
