@@ -62,6 +62,28 @@ public class BeanCopyUtils {
         return  mapper.map(source, clazz);
     }
 
+    public static <T, M> M copy(T source, M target) {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        mapper.map(source, target);
+        return target;
+    }
+
+    /**
+     *  modelMapper bean copy, 严格匹配，不忽略null值
+     * @param source
+     * @param target
+     * @return
+     * @param <T>
+     * @param <M>
+     */
+    public static <T, M> M copyNotIgnoreNull(T source, M target) {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.getConfiguration().setSkipNullEnabled(false); // 不跳过null值
+        mapper.map(source, target);
+        return target;
+    }
 
     /**
      * list 复制
