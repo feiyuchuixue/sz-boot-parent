@@ -43,8 +43,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         long count;
         count = QueryChain.of(SysRole.class).eq(SysRole::getRoleName, dto.getRoleName()).count();
         CommonResponseEnum.EXISTS.message("roleName已存在").assertTrue(count > 0);
-        count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions()).count();
-        CommonResponseEnum.EXISTS.message("permissions已存在").assertTrue(count > 0);
+        if (Utils.isNotNull(dto.getPermissions())) {
+            count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions()).count();
+            CommonResponseEnum.EXISTS.message("permissions已存在").assertTrue(count > 0);
+        }
         save(sysRole);
     }
 
