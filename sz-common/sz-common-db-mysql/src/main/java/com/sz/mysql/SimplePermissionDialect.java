@@ -1,6 +1,7 @@
 package com.sz.mysql;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.constant.SqlConsts;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
@@ -72,8 +73,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, String> ruleMap = loginUser.getRuleMap();
-            String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
-            String tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
+            String tableName = getTableName(tableClazz);
             QueryTable table = tableMap.get(tableName);
             if (table == null) return;
 
@@ -117,6 +117,24 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         } finally {
             super.prepareAuth(queryWrapper, operateType);
         }
+    }
+
+    /**
+     * 获取TableName：先根据Table注解获取value名，取不到再根据驼峰映射
+     *
+     * @param tableClazz
+     * @return
+     */
+    private static String getTableName(Class<?> tableClazz) {
+        String tableName = "";
+        Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
+        if (tableClazzAnnotation == null) {
+            String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
+            tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
+        } else {
+            tableName = tableClazzAnnotation.value(); // eg: teacher_statics
+        }
+        return tableName;
     }
 
     private void processSubQueries(List<QueryTable> queryTables, OperateType operateType) {
@@ -189,10 +207,11 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
     /**
      * 自定义的 根据权限和规则模式确定规则范围。
-     * @param permissionKeys 权限数组
+     *
+     * @param permissionKeys      权限数组
      * @param permissionAccessMap 权限到菜单ID的映射
-     * @param ruleRelation 自定义规则Relation
-     * @param mode 规则模式，"or" 或 "and"。
+     * @param ruleRelation        自定义规则Relation
+     * @param mode                规则模式，"or" 或 "and"。
      * @return 确定的规则relationId范围
      */
     private Set<Long> determineCustomRuleRelationIds(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, Set<Long>> ruleRelation, String mode) {
@@ -409,4 +428,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             }
         }
     }
+
+
 }
