@@ -181,6 +181,7 @@ const searchColumns: SearchProps[] = [
   { prop: '${field.javaField}',
     label: '${field.columnComment}',
     el: '${field.searchType}',
+    enum: optionsStore.getDictOptions('${field.dictType}'),
     fieldNames: {
       label: "codeName",
       value: "id",
