@@ -1,7 +1,7 @@
 package com.sz.security.config;
 
-import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
+import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.core.common.configuration.WebMvcConfiguration;
@@ -37,13 +37,9 @@ public class SaTokenConfig extends WebMvcConfiguration {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 路由拦截鉴权 - 登录校验
-        registry.addInterceptor(new SaInterceptor(r -> {
-            StpUtil.checkLogin();
-        }).isAnnotation(false)).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
-
-        // 打开注解鉴权
-        registry.addInterceptor(new MySaInterceptor()).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
+        registry.addInterceptor(new MySaInterceptor(handler -> {
+            SaRouter.match("/**", r -> StpUtil.checkLogin()); // 这里可以结合自己业务改造
+        })).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
     }
 
 }
