@@ -178,10 +178,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return {@link SysUser}
      */
     @Override
-    public SysUser detail(Long id) {
+    public SysUserVO detail(Long id) {
         SysUser user = getById(id);
         AdminResponseEnum.INVALID_ID.assertNull(user);
-        return user;
+        return BeanCopyUtils.copy(user, SysUserVO.class);
     }
 
     @Override

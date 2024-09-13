@@ -83,7 +83,7 @@ public class SysUserController {
     @Operation(summary = "用户详情")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
-    public ApiResult<SysUser> detail(@PathVariable Long id) {
+    public ApiResult<SysUserVO> detail(@PathVariable Long id) {
         return ApiResult.success(sysUserService.detail(id));
     }
 
@@ -163,7 +163,6 @@ public class SysUserController {
     public ApiResult<List<UserOptionVO>> getUserOptions() {
         return ApiResult.success(sysUserService.getUserOptions());
     }
-
 
     @Operation(summary = "用户数据角色信息查询-（穿梭框）")
     @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)

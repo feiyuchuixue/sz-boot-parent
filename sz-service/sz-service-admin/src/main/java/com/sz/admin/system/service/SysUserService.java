@@ -54,7 +54,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param id id
      * @return {@link SysUser}
      */
-    SysUser detail(Long id);
+    SysUserVO detail(Long id);
 
     PageResult<SysUserVO> list(SysUserListDTO dto);
 
