@@ -84,14 +84,12 @@ public class SysMenuController {
     }
 
     @Operation(summary = "查询上级菜单")
-    @SaIgnore
     @GetMapping("tree")
     public ApiResult<List<MenuTreeVO>> queryParentListTree(@RequestParam(required = false) String nodeId) {
         return ApiResult.success(sysMenuService.getSimpleMenuTree(nodeId));
     }
 
     @Operation(summary = "查询用户具有的菜单")
-    @SaIgnore
     @GetMapping("/menu")
     public ApiResult queryMenuByUserId() {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -100,14 +98,12 @@ public class SysMenuController {
     }
 
     @Operation(summary = "查询菜单按钮权限是否存在")
-    @SaIgnore
     @GetMapping("/btn/exists")
     public ApiResult findBtnPermission(MenuPermissionDTO dto) {
         return ApiResult.success(sysMenuService.hasExistsPermissions(dto));
     }
 
     @Operation(summary = "查询全部按钮权限")
-    @SaIgnore
     @GetMapping("/btn/permissions")
     public ApiResult<List<String>> findBtnPermission() {
         return ApiResult.success(sysMenuService.findPermission());
@@ -121,7 +117,6 @@ public class SysMenuController {
     }
 
     @Operation(summary = "查询用户角色", description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
-    @SaIgnore
     @GetMapping("/user/roles")
     public ApiResult<List<String>> findUserRoles() {
         Set<String> roles = sysPermissionService.getRoles(StpUtil.getLoginIdAsLong());

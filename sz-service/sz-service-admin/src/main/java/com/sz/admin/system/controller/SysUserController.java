@@ -8,6 +8,7 @@ import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
+import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDeptService;
@@ -48,14 +49,6 @@ public class SysUserController {
 
     private final SysUserDataRoleService sysUserDataRoleService;
 
-    @Operation(summary = "根据账户名获取用户信息", hidden = true)
-    @SaIgnore
-    @GetMapping("/accountName/{accountName}")
-    public ApiResult<SysUserVO> getAuthInfoByAccountName(@PathVariable String accountName) {
-        SysUserVO user = sysUserService.getSysUserByUsername(accountName);
-        return ApiResult.success(user);
-    }
-
     @Operation(summary = "添加用户")
     @SaCheckPermission(value = "sys.user.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
@@ -88,7 +81,7 @@ public class SysUserController {
     }
 
     @Operation(summary = "用户详情")
-    @SaIgnore
+    @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
     public ApiResult<SysUser> detail(@PathVariable Long id) {
         return ApiResult.success(sysUserService.detail(id));
@@ -97,7 +90,7 @@ public class SysUserController {
     @Operation(summary = "用户角色信息查询-（穿梭框）")
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("role")
-    public ApiResult findUserRole(@NotZero @RequestParam Integer userId) {
+    public ApiResult<SysUserRoleVO> findUserRole(@NotZero @RequestParam Integer userId) {
         return ApiPageResult.success(sysUserService.findSysUserRole(userId));
     }
 
@@ -110,7 +103,6 @@ public class SysUserController {
     }
 
     @Operation(summary = "登录信息查询")
-    @SaIgnore
     @GetMapping("/userinfo")
     public ApiResult<SysUserVO> getUserInfo() {
         return ApiResult.success(sysUserService.getUserInfo());

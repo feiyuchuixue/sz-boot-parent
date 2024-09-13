@@ -66,14 +66,12 @@ public class SysDictController {
     }
 
     @Operation(summary = "系统字典查询-全部")
-    @SaIgnore
     @GetMapping("dict")
     public ApiResult<Map<String, List<DictVO>>> listDict() {
         return ApiResult.success(sysDictService.dictAll());
     }
 
     @Operation(summary = "指定类型系统字典查询")
-    @SaIgnore
     @GetMapping("dict/{typeCode}")
     public ApiResult<List<DictVO>> getDictDataByType(@PathVariable String typeCode) {
         return ApiResult.success(sysDictService.getDictByType(typeCode));

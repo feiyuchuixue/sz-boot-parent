@@ -35,7 +35,6 @@ public class SysFileController {
         return ApiPageResult.success(sysFileService.fileList(dto));
     }
 
-    @SaIgnore
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
     public ApiResult upload(@RequestParam MultipartFile file, @RequestParam(value = "type") String type) {

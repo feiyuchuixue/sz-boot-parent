@@ -62,7 +62,6 @@ public class SysDictTypeController {
     }
 
     @Operation(summary = "字段类型详情查询")
-    @SaIgnore
     @GetMapping("{id}")
     public ApiResult<SysDictType> detail(@PathVariable Long id) {
         return ApiResult.success(sysDictTypeService.detail(id));
@@ -76,7 +75,6 @@ public class SysDictTypeController {
     }
 
     @Operation(summary = "下拉字典类型查询")
-    @SaIgnore
     @GetMapping("selectOptionsType")
     public ApiResult<List<DictTypeVO>> selectOptionType() {
         return ApiResult.success(sysDictTypeService.selectDictTypeOptions());
