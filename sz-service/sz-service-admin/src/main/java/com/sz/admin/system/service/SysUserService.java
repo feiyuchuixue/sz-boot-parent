@@ -56,7 +56,7 @@ public interface SysUserService extends IService<SysUser> {
      */
     SysUserVO detail(Long id);
 
-    PageResult<SysUserVO> list(SysUserListDTO dto);
+    PageResult<SysUserVO> page(SysUserListDTO dto);
 
     SysUserRoleVO findSysUserRole(Integer userId);
 

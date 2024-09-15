@@ -185,7 +185,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public PageResult<SysUserVO> list(SysUserListDTO dto) {
+    public PageResult<SysUserVO> page(SysUserListDTO dto) {
         PageResult<SysUserVO> result = null;
         PageUtils.toPage(dto);
         try {

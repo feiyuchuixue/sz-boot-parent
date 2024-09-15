@@ -32,7 +32,8 @@
 
     <!--查询（部门）用户列表-->
     <select id="querySysUserListByDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT su.*
+        SELECT * FROM  sys_user WHERE id IN (
+        SELECT su.id
         FROM sys_user su
         JOIN
         sys_user_dept sud ON su.id = sud.user_id
@@ -57,12 +58,14 @@
             <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
         </where>
         GROUP BY su.id
-        ORDER BY su.create_time ASC
+        ORDER BY  su.create_time ASC
+        )
     </select>
     <!--查询（未分配部门）用户列表-->
     <select id="querySysUserListNotDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
+        SELECT * FROM  sys_user WHERE id IN (
         SELECT
-        su.*
+        su.id
         FROM
         sys_user su
         LEFT JOIN
@@ -80,42 +83,17 @@
         </where>
         GROUP BY su.id
         ORDER BY su.create_time ASC
+        )
     </select>
     <select id="queryAllSysUserList" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT * from (
-        SELECT
-        su.*
-        FROM
-        sys_user su
-        JOIN sys_user_dept sud ON su.id = sud.user_id
-        JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
-        JOIN sys_dept sd ON sud.dept_id = sd.id
+        SELECT * FROM sys_user su
         <where>
             su.del_flag = 'F'
-            AND sdc.descendant_id IS NOT NULL
             <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
             <if test="username != null and username != ''">AND su.username = #{username}</if>
             <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
         </where>
-        GROUP BY
-        su.id UNION ALL
-        SELECT
-        su.*
-        FROM
-        sys_user su
-        LEFT JOIN sys_user_dept sud ON su.id = sud.user_id
-        LEFT JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
-        LEFT JOIN sys_dept sd ON sud.dept_id = sd.id
-        <where>
-            su.del_flag = 'F'
-            AND sud.user_id IS NULL
-            <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
-            <if test="username != null and username != ''">AND su.username = #{username}</if>
-            <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
-        </where>
-        GROUP BY
-        su.id
-        ) AS t ORDER BY t.create_time ASC
+        ORDER BY su.create_time ASC
     </select>
     <select id="queryUserDeptInfo" resultType="com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO">
         SELECT

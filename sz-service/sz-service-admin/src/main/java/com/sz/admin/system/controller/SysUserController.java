@@ -2,11 +2,9 @@ package com.sz.admin.system.controller;
 
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
-import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
@@ -77,7 +75,7 @@ public class SysUserController {
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiPageResult<PageResult<SysUserVO>> listPage(SysUserListDTO dto) {
-        return ApiPageResult.success(sysUserService.list(dto));
+        return ApiPageResult.success(sysUserService.page(dto));
     }
 
     @Operation(summary = "用户详情")
