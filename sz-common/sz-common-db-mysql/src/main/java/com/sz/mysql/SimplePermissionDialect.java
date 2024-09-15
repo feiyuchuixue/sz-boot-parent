@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +74,14 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, String> ruleMap = loginUser.getRuleMap();
-            String tableName = getTableName(tableClazz);
+            String tableName = "";
+            Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
+            if (tableClazzAnnotation == null) {
+                String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
+                tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
+            } else {
+                tableName = tableClazzAnnotation.value(); // eg: teacher_statics
+            }
             QueryTable table = tableMap.get(tableName);
             if (table == null) return;
 
@@ -81,7 +89,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String mode = permissions.getMode();
             String rule = determineRuleScope(btnPermissions, permissionMap, ruleMap, mode);
             String alias = Utils.isNotNull(table.getAlias()) ? table.getAlias() : table.getName();
-
             String logicMinUnit = SpringApplicationContextUtils.getBean(DataScopeProperties.class).getLogicMinUnit();
             switch (rule) {
                 case "1006001": // 全部 - 放行
@@ -101,14 +108,19 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
             // 自定义逻辑处理
             Map<String, Set<Long>> userRuleMap = loginUser.getUserRuleMap();
-            if (!userRuleMap.isEmpty()) {
-                Set<Long> relationIds = determineCustomRuleRelationIds(btnPermissions, permissionMap, userRuleMap, mode); // 自定义用户ID
-                handleCustomUserRelation(queryWrapper, table, relationIds);
-            }
             Map<String, Set<Long>> deptRuleMap = loginUser.getDeptRuleMap();
-            if (!deptRuleMap.isEmpty()) {
-                Set<Long> relationIds = determineCustomRuleRelationIds(btnPermissions, permissionMap, deptRuleMap, mode); // 自定义部门ID
-                handleCustomDeptRelation(queryWrapper, relationIds, logicMinUnit, alias, tableClazz);
+            Set<Long> customUserIds = determineCustomRuleRelationIds(btnPermissions, permissionMap, userRuleMap, mode); // 自定义用户ID
+            Set<Long> customDeptIds = determineCustomRuleRelationIds(btnPermissions, permissionMap, deptRuleMap, mode); // 自定义部门ID
+
+            String key = "customRuleContext";
+            Object context = CPI.getContext(queryWrapper, key);
+
+            if (!Boolean.TRUE.equals(context)) {
+                Consumer<QueryWrapper> queryHandler = getQueryHandler(userRuleMap, deptRuleMap, customUserIds, customDeptIds, table, logicMinUnit, alias, tableClazz);
+                if (queryHandler != null) {
+                    queryWrapper.and(queryHandler);
+                    CPI.putContext(queryWrapper, key, true);
+                }
             }
 
         } catch (Exception e) {
@@ -119,22 +131,19 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
     }
 
-    /**
-     * 获取TableName：先根据Table注解获取value名，取不到再根据驼峰映射
-     *
-     * @param tableClazz
-     * @return
-     */
-    private static String getTableName(Class<?> tableClazz) {
-        String tableName = "";
-        Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
-        if (tableClazzAnnotation == null) {
-            String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
-            tableName = StringUtils.toSnakeCase(simpleName); // eg: teacher_statics
-        } else {
-            tableName = tableClazzAnnotation.value(); // eg: teacher_statics
+    // 提取查询处理逻辑
+    private Consumer<QueryWrapper> getQueryHandler(Map<String, Set<Long>> userRuleMap, Map<String, Set<Long>> deptRuleMap,
+                                                   Set<Long> customUserIds, Set<Long> customDeptIds, QueryTable table,
+                                                   String logicMinUnit, String alias, Class<?> tableClazz) {
+        if (!userRuleMap.isEmpty() && !deptRuleMap.isEmpty()) {
+            return wrapper -> wrapper.and(handleCustomUserRelation(table, customUserIds))
+                    .or(handleCustomDeptRelation(table, customDeptIds, logicMinUnit, alias, tableClazz));
+        } else if (!userRuleMap.isEmpty()) {
+            return wrapper -> wrapper.and(handleCustomUserRelation(table, customUserIds));
+        } else if (!deptRuleMap.isEmpty()) {
+            return wrapper -> wrapper.and(handleCustomDeptRelation(table, customDeptIds, logicMinUnit, alias, tableClazz));
         }
-        return tableName;
+        return null;
     }
 
     private void processSubQueries(List<QueryTable> queryTables, OperateType operateType) {
@@ -293,21 +302,27 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
             String sqlParams = depts.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
             String sql = " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field + "` = `sys_user_dept`.`user_id` )";
-            String sqlSuper = " EXISTS ( SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `" + alias + "`.`" + field + "` AND  `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F' )";// 管理员Id查询
+            String sqlSuper = " OR  EXISTS ( SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `" + alias + "`.`" + field + "` AND  `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F' )";// 管理员Id查询
             context = CPI.getContext(queryWrapper, field);
             if (!Boolean.TRUE.equals(context)) {
-                queryWrapper.where(sql);
-                queryWrapper.or(sqlSuper);
+                queryWrapper.and(sql + sqlSuper);
                 CPI.putContext(queryWrapper, field, true);
             }
         } else {
             field = FIELD_DEPT_SCOPE;
             context = CPI.getContext(queryWrapper, field);
             if (!Boolean.TRUE.equals(context)) {
-                depts.forEach(dept -> {
-                    String sql = "JSON_CONTAINS(" + alias + "." + field + ", '" + dept + "', '$')";
-                    queryWrapper.or(sql);
-                });
+                StringBuilder append = new StringBuilder();
+                boolean isFirst = true;
+                for (Long dept : depts) {
+                    if (!isFirst) {
+                        append.append(" OR JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
+                    } else {
+                        isFirst = false;
+                        append.append("JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
+                    }
+                }
+                queryWrapper.and(append.toString());
                 CPI.putContext(queryWrapper, field, true);
             }
         }
@@ -324,7 +339,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private void handlePersonalScope(QueryWrapper queryWrapper, LoginUser loginUser, QueryTable table, Class<?> tableClazz) {
         String field = FIELD_CREATE_ID;
         boolean exists = isFieldExists(tableClazz, StringUtils.toCamelCase(field));
-        if (!exists) {
+        boolean isCustom = !loginUser.getUserRuleMap().isEmpty() || !loginUser.getDeptRuleMap().isEmpty();
+        if (!exists || isCustom) {
             return;
         }
         QueryCondition queryCondition = QueryCondition.create(
@@ -368,66 +384,61 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     /**
      * 自定义-用户维度
      *
-     * @param queryWrapper
      * @param table
      * @param customUserIds
      */
-    private void handleCustomUserRelation(QueryWrapper queryWrapper, QueryTable table, Collection<Long> customUserIds) {
-        if (customUserIds.isEmpty()) return;
+    private QueryCondition handleCustomUserRelation(QueryTable table, Collection<Long> customUserIds) {
+        if (customUserIds.isEmpty()) return null;
         String field;
         field = FIELD_CREATE_ID;
         QueryCondition queryCondition = QueryCondition.create(
                 new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()),
                 SqlConsts.IN,
                 customUserIds);
-        Object contextUser = CPI.getContext(queryWrapper, field + "_1007002");
-        if (!Boolean.TRUE.equals(contextUser)) {
-            queryWrapper.or(queryCondition);
-            CPI.putContext(queryWrapper, field + "_1007002", true);
-        }
+        return queryCondition;
     }
 
     /**
      * 自定义-部门维度
      *
-     * @param queryWrapper
+     * @param table
      * @param depts
      * @param logicMinUnit
      * @param alias
      * @param tableClazz
      */
-    private void handleCustomDeptRelation(QueryWrapper queryWrapper, Collection<Long> depts, String logicMinUnit, String alias, Class<?> tableClazz) {
+    private String handleCustomDeptRelation(QueryTable table, Collection<Long> depts, String logicMinUnit, String alias, Class<?> tableClazz) {
         String field;
-        Object context;
         if (depts.isEmpty()) {
-            return;
+            return "";
         }
         if ("user".equals(logicMinUnit)) {
             field = FIELD_CREATE_ID;
             boolean exists = isFieldExists(tableClazz, StringUtils.toCamelCase(field));
             if (!exists) {
-                return;
+                return "";
             }
 
             String sqlParams = depts.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
-            String sql = " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field + "` = `sys_user_dept`.`user_id` )";
-            context = CPI.getContext(queryWrapper, field + "_1007001");
-            if (!Boolean.TRUE.equals(context)) {
-                queryWrapper.or(sql);
-                CPI.putContext(queryWrapper, field + "_1007001", true);
-            }
+            return " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field + "` = `sys_user_dept`.`user_id` )";
         } else {
             field = FIELD_DEPT_SCOPE;
-            context = CPI.getContext(queryWrapper, field + "_1007001");
-            if (!Boolean.TRUE.equals(context)) {
-                depts.forEach(dept -> {
-                    String sql = "JSON_CONTAINS(" + alias + "." + field + ", '" + dept + "', '$')";
-                    queryWrapper.or(sql);
-                });
-                CPI.putContext(queryWrapper, field + "_1007001", true);
+            boolean exists = isFieldExists(tableClazz, StringUtils.toCamelCase(field));
+            if (!exists) {
+                return "";
             }
+            StringBuilder append = new StringBuilder();
+            boolean isFirst = true;
+            for (Long dept : depts) {
+                if (!isFirst) {
+                    append.append(" OR JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
+                } else {
+                    isFirst = false;
+                    append.append("JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
+                }
+            }
+            return append.toString();
+
         }
     }
-
-
 }
