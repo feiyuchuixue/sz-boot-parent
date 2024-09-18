@@ -26,6 +26,7 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     INVALID(10101, "无效的数据"),
     OTHER(1099, ""),
     UNKNOWN(10100, "服务异常"),
+    DEBOUNCE(10102, "您的请求过于频繁，请稍后再试！"),
 
     ;
 

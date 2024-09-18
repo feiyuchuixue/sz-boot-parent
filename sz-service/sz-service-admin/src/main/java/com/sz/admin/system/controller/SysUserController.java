@@ -18,6 +18,8 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.valid.annotation.NotZero;
+import com.sz.platform.debounce.annotation.Debounce;
+import com.sz.platform.debounce.annotation.DebounceIgnore;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -73,6 +75,8 @@ public class SysUserController {
         return ApiResult.success();
     }
 
+    @DebounceIgnore
+    @Debounce(time = 1000)
     @Operation(summary = "查询分页列表")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
