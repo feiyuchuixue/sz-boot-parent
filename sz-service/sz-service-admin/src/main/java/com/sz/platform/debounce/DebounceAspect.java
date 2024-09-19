@@ -62,7 +62,7 @@ public class DebounceAspect {
         if (!lockAcquired) {
             // 锁获取失败，返回防抖提示
             if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
-                return CompletableFuture.completedFuture("请求过于频繁，请稍后再试。"); // 异步返回结构问题，待验证。
+                return CompletableFuture.completedFuture(ApiResult.error(CommonResponseEnum.DEBOUNCE)); // 异步返回结构。
             } else {
                 // 获取返回类型
                 Class<?> returnType = method.getReturnType();
@@ -75,9 +75,9 @@ public class DebounceAspect {
                 else if (returnType.isAssignableFrom(ApiResult.class)) {
                     return ApiResult.error(CommonResponseEnum.DEBOUNCE);  // 返回 ApiResult
                 }
-                // 如果返回类型是其他类型，比如 String
+                // 如果返回类型是其他类型，比如 String。
                 else if (returnType.isAssignableFrom(String.class)) {
-                    return "请求过于频繁，请稍后再试。";  // 返回简单的字符串
+                    return CommonResponseEnum.DEBOUNCE.getMessage();  // 返回简单的字符串
                 }
                 // 如果是其他类型，抛出异常或者做其他处理
                 else {
@@ -85,13 +85,7 @@ public class DebounceAspect {
                 }
             }
         }
-
-        Object result = point.proceed(); // 执行方法
-        if (result instanceof CompletableFuture) {
-            return ((CompletableFuture<String>) result)
-                    .exceptionally(ex -> "执行过程中发生异常：" + ex.getMessage());
-        }
-        return result;
+        return point.proceed(); // 执行方法
     }
 
     private String generateLockKey(HttpServletRequest request) {
