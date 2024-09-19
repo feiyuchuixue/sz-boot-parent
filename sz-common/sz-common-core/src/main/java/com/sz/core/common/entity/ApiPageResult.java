@@ -1,11 +1,14 @@
 package com.sz.core.common.entity;
 
 import com.mybatisflex.core.paginate.Page;
+import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.PageUtils;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ import java.util.List;
 @Data
 public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     {
@@ -59,4 +63,10 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
         return apiResult;
     }
 
+    public static <T> ApiPageResult<T> error(CommonResponseEnum responseEnum) {
+        ApiPageResult<T> apiResult = new ApiPageResult<>();
+        apiResult.setCode(String.valueOf(responseEnum.getCode()));
+        apiResult.setMessage(responseEnum.getMessage());
+        return apiResult;
+    }
 }

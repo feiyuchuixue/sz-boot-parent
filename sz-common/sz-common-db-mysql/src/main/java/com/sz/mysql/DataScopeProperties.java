@@ -6,15 +6,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "data-scope")
+@ConfigurationProperties(prefix = "sz.data-scope")
 public class DataScopeProperties {
 
     {
-        enable = true;
+        enabled = true;
         logicMinUnit = "user";
     }
 
-    private boolean enable;
+    private boolean enabled;
     private String logicMinUnit;
 
 }

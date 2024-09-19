@@ -46,7 +46,7 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
 
     @Override
     public void customize(FlexGlobalConfig flexGlobalConfig) {
-        if (dataScopeProperties.isEnable()) {
+        if (dataScopeProperties.isEnabled()) {
             // 注册查询权限监听方言
             DialectFactory.registerDialect(DbType.MYSQL, new SimplePermissionDialect());
         }

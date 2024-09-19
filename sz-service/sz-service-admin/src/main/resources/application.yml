@@ -50,4 +50,9 @@ data-scope:
   enable: true
   # 数据逻辑实现最小验证（查询）单位：dept 部门（dept_scope字段）、user 用户 (create_id 字段),默认user。
   logic-min-unit: user
-
+sz:
+  debounce:
+    # 是否启用防抖功能
+    enabled: true
+    # 全局防抖时间，单位毫秒（默认1000ms）
+    global-lock-time: 1000

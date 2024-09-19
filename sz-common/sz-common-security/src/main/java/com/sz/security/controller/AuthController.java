@@ -1,6 +1,7 @@
 package com.sz.security.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.security.pojo.LoginInfo;
 import com.sz.security.pojo.LoginVO;
@@ -31,6 +32,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @DebounceIgnore
     @Operation(summary ="登录")
     @PostMapping("login")
     public ApiResult<LoginVO> login(@RequestBody LoginInfo loginInfo) {

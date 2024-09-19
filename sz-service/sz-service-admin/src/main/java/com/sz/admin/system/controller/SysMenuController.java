@@ -12,6 +12,7 @@ import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.service.SysMenuService;
 import com.sz.admin.system.service.SysPermissionService;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -89,6 +90,7 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.getSimpleMenuTree(nodeId));
     }
 
+    @DebounceIgnore
     @Operation(summary = "查询用户具有的菜单")
     @GetMapping("/menu")
     public ApiResult queryMenuByUserId() {
@@ -103,6 +105,7 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.hasExistsPermissions(dto));
     }
 
+    @DebounceIgnore
     @Operation(summary = "查询全部按钮权限")
     @GetMapping("/btn/permissions")
     public ApiResult<List<String>> findBtnPermission() {
@@ -116,6 +119,7 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
     }
 
+    @DebounceIgnore
     @Operation(summary = "查询用户角色", description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
     @GetMapping("/user/roles")
     public ApiResult<List<String>> findUserRoles() {
