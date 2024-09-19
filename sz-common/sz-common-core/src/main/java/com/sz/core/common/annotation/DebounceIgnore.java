@@ -1,4 +1,4 @@
-package com.sz.platform.debounce.annotation;
+package com.sz.core.common.annotation;
 
 import java.lang.annotation.*;
 

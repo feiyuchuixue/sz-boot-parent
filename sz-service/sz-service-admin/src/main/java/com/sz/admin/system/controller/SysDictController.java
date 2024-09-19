@@ -7,6 +7,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.service.SysDictService;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,6 +66,7 @@ public class SysDictController {
         return ApiPageResult.success(sysDictService.list(dto));
     }
 
+    @DebounceIgnore
     @Operation(summary = "系统字典查询-全部")
     @GetMapping("dict")
     public ApiResult<Map<String, List<DictVO>>> listDict() {

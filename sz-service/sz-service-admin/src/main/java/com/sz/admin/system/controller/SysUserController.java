@@ -2,11 +2,9 @@ package com.sz.admin.system.controller;
 
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
-import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
@@ -18,8 +16,8 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.common.valid.annotation.NotZero;
-import com.sz.platform.debounce.annotation.Debounce;
-import com.sz.platform.debounce.annotation.DebounceIgnore;
+import com.sz.core.common.annotation.Debounce;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
