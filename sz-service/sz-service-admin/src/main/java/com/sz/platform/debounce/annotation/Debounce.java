@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface Debounce {
     /**
-     * 默认防抖时间，2000 ms
+     * 默认防抖时间，1000 ms
      *
      * @return
      */
