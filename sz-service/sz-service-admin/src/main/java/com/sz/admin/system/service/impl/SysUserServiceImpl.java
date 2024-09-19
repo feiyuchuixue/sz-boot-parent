@@ -411,7 +411,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         loginUser.setRoles(sysPermissionService.getRoles(sysUser)); // 获取用户角色
         loginUser.setDepts(sysPermissionService.getDepts(sysUser)); // 获取用户部门
         loginUser.setDeptAndChildren(sysPermissionService.getDeptAndChildren(sysUser)); // 获取用户部门及子孙节点
-        if (!dataScopeProperties.isEnable()) return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
+        if (!dataScopeProperties.isEnabled()) return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
 
         Map<String, String> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
         Set<String> findMenuIds = new HashSet<>();

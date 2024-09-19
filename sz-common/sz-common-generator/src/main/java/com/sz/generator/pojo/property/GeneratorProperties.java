@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
-@ConfigurationProperties(prefix = "generator")
+@ConfigurationProperties(prefix = "sz.generator")
 public class GeneratorProperties {
 
     {
