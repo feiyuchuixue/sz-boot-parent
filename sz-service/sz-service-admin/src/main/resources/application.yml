@@ -24,35 +24,35 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 15MB
-# 生成工具
-generator:
-  path:
-    # 前端项目地址
-    web:
-    # 后端项目地址，默认自动检测springboot项目路径，无需配置。
-    api: E://code//Gitlab//sz-framework//sz-admin
-  # 模块名，指定代码生成的模块
-  module-name: sz-service
-  service-name: sz-service-admin
-  global:
-    author: sz-admin
-    packages: com.sz.admin
-# 微信生态
-wechat:
-  # 小程序
-  mini:
-    app-id: your_app_id
-    app-secret: your_app_secret
 app:
   version: @project.version@
-# 是否启用数据权限拼接
-data-scope:
-  enable: true
-  # 数据逻辑实现最小验证（查询）单位：dept 部门（dept_scope字段）、user 用户 (create_id 字段),默认user。
-  logic-min-unit: user
 sz:
+  # 是否启用数据权限拼接
+  data-scope:
+    enabled: true
+    # 数据逻辑实现最小验证（查询）单位：dept 部门（dept_scope字段）、user 用户 (create_id 字段),默认user。
+    logic-min-unit: user
   debounce:
     # 是否启用防抖功能
     enabled: true
     # 全局防抖时间，单位毫秒（默认1000ms）
-    global-lock-time: 1000
+    global-lock-time: 500
+  # 生成工具
+  generator:
+    path:
+      # 前端项目地址
+      web:
+      # 后端项目地址，默认自动检测springboot项目路径，无需配置。
+      api: E://code//Gitlab//sz-framework//sz-admin
+    # 模块名，指定代码生成的模块
+    module-name: sz-service
+    service-name: sz-service-admin
+    global:
+      author: sz-admin
+      packages: com.sz.admin
+  # 微信生态
+  wechat:
+    # 小程序
+    mini:
+      app-id: your_app_id
+      app-secret: your_app_secret
