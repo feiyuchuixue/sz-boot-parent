@@ -6,6 +6,7 @@ import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
+import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +37,7 @@ public interface TeacherStatisticsService extends IService<TeacherStatistics> {
 
     TeacherStatisticsVO detail(Long id);
 
-    void importExcel(MultipartFile file);
+    void importExcel(ImportExcelDTO dto);
 
     void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response);
 }

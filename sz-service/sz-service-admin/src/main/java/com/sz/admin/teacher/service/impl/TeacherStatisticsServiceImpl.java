@@ -11,6 +11,7 @@ import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
+import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
@@ -25,12 +26,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
-
-import static com.sz.admin.teacher.pojo.po.table.TeacherStatisticsTableDef.TEACHER_STATISTICS;
 
 /**
  * <p>
@@ -99,12 +97,13 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @SneakyThrows
     @Override
-    public void importExcel(MultipartFile file) {
-        ExcelResult<TeacherStatisticsImportDTO> excelResult = ExcelUtils.importExcel(file.getInputStream(), TeacherStatisticsImportDTO.class, true);
+    public void importExcel(ImportExcelDTO dto) {
+        ExcelResult<TeacherStatisticsImportDTO> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), TeacherStatisticsImportDTO.class, true);
         List<TeacherStatisticsImportDTO> list = excelResult.getList();
         List<String> errorList = excelResult.getErrorList();
         String analysis = excelResult.getAnalysis();
         System.out.println(" analysis : " + analysis);
+        System.out.println(" isCover : " + dto.getIsCover());
     }
 
     @SneakyThrows

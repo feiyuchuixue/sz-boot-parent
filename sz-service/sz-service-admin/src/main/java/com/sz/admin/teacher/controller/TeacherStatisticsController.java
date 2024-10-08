@@ -8,10 +8,7 @@ import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
 import com.sz.core.common.constant.GlobalConstant;
-import com.sz.core.common.entity.ApiPageResult;
-import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.core.common.entity.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -20,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -30,11 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
  * @author sz
  * @since 2024-02-19
  */
-@Tag(name =  "教师统计总览表")
+@Tag(name = "教师统计总览表")
 @RestController
 @RequestMapping("teacher-statistics")
 @RequiredArgsConstructor
-public class TeacherStatisticsController  {
+public class TeacherStatisticsController {
 
     private final TeacherStatisticsService teacherStatisticsService;
 
@@ -82,8 +78,8 @@ public class TeacherStatisticsController  {
     })
     @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/import")
-    public void importExcel(MultipartFile file) {
-        teacherStatisticsService.importExcel(file);
+    public void importExcel(@ModelAttribute ImportExcelDTO dto) {
+        teacherStatisticsService.importExcel(dto);
     }
 
     @Operation(summary = "导出")
