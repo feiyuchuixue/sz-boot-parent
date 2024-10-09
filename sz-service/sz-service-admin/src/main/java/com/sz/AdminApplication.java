@@ -2,6 +2,7 @@ package com.sz;
 
 import com.sz.mysql.FlywayProperties;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ public class AdminApplication {
 
     private final Flyway businessFlyway;
 
+    @Getter
     private static String version;
 
     @PostConstruct
@@ -32,10 +34,6 @@ public class AdminApplication {
         FlywayProperties.FlywayConfig framework = flywayProperties.getFramework();
         if (framework.isEnabled()) frameworkFlyway.migrate();
         if (business.isEnabled()) businessFlyway.migrate();
-    }
-
-    public static String getVersion() {
-        return version;
     }
 
 

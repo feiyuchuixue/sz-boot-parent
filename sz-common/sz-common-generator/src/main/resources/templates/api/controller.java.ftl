@@ -50,7 +50,7 @@ public class ${controllerClassName}  {
 
     @Operation(summary = "新增")
 <#if GeneratorInfo.btnPermissionType == "1">
-    @SaCheckPermission(value = "${createPermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${createPermission}")
 </#if>
     @PostMapping
     public ApiResult create(@RequestBody ${dtoCreateClassName} dto) {
@@ -60,7 +60,7 @@ public class ${controllerClassName}  {
 
     @Operation(summary = "修改")
 <#if GeneratorInfo.btnPermissionType == "1">
-    @SaCheckPermission(value = "${updatePermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${updatePermission}")
 </#if>
     @PutMapping
     public ApiResult update(@RequestBody ${dtoUpdateClassName} dto) {
@@ -70,7 +70,7 @@ public class ${controllerClassName}  {
 
     @Operation(summary = "删除")
 <#if GeneratorInfo.btnPermissionType == "1">
-    @SaCheckPermission(value = "${removePermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${removePermission}")
 </#if>
     @DeleteMapping
     public ApiResult remove(@RequestBody SelectIdsDTO dto) {
@@ -79,14 +79,14 @@ public class ${controllerClassName}  {
     }
 
     @Operation(summary = "列表查询")
-    @SaCheckPermission(value = "${listPermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${listPermission}")
     @GetMapping
     public ApiResult<PageResult<${voClassName}>> list(${dtoListClassName} dto) {
         return ApiPageResult.success(${serviceName}.page(dto));
     }
 
     @Operation(summary = "详情")
-    @SaCheckPermission(value = "${listPermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${listPermission}")
     @GetMapping("/{id}")
     public ApiResult<${voClassName}> detail(@PathVariable Object id) {
         return ApiResult.success(${serviceName}.detail(id));
@@ -98,7 +98,7 @@ public class ${controllerClassName}  {
       @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
     })
     <#if GeneratorInfo.btnPermissionType == "1">
-    @SaCheckPermission(value = "${importPermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${importPermission}")
     </#if>
     @PostMapping("/import")
     public void importExcel(@ModelAttribute ImportExcelDTO dto) {
@@ -109,7 +109,7 @@ public class ${controllerClassName}  {
 <#if GeneratorInfo.hasExport == "1">
     @Operation(summary = "导出")
   <#if GeneratorInfo.btnPermissionType == "1">
-    @SaCheckPermission(value = "${exportPermission}", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "${exportPermission}")
   </#if>
     @PostMapping("/export")
     public void exportExcel(@RequestBody ${dtoListClassName} dto, HttpServletResponse response) {

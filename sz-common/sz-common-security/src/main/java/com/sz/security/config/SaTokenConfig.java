@@ -4,7 +4,9 @@ import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.strategy.SaAnnotationStrategy;
 import com.sz.core.common.configuration.WebMvcConfiguration;
+import com.sz.security.core.MySaCheckPermissionHandler;
 import com.sz.security.core.interceptor.MySaInterceptor;
 import com.sz.security.pojo.WhitelistProperties;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,9 @@ public class SaTokenConfig extends WebMvcConfiguration {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 注册自定义 @SaCheckPermission 注解Handler;
+        SaAnnotationStrategy.instance.registerAnnotationHandler(new MySaCheckPermissionHandler());
+        // 注册 自定义 MySaInterceptor 拦截器
         registry.addInterceptor(new MySaInterceptor(handler -> {
             SaRouter.match("/**", r -> StpUtil.checkLogin()); // 这里可以结合自己业务改造
         })).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());

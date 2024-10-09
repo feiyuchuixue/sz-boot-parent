@@ -38,7 +38,7 @@ public class MySaInterceptor extends SaInterceptor {
                 Method method = ((HandlerMethod) handler).getMethod();
                 SaAnnotationStrategy.instance.checkMethodAnnotation.accept(method);
 
-                // 如果此 Method 标注了 @SaCheckPermission，则进行权限校验
+                // 如果此 Method 标注了 @SaCheckPermission，则进行（数据权限）校验
                 SaCheckPermission checkPermission = (SaCheckPermission) SaAnnotationStrategy.instance.getAnnotation.apply(method, SaCheckPermission.class);
                 if (checkPermission != null) {
                     ControlThreadLocal.set(new ControlPermissions(checkPermission.value(), checkPermission.mode().name()));

@@ -61,7 +61,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
                 return;
             }
 
-            if (loginUser.getRoles().contains(GlobalConstant.SUPER_ROLE)) { // 管理员，可查看全部
+            if (LoginUtils.isSuperAdmin()) { // 管理员，可查看全部
                 super.prepareAuth(queryWrapper, operateType);
                 return;
             }

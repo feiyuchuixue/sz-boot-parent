@@ -194,7 +194,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                     deptIds = deptRuleMap.get(menuId);
                     deptIds.add(relationId);
                 } else {
-                   deptIds = new HashSet<>();
+                    deptIds = new HashSet<>();
                     deptIds.add(relationId);
                     deptRuleMap.put(menuId, deptIds);
                 }
@@ -221,6 +221,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
         }
     }
 
+    /**
+     * 验证用户是否是【管理员身份】
+     * 验证方式：sys_user.user_tag_cd 字段； [1001001 测试用户; 1001002 超级管理员; 1001003 普通用户] 。 详见字典：用户标签（user_tag）
+     *
+     * @param sysUser
+     * @return
+     */
     private boolean isSuperAdmin(SysUser sysUser) {
         if (sysUser != null && ("1001002").equals(sysUser.getUserTagCd())) {
             return true;
