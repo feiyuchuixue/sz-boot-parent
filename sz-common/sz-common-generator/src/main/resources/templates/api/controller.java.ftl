@@ -23,7 +23,7 @@ import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
 <#if GeneratorInfo.hasImport == "1">
-import org.springframework.web.multipart.MultipartFile;
+import com.sz.core.common.entity.ImportExcelDTO;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 import jakarta.servlet.http.HttpServletResponse;
@@ -101,8 +101,8 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${importPermission}", orRole = GlobalConstant.SUPER_ROLE)
     </#if>
     @PostMapping("/import")
-    public void importExcel(MultipartFile file) {
-        ${serviceName}.importExcel(file);
+    public void importExcel(@ModelAttribute ImportExcelDTO dto) {
+        ${serviceName}.importExcel(dto);
     }
 </#if>
 

@@ -13,7 +13,7 @@ import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
 <#if GeneratorInfo.hasImport == "1">
-import org.springframework.web.multipart.MultipartFile;
+import com.sz.core.common.entity.ImportExcelDTO;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,7 +46,7 @@ public interface ${serviceClassName} extends IService<${poClassName}> {
     ${voClassName} detail(Object id);
 
     <#if GeneratorInfo.hasImport == "1">
-    void importExcel(MultipartFile file);
+    void importExcel(ImportExcelDTO dto);
     </#if>
 
     <#if GeneratorInfo.hasExport == "1">

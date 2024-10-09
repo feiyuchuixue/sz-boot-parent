@@ -24,7 +24,7 @@ import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 <#if GeneratorInfo.hasImport == "1">
 import ${dtoPkg}.${dtoImportClassName};
-import org.springframework.web.multipart.MultipartFile;
+import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.excel.core.ExcelResult;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
@@ -123,12 +123,13 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 
     @SneakyThrows
     @Override
-    public void importExcel(MultipartFile file) {
-        ExcelResult<${dtoImportClassName}> excelResult = ExcelUtils.importExcel(file.getInputStream(), ${dtoImportClassName}.class, true);
+    public void importExcel(ImportExcelDTO dto) {
+        ExcelResult<${dtoImportClassName}> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), ${dtoImportClassName}.class, true);
         List<${dtoImportClassName}> list = excelResult.getList();
         List<String> errorList = excelResult.getErrorList();
         String analysis = excelResult.getAnalysis();
         System.out.println(" analysis : " + analysis);
+        System.out.println(" isCover : " + dto.getIsCover());
     }
 </#if>
 <#if GeneratorInfo.hasExport == "1">
