@@ -6,6 +6,7 @@ import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO;
+import com.sz.core.common.entity.SelectIdsDTO;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -40,6 +41,12 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      */
     List<SysUserVO> queryAllSysUserList(SysUserListDTO dto);
 
+    /**
+     * 查询全部部门的用户名称列表
+     * @param dto
+     * @return
+     */
+    List<SysUserVO> queryAllSysUserNameList(String[] ids);
 
     /**
      * 查询（部门）用户列表

@@ -95,6 +95,17 @@
         </where>
         ORDER BY su.create_time ASC
     </select>
+    <select id="queryAllSysUserNameList" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
+        SELECT username FROM sys_user su
+        <where>
+            su.del_flag = 'F'
+            AND id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+        ORDER BY su.create_time ASC
+    </select>
     <select id="queryUserDeptInfo" resultType="com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO">
         SELECT
         user_id,
