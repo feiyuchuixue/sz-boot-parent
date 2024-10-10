@@ -393,9 +393,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void unlock(SelectIdsDTO dto) {
-        List ids = dto.getIds();
-        for (Object id : ids) {
-            RedisUtils.removeKey(CommonKeyConstants.SYS_PWD_ERR_CNT, Utils.getStringVal(id));
+        if (dto.getIds() == null || dto.getIds().isEmpty()) return;
+        String[] ids = dto.getIds().stream().map(Utils::getStringVal).filter(Objects::nonNull).toArray(String[]::new);
+        List<SysUserVO> sysUserVOS = this.mapper.queryAllSysUserNameList(ids);
+        for (SysUserVO sysUserVO : sysUserVOS) {
+            RedisUtils.removeKey(CommonKeyConstants.SYS_PWD_ERR_CNT, Utils.getStringVal(sysUserVO.getUsername()));
         }
     }
 
