@@ -10,6 +10,7 @@ import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.pojo.po.table.SysFileTableDef;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.FileUploadUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
@@ -80,7 +81,7 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
             fileLog(file, map);
         } catch (Exception e) {
             e.printStackTrace();
-            AdminResponseEnum.SYS_UPLOAD_FILE_ERROR.assertTrue(true);
+            CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
         }
         return fileUrl;
     }

@@ -88,11 +88,14 @@ public class ApiResult<T> implements Serializable {
 
     public static <T> ApiResult<T> error(CommonResponseEnum responseEnum) {
         ApiResult<T> apiResult = new ApiResult<>();
-        apiResult.code = String.valueOf(responseEnum.getCode());
+        apiResult.code = getResponseCode(responseEnum);
         apiResult.message = responseEnum.getMessage();
         apiResult.data = (T) new HashMap<>(1);
         return apiResult;
     }
 
+    protected static String getResponseCode(CommonResponseEnum responseEnum) {
+        return responseEnum.getCodePrefixEnum().getPrefix() + responseEnum.getCode();
+    }
 
 }

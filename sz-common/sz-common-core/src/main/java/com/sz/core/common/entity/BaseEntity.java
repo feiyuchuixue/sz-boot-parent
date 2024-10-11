@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
  * @Date 2023/12/8 18:28
  * @Version 1.0
  */
+@Deprecated
 @Data
 @Schema(description = "基础Entity通用字段类")
 public class BaseEntity {

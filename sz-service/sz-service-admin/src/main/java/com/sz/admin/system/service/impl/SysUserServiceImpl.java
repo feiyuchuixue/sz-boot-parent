@@ -150,7 +150,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create()
                 .eq(SysUser::getId, dto.getId());
         SysUser one = getOne(wrapper);
-        AdminResponseEnum.INVALID_USER.assertNull(one);
+        CommonResponseEnum.INVALID_USER.assertNull(one);
         redisCache.clearUserInfo(one.getUsername());
         updateById(user);
     }
@@ -167,7 +167,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create()
                 .in(SysUser::getId, dto.getIds());
         // 检查用户是否存在
-        AdminResponseEnum.INVALID_ID.assertTrue(count(wrapper) < 1);
+        CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) < 1);
         removeByIds((Collection<? extends Serializable>) dto.getIds());
     }
 
@@ -180,7 +180,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserVO detail(Long id) {
         SysUser user = getById(id);
-        AdminResponseEnum.INVALID_ID.assertNull(user);
+        CommonResponseEnum.INVALID_ID.assertNull(user);
         return BeanCopyUtils.copy(user, SysUserVO.class);
     }
 

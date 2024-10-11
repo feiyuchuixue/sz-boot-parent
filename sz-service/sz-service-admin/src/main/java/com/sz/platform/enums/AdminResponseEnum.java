@@ -1,5 +1,6 @@
 package com.sz.platform.enums;
 
+import com.sz.core.common.enums.ErrorPrefixEnum;
 import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
 
 /**
@@ -7,23 +8,8 @@ import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
  */
 public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
 
-    NO_HEADER_TOKEN(2003, "无效的token"),
-    INVALID_USER(2004, "无效用户"),
-    INVALID_ID(2005, "无效的id"),
-    SYS_DICT_TYPE_EXISTS(2006, "字典类型已存在"),
-    SYS_DICT_EXISTS(2007, "字典已存在"),
-
-    SYS_MENU_NOT_EXISTS(2008, "菜单不存在"),
-
-    SYS_ROLE_EXISTS(2009, "角色已存在"),
-    MENU_PATH_EXISTS(2010, "路由地址已存在"),
-
-    SYS_UPLOAD_FILE_ERROR(2011, "上传文件失败"),
-
-    MENU_NAME_EXISTS(2012, "路由名称已存在"),
-
-    SYS_CONFIG_EXISTS(2013, "参数key已存在"),
-    INVALID_EXISTS(2014, "已存在");
+    MENU_NAME_EXISTS(1001, "Menu路由名称已存在"),
+    ;
 
     /**
      * 返回码
@@ -69,4 +55,10 @@ public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public ErrorPrefixEnum getCodePrefixEnum() {
+        return ErrorPrefixEnum.ADMIN;
+    }
+
 }

@@ -79,7 +79,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         long count = QueryChain.of(sysDictTypeMapper)
                 .eq(SysDictType::getId, dto.getSysDictTypeId())
                 .count();
-        CommonResponseEnum.INVALID_ID.message("SYS_DICT_TYPE不存在").assertTrue(count < 1);
+        CommonResponseEnum.NOT_EXISTS.message("SYS_DICT_TYPE不存在").assertTrue(count < 1);
 
         wrapper = QueryWrapper.create()
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))

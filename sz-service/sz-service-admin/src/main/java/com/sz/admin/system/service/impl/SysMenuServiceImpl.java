@@ -334,7 +334,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public SysMenu detail(String id) {
         SysMenu menu = getById(id);
-        AdminResponseEnum.INVALID_ID.assertNull(menu);
+        CommonResponseEnum.INVALID_ID.assertNull(menu);
         return menu;
     }
 

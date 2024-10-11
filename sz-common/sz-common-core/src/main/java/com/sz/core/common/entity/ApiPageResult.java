@@ -8,7 +8,6 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,8 +39,8 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
         return apiResult;
     }
 
-    public static <T> ApiResult<PageResult<T>> success(Page<T> page){
-       return success(PageUtils.getPageResult(page));
+    public static <T> ApiResult<PageResult<T>> success(Page<T> page) {
+        return success(PageUtils.getPageResult(page));
     }
 
     /**
@@ -65,7 +64,7 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
 
     public static <T> ApiPageResult<T> error(CommonResponseEnum responseEnum) {
         ApiPageResult<T> apiResult = new ApiPageResult<>();
-        apiResult.setCode(String.valueOf(responseEnum.getCode()));
+        apiResult.setCode(getResponseCode(responseEnum));
         apiResult.setMessage(responseEnum.getMessage());
         return apiResult;
     }
