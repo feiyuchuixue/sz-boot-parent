@@ -1,0 +1,276 @@
+# 更新日志
+
+## v0.7.11 （20241009）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-data-redis：3.3.3  -> 3.3.4。
+    - spring-boot-starter-parent：3.3.3  -> 3.3.4。
+    - commons-io：2.16.1 -> 2.17.0。
+    - HikariCP：5.1.0 -> 6.0.0。
+    - swagger-annotations：2.2.23 -> 2.2.25。
+  - 优化：sz自定义配置yml文件修改。
+  - 修复：角色-标识属性空值也参与校验（唯一校验时）问题。
+  - 优化：Excel导入支持数据覆盖参数。
+  - 优化：[代码生成器] ftl模版, 规范化Excel导入参数、controller @SaCheckPermission 模版去除orRole=xxx的默认值。
+  - 优化：@SaCheckPermission注解接口鉴权时默认添加对“超级管理员”的默认支持，无需再使用orRole=xxx指定。
+- sz-admin：
+  - 修复：菜单标签页Tabs同步问题。[#IAUD56](https://gitee.com/feiyuchuixue/sz-boot-parent/issues/IAUD56)
+  - 修复：关闭面包屑导航“目录”类型菜单的跳转。[#5](https://github.com/feiyuchuixue/sz-admin/issues/5#issue-2555540407)
+  - 优化：代码清理与格式化。
+
+## v0.7.10 （20240919）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - com.alibaba:easyexcel：4.0.2  -> 4.0.3。
+  - 修复：某些情况下账户列表查询的分页问题。
+  - 修复：数据权限组合拼接条件时OR、AND的优先级问题。
+  - 新增：接口防抖功能。
+  - 优化：sz自定义配置格式统一化。
+- sz-admin：
+  - 优化：WebSocket验证逻辑。
+  - 优化：env环境变量。
+  - 修复：dict接口登录时请求两次的问题。
+
+## v0.7.9 （20240913）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - org.apache.commons:commons-lang3：3.16.0  -> 3.17.0
+    - swagger-annotations： 2.2.21  -> 2.2.23.
+    - org.aspectj:aspectjweaver：1.9.22 -> 1.9.22.1
+    - mysql-connector-j： 8.4.0 -> 9.0.0
+    - hutool-jwt： 5.8.31 -> 5.8.32
+  - 新增：BeanCopyUtils 增加copy, copyNotIgnoreNull方法。
+  - 优化：**数据权限**映射表名的获取规则：优先使用@Table注解名称属性。
+  - 修复：角色管理标识空值校验问题。
+  - 优化：[代码生成] 前端搜索项独立enum Select的支持。
+  - 修复: @SaIgnore注解失效问题。
+  - 优化: @SaIgnore的使用场景，[详见文档](https://szadmin.cn/md/Help/doc/code-standard.html#_9-%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83) 。
+  - 优化: 账户detail详情查询接口，排除敏感信息。
+- sz-admin：
+  - 优化：改造SearchForm组件，添加对enum的独立支持。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 修改：[教师统计] searchColumns enum演示。
+
+## v0.7.8 （20240902）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-parent：3.2.5  -> 3.3.3
+    - jackson：2.16.1 -> 2.17.2
+    - hutool-jwt：5.8.27 -> 5.8.31
+    - easyexcel： 3.3.4 -> 4.0.2
+    - aspectjweaver： 1.9.22 -> 1.9.22.1
+    - commons-lang3：3.14.0 -> 3.16.0
+    - mybatis-flex-spring-boot3-starter：1.9.3 -> 1.9.7
+    - modelmapper：3.2.0 -> 3.2.1
+    - minio：8.5.10 -> 8.5.12
+    - sa-token：1.38.0 -> 1.39.0
+  - 修复：代码生成，zip生成时流未关闭的问题。
+  - 修复：ftl sql模板int类型参数自动转换千分位的问题。
+  - 修复：字典更新问题。
+  - 优化：类名、包结构。
+  - 修改：MybatisFlex**禁用全局null值自动忽略**。代码生成器模版、部分业务查询拼接同步改动。|增强逻辑清晰和确定性。
+- sz-admin：
+  - 修改：客户端管理Form项描述错误
+  - 优化：[代码生成] 编辑Form，字典类型下拉展示。区分静态字典和动态字典。（感谢[Alex-1116](https://github.com/Alex-1116)）
+
+## v0.7.7 （20240823）
+
+- sz-boot-parent：
+  - 优化：包结构及代码。
+  - 修复：字典sql导出ID格式问题。
+  - 修复：[代码生成] LocalDateTime范围查询Search区域展示异常问题。
+  - 新增：字典改造，对静态字典、动态字典提供支持。
+  - 优化：DictVO对象，完善字典查询sql增加对逻辑删除的支持。
+  - 修改：SysUser 动态字典：用户信息的支持。
+  - 优化：TeacherStatics演示示例，@DictFormat注解isSelected()的调整等。感谢[阳纸伞](https://github.com/1327614618)的贡献代码。
+- sz-admin：
+  - 优化：账户管理-切换部门列表时list接口请求两次额问题。
+
+## v0.7.6 （20240814）
+
+- sz-boot-parent：
+  - 修复：[代码生成] excel导出条数与列表查询数不符的问题。
+  - 修复：[代码生成] 关联字典的查询条件，生成类型为input而非select的问题。
+  - 修复：[代码生成] 新增菜单类型【菜单】时，deep层级赋值不正确问题。
+  - 优化：[代码生成] 代码生成逻辑，修复一些bug。
+  - 优化：添加business业务Flyway README描述文件。
+  - 优化：遵循jdk21建议，使用@Serial注解标识serialVersionUID。
+  - 优化：角色增加is_lock, permissions属性。
+  - 修复：字典菜单SQL查看时某些原因无法展示的问题。
+- sz-admin：
+  - 优化：代码生成字段类型添加描述。
+  - 优化：角色管理增加标识属性（permissions）、锁定状态（is_lock）。
+
+## v0.7.5 （20240812）
+
+- sz-boot-parent：
+  - 优化：账户新增时，如果选择了可用的部门，将账户创建到指定部门。
+  - 新增：字典管理，SQL导出功能。
+  - 优化：代码生成模板格式。
+- sz-admin：
+  - 修复：Header结构Avatar组件 默认头像展示问题。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 优化： 代码生成HighCode组件 增加行号展示。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 修复：账号管理 新增用户后 与部门列表的通讯问题。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 优化：代码生成编辑操作 根据导入导出checkbox 动态展示对应columns。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 优化：账户新增时，如果选择了可用的部门，将账户创建到指定部门下。
+  - 新增：字典管理，SQL导出功能。
+  - 修复：代码生成组件 行号 头部标题固定。（感谢[Alex-1116](https://github.com/Alex-1116)）
+
+## v0.7.4 （20240730）
+
+- sz-boot-parent：
+  - 优化：业务与框架Flyway迁移脚本分离
+
+    - 新增多 Flyway 实例配置，分别管理业务和框架迁移脚本。
+    - 修改 `flyway.yml` 配置项，实现配置的清晰划分。
+    - 利用 `@ConfigurationProperties` 自动绑定配置项，创建独立的 Flyway 实例
+    - 各自使用独立的历史版本表（t_db_version 和 t_db_version_business）以避免相互干扰
+    - 优化迁移管理，提高数据库版本管理的灵活性和扩展性
+    - 更新了flyway的ddl脚本路径，在classpath:/db 路径下，新增framework、business路径，并**将原 classpath:/db 路径下 的DDL文件移动至 classpath:/db/framework下**。|  <font color="red">可能的破坏性更新</font>
+
+    > [!IMPORTANT]
+    >
+    > - **重要通知：数据库迁移操作**
+    >
+    >   为了确保数据库迁移的顺利进行，我们特别提醒您注意以下步骤：
+    >
+    >   1. **迁移DDL脚本**：请将所有使用Flyway编写的自定义DDL（非框架提供的v1.1~v1.8版本）迁移脚本移动至`classpath:/db/business`目录下。
+    >   2. **重新规划DDL版本**：在迁移脚本完成后，重新规划并更新DDL的版本号，确保版本控制的一致性和可追溯性。
+    >   3. **数据备份**：**务必在执行迁移操作之前**，对现有数据库进行全面的数据备份。这是保障数据安全的关键步骤，避免在迁移过程中发生数据丢失或损坏的风险。
+    >   4. **执行迁移操作**：在确认数据备份无误后，按照既定的迁移计划执行DDL迁移操作。
+
+## v0.7.3 （20240728）
+
+- sz-boot-parent：
+  - 修复：部门逻辑删除后，account数据展示问题。
+  - 优化：permission唯一性校验。
+  - 新增：逻辑删除自动填充支持，delete_id,delete_time属性。
+  - 优化：代码生成器，提取配置文件。
+  - 优化：代码生成器，menu生成Sort逻辑。
+  - 修复：预览时检查菜单重复的问题。
+- sz-admin：
+  - 优化：permission唯一性校验。
+  - 优化：码生成器编辑Form表单的交互体验。
+- 官网文档：
+  - 新增：[代码生成器](https://szadmin.cn/md/Help/gen/generator-tools.html)文档。
+## v0.7.2 （20240719）
+
+> [!WARNING]
+>
+> **数据权限的session存储结构部分发生了改变，移除了customUserIds、customDeptIds。启用了userRuleMap、deptRuleMap来配合灵活的自定义规则。**
+
+- sz-boot-parent：
+  - 修改：数据权限，逻辑优化。减少用户操作，提升用户体验。
+- sz-admin：
+
+  - 修改：数据权限Form，优化交互逻辑。
+  - 修复：数据权限，编辑后再新增操作项disable的问题。
+- 官网文档：
+
+  - 修改：[数据权限文档](https://szadmin.cn/md/Help/doc/data-scope.html) 对部分逻辑进行了简化。
+
+## v0.7.1 （20240717）
+
+- sz-boot-parent：
+
+  - 修复：代码生成pojo类注释名称问题
+
+  - 优化：用户管理功能，代码清理
+
+  - 修复：TreeUtils constructTreeRecursiveExcludeNode方法忽略指定节点不生效的问题
+
+  - 修复：AOP url参数解析异常问题
+
+  - 优化：文件清理，命名规范化
+
+  - 新增：StringUtils toSnakeCase方法
+
+  - **修改：字典管理，添加业务类型，区分系统字典、业务字典**  |  <font color="red">可能的破坏性更新</font>
+
+    > [!IMPORTANT] ！重要
+    >
+    > 1000号段为业务性字典，如有新增的字典请迁移至2000号段。受影响的字典类型值为“1006”、“1007”。
+
+  - 新增：数据权限实现
+
+- sz-admin：
+
+  - 优化：账户添加Form tooltip
+  - 修复：菜单缓存失效问题 [#IA8QI1](https://gitee.com/feiyuchuixue/sz-admin/issues/IA8QI1) | Gitee
+  - 优化：角色权限Form禁止esc关闭及点击其他区域关闭
+  - 修复：socket参数不存在时仍连接socket的问题
+  - 新增：数据字典-业务类型
+  - 修复：默认头像无法展示问题
+  - 修复：home页切换“分栏”布局报错问题
+  - 修复：查询条件项在某些条件下无法展示全的问题
+  - 优化：代码清理，规范化命名
+  - 新增：数据权限
+- 官网文档：
+
+  - 新增：[数据权限文档](https://szadmin.cn/md/Help/doc/data-scope.html)
+
+
+## v0.6.5 （20240619）
+
+- sz-boot-parent：
+  - 修复：未登录状态接口自动数据填充异常问题
+  - 修复：代码生成，批量删除异常问题
+  - 升级：升级Mybatis-Flex版本v1.9.3
+
+## v0.6.4 （20240612）
+
+- sz-boot-parent：
+  - 修复：权限问题orRole不生效的问题 [#IA4F9Z](https://gitee.com/feiyuchuixue/sz-boot-parent/issues/IA4F9Z)
+  - 新增：查询用户角色接口
+- sz-admin：
+  - 新增：权限校验（v-auth指令） 对超管角色的处理。env 新增 VITE_ADMIN_BYPASS_PERMISSION属性。
+
+## v0.6.3 （20240609）
+
+- sz-boot-parent：
+  - 修复：代码生成器拖拽排序丢失问题
+  - 优化：代码生成器-字段信息编辑模板调整，增加数据库模板
+  - 优化：代码生成菜单唯一性检查逻辑
+  - 修改： 升级Mybatis-Flex版本v1.9.2
+- sz-admin：
+  - 优化：代码生成器-字段信息编辑、生成信息编辑的操作逻辑
+  - 优化：代码生成器-字段信息编辑 选择模板功能区，增加数据库模板选项，完善提示信息
+  - 修复：ElMessage提示信息展示不在顶层的问题
+  - 优化：页脚增加版本号展示
+
+## v0.6.2 （20240605）
+
+- sz-boot-parent：
+  - 优化：将密码错误次数、错误冻结时间等魔法值提取到参数管理中
+- sz-admin：
+  - 优化：优化nginx推荐配置，解决网络原因导致socket频繁断开的问题
+- 官网文档：
+  - 新增：代码规范，前端代码提交前检查
+  - 修改：序言，商业用途免费。
+  - 优化：技术栈增加技术依赖超链接
+  - 新增：websocket Nginx配置建议
+  - 修改：感谢，对前端贡献者s1990218yao增加描述
+  - 修改：页脚，增加友链
+
+## v0.6.1 （20240603）
+
+- sz-boot-parent：
+  - 修改：admin账户初始密码为**sz123456**
+  - 优化：更新README文档
+- sz-admin：
+  - 修改：登陆页面placeholder
+  - 优化：更新README文档
+
+----
+
+## v0.6.0 （20240602）
+
+- sz-boot-parent：
+  - init
+- sz-admin：
+  - init
+- sz-deploy：
+  - init
