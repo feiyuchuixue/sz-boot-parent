@@ -1,0 +1,22 @@
+<profiles version="21">
+    <profile kind="CodeFormatterProfile" name="baeldung-style" version="21">
+        <!--缩进字符:space/tab-->
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
+        <!--用于对缩进和空格进行行包装,默认为FALSE-->
+        <setting id="org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations" value="true"/>
+        <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="4"/>
+        <!--以在同一行上保留else语句,默认为false-->
+        <setting id="org.eclipse.jdt.core.formatter.keep_else_statement_on_same_line" value="true"/>
+        <!--在方法声明中，在参数列表前插入空行-->
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_field" value="1"/>
+        <!--在第一个类body声明之前添加空行,-默认值:"0"-->
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="1"/>
+        <!--用于控制javadoc注释是否被格式化，默认为TRUE-->
+        <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="true"/>
+
+        <!--   other settings...   -->
+        <setting id="org.eclipse.jdt.core.formatter.disabling_tag" value="@formatter:off"/>
+        <setting id="org.eclipse.jdt.core.formatter.enabling_tag" value="@formatter:on"/>
+
+    </profile>
+</profiles>
