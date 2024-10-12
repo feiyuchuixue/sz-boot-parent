@@ -15,6 +15,7 @@ public class DataScopeProperties {
     }
 
     private boolean enabled;
+
     private String logicMinUnit;
 
 }

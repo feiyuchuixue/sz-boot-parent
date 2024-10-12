@@ -21,7 +21,6 @@ public class PageUtils {
         throw new IllegalStateException("PageUtils class Illegal");
     }
 
-
     /**
      * pagehelper获取PageResult对象
      *
@@ -45,7 +44,8 @@ public class PageUtils {
      */
     public static <T> PageResult<T> getPageResult(List<T> list, Object param) {
         PageInfo<T> pageInfo = new PageInfo<>(list);
-        if (param == null) param = new HashMap<>(1);
+        if (param == null)
+            param = new HashMap<>(1);
         return new PageResult<>(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getPages(), pageInfo.getTotal(), pageInfo.getList(), param);
     }
 
@@ -74,17 +74,22 @@ public class PageUtils {
      */
     public static <T, M> PageResult<M> getPageResult(List<T> list, List<M> replaceList, Object param) {
         PageInfo<T> pageInfo = new PageInfo<>(list);
-        if (param == null) param = new HashMap<>(1);
+        if (param == null)
+            param = new HashMap<>(1);
         return new PageResult<>(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getPages(), pageInfo.getTotal(), replaceList, param);
     }
 
     /**
      * 根据list和count结果构建PageResult对象
      *
-     * @param current 当前页
-     * @param limit   limit,每页最大展示条数
-     * @param list    list结果
-     * @param total   总数
+     * @param current
+     *            当前页
+     * @param limit
+     *            limit,每页最大展示条数
+     * @param list
+     *            list结果
+     * @param total
+     *            总数
      * @return PageResult<T>
      * @author sz
      * @date 2021-12-21 10:44:34
@@ -96,7 +101,8 @@ public class PageUtils {
 
     public static Page getPage(PageQuery query) {
         Page<Object> page = Page.of(query.getPage(), query.getLimit());
-        if (SimpleDataScopeHelper.isDataScope()) page.setOptimizeCountQuery(false); // 数据权限时，关闭优化查询。
+        if (SimpleDataScopeHelper.isDataScope())
+            page.setOptimizeCountQuery(false); // 数据权限时，关闭优化查询。
         return page;
     }
 
@@ -105,24 +111,30 @@ public class PageUtils {
     }
 
     public static <T> PageResult<T> getPageResult(Page<T> page, Object param) {
-        if (param == null) param = new HashMap<>(1);
+        if (param == null)
+            param = new HashMap<>(1);
         return new PageResult<>(page.getPageNumber(), page.getPageSize(), page.getTotalPage(), page.getTotalRow(), page.getRecords(), param);
     }
 
     /**
      * 根据list和count结果构建PageResult对象
      *
-     * @param current 当前页
-     * @param limit   limit,每页最大展示条数
-     * @param list    list结果
-     * @param total   总数
+     * @param current
+     *            当前页
+     * @param limit
+     *            limit,每页最大展示条数
+     * @param list
+     *            list结果
+     * @param total
+     *            总数
      * @return PageResult<T>
      * @author sz
      * @date 2021-12-21 10:44:34
      */
     public static <T> PageResult<T> getPageResult(int current, int limit, List<T> list, int total, Object param) {
         int totalPage = getTotalPage(total, limit);
-        if (param == null) param = new HashMap<>(1);
+        if (param == null)
+            param = new HashMap<>(1);
         return new PageResult<>(current, limit, totalPage, total, list, param);
     }
 
@@ -147,6 +159,5 @@ public class PageUtils {
     public static void toPage(PageQuery dto) {
         PageHelper.startPage(dto.getPage(), dto.getLimit());
     }
-
 
 }

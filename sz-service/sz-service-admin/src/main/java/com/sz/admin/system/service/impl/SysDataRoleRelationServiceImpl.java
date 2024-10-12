@@ -44,14 +44,13 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
             roleRelation.setRelationTypeCd(relationTypeCd);
             roleRelations.add(roleRelation);
         }
-        if (!roleRelations.isEmpty()) saveBatch(roleRelations);
+        if (!roleRelations.isEmpty())
+            saveBatch(roleRelations);
     }
 
     @Override
     public List<Long> getSelectRelationId(Long roleId, String relationTypeCd) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SYS_DATA_ROLE_RELATION.RELATION_ID)
-                .where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DATA_ROLE_RELATION.RELATION_ID).where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
                 .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq(relationTypeCd));
         return listAs(wrapper, Long.class);
     }

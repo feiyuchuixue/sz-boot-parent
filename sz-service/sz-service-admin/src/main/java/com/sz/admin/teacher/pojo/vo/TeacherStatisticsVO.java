@@ -1,6 +1,5 @@
 package com.sz.admin.teacher.pojo.vo;
 
-
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.sz.excel.annotation.DictFormat;
@@ -84,6 +83,5 @@ public class TeacherStatisticsVO {
     @DictFormat(dictType = "dynamic_user_options")
     @Schema(description = "创建人id")
     private String createId;
-
 
 }

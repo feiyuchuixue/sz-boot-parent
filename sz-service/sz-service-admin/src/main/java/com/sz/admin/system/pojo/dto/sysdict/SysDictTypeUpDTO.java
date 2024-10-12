@@ -10,21 +10,21 @@ import lombok.Data;
 public class SysDictTypeUpDTO {
 
     @NotNull(message = "id不能为")
-    @Schema(description =  "id")
+    @Schema(description = "id")
     private Long id;
 
     @NotBlank(message = "字典名称不能为空")
-    @Schema(description =  "字典名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "账户状态")
+    @Schema(description = "字典名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "账户状态")
     private String typeName;
 
     @NotBlank(message = "字典码不能为空")
-    @Schema(description =  "字典码(英文)", requiredMode = Schema.RequiredMode.REQUIRED, example = "account_status")
+    @Schema(description = "字典码(英文)", requiredMode = Schema.RequiredMode.REQUIRED, example = "account_status")
     private String typeCode;
 
-    @Schema(description =  "是否显示", allowableValues = "T,F", example = "T")
+    @Schema(description = "是否显示", allowableValues = "T,F", example = "T")
     private String isShow;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
 }

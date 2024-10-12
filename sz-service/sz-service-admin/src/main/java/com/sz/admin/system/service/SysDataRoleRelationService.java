@@ -16,7 +16,6 @@ import java.util.List;
  */
 public interface SysDataRoleRelationService extends IService<SysDataRoleRelation> {
 
-
     @Transactional
     void batchSave(Long roleId, String relationTypeCd, List<Long> relationIds);
 

@@ -12,6 +12,7 @@ public interface ConfService {
 
     /**
      * 验证配置是否存在
+     * 
      * @param key
      * @return
      */
@@ -19,6 +20,7 @@ public interface ConfService {
 
     /**
      * 根据配置key获取value
+     * 
      * @param key
      * @return
      */

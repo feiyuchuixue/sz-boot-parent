@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service("email" + IAuthStrategy.BASE_NAME)
 public class EmailAuthStrategy implements IAuthStrategy {
+
     @Override
     public LoginVO login(LoginInfo body, ClientVO client) {
         return null;

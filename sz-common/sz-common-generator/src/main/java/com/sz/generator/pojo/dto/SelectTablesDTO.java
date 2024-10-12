@@ -15,7 +15,7 @@ import java.util.List;
 @Schema(description = "批量选中")
 public class SelectTablesDTO {
 
-    @Schema(description ="选中的tableName数组")
+    @Schema(description = "选中的tableName数组")
     private List<String> tableNames;
 
 }

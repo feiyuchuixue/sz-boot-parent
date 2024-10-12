@@ -36,7 +36,8 @@ public class GlobalExceptionHandler {
     /**
      * 业务异常
      *
-     * @param e 异常
+     * @param e
+     *            异常
      * @return 异常结果
      */
     @ExceptionHandler(value = BusinessException.class)
@@ -49,7 +50,8 @@ public class GlobalExceptionHandler {
     /**
      * 自定义异常
      *
-     * @param e 异常
+     * @param e
+     *            异常
      * @return 异常结果
      */
     @ExceptionHandler(value = BaseException.class)
@@ -85,7 +87,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(apiResult, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-
     private ApiResult wrapperBindingResult(BindingResult bindingResult) {
         StringBuilder msg = new StringBuilder();
         for (ObjectError error : bindingResult.getAllErrors()) {
@@ -95,12 +96,10 @@ public class GlobalExceptionHandler {
         return new ApiResult(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
     }
 
-
     private MultiValueMap<String, String> setHeader() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         // headers.add("X-Trace-Id", TraceLocal.getTraceId());
         return headers;
     }
-
 
 }

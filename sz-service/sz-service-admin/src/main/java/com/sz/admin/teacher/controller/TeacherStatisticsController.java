@@ -1,6 +1,5 @@
 package com.sz.admin.teacher.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
@@ -73,9 +72,7 @@ public class TeacherStatisticsController {
     }
 
     @Operation(summary = "导入")
-    @Parameters({
-            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
-    })
+    @Parameters({@Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),})
     @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/import")
     public void importExcel(@ModelAttribute ImportExcelDTO dto) {

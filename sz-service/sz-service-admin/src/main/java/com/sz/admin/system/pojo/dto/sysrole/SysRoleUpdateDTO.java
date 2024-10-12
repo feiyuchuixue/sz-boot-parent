@@ -13,13 +13,13 @@ import lombok.Data;
 public class SysRoleUpdateDTO {
 
     @NotZero
-    @Schema(description =  "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 
-    @Schema(description =  "角色名称")
+    @Schema(description = "角色名称")
     private String roleName;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
     @Schema(description = "标识")

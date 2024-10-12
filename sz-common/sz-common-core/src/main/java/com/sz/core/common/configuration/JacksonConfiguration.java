@@ -25,19 +25,18 @@ import java.util.TimeZone;
 /**
  * @author: sz
  * @date: 2022/8/26 10:38
- * @description: （使用Jackson）全局统一格式化处理：
- * - Null 转为 空字符串
- * - date 格式化
- * - 时区
- * - 驼峰-蛇形转换
- * - 序列化或实体匹配异常
+ * @description: （使用Jackson）全局统一格式化处理： - Null 转为 空字符串 - date 格式化 - 时区 - 驼峰-蛇形转换
+ *               - 序列化或实体匹配异常
  */
 @Configuration
 @JsonComponent
 @Slf4j
 public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
+
     private static final String TIME_ZONE = "GMT+8";
+
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     private static final String DATE_PATTERN = "yyyy-MM-dd";
 
     @Bean
@@ -90,6 +89,7 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         // dui Null值进行处理,转换为空字符串
         objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+
             @Override
             public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
                 jsonGenerator.writeString("");

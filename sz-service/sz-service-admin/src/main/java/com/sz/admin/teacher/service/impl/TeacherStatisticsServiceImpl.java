@@ -54,8 +54,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
         QueryWrapper wrapper;
         // id有效性校验
-        wrapper = QueryWrapper.create()
-                .eq(TeacherStatistics::getId, dto.getId());
+        wrapper = QueryWrapper.create().eq(TeacherStatistics::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
         // 唯一性校验
         saveOrUpdate(teacherStatistics);

@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 
 /**
- * 大数值转换
- * Excel 数值长度位15位 大于15位的数值转换位字符串
+ * 大数值转换 Excel 数值长度位15位 大于15位的数值转换位字符串
  *
  */
 @Slf4j

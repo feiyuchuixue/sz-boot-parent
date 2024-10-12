@@ -15,7 +15,6 @@ import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
  */
 public interface SysUserDataRoleService extends IService<SysUserDataRole> {
 
-
     void changeRole(SysUserRoleDTO dto);
 
     SysUserRoleVO queryRoleMenu(Long userId);

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * @author sz
  * @since 2023-11-23
  */
-@Tag(name =  "参数配置")
+@Tag(name = "参数配置")
 @RestController
 @RequestMapping("/sys-config")
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class SysConfigController {
 
     private final SysConfigService sysConfigService;
 
-    @Operation(summary ="新增")
+    @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.config.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult create(@RequestBody SysConfigCreateDTO dto) {
@@ -40,7 +40,7 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="修改")
+    @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.config.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult update(@RequestBody SysConfigUpdateDTO dto) {
@@ -48,7 +48,7 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.config.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult remove(@RequestBody SelectIdsDTO dto) {
@@ -56,7 +56,7 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="列表查询")
+    @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysConfig>> list(SysConfigListDTO dto) {

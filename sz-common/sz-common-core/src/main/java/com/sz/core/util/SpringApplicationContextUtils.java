@@ -24,7 +24,8 @@ import java.util.function.Function;
  *
  * @author: sz
  * @date: 2021/9/15 13:37
- * @description: SpringBootApplicationContextUtil 通过ApplicationContext上下文对象自定义获取bean
+ * @description: SpringBootApplicationContextUtil
+ *               通过ApplicationContext上下文对象自定义获取bean
  */
 @Component
 public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, ApplicationContextAware {
@@ -73,7 +74,8 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     /**
-     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
+     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
+     * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
      *
      * @param name
      * @return boolean
@@ -126,9 +128,12 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     /**
      * 注册bean
      *
-     * @param beanName 注册的bean名称
-     * @param clazz    类型
-     * @param function bean定义
+     * @param beanName
+     *            注册的bean名称
+     * @param clazz
+     *            类型
+     * @param function
+     *            bean定义
      * @return 注册的bean实例
      * @author sz
      * @date 2022/3/9 9:43
@@ -153,10 +158,14 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     /**
      * 注册bean
      *
-     * @param beanName 注册的bean名称
-     * @param clazz    类型
-     * @param args     构造参数
-     * @param property bean属性集
+     * @param beanName
+     *            注册的bean名称
+     * @param clazz
+     *            类型
+     * @param args
+     *            构造参数
+     * @param property
+     *            bean属性集
      * @return 注册的bean实例
      * @author sz
      * @date 2022/3/9 9:47
@@ -191,6 +200,7 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
 
     /**
      * 判断是否是本地环境
+     * 
      * @return
      */
     public static boolean isLocalEnv() {
@@ -200,6 +210,5 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
         }
         return false;
     }
-
 
 }

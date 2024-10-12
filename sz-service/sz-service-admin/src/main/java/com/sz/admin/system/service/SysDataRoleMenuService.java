@@ -15,7 +15,6 @@ import java.util.List;
  */
 public interface SysDataRoleMenuService extends IService<SysDataRoleMenu> {
 
-
     void batchSave(Long roleId, List<String> menuIds);
 
     List<String> getSelectMenuIdByRoleId(Long roleId);

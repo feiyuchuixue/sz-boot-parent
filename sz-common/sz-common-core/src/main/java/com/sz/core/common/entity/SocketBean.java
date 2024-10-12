@@ -27,6 +27,4 @@ public class SocketBean<T> {
     @Schema(description = "消息通知作用域")
     protected MessageTransferScopeEnum scope;
 
-
-
 }

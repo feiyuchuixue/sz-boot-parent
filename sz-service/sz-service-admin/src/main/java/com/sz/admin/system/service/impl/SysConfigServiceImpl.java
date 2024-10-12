@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysConfigMapper;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
  * <p>
  * 参数配置表 服务实现类
@@ -42,8 +40,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public void create(SysConfigCreateDTO dto) {
         SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(sysConfig.getConfigKey()));
+        QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(sysConfig.getConfigKey()));
         CommonResponseEnum.EXISTS.message("key已存在").assertTrue(count(wrapper) > 0);
         save(sysConfig);
     }
@@ -51,8 +48,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public void update(SysConfigUpdateDTO dto) {
         SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SysConfigTableDef.SYS_CONFIG.ID.ne(dto.getId()))
+        QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.ID.ne(dto.getId()))
                 .where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(dto.getConfigKey()));
         CommonResponseEnum.EXISTS.message(2015, "key已存在").assertTrue(count(wrapper) > 0);
         saveOrUpdate(sysConfig);
@@ -74,8 +70,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SysConfigTableDef.SYS_CONFIG.ID.in(dto.getIds()));
+        QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.ID.in(dto.getIds()));
         List<SysConfig> list = list(wrapper);
         for (SysConfig sysConfig : list) {
             redisCache.clearConf(sysConfig.getConfigKey()); // 清除conf key
@@ -101,8 +96,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         if (hasConfKey(key)) {
             return redisCache.getConfValue(key);
         } else {
-            QueryWrapper wrapper = QueryWrapper.create()
-                    .where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(key));
+            QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(key));
             SysConfig sysConfig = getOne(wrapper);
             if (sysConfig != null) {
                 String value = sysConfig.getConfigValue();

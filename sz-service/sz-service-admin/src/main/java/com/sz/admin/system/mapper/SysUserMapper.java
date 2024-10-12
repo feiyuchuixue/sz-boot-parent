@@ -6,7 +6,6 @@ import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO;
-import com.sz.core.common.entity.SelectIdsDTO;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -33,9 +32,9 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     @Select(" select count(id) from sys_user where username = #{username}  ")
     int validUsername(String username);
 
-
     /**
      * 查询全部部门的用户列表
+     * 
      * @param dto
      * @return
      */
@@ -43,6 +42,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * 查询全部部门的用户名称列表
+     * 
      * @param dto
      * @return
      */
@@ -50,6 +50,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * 查询（部门）用户列表
+     * 
      * @param dto
      * @return
      */
@@ -57,6 +58,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * 查询（未分配部门）用户列表
+     * 
      * @param dto
      * @return
      */
@@ -64,6 +66,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * 查询用户部门信息
+     * 
      * @param userIds
      * @return
      */
@@ -71,10 +74,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * 查询用户部门信息
+     * 
      * @param userIds
      * @return
      */
     List<UserRoleInfoVO> queryUserRoleInfo(List<Long> userIds);
-
 
 }

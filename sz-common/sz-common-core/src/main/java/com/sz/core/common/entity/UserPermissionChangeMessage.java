@@ -9,7 +9,7 @@ public class UserPermissionChangeMessage {
     @Schema(description = "username")
     private String username;
 
-    @Schema(description ="用户id")
+    @Schema(description = "用户id")
     private Long userId;
 
     /**
@@ -30,6 +30,5 @@ public class UserPermissionChangeMessage {
         this.username = username;
         this.toChangeAll = toChangeAll;
     }
-
 
 }

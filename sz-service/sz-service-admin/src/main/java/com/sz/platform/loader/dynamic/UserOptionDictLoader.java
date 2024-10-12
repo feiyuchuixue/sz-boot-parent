@@ -47,18 +47,8 @@ public class UserOptionDictLoader implements DictLoader {
         List<UserOptionVO> userOptions = sysUserService.getUserOptions();
         for (int i = 0; i < userOptions.size(); i++) {
             UserOptionVO option = userOptions.get(i);
-            dictVO = DictVO.builder()
-                    .id(option.getId().toString())
-                    .codeName(option.getNickname())
-                    .alias(option.getUsername())
-                    .sort(i + 1)
-                    .sysDictTypeCode(key)
-                    .sysDictTypeName(name)
-                    .callbackShowStyle("primary")
-                    .isDynamic(true)
-                    .isLock("F")
-                    .isShow("T")
-                    .build();
+            dictVO = DictVO.builder().id(option.getId().toString()).codeName(option.getNickname()).alias(option.getUsername()).sort(i + 1).sysDictTypeCode(key)
+                    .sysDictTypeName(name).callbackShowStyle("primary").isDynamic(true).isLock("F").isShow("T").build();
             list.add(dictVO);
         }
         redisCache.setDict(key, list);

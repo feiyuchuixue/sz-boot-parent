@@ -2,7 +2,6 @@ package com.sz.redis;
 
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.TransferMessage;
-import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class WebsocketRedisService {
+
     public final static String WEBSOCKET_ONLINE_SID = "socket:online:sid";
+
     public final static String WEBSOCKET_ONLINE_USER = "socket:online:user";
 
     private final RedisTemplate redisTemplate;
@@ -92,7 +93,7 @@ public class WebsocketRedisService {
             // 从在线用户列表中删除sessionId
             if (redisTemplate.opsForHash().hasKey(WEBSOCKET_ONLINE_USER, loginId)) {
                 List<String> sids = (List<String>) redisTemplate.opsForHash().get(WEBSOCKET_ONLINE_USER, loginId);
-                System.out.println("sids =="+ sids);
+                System.out.println("sids ==" + sids);
                 sids.remove(sessionId);
 
                 // 如果用户不再有任何会话，则从在线用户列表中删除该用户
@@ -147,7 +148,6 @@ public class WebsocketRedisService {
             return null;
         }
     }
-
 
     /**
      * 查询在线用户数
@@ -225,7 +225,6 @@ public class WebsocketRedisService {
         }
     }
 
-
     /**
      * 透传 websocket 给 service 服务
      *
@@ -243,6 +242,5 @@ public class WebsocketRedisService {
     public void sendServiceToWs(TransferMessage transferMessage) {
         redisTemplate.convertAndSend(GlobalConstant.SERVICE_TO_WS, transferMessage);
     }
-
 
 }

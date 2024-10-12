@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.vo.sysdatarole;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 /**
  * <p>
  * 部门领导人表 Service
@@ -16,7 +15,6 @@ import java.util.List;
  * @since 2024-03-26
  */
 public interface SysDeptLeaderService extends IService<SysDeptLeader> {
-
 
     @Transactional
     void syncLeader(Long deptId, List<Long> leaderIds);

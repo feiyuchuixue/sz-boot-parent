@@ -45,8 +45,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
         sysClient.setClientId(clientId);
         sysClient.setClientSecret(Utils.generateUUIDs());
         // 唯一性校验
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysClient::getClientKey, dto.getClientKey());
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysClient::getClientKey, dto.getClientKey());
         CommonResponseEnum.EXISTS.message("clientKey已存在").assertTrue(count(wrapper) > 0);
         List<String> grantTypeCdList = dto.getGrantTypeCdList();
         formatGrantType(grantTypeCdList, sysClient);
@@ -58,8 +57,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
         SysClient sysClient = BeanCopyUtils.springCopy(dto, SysClient.class);
         QueryWrapper wrapper;
         // id有效性校验
-        wrapper = QueryWrapper.create()
-                .eq(SysClient::getClientId, dto.getClientId());
+        wrapper = QueryWrapper.create().eq(SysClient::getClientId, dto.getClientId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
         List<String> grantTypeCdList = dto.getGrantTypeCdList();
         formatGrantType(grantTypeCdList, sysClient);
@@ -133,6 +131,5 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
             sysClient.setGrantTypeCd(grantTypes);
         }
     }
-
 
 }

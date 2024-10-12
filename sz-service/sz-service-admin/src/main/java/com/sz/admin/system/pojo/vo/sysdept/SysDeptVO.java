@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.vo.sysdept;
 
-
 import com.sz.core.common.service.Treeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

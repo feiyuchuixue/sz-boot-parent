@@ -10,13 +10,13 @@ import lombok.Data;
 public class SysDictListDTO extends PageQuery {
 
     @NotZero(message = "sysDictTypeId不能为空")
-    @Schema(description =  "关联sys_dict_type id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
+    @Schema(description = "关联sys_dict_type id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
     private Long sysDictTypeId;
 
     @Schema(description = "字典别名")
     private String alias;
 
-    @Schema(description =  "字典名称", example = "禁用")
+    @Schema(description = "字典名称", example = "禁用")
     private String codeName;
 
 }

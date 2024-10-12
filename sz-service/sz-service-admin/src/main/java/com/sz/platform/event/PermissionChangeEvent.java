@@ -9,6 +9,7 @@ import com.sz.core.common.event.BaseEvent;
  * @Version 1.0
  */
 public class PermissionChangeEvent extends BaseEvent<PermissionMeta> {
+
     public PermissionChangeEvent(Object source, PermissionMeta payload) {
         super(source, payload);
     }

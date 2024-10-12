@@ -15,6 +15,7 @@ import java.util.Date;
 public class DateUtils {
 
     private static String DATE_PATTERN = "yyyy-MM-dd";
+
     private static String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private DateUtils() {
         throw new IllegalStateException("DateUtils class Illegal");

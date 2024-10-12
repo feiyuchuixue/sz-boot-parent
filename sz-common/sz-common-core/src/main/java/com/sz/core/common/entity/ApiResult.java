@@ -1,6 +1,5 @@
 package com.sz.core.common.entity;
 
-
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.Utils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -84,7 +83,6 @@ public class ApiResult<T> implements Serializable {
         }
         return apiResult;
     }
-
 
     public static <T> ApiResult<T> error(CommonResponseEnum responseEnum) {
         ApiResult<T> apiResult = new ApiResult<>();

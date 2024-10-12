@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.vo.sysdatarole;
 
-
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;

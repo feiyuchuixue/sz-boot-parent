@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 public class FlywayConfiguration {
 
     private final DataSource dataSource;
+
     private final FlywayProperties flywayProperties;
 
     public FlywayConfiguration(DataSource dataSource, FlywayProperties flywayProperties) {
@@ -27,26 +28,16 @@ public class FlywayConfiguration {
     @Bean
     public Flyway frameworkFlyway() {
         FlywayProperties.FlywayConfig config = flywayProperties.getFramework();
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(config.getLocations())
-                .table(config.getTable())
-                .baselineOnMigrate(config.isBaselineOnMigrate())
-                .validateOnMigrate(config.isValidateOnMigrate())
-                .baselineVersion(config.getBaselineVersion())
+        return Flyway.configure().dataSource(dataSource).locations(config.getLocations()).table(config.getTable())
+                .baselineOnMigrate(config.isBaselineOnMigrate()).validateOnMigrate(config.isValidateOnMigrate()).baselineVersion(config.getBaselineVersion())
                 .load();
     }
 
     @Bean
     public Flyway businessFlyway() {
         FlywayProperties.FlywayConfig config = flywayProperties.getBusiness();
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(config.getLocations())
-                .table(config.getTable())
-                .baselineOnMigrate(config.isBaselineOnMigrate())
-                .validateOnMigrate(config.isValidateOnMigrate())
-                .baselineVersion(config.getBaselineVersion())
+        return Flyway.configure().dataSource(dataSource).locations(config.getLocations()).table(config.getTable())
+                .baselineOnMigrate(config.isBaselineOnMigrate()).validateOnMigrate(config.isValidateOnMigrate()).baselineVersion(config.getBaselineVersion())
                 .load();
     }
 }

@@ -15,11 +15,10 @@ import java.util.List;
 @Schema(description = "角色菜单详情")
 public class SysRoleMenuVO {
 
-    @Schema(description =  "菜单列表")
+    @Schema(description = "菜单列表")
     private List<MenuTreeVO> menuLists;
 
-    @Schema(description =  "选中的菜单id")
+    @Schema(description = "选中的菜单id")
     private List<String> selectIds = new ArrayList<>();
-
 
 }

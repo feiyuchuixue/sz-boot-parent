@@ -6,6 +6,8 @@ import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
  * 异常枚举类
  */
 public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
+
+    // @formatter:off
     VALID_ERROR(100, "参数校验异常"),
     BAD_USERNAME_OR_PASSWORD(101, "账户不存在或密码错误"),
     CNT_PASSWORD_ERR(102, "密码错误次数过多，账户锁定！"),
@@ -30,11 +32,13 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
 
     UNKNOWN(9999, "未知异常"),
     ;
+    // @formatter:on
 
     /**
      * 返回码
      */
     private int code;
+
     /**
      * 返回消息
      */
@@ -48,8 +52,10 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     /**
      * 自定义断言，支持提供错误码和消息
      *
-     * @param code    自定义错误码
-     * @param message 自定义错误消息
+     * @param code
+     *            自定义错误码
+     * @param message
+     *            自定义错误消息
      * @return 当前枚举常量
      */
     public CommonResponseEnum message(int code, String message) {
@@ -70,7 +76,6 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     private void setMessage(String message) {
         this.message = message;
     }
-
 
     @Override
     public int getCode() {

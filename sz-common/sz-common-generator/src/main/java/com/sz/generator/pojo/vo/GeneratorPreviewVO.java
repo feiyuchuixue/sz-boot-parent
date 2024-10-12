@@ -1,6 +1,5 @@
 package com.sz.generator.pojo.vo;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,19 +10,19 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-@Schema(description ="preview")
+@Schema(description = "preview")
 public class GeneratorPreviewVO {
 
-    @Schema(description =  "文件名",example = "TestController.java")
+    @Schema(description = "文件名", example = "TestController.java")
     private String name;
 
-    @Schema(description =  "代码", example = "public class TeacherStatisticsController  {}")
+    @Schema(description = "代码", example = "public class TeacherStatisticsController  {}")
     private String code;
 
-    @Schema(description =  "语言", example = "java")
+    @Schema(description = "语言", example = "java")
     private String language;
 
-    @Schema(description =  "别名",example = "controller")
+    @Schema(description = "别名", example = "controller")
     private String alias;
 
 }

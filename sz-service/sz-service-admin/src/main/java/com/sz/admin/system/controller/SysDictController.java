@@ -1,7 +1,6 @@
 package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;

@@ -32,10 +32,14 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
     /**
      * 握手之前
      *
-     * @param request    request
-     * @param response   response
-     * @param wsHandler  handler
-     * @param attributes 属性
+     * @param request
+     *            request
+     * @param response
+     *            response
+     * @param wsHandler
+     *            handler
+     * @param attributes
+     *            属性
      * @return 是否握手成功：true-成功，false-失败
      */
     @Override
@@ -46,7 +50,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
         String keyt = StpUtil.getStpLogic().getConfigOrGlobal().getJwtSecretKey();
         if (Utils.isNotNull(authorization)) {
             JWT jwt = SaJwtUtil.parseToken(authorization, "login", keyt, false);
-            if(!jwt.verify()){
+            if (!jwt.verify()) {
                 return false;
             }
             String loginId = jwt.getPayload().getClaimsJson().get(LOGIN_ID).toString();
@@ -66,10 +70,14 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
     /**
      * 握手后
      *
-     * @param request   request
-     * @param response  response
-     * @param wsHandler wsHandler
-     * @param exception exception
+     * @param request
+     *            request
+     * @param response
+     *            response
+     * @param wsHandler
+     *            wsHandler
+     * @param exception
+     *            exception
      */
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {

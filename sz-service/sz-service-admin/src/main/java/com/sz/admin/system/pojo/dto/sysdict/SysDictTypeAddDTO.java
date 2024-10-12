@@ -9,14 +9,14 @@ import lombok.Data;
 public class SysDictTypeAddDTO {
 
     @NotBlank(message = "字典名称不能为空")
-    @Schema(description =  "字典名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "账户状态")
+    @Schema(description = "字典名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "账户状态")
     private String typeName;
 
     @NotBlank(message = "字典码不能为空")
-    @Schema(description =  "字典码(英文)", requiredMode = Schema.RequiredMode.REQUIRED, example = "account_status")
+    @Schema(description = "字典码(英文)", requiredMode = Schema.RequiredMode.REQUIRED, example = "account_status")
     private String typeCode;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
     @Schema(description = "字典类型")

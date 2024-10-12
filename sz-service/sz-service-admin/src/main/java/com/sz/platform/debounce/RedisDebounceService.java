@@ -21,7 +21,7 @@ public class RedisDebounceService {
 
     private static final String DEBOUNCE_PREFIX = "debounce:";
 
-    //  尝试获取分布式锁
+    // 尝试获取分布式锁
     public boolean acquireLock(String key, long debounceInterval) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         // 这里使用redis锁保证分布式场景下的稳定性

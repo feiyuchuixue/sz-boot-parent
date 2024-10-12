@@ -1,6 +1,5 @@
 package com.sz.admin.system.controller;
 
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.service.SysFileService;
@@ -21,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author sz
  * @since 2023-08-31
  */
-@Tag(name =  "系统公共文件管理")
+@Tag(name = "系统公共文件管理")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/sys-file")

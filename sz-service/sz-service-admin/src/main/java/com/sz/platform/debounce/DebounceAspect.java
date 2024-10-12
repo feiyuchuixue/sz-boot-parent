@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 @Order(value = Integer.MIN_VALUE)
 @RequiredArgsConstructor
 public class DebounceAspect {
+
     private final RedisDebounceService debounceService;
 
     private final HttpServletRequest request;
@@ -69,15 +70,15 @@ public class DebounceAspect {
 
                 // 如果返回类型是 ApiPageResult
                 if (returnType.isAssignableFrom(ApiPageResult.class)) {
-                    return ApiPageResult.error(CommonResponseEnum.DEBOUNCE);  // 返回 ApiPageResult
+                    return ApiPageResult.error(CommonResponseEnum.DEBOUNCE); // 返回 ApiPageResult
                 }
                 // 如果返回类型是 ApiResult
                 else if (returnType.isAssignableFrom(ApiResult.class)) {
-                    return ApiResult.error(CommonResponseEnum.DEBOUNCE);  // 返回 ApiResult
+                    return ApiResult.error(CommonResponseEnum.DEBOUNCE); // 返回 ApiResult
                 }
                 // 如果返回类型是其他类型，比如 String。
                 else if (returnType.isAssignableFrom(String.class)) {
-                    return CommonResponseEnum.DEBOUNCE.getMessage();  // 返回简单的字符串
+                    return CommonResponseEnum.DEBOUNCE.getMessage(); // 返回简单的字符串
                 }
                 // 如果是其他类型，抛出异常或者做其他处理
                 else {

@@ -15,7 +15,9 @@ import java.util.*;
  * @Version 1.0
  */
 public class CodeModelBuilder {
+
     private Map<String, Object> model = new HashMap<>();
+
     // vue 文件夹路径分隔符
     public static final String SEPARATOR = "/";
 
@@ -44,7 +46,6 @@ public class CodeModelBuilder {
         return this;
     }
 
-
     public CodeModelBuilder builderImportPackage(GeneratorDetailVO detailVO) {
         List<GeneratorDetailVO.Column> columns = detailVO.getColumns();
         Set<String> importPackages = new TreeSet<>();
@@ -62,9 +63,10 @@ public class CodeModelBuilder {
                 hasUniqueValidField = true;
             }
         }
-        /*if (hasDateFormat) {
-            importPackages.add("org.springframework.format.annotation.DateTimeFormat");
-        }*/
+        /*
+         * if (hasDateFormat) {
+         * importPackages.add("org.springframework.format.annotation.DateTimeFormat"); }
+         */
         model.put("importPackages", importPackages);
         model.put("hasUniqueValidField", hasUniqueValidField);
         model.put("hasDateFormat", hasDateFormat);
@@ -155,7 +157,8 @@ public class CodeModelBuilder {
         model.put("modulesPkg", modulesPkg);
         model.put("modulesClassName", detailVO.getGeneratorInfo().getBusinessName());
 
-        String indexPkg = SEPARATOR + "views" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getGeneratorInfo().getBusinessName();
+        String indexPkg = SEPARATOR + "views" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR
+                + detailVO.getGeneratorInfo().getBusinessName();
         model.put("indexPkg", indexPkg);
         model.put("indexClassName", "index");
 

@@ -18,6 +18,7 @@ import java.util.List;
 public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
 
     private final WriteCellStyle headWriteCellStyle;
+
     private final WriteCellStyle contentWriteCellStyle;
 
     /**
@@ -31,27 +32,27 @@ public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
         this.contentWriteCellStyle = contentWriteCellStyle;
     }
 
-    //设置头样式
+    // 设置头样式
     @Override
     protected void setHeadCellStyle(CellWriteHandlerContext context) {
         // 获取字体实例
         WriteFont headWriteFont = new WriteFont();
         headWriteFont.setFontName("宋体");
-        //表头不同处理
-  /*      if (columnIndexes.get(0).equals(context.getRowIndex())) {
-            System.out.println("1111111111111");
-            headWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-            headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-            headWriteFont.setFontHeightInPoints((short) 12);
-            headWriteFont.setBold(false);
-            headWriteFont.setFontName("宋体");
-        } else {*/
-            headWriteCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-            headWriteFont.setFontHeightInPoints((short) 14);
-            headWriteFont.setBold(false);
-            headWriteFont.setFontName("宋体");
-        //}
+        // 表头不同处理
+        /*
+         * if (columnIndexes.get(0).equals(context.getRowIndex())) {
+         * System.out.println("1111111111111");
+         * headWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+         * headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+         * headWriteFont.setFontHeightInPoints((short) 12);
+         * headWriteFont.setBold(false); headWriteFont.setFontName("宋体"); } else {
+         */
+        headWriteCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        headWriteFont.setFontHeightInPoints((short) 14);
+        headWriteFont.setBold(false);
+        headWriteFont.setFontName("宋体");
+        // }
         headWriteCellStyle.setWriteFont(headWriteFont);
         if (stopProcessing(context)) {
             return;
@@ -60,13 +61,13 @@ public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
         WriteCellStyle.merge(headWriteCellStyle, cellData.getOrCreateStyle());
     }
 
-    //设置填充数据样式
+    // 设置填充数据样式
     @Override
     protected void setContentCellStyle(CellWriteHandlerContext context) {
         WriteFont contentWriteFont = new WriteFont();
         contentWriteFont.setFontName("宋体");
         contentWriteFont.setFontHeightInPoints((short) 12);
-        //设置数据填充后的实线边框
+        // 设置数据填充后的实线边框
         contentWriteCellStyle.setWriteFont(contentWriteFont);
         contentWriteCellStyle.setBorderLeft(BorderStyle.THIN);
         contentWriteCellStyle.setBorderTop(BorderStyle.THIN);

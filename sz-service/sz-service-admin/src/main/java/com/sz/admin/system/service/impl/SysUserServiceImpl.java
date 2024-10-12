@@ -27,7 +27,6 @@ import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
 import com.sz.mysql.DataScopeProperties;
-import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.CommonKeyConstants;
@@ -87,8 +86,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public SysUserVO getSysUserByUsername(String username) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysUser::getUsername, username);
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getUsername, username);
 
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
@@ -105,8 +103,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public SysUserVO getSysUserByUserId(Long userId) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysUser::getId, userId);
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, userId);
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
         SysUserVO sysUserVO = BeanCopyUtils.copy(one, SysUserVO.class);
@@ -116,14 +113,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 后台创建用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     @Transactional
     @Override
     public void create(SysUserCreateDTO dto) {
         SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysUser::getUsername, dto.getUsername());
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getUsername, dto.getUsername());
         CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
         String encodePwd = getEncoderPwd(getInitPassword());
         user.setPwd(encodePwd);
@@ -131,7 +128,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setUserTagCd("1001003");
         save(user);
 
-        if (dto.getDeptId() <= 0) return;
+        if (dto.getDeptId() <= 0)
+            return;
         UserDeptDTO deptDTO = new UserDeptDTO();
         deptDTO.setDeptIds(Collections.singletonList(dto.getDeptId()));
         deptDTO.setUserIds(Collections.singletonList(user.getId()));
@@ -141,31 +139,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更新用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     @Override
     public void update(SysUserUpdateDTO dto) {
         SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
         // 检查用户是否存在
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysUser::getId, dto.getId());
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, dto.getId());
         SysUser one = getOne(wrapper);
         CommonResponseEnum.INVALID_USER.assertNull(one);
         redisCache.clearUserInfo(one.getUsername());
         updateById(user);
     }
 
-
     /**
      * 删除用户 (逻辑删除，保留数据关系。如部门、权限、角色等)
      *
-     * @param dto 用户id数组
+     * @param dto
+     *            用户id数组
      */
     @Override
     @Transactional
     public void remove(SelectIdsDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .in(SysUser::getId, dto.getIds());
+        QueryWrapper wrapper = QueryWrapper.create().in(SysUser::getId, dto.getIds());
         // 检查用户是否存在
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) < 1);
         removeByIds((Collection<? extends Serializable>) dto.getIds());
@@ -174,7 +171,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 详情
      *
-     * @param id 用户id
+     * @param id
+     *            用户id
      * @return {@link SysUser}
      */
     @Override
@@ -211,9 +209,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return;
         }
         // 获取所有用户的 ID 列表
-        List<Long> userIds = userList.stream()
-                .map(SysUserVO::getId)
-                .collect(Collectors.toList());
+        List<Long> userIds = userList.stream().map(SysUserVO::getId).collect(Collectors.toList());
 
         // 查询用户的部门信息并转换为 Map
         Map<Long, UserDeptInfoVO> userDeptMap = new HashMap<>();
@@ -240,9 +236,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return;
         }
         // 获取所有用户的 ID 列表
-        List<Long> userIds = userList.stream()
-                .map(SysUserVO::getId)
-                .collect(Collectors.toList());
+        List<Long> userIds = userList.stream().map(SysUserVO::getId).collect(Collectors.toList());
 
         // 查询用户的部门信息并转换为 Map
         Map<Long, UserRoleInfoVO> userRoleMap = new HashMap<>();
@@ -275,14 +269,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUserRoleVO findSysUserRole(Integer userId) {
         List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
         List<SysUserRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(sysRoleList, SysUserRoleVO.RoleInfoVO.class);
-        List<SysUserRole> userRoles = QueryChain.of(sysUserRoleMapper)
-                .eq(SysUserRole::getUserId, userId)
-                .list();
+        List<SysUserRole> userRoles = QueryChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, userId).list();
         List<Long> roleIds = new ArrayList<>();
         if (Utils.isNotNull(userRoles)) {
-            roleIds = userRoles.stream()
-                    .map(SysUserRole::getRoleId)
-                    .collect(Collectors.toList());
+            roleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
         }
         SysUserRoleVO sysUserRoleVO = new SysUserRoleVO();
         sysUserRoleVO.setRoleInfoVOS(roleInfoVOS);
@@ -293,9 +283,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void changeSysUserRole(SysUserRoleDTO dto) {
         // 删除当前用户下的所有角色
-        UpdateChain.of(sysUserRoleMapper)
-                .eq(SysUserRole::getUserId, dto.getUserId())
-                .remove();
+        UpdateChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, dto.getUserId()).remove();
 
         if (Utils.isNotNull(dto.getRoleIds())) {
             sysUserRoleMapper.insertBatchSysUserRole(dto.getRoleIds(), dto.getUserId());
@@ -320,11 +308,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更改（当前用户）密码
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Override
     public void changePassword(SysUserPasswordDTO dto) {
-        SysUser sysUser = getById(StpUtil.getLoginIdAsInt()); //获取当前用户id
+        SysUser sysUser = getById(StpUtil.getLoginIdAsInt()); // 获取当前用户id
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getOldPwd(), sysUser.getPwd()));
         sysUser.setPwd(getEncoderPwd(dto.getNewPwd()));
         updateById(sysUser);
@@ -355,7 +344,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return;
         }
         for (String token : tokens) {
-            // SaSession saSession = StpUtil.stpLogic.getTokenSessionByToken(token, false); // 根据token获取用户session
+            // SaSession saSession = StpUtil.stpLogic.getTokenSessionByToken(token, false);
+            // // 根据token获取用户session
             SaSession saSession = StpUtil.getTokenSessionByToken(token);
             // 1. 查询当前用户的最新用户权限信息
             LoginUser loginUser = buildLoginUser(Long.valueOf(userId + ""));
@@ -393,7 +383,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void unlock(SelectIdsDTO dto) {
-        if (dto.getIds() == null || dto.getIds().isEmpty()) return;
+        if (dto.getIds() == null || dto.getIds().isEmpty())
+            return;
         String[] ids = dto.getIds().stream().map(Utils::getStringVal).filter(Objects::nonNull).toArray(String[]::new);
         List<SysUserVO> sysUserVOS = this.mapper.queryAllSysUserNameList(ids);
         for (SysUserVO sysUserVO : sysUserVOS) {
@@ -404,16 +395,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @NotNull
     private LoginUser getLoginUser(Long userId, SysUserVO userVo) {
         BaseUserInfo userInfo = BeanCopyUtils.springCopy(userVo, BaseUserInfo.class);
-        SysUser sysUser = QueryChain.of(SysUser.class)
-                .eq(SysUser::getId, userId).one();
+        SysUser sysUser = QueryChain.of(SysUser.class).eq(SysUser::getId, userId).one();
         CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         LoginUser loginUser = new LoginUser();
         loginUser.setUserInfo(userInfo);
-        loginUser.setPermissions(sysPermissionService.getMenuPermissions(sysUser));   // 获取用户permissions
+        loginUser.setPermissions(sysPermissionService.getMenuPermissions(sysUser)); // 获取用户permissions
         loginUser.setRoles(sysPermissionService.getRoles(sysUser)); // 获取用户角色
         loginUser.setDepts(sysPermissionService.getDepts(sysUser)); // 获取用户部门
         loginUser.setDeptAndChildren(sysPermissionService.getDeptAndChildren(sysUser)); // 获取用户部门及子孙节点
-        if (!dataScopeProperties.isEnabled()) return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
+        if (!dataScopeProperties.isEnabled())
+            return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
 
         Map<String, String> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
         Set<String> findMenuIds = new HashSet<>();
@@ -449,7 +440,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private void validatePassword(String password, String hashedPassword, String username) {
         String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
         boolean checkpwd = BCrypt.checkpw(password, hashedPassword);
-        if (!checkpwd) redisCache.countPwdErr(username, Utils.getLongVal(timeout).longValue());
+        if (!checkpwd)
+            redisCache.countPwdErr(username, Utils.getLongVal(timeout).longValue());
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(checkpwd);
     }
 
@@ -466,6 +458,5 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.USERNAME, SYS_USER.NICKNAME);
         return listAs(wrapper, UserOptionVO.class);
     }
-
 
 }

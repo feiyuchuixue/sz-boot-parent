@@ -18,6 +18,7 @@ import java.util.Map;
  * @description:
  */
 public class JsonUtils {
+
     private static final ObjectMapper OBJECT_MAPPER = SpringApplicationContextUtils.getBean(ObjectMapper.class);
 
     public static String readJsonFile(String filePath) {
@@ -97,7 +98,6 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
-
 
     public static <T> List<T> parseArray(String text, Class<T> clazz) {
         if (StringUtils.isEmpty(text)) {

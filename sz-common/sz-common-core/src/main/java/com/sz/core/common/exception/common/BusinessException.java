@@ -12,4 +12,3 @@ public class BusinessException extends BaseException {
         super(responseEnum, args, message, cause);
     }
 }
-

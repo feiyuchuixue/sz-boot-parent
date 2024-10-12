@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PermissionChangeHandler implements UserPermissionChangeMsgHandler {
+
     @Override
     public void handlerMsg(UserPermissionChangeMessage message) {
         System.out.println(" [signal] message  = " + JsonUtils.toJsonString(message));

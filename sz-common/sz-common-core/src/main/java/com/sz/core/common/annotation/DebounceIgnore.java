@@ -14,6 +14,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
 public @interface DebounceIgnore {
+
     boolean required() default true;
 
 }

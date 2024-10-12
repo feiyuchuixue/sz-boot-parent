@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -15,7 +14,6 @@ import com.sz.core.util.FileUploadUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.minio.MinioService;
-import com.sz.platform.enums.AdminResponseEnum;
 import io.minio.ObjectWriteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * <p>
@@ -37,13 +34,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
 
-
     private final MinioService minioService;
 
     /**
      * 文件列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link PageResult}<{@link SysFile}>
      */
     @Override
@@ -60,7 +57,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
     /**
      * 上传文件
      *
-     * @param file 文件
+     * @param file
+     *            文件
      * @param type
      * @return {@link String}
      */
@@ -87,11 +85,12 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
     }
 
     /**
-     * 文件日志
-     * 文件管理数据记录,收集管理追踪文件
+     * 文件日志 文件管理数据记录,收集管理追踪文件
      *
-     * @param file     上传文件
-     * @param fileInfo 文件信息
+     * @param file
+     *            上传文件
+     * @param fileInfo
+     *            文件信息
      */
     private void fileLog(MultipartFile file, Map<String, String> fileInfo) {
         SysFile sysFile = new SysFile();

@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.dto.sysdatascope;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

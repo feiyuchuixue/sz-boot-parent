@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
 
     @Resource
-    private  DataScopeProperties dataScopeProperties;
+    private DataScopeProperties dataScopeProperties;
 
     public MybatisFlexConfiguration() {
         QueryColumnBehavior.setIgnoreFunction(QueryColumnBehavior.IGNORE_NONE);// 关闭全局null参数忽略设置
@@ -40,7 +40,7 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
     }
 
     @Bean
-    public LogicDeleteProcessor logicDeleteProcessor(){
+    public LogicDeleteProcessor logicDeleteProcessor() {
         return new EntityLogicDeleteListener();
     }
 

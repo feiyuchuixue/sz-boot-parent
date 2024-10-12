@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date 2023/12/25 10:07
  * @Version 1.0
  */
-@Tag(name =  "认证")
+@Tag(name = "认证")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -33,20 +33,19 @@ public class AuthController {
     private final AuthService authService;
 
     @DebounceIgnore
-    @Operation(summary ="登录")
+    @Operation(summary = "登录")
     @PostMapping("login")
     public ApiResult<LoginVO> login(@RequestBody LoginInfo loginInfo) {
         return ApiResult.success(authService.loginClient(loginInfo));
     }
 
-    @Operation(summary ="登出")
+    @Operation(summary = "登出")
     @PostMapping("logout")
     public ApiResult logout() {
         // 注意执行顺序，最后再执行logout
         StpUtil.getTokenSession().logout(); // 清除缓存session
-        StpUtil.logout();   // 退出登录
+        StpUtil.logout(); // 退出登录
         return ApiResult.success();
     }
-
 
 }

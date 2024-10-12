@@ -8,13 +8,13 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 /**
-* <p>
-* 部门祖籍关系表
-* </p>
-*
-* @author sz
-* @since 2024-03-28
-*/
+ * <p>
+ * 部门祖籍关系表
+ * </p>
+ *
+ * @author sz
+ * @since 2024-03-28
+ */
 @Data
 @Table(value = "sys_dept_closure")
 @Schema(description = "部门祖籍关系表")
@@ -24,13 +24,13 @@ public class SysDeptClosure implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Schema(description ="祖先节点ID")
+    @Schema(description = "祖先节点ID")
     private Long ancestorId;
 
-    @Schema(description ="后代节点ID")
+    @Schema(description = "后代节点ID")
     private Long descendantId;
 
-    @Schema(description ="祖先节点到后代节点的距离")
+    @Schema(description = "祖先节点到后代节点的距离")
     private Integer depth;
 
 }

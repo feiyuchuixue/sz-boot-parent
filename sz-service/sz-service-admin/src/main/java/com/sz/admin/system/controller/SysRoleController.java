@@ -1,6 +1,5 @@
 package com.sz.admin.system.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleCreateDTO;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
  * @author sz
  * @since 2022-10-01
  */
-@Tag(name =  "角色管理")
+@Tag(name = "角色管理")
 @RestController
 @RequestMapping("/sys-role")
 @RequiredArgsConstructor

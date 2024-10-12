@@ -148,7 +148,8 @@ public abstract class AbstractCodeGenerationTemplate {
 
             // Check if the file already exists
             if (Files.exists(path)) {
-                // File already exists, handle accordingly (e.g., change filename, throw exception)
+                // File already exists, handle accordingly (e.g., change filename, throw
+                // exception)
                 String info = "File already exists: " + outputPath;
                 System.out.println(info);
                 return info; // Do nothing or throw an exception based on your requirement

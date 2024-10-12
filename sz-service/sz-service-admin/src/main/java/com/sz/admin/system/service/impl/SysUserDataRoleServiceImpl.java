@@ -55,10 +55,11 @@ public class SysUserDataRoleServiceImpl extends ServiceImpl<SysUserDataRoleMappe
             dataRole.setRoleId(roleId);
             dataRoles.add(dataRole);
         }
-        if (dataRoles.isEmpty()) return;
+        if (dataRoles.isEmpty())
+            return;
         saveBatch(dataRoles);
         Long userId = dto.getUserId();
-        eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(Collections.singletonList(userId)))); //  发送用户元数据change事件
+        eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(Collections.singletonList(userId)))); // 发送用户元数据change事件
 
     }
 
@@ -66,9 +67,7 @@ public class SysUserDataRoleServiceImpl extends ServiceImpl<SysUserDataRoleMappe
     public SysUserRoleVO queryRoleMenu(Long userId) {
         List<SysDataRole> list = QueryChain.of(sysDataRoleMapper).list();
         List<SysUserRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(list, SysUserRoleVO.RoleInfoVO.class);
-        List<Long> roleIds = QueryChain.of(this.mapper)
-                .select(SYS_USER_DATA_ROLE.ROLE_ID)
-                .where(SYS_USER_DATA_ROLE.USER_ID.eq(userId)).listAs(Long.class);
+        List<Long> roleIds = QueryChain.of(this.mapper).select(SYS_USER_DATA_ROLE.ROLE_ID).where(SYS_USER_DATA_ROLE.USER_ID.eq(userId)).listAs(Long.class);
         SysUserRoleVO vo = new SysUserRoleVO();
         vo.setRoleInfoVOS(roleInfoVOS);
         vo.setSelectIds(roleIds);

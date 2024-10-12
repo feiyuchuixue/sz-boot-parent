@@ -73,8 +73,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
             // 如果是某一个单元格的转换异常 能获取到具体行号
             Integer rowIndex = excelDataConvertException.getRowIndex();
             Integer columnIndex = excelDataConvertException.getColumnIndex();
-            errMsg = String.format("第%d行-第%d列-表头%s: 解析异常<br/>",
-                    rowIndex + 1, columnIndex + 1, headMap.get(columnIndex));
+            errMsg = String.format("第%d行-第%d列-表头%s: 解析异常<br/>", rowIndex + 1, columnIndex + 1, headMap.get(columnIndex));
             if (log.isDebugEnabled()) {
                 log.error(errMsg);
             }
@@ -83,7 +82,8 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
             Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
             String constraintViolationsMsg = "";
             if (constraintViolations != null && !constraintViolations.isEmpty()) {
-                constraintViolationsMsg = constraintViolations.stream().map(ConstraintViolation::getMessage).filter(Objects::nonNull).collect(Collectors.joining(", "));
+                constraintViolationsMsg = constraintViolations.stream().map(ConstraintViolation::getMessage).filter(Objects::nonNull)
+                        .collect(Collectors.joining(", "));
             }
             errMsg = String.format("第%d行数据校验异常: %s", context.readRowHolder().getRowIndex() + 1, constraintViolationsMsg);
             if (log.isDebugEnabled()) {

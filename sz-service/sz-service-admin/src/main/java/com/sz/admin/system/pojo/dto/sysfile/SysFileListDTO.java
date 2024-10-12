@@ -14,6 +14,6 @@ import lombok.Data;
 @Schema(description = "公共文件搜索")
 public class SysFileListDTO extends PageQuery {
 
-    @Schema(description =  "文件名")
+    @Schema(description = "文件名")
     private String filename;
 }

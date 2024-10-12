@@ -2,11 +2,8 @@ package com.sz.platform.strategy;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
-import com.sz.admin.system.service.SysUserService;
 import com.sz.applet.miniuser.pojo.po.MiniLoginUser;
 import com.sz.applet.miniuser.service.MiniUserService;
-import com.sz.core.common.entity.BaseUserInfo;
-import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.JsonUtils;
 import com.sz.core.util.Utils;
@@ -63,7 +60,7 @@ public class AppletStrategy implements IAuthStrategy {
         // 设置jwt额外数据
         Map<String, Object> extraData = createExtraData(clientId, userId);
         // 执行登录
-        LoginUtils.performMiniLogin(userId,miniLoginUser, model, extraData);
+        LoginUtils.performMiniLogin(userId, miniLoginUser, model, extraData);
         // 构造返回对象
         return createLoginVO(miniLoginUser);
     }

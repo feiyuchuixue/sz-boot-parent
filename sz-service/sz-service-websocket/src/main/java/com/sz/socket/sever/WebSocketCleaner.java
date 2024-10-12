@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class WebSocketCleaner implements SmartLifecycle {
+
     private boolean running = false;
 
     private final WebSocketServer webSocketServer;

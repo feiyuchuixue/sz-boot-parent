@@ -20,9 +20,8 @@ public class DefaultColumnWidthStyleStrategy extends AbstractColumnWidthStyleStr
     private final Map<Integer, Map<Integer, Integer>> cache = MapUtils.newHashMapWithExpectedSize(8);
 
     @Override
-    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell,
-                                  Head head,
-                                  Integer relativeRowIndex, Boolean isHead) {
+    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex,
+            Boolean isHead) {
         boolean needSetWidth = isHead || !CollectionUtils.isEmpty(cellDataList);
         if (!needSetWidth) {
             return;
@@ -52,15 +51,15 @@ public class DefaultColumnWidthStyleStrategy extends AbstractColumnWidthStyleStr
             return -1;
         }
         switch (type) {
-            case STRING:
+            case STRING :
                 return getStringWidth(cellData.getStringValue());
-            case BOOLEAN:
+            case BOOLEAN :
                 return cellData.getBooleanValue().toString().getBytes().length + 10;
-            case NUMBER:
+            case NUMBER :
                 return cellData.getNumberValue().toString().getBytes().length + 10;
-            case DATE:
+            case DATE :
                 return cellData.getDateValue().toString().getBytes().length + 10;
-            default:
+            default :
                 return -1;
         }
     }

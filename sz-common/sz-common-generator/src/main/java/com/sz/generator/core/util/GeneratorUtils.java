@@ -73,7 +73,7 @@ public class GeneratorUtils {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
         }
         // 【约定】： 使用del_flag 作为逻辑删除标识字段
-        if ("del_flag".equals(columnName)){
+        if ("del_flag".equals(columnName)) {
             tableColumn.setIsLogicDel(GeneratorConstants.REQUIRE);
         }
 
@@ -83,12 +83,13 @@ public class GeneratorUtils {
         return tableColumn;
     }
 
-
     /**
      * 校验数组是否包含指定值
      *
-     * @param arr         数组
-     * @param targetValue 值
+     * @param arr
+     *            数组
+     * @param targetValue
+     *            值
      * @return 是否包含
      */
     public static boolean arraysContains(String[] arr, String targetValue) {
@@ -98,7 +99,8 @@ public class GeneratorUtils {
     /**
      * 获取数据库类型字段
      *
-     * @param columnType 列类型
+     * @param columnType
+     *            列类型
      * @return 截取后的列类型
      */
     public static String getDbType(String columnType) {
@@ -112,7 +114,8 @@ public class GeneratorUtils {
     /**
      * 获取字段长度
      *
-     * @param columnType 列类型
+     * @param columnType
+     *            列类型
      * @return 截取后的列类型
      */
     public static Integer getColumnLength(String columnType) {
@@ -174,64 +177,62 @@ public class GeneratorUtils {
 
     private static void setHtmlAndJavaType(String dataType, String columnType, GeneratorTableColumn tableColumn) {
         switch (dataType.toUpperCase()) {
-            case "VARCHAR":
-            case "CHAR":
-            case "NVARCHAR":
-            case "VARCHAR2":
-            case "TEXT":
-            case "TINYTEXT":
-            case "MEDIUMTEXT":
-            case "LONGTEXT":
+            case "VARCHAR" :
+            case "CHAR" :
+            case "NVARCHAR" :
+            case "VARCHAR2" :
+            case "TEXT" :
+            case "TINYTEXT" :
+            case "MEDIUMTEXT" :
+            case "LONGTEXT" :
                 setStringTypeAttributes(columnType, tableColumn);
                 tableColumn.setSearchType("input");
                 break;
-            case "TIME":
+            case "TIME" :
                 tableColumn.setJavaType(GeneratorConstants.TYPE_LOCALTIME);
                 tableColumn.setHtmlType(GeneratorConstants.HTML_TIME);
                 tableColumn.setJavaTypePackage("java.time.LocalTime");
                 tableColumn.setSearchType("time-picker");
                 tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
-            case "DATE":
+            case "DATE" :
                 tableColumn.setJavaType(GeneratorConstants.TYPE_LOCALDATE);
                 tableColumn.setHtmlType(GeneratorConstants.HTML_DATE);
                 tableColumn.setJavaTypePackage("java.time.LocalDate");
                 tableColumn.setSearchType("date-picker");
                 tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
-            case "TIMESTAMP":
-            case "DATETIME":
+            case "TIMESTAMP" :
+            case "DATETIME" :
                 tableColumn.setJavaType(GeneratorConstants.TYPE_LOCALDATETIME);
                 tableColumn.setHtmlType(GeneratorConstants.HTML_DATETIME);
                 tableColumn.setJavaTypePackage("java.time.LocalDateTime");
                 tableColumn.setSearchType("date-picker");
                 tableColumn.setQueryType(GeneratorConstants.QUERY_BETWEEN);
                 break;
-            case "TINYINT":
-            case "SMALLINT":
-            case "MEDIUMINT":
-            case "INT":
-            case "NUMBER":
-            case "INTEGER":
-            case "BIT":
-            case "BIGINT":
-            case "FLOAT":
-            case "DOUBLE":
-            case "DECIMAL":
+            case "TINYINT" :
+            case "SMALLINT" :
+            case "MEDIUMINT" :
+            case "INT" :
+            case "NUMBER" :
+            case "INTEGER" :
+            case "BIT" :
+            case "BIGINT" :
+            case "FLOAT" :
+            case "DOUBLE" :
+            case "DECIMAL" :
                 tableColumn.setTsType(GeneratorConstants.TS_TYPE_NUMBER);
                 setNumberTypeAttributes(columnType, tableColumn);
                 // tableColumn.setSearchType("input-number");
                 break;
-            default:
+            default :
                 // Handle other data types as needed
         }
     }
 
     private static void setStringTypeAttributes(String columnType, GeneratorTableColumn tableColumn) {
         Integer columnLength = getColumnLength(columnType);
-        String htmlType = (columnLength != null && columnLength >= 500)
-                ? GeneratorConstants.HTML_TEXTAREA
-                : GeneratorConstants.HTML_INPUT;
+        String htmlType = (columnLength != null && columnLength >= 500) ? GeneratorConstants.HTML_TEXTAREA : GeneratorConstants.HTML_INPUT;
         tableColumn.setHtmlType(htmlType);
     }
 

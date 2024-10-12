@@ -53,5 +53,4 @@ public class MenuSqlCodeBuilder extends AbstractCodeGenerationTemplate {
         return "";
     }
 
-
 }

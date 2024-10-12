@@ -19,5 +19,4 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 
     List<DictVO> listDict(@Param("typeCode") String typeCode);
 
-
 }

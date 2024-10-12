@@ -1,6 +1,5 @@
 package com.sz.generator.pojo.po;
 
-
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
@@ -32,8 +31,7 @@ public class GeneratorTable implements Serializable {
      * <p>
      * private String tableName;
      * <p>
-     * /**
-     * 表描述
+     * /** 表描述
      */
     private String tableName;
 
@@ -141,9 +139,7 @@ public class GeneratorTable implements Serializable {
     /**
      * 生成类型
      * <p>
-     * all      全部
-     * server   后端
-     * service  接口
+     * all 全部 server 后端 service 接口
      */
     private String generateType;
 

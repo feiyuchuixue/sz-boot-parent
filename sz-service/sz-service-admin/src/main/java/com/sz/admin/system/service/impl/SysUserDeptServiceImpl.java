@@ -52,7 +52,6 @@ public class SysUserDeptServiceImpl extends ServiceImpl<SysUserDeptMapper, SysUs
         saveBatch(batchList); // 重新创建user 和dept的关系
     }
 
-
     @Override
     public void unbind(List<Long> userIds) {
         QueryWrapper removeWrapper = QueryWrapper.create().where(SYS_USER_DEPT.USER_ID.in(userIds));

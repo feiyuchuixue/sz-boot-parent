@@ -14,5 +14,6 @@ import java.util.List;
  * @since 2022-10-01
  */
 public interface SysUserRoleService extends IService<SysUserRole> {
+
     List<String> getUserRolesByUserId(Long userId);
 }

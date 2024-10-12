@@ -40,10 +40,8 @@ public class WechatService {
         if (RedisUtils.hasKey(WECHAT_MINI_TOKEN)) {
             return (String) RedisUtils.getValue(WECHAT_MINI_TOKEN);
         } else {
-            ResponseEntity<AccessTokenResult> entity = RestClient.create()
-                    .get()
-                    .uri(WECHAT_TOKEN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret())
-                    .retrieve()
+            ResponseEntity<AccessTokenResult> entity = RestClient.create().get()
+                    .uri(WECHAT_TOKEN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret()).retrieve()
                     .toEntity(AccessTokenResult.class);
             AccessTokenResult result = entity.getBody();
             if (validSuccess(result)) {
@@ -66,10 +64,8 @@ public class WechatService {
      */
     public LoginInfoResult miniLogin(String code, String accessToken) {
         // 微信小程序登录接口返回content-type是text/plain，因此无法直接映射对象。使用String接收，后续再做转换
-        ResponseEntity<String> entity = RestClient.create()
-                .get()
-                .uri(WECHAT_MINI_LOGIN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret(), code, accessToken)
-                .retrieve()
+        ResponseEntity<String> entity = RestClient.create().get()
+                .uri(WECHAT_MINI_LOGIN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret(), code, accessToken).retrieve()
                 .toEntity(String.class);
         LoginInfoResult loginInfoResult = JsonUtils.parseObject(entity.getBody(), LoginInfoResult.class);
         return loginInfoResult;

@@ -26,12 +26,12 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
         SocketBean tmMessage = tm.getMessage();
         SocketChannelEnum channel = tmMessage.getChannel();
         switch (tmMessage.getScope()) {
-            case SERVER: // 通知到后台服务端
+            case SERVER : // 通知到后台服务端
                 if (SocketChannelEnum.CLOSE == channel) {
                     // todo ...
                 }
                 break;
-            case SOCKET_CLIENT: // 通知到socket客户端，即浏览器、移动端等
+            case SOCKET_CLIENT : // 通知到socket客户端，即浏览器、移动端等
                 // 推送给全体用户
                 if (tm.isToPushAll()) {
                     webSocketServer.sendMessageToAllUser(tm.getMessage());
@@ -40,10 +40,10 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
                     webSocketServer.sendMessage(tm.getToUsers(), tm.getMessage());
                 }
                 break;
-            case SOCKET_SERVER:
+            case SOCKET_SERVER :
                 // todo something ..
                 break;
-            default:
+            default :
                 break;
         }
     }

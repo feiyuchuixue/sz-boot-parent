@@ -1,7 +1,5 @@
 package com.sz.admin.system.pojo.po;
 
-
-
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;

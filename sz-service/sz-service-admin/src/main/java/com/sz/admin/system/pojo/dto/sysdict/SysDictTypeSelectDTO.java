@@ -9,8 +9,7 @@ import java.util.List;
 @Schema(description = "字典类型批量操作")
 public class SysDictTypeSelectDTO {
 
-    @Schema(description =  "字典类型id数组")
+    @Schema(description = "字典类型id数组")
     private List<String> ids;
-
 
 }

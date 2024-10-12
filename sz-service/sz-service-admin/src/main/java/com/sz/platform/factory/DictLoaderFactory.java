@@ -21,6 +21,7 @@ public class DictLoaderFactory {
 
     // 动态字典加载器
     private final List<DictLoader> dynamicLoaders = new ArrayList<>();
+
     // 静态字典加载器
     private final DictLoader defaultLoader;
 
@@ -55,7 +56,8 @@ public class DictLoaderFactory {
     /**
      * 获取指定类型的字典
      *
-     * @param typeCode 类型
+     * @param typeCode
+     *            类型
      * @return DictVO集合
      */
     public List<DictVO> getDictByType(String typeCode) {
@@ -87,15 +89,10 @@ public class DictLoaderFactory {
             DynamicDictEnum dictEnum = loader.getDynamicTypeCode();
             String typeCode = dictEnum.getTypeCode();
             String name = dictEnum.getName();
-            dictTypeVO = DictTypeVO.builder()
-                    .typeName(name)
-                    .typeCode(typeCode)
-                    .isDynamic(true)
-                    .build();
+            dictTypeVO = DictTypeVO.builder().typeName(name).typeCode(typeCode).isDynamic(true).build();
             result.add(dictTypeVO);
         }
         return result;
     }
-
 
 }

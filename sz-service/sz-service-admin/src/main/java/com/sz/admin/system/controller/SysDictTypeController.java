@@ -1,7 +1,6 @@
 package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
@@ -29,7 +28,7 @@ import java.util.List;
  * @author sz
  * @since 2023-08-18
  */
-@Tag(name =  "字典类型管理")
+@Tag(name = "字典类型管理")
 @RestController
 @RequestMapping("/sys-dict-type")
 @RequiredArgsConstructor
@@ -79,6 +78,5 @@ public class SysDictTypeController {
     public ApiResult<List<DictTypeVO>> selectOptionType() {
         return ApiResult.success(sysDictTypeService.selectDictTypeOptions());
     }
-
 
 }

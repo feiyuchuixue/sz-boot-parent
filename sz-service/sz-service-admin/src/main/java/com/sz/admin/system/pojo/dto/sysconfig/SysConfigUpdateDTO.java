@@ -9,19 +9,19 @@ import lombok.Data;
 public class SysConfigUpdateDTO {
 
     @NotZero
-    @Schema(description =  "参数id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "参数id", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 
-    @Schema(description =  "参数名")
+    @Schema(description = "参数名")
     private String configName;
 
-    @Schema(description =  "key")
+    @Schema(description = "key")
     private String configKey;
 
-    @Schema(description =  "value")
+    @Schema(description = "value")
     private String configValue;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
 }

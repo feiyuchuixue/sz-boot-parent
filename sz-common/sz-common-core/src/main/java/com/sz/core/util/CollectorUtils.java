@@ -1,6 +1,5 @@
 package com.sz.core.util;
 
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +14,13 @@ import static java.util.stream.Collectors.toList;
  * @description: 集合tools
  */
 public class CollectorUtils {
+
     private CollectorUtils() {
         throw new IllegalStateException("CollectorUtils class Illegal");
     }
 
-
     /**
-     * 取两个list的交集
-     * - list1 => [1,2,3]
-     * - list2 => [2,3]
-     * - 期望值: [2,3]
+     * 取两个list的交集 - list1 => [1,2,3] - list2 => [2,3] - 期望值: [2,3]
      *
      * @param list1
      * @param list2
@@ -35,10 +31,7 @@ public class CollectorUtils {
     }
 
     /**
-     * 取两个list的差集
-     * - list1 => [1,2,3]
-     * - list2 => [2,3]
-     * - 期望值: [1]
+     * 取两个list的差集 - list1 => [1,2,3] - list2 => [2,3] - 期望值: [1]
      *
      * @param list1
      * @param list2
@@ -49,10 +42,7 @@ public class CollectorUtils {
     }
 
     /**
-     * 取两个list的并集（未去重）
-     * - list1 => [1,2,3]
-     * - list2 => [2,3]
-     * - 期望值: [1,2,3,2,3]
+     * 取两个list的并集（未去重） - list1 => [1,2,3] - list2 => [2,3] - 期望值: [1,2,3,2,3]
      *
      * @param list1
      * @param list2
@@ -66,10 +56,7 @@ public class CollectorUtils {
     }
 
     /**
-     * 取两个list的并集（去重）
-     * - list1 => [1,2,3]
-     * - list2 => [2,3,4]
-     * - 期望值: [1,2,3,4]
+     * 取两个list的并集（去重） - list1 => [1,2,3] - list2 => [2,3,4] - 期望值: [1,2,3,4]
      *
      * @param list1
      * @param list2
@@ -94,9 +81,7 @@ public class CollectorUtils {
     }
 
     /**
-     * list转逗号分隔字符串
-     * - list => ["a","b","c"]
-     * - 期望值: "a,b,c"
+     * list转逗号分隔字符串 - list => ["a","b","c"] - 期望值: "a,b,c"
      *
      * @param list
      * @return String
@@ -106,9 +91,8 @@ public class CollectorUtils {
     }
 
     /**
-     * 根据map key 进行排序 (针对 map->key 进行 ASCii 排序)
-     * - list => ["b","d","a","b2","c"]
-     * - 期望值: ["a","b","b2","c","d"]
+     * 根据map key 进行排序 (针对 map->key 进行 ASCii 排序) - list => ["b","d","a","b2","c"] -
+     * 期望值: ["a","b","b2","c","d"]
      *
      * @param map
      * @return

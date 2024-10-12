@@ -1,12 +1,8 @@
 package com.sz.admin.system.pojo.dto.sysdept;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import java.time.LocalDateTime;
 import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -20,23 +16,22 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "SysDept修改DTO")
 public class SysDeptUpdateDTO {
 
-    @Schema(description =  "id")
+    @Schema(description = "id")
     private Long id;
 
-    @Schema(description =  "部门名称")
+    @Schema(description = "部门名称")
     private String name;
 
-    @Schema(description =  "父级id")
+    @Schema(description = "父级id")
     private Long pid;
 
-    @Schema(description =  "排序")
+    @Schema(description = "排序")
     private Integer sort;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
     @Schema(description = "负责人")
     private List<Long> leaders;
-
 
 }

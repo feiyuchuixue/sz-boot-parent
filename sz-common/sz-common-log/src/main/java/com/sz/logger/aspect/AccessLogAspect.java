@@ -28,9 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * TODO: 优化request参数和response参数。 最终结合SkyWalking使用再做改造
- * Controller请求切面
- * 打印请求参数
+ * TODO: 优化request参数和response参数。 最终结合SkyWalking使用再做改造 Controller请求切面 打印请求参数
  *
  * @author sz
  * @date 2022/2/17 9:11
@@ -70,25 +68,15 @@ public class AccessLogAspect {
             Object[] args = joinPoint.getArgs();
             filterAndConvertArguments(args);
 
-            AccessRequestLog requestLog = AccessRequestLog.builder()
-                    .traceId("")
-                    .url(request.getRequestURI())
-                    .timestamp(System.currentTimeMillis())
-                    .method(request.getMethod())
-                    .ip(HttpReqResUtil.getIpAdrress(request))
-                    .param(urlParams)
-                    .body(body)
-                    .form(parameter)
-                    .requestBody(args)
-                    .type("request")
-                    .contentType(contentType)
-                    .build();
+            AccessRequestLog requestLog = AccessRequestLog.builder().traceId("").url(request.getRequestURI()).timestamp(System.currentTimeMillis())
+                    .method(request.getMethod()).ip(HttpReqResUtil.getIpAdrress(request)).param(urlParams).body(body).form(parameter).requestBody(args)
+                    .type("request").contentType(contentType).build();
             List<String> whitelist = whitelistProperties.getWhitelist();
             if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {
                 requestLog.setUserId(StpUtil.getLoginIdAsString());
             }
             log.info(" [aop] request log : {}", JsonUtils.toJsonString(requestLog));
-            //设置请求开始时间
+            // 设置请求开始时间
             request.setAttribute(SEND_TIME, System.currentTimeMillis());
         } catch (Exception e) {
             log.error("Error in doBefore method", e);
@@ -111,17 +99,9 @@ public class AccessLogAspect {
             Map<String, Object> parameter = HttpReqResUtil.getParameter(request);
             long sendTime = (long) request.getAttribute(SEND_TIME);
             long ms = System.currentTimeMillis() - sendTime;
-            AccessResponseLog responseLog = AccessResponseLog.builder()
-                    .timestamp(System.currentTimeMillis())
-                    .traceId("")
-                    .param(JsonUtils.toJsonString(urlParams))
-                    .form(JsonUtils.toJsonString(parameter))
-                    .reqBody(joinPoint.getArgs())
-                    .resBody(returnValue)
-                    .method(request.getMethod())
-                    .url(request.getRequestURI())
-                    .ms(ms)
-                    .build();
+            AccessResponseLog responseLog = AccessResponseLog.builder().timestamp(System.currentTimeMillis()).traceId("")
+                    .param(JsonUtils.toJsonString(urlParams)).form(JsonUtils.toJsonString(parameter)).reqBody(joinPoint.getArgs()).resBody(returnValue)
+                    .method(request.getMethod()).url(request.getRequestURI()).ms(ms).build();
             String requestURI = request.getRequestURI();
             List<String> whitelist = whitelistProperties.getWhitelist();
             whitelist.add("/auth/logout"); // 退出登录接口也需要排除掉，因为logout的service方法先执行，在切面获取userId时已经失效了。
@@ -142,7 +122,8 @@ public class AccessLogAspect {
         if (Objects.nonNull(args)) {
             List<Object> argsList = Arrays.asList(args);
             // 将 HttpServletResponse 和 HttpServletRequest 参数移除，不然会报异常
-            List<Object> collect = argsList.stream().filter(o -> !(o instanceof HttpServletResponse || o instanceof HttpServletRequest)).collect(Collectors.toList());
+            List<Object> collect = argsList.stream().filter(o -> !(o instanceof HttpServletResponse || o instanceof HttpServletRequest))
+                    .collect(Collectors.toList());
             collect.toArray(args);
         }
     }
@@ -159,6 +140,5 @@ public class AccessLogAspect {
         }
         return whitelist.stream().anyMatch(pattern -> antPathMatcher.match(pattern, pathAfterContext));
     }
-
 
 }

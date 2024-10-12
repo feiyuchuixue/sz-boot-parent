@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 /**
  * @ClassName StringUtilsTest
  * @Author sz
@@ -12,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @Version 1.0
  */
 class StringUtilsTest {
+
     @Test
     void toSnakeCase() {
         String str = StringUtils.toSnakeCase("TeacherStatics");

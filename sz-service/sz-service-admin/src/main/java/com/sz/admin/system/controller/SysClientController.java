@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @author sz
  * @since 2024-01-22
  */
-@Tag(name =  "系统授权表")
+@Tag(name = "系统授权表")
 @RestController
 @RequestMapping("sys-client")
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class SysClientController {
 
     private final SysClientService sysClientService;
 
-    @Operation(summary ="新增")
+    @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.client.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult create(@RequestBody SysClientCreateDTO dto) {
@@ -41,7 +41,7 @@ public class SysClientController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="修改")
+    @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.client.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult update(@RequestBody SysClientUpdateDTO dto) {
@@ -49,7 +49,7 @@ public class SysClientController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="删除")
+    @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.client.remove", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult remove(@RequestBody SelectIdsDTO dto) {
@@ -57,19 +57,18 @@ public class SysClientController {
         return ApiResult.success();
     }
 
-    @Operation(summary ="列表查询")
+    @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.client.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysClientVO>> list(SysClientListDTO dto) {
         return ApiPageResult.success(sysClientService.page(dto));
     }
 
-    @Operation(summary ="详情")
+    @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.client.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
     public ApiResult<ClientVO> detail(@PathVariable Object id) {
         return ApiResult.success(sysClientService.detail(id));
     }
-
 
 }

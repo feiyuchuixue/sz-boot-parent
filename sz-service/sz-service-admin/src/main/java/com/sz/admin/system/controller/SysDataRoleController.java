@@ -1,6 +1,5 @@
 package com.sz.admin.system.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.system.pojo.dto.sysdatarole.SysDataRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdatarole.SysDataRoleListDTO;
@@ -77,6 +76,5 @@ public class SysDataRoleController {
     public ApiResult findRoleMenuByRoleId() {
         return ApiPageResult.success(sysDataRoleService.queryDataRoleMenu());
     }
-
 
 }

@@ -8,10 +8,10 @@ import lombok.Data;
 @Schema(description = "列表查询")
 public class SysConfigListDTO extends PageQuery {
 
-    @Schema(description =  "参数名", example = "test")
+    @Schema(description = "参数名", example = "test")
     private String configName;
 
-    @Schema(description =  "参数Key", example = "key1")
+    @Schema(description = "参数Key", example = "key1")
     private String configKey;
 
 }

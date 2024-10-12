@@ -40,17 +40,15 @@ public class SysDataRoleMenuServiceImpl extends ServiceImpl<SysDataRoleMenuMappe
             roleMenu.setMenuId(menuId);
             roleMenus.add(roleMenu);
         }
-        if (!roleMenus.isEmpty()) saveBatch(roleMenus);
+        if (!roleMenus.isEmpty())
+            saveBatch(roleMenus);
     }
 
     @Override
     public List<String> getSelectMenuIdByRoleId(Long roleId) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SYS_DATA_ROLE_MENU.MENU_ID)
-                .where(SYS_DATA_ROLE_MENU.ROLE_ID.eq(roleId));
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DATA_ROLE_MENU.MENU_ID).where(SYS_DATA_ROLE_MENU.ROLE_ID.eq(roleId));
         List<String> list = listAs(wrapper, String.class);
         return list;
     }
-
 
 }

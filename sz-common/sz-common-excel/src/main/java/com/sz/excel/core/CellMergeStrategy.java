@@ -1,6 +1,5 @@
 package com.sz.excel.core;
 
-
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.write.merge.AbstractMergeStrategy;
@@ -34,6 +33,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
      * 是否有标题
      */
     private final boolean hasTitle;
+
     /**
      * 开始行号，从0开始（第一行），如果有要忽略的（标题行）需要设置非0
      */
@@ -56,7 +56,6 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
         this.rowIndex = rowIndex;
         this.cellList = handle(list, hasTitle);
     }
-
 
     @Override
     protected void merge(Sheet sheet, Cell cell, Head head, Integer relativeRowIndex) {
@@ -138,6 +137,5 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
         private int current;
 
     }
-
 
 }

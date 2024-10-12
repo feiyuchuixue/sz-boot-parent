@@ -51,5 +51,4 @@ public class LoginUser {
     @Schema(description = "自定义deptRule")
     private Map<String, Set<Long>> deptRuleMap;
 
-
 }

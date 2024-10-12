@@ -24,10 +24,11 @@ public class LoginUtils {
     public static void performLogin(LoginUser loginUser, SaLoginModel model, Map<String, Object> extraData) {
         model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
         model.setExtraData(extraData);
-        //登录，生成token
+        // 登录，生成token
         StpUtil.login(loginUser.getUserInfo().getId(), model);
         StpUtil.getTokenSession().set(USER_KEY, loginUser);
-        // TODO 临时解决方案，后续看官方是否有更新。 解决token-session、session timeout 使用全局配置而不使用model独立配置时间的问题
+        // TODO 临时解决方案，后续看官方是否有更新。 解决token-session、session timeout
+        // 使用全局配置而不使用model独立配置时间的问题
         StpUtil.getTokenSession().updateTimeout(model.getTimeout());
         StpUtil.getSession().updateTimeout(model.getTimeout());
     }
@@ -35,10 +36,11 @@ public class LoginUtils {
     public static void performMiniLogin(Object userId, Object loginUser, SaLoginModel model, Map<String, Object> extraData) {
         model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
         model.setExtraData(extraData);
-        //登录，生成token
+        // 登录，生成token
         StpUtil.login(userId, model);
         StpUtil.getTokenSession().set(USER_KEY, loginUser);
-        // TODO 临时解决方案，后续看官方是否有更新。 解决token-session、session timeout 使用全局配置而不使用model独立配置时间的问题
+        // TODO 临时解决方案，后续看官方是否有更新。 解决token-session、session timeout
+        // 使用全局配置而不使用model独立配置时间的问题
         StpUtil.getTokenSession().updateTimeout(model.getTimeout());
         StpUtil.getSession().updateTimeout(model.getTimeout());
     }
@@ -74,9 +76,11 @@ public class LoginUtils {
      * @return
      */
     public static boolean isSuperAdmin() {
-        if (!StpUtil.isLogin()) return false;
+        if (!StpUtil.isLogin())
+            return false;
         LoginUser loginUser = getLoginUser();
-        if (loginUser == null) return false;
+        if (loginUser == null)
+            return false;
         return loginUser.getRoles().contains(GlobalConstant.SUPER_ROLE);
     }
 

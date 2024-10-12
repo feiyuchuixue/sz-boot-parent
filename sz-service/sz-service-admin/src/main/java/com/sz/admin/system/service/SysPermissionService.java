@@ -13,6 +13,7 @@ import java.util.Set;
  * @Version 1.0
  */
 public interface SysPermissionService {
+
     Set<String> getMenuPermissions(SysUser sysUser);
 
     Set<String> getRoles(Long userId);
@@ -23,6 +24,6 @@ public interface SysPermissionService {
 
     List<Long> getDeptAndChildren(SysUser sysUser);
 
-    Map<String,String> buildMenuRuleMap(SysUser sysUser, Set<String> findMenuIds);
+    Map<String, String> buildMenuRuleMap(SysUser sysUser, Set<String> findMenuIds);
 
 }

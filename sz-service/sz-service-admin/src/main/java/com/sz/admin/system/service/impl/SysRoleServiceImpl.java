@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -54,12 +53,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public void update(SysRoleUpdateDTO dto) {
         SysRole sysRole = BeanCopyUtils.copy(dto, SysRole.class);
         long count;
-        count = QueryChain.of(SysRole.class).eq(SysRole::getRoleName, dto.getRoleName())
-                .ne(SysRole::getId, dto.getId()).count();
+        count = QueryChain.of(SysRole.class).eq(SysRole::getRoleName, dto.getRoleName()).ne(SysRole::getId, dto.getId()).count();
         CommonResponseEnum.EXISTS.message("roleName已存在").assertTrue(count > 0);
         if (Utils.isNotNull(dto.getPermissions())) {
-            count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions())
-                    .ne(SysRole::getId, dto.getId()).count();
+            count = QueryChain.of(SysRole.class).eq(SysRole::getPermissions, dto.getPermissions()).ne(SysRole::getId, dto.getId()).count();
             CommonResponseEnum.EXISTS.message("permissions已存在").assertTrue(count > 0);
         }
         updateById(sysRole);
@@ -72,8 +69,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public void removeByMenuId(SelectIdsDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .in(SysRoleMenu::getMenuId, dto.getIds());
+        QueryWrapper wrapper = QueryWrapper.create().in(SysRoleMenu::getMenuId, dto.getIds());
         sysRoleMenuMapper.deleteByQuery(wrapper);
     }
 
@@ -85,6 +81,5 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
         return PageUtils.getPageResult(page(PageUtils.getPage(dto), wrapper));
     }
-
 
 }

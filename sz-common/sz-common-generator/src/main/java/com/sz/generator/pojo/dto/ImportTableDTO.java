@@ -15,7 +15,7 @@ import java.util.List;
 @Schema(description = "导入表")
 public class ImportTableDTO {
 
-    @Schema(description =  "表名")
+    @Schema(description = "表名")
     private List<String> tableName;
 
 }

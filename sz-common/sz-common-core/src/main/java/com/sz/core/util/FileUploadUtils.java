@@ -17,7 +17,8 @@ public class FileUploadUtils {
     /**
      * 生成文件名
      *
-     * @param originalFilename 原始文件名
+     * @param originalFilename
+     *            原始文件名
      * @return {@link String}
      */
     public static String generateFileName(String originalFilename) {

@@ -14,11 +14,11 @@ import java.util.List;
 @Schema(description = "角色菜单变更")
 public class SysRoleMenuDTO {
 
-    @Schema(description =  "菜单id数组")
+    @Schema(description = "菜单id数组")
     List<String> menuIds;
 
     @NotZero(message = "角色id不能为空")
-    @Schema(description =  "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
     Integer roleId;
 
 }

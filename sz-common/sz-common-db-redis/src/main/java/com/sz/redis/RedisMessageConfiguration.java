@@ -24,10 +24,12 @@ import org.springframework.stereotype.Component;
 public class RedisMessageConfiguration {
 
     private final RedisConnectionFactory redisConnectionFactory;
-    private final WsToServiceListener wsToServiceListener;
-    private final ServiceToWsListener serviceToWsListener;
-    private final UserPermissionChangeListener userPermissionChangeListener;
 
+    private final WsToServiceListener wsToServiceListener;
+
+    private final ServiceToWsListener serviceToWsListener;
+
+    private final UserPermissionChangeListener userPermissionChangeListener;
 
     /**
      * 配置订阅关系

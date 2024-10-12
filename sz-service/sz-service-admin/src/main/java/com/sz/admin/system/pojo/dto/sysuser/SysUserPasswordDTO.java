@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 public class SysUserPasswordDTO {
 
-    @Schema(description =  "原始密码")
+    @Schema(description = "原始密码")
     private String oldPwd;
 
-    @Schema(description =  "新密码")
+    @Schema(description = "新密码")
     private String newPwd;
 }

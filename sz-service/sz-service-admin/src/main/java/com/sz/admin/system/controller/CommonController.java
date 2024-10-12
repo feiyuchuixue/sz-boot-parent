@@ -29,7 +29,7 @@ public class CommonController {
 
     private final ResourceLoader resourceLoader;
 
-    @Operation(summary ="模板下载")
+    @Operation(summary = "模板下载")
     @GetMapping("/download/templates")
     public void fileDownload(@RequestParam("templateName") String templateName, HttpServletResponse response) {
         try {
@@ -38,6 +38,5 @@ public class CommonController {
             log.error("模板下载文件下载失败", e);
         }
     }
-
 
 }

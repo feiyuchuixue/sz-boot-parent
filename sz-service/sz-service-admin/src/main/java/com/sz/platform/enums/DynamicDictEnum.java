@@ -1,6 +1,5 @@
 package com.sz.platform.enums;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DynamicDictEnum {
 
+    // @formatter:off
     DYNAMIC_USER_OPTIONS("dynamic_user_options", "用户信息");
-
+    // @formatter:on
     private final String typeCode; // 类型代码
-    private final String name;     // 名称
+
+    private final String name; // 名称
 
 }

@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "flyway")
 public class FlywayProperties {
+
     private FlywayConfig framework;
+
     private FlywayConfig business;
 
     public FlywayConfig getFramework() {
@@ -37,9 +39,13 @@ public class FlywayProperties {
         }
 
         private boolean enabled;
+
         private String locations;
+
         private boolean baselineOnMigrate;
+
         private String table;
+
         private boolean validateOnMigrate;
 
         private String baselineVersion;
@@ -85,8 +91,12 @@ public class FlywayProperties {
             this.validateOnMigrate = validateOnMigrate;
         }
 
-        public String getBaselineVersion() { return baselineVersion; }
+        public String getBaselineVersion() {
+            return baselineVersion;
+        }
 
-        public void setBaselineVersion(String baselineVersion) { this.baselineVersion = baselineVersion; }
+        public void setBaselineVersion(String baselineVersion) {
+            this.baselineVersion = baselineVersion;
+        }
     }
 }

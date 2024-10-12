@@ -13,7 +13,6 @@ import com.sz.core.common.entity.SelectIdsDTO;
 
 import java.util.List;
 
-
 /**
  * <p>
  * 部门表 Service
@@ -35,7 +34,6 @@ public interface SysDeptService extends IService<SysDept> {
     void remove(SelectIdsDTO dto);
 
     SysDeptVO detail(Object id);
-
 
     List<DeptTreeVO> getDepartmentTreeWithAdditionalNodes();
 

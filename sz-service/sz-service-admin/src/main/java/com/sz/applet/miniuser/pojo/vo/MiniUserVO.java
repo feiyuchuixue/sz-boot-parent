@@ -1,10 +1,7 @@
 package com.sz.applet.miniuser.pojo.vo;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -17,6 +14,5 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @Schema(description = "MiniUser返回vo")
 public class MiniUserVO {
-
 
 }

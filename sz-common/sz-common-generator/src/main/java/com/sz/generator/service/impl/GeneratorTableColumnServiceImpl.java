@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 /**
  * <p>
  * 代码生成业务表字段 服务实现类
@@ -31,19 +30,14 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
 
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableId(Integer tableId) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(GeneratorTableColumn::getTableId, tableId)
-                .orderBy(GeneratorTableColumn::getSort).asc();
+        QueryWrapper wrapper = QueryWrapper.create().eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc();
         List<GeneratorTableColumn> list = list(wrapper);
         return list;
     }
 
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableName(Integer tableId) {
-        List<GeneratorTableColumn> list = QueryChain.of(mapper)
-                .eq(GeneratorTableColumn::getTableId, tableId)
-                .orderBy(GeneratorTableColumn::getSort)
-                .asc()
+        List<GeneratorTableColumn> list = QueryChain.of(mapper).eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc()
                 .list();
         return list;
     }
@@ -54,13 +48,10 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
     }
 
     @Override
-    public void remove(List tableNames){
-        this.updateChain()
-                .from(GeneratorTableTableDef.GENERATOR_TABLE, GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN)
+    public void remove(List tableNames) {
+        this.updateChain().from(GeneratorTableTableDef.GENERATOR_TABLE, GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN)
                 .where(GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN.TABLE_ID.eq(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_ID))
-                .where(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_NAME.in(tableNames))
-                .remove();
+                .where(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_NAME.in(tableNames)).remove();
     }
-
 
 }

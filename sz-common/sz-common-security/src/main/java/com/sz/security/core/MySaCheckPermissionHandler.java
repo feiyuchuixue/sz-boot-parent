@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
  * @Version 1.0
  */
 public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<SaCheckPermission> {
+
     @Override
     public Class<SaCheckPermission> getHandlerAnnotationClass() {
         return SaCheckPermission.class;
@@ -40,7 +41,8 @@ public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<
             }
         } catch (NotPermissionException e) {
             // Start------------以下是自定义代码-------
-            if (LoginUtils.isSuperAdmin()) return;
+            if (LoginUtils.isSuperAdmin())
+                return;
             // End------------以上是自定义代码-------
             // 权限认证校验未通过，再开始角色认证校验
             for (String role : orRole) {

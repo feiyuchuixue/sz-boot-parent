@@ -1,9 +1,11 @@
 package com.sz.core.common.exception.common;
 
 public class BaseException extends RuntimeException {
+
     private static final long serialVersionUID = 1L;
 
     private final IResponseEnum responseEnum;
+
     private final Object[] args;
 
     public BaseException(IResponseEnum responseEnum, Object[] args, String message) {
@@ -25,6 +27,5 @@ public class BaseException extends RuntimeException {
     public Object[] getArgs() {
         return args;
     }
-
 
 }

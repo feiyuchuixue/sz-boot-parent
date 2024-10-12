@@ -20,7 +20,9 @@ public class WechatProperties {
 
     @Data
     public static class MiniProgramProperties {
+
         private String appId;
+
         private String appSecret;
 
     }

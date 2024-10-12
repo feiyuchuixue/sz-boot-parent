@@ -2,14 +2,12 @@ package com.sz.core.util;
 
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -26,14 +24,15 @@ public class HttpReqResUtil {
     /**
      * 获取Ip地址
      *
-     * @param request HttpServletRequest
+     * @param request
+     *            HttpServletRequest
      * @return ip
      */
     public static String getIpAdrress(HttpServletRequest request) {
         String Xip = request.getHeader("X-Real-IP");
         String XFor = request.getHeader("X-Forwarded-For");
         if (StringUtils.isNotEmpty(XFor) && !"unKnown".equalsIgnoreCase(XFor)) {
-            //多次反向代理后会有多个ip值，第一个ip才是真实ip
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
             int index = XFor.indexOf(",");
             if (index != -1) {
                 return XFor.substring(0, index);
@@ -141,9 +140,9 @@ public class HttpReqResUtil {
         String param = null;
         String val = "";
         while (a.hasMoreElements()) {
-            //参数名
+            // 参数名
             param = a.nextElement();
-            //值
+            // 值
             val = request.getParameter(param);
             paramMap.put(param, val);
         }

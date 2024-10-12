@@ -12,16 +12,15 @@ import com.sz.security.pojo.ClientVO;
 
 import java.util.List;
 
-
 /**
-* <p>
-    * 系统授权表 Service
-    * </p>
-*
-* @author sz
-* @since 2024-01-22
-*/
-public interface SysClientService  extends IService<SysClient>  {
+ * <p>
+ * 系统授权表 Service
+ * </p>
+ *
+ * @author sz
+ * @since 2024-01-22
+ */
+public interface SysClientService extends IService<SysClient> {
 
     void create(SysClientCreateDTO dto);
 
@@ -34,6 +33,5 @@ public interface SysClientService  extends IService<SysClient>  {
     void remove(SelectIdsDTO dto);
 
     ClientVO detail(Object id);
-
 
 }

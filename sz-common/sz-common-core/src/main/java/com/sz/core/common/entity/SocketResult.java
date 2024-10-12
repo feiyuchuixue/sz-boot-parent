@@ -46,5 +46,4 @@ public class SocketResult<T> extends SocketBean {
         return socketResult;
     }
 
-
 }

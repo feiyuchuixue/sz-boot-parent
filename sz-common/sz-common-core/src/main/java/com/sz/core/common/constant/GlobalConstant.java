@@ -31,5 +31,4 @@ public class GlobalConstant {
      */
     public static final String SUPER_ROLE = "admin";
 
-
 }

@@ -16,7 +16,7 @@ public class WechatApiConstant {
     public static final String WECHAT_TOKEN_URL = WECHAT_API_BASE_URL + "/cgi-bin/token?grant_type=client_credential&appid={APPID}&secret={APP_SECRET}";
 
     // 小程序登录
-    public static final String WECHAT_MINI_LOGIN_URL = WECHAT_API_BASE_URL + "/sns/jscode2session?appid={APPID}&secret={APP_SECRET}&js_code={JS_CODE}&grant_type=authorization_code&access_token={ACCESS_TOKEN}";
-
+    public static final String WECHAT_MINI_LOGIN_URL = WECHAT_API_BASE_URL
+            + "/sns/jscode2session?appid={APPID}&secret={APP_SECRET}&js_code={JS_CODE}&grant_type=authorization_code&access_token={ACCESS_TOKEN}";
 
 }

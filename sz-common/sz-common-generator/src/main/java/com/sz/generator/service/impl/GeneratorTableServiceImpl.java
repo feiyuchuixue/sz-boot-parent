@@ -71,6 +71,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     /**
      * 导入表
+     * 
      * @param dto
      */
     @Transactional
@@ -90,7 +91,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             String moduleName = generatorProperties.getModuleName();
             String serviceName = generatorProperties.getServiceName();
             String projectRootPath = System.getProperty("user.dir");
-            // pathApi = projectRootPath + File.separator + "sz-service" + File.separator + "sz-service-admin";
+            // pathApi = projectRootPath + File.separator + "sz-service" + File.separator +
+            // "sz-service-admin";
             pathApi = projectRootPath + File.separator + moduleName + File.separator + serviceName;
             pathWeb = generatorProperties.getPath().getWeb();
         }
@@ -116,9 +118,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     /**
      * 查询未导入的表
+     * 
      * @param dto
      * @return
-     */ public PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto) {
+     */
+    public PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableNotInImport(dto);
         return PageUtils.getPageResult(generatorTables);
@@ -127,9 +131,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     /**
      * 查询已经导入的表
+     * 
      * @param dto
      * @return
-     */ public PageResult<GeneratorTable> selectDbTableByImport(DbTableQueryDTO dto) {
+     */
+    public PageResult<GeneratorTable> selectDbTableByImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableByImport(dto);
         return PageUtils.getPageResult(generatorTables);
@@ -138,9 +144,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     /**
      * 代码生成配置详情
+     * 
      * @param tableId
      * @return
-     */ public GeneratorDetailVO detail(String tableName) {
+     */
+    public GeneratorDetailVO detail(String tableName) {
         GeneratorDetailVO detailVO = new GeneratorDetailVO();
         GeneratorTable one = QueryChain.of(GeneratorTable.class).eq(GeneratorTable::getTableName, tableName).one();
         CommonResponseEnum.NOT_EXISTS.message(1002, "table不存在").assertNull(one);
@@ -159,8 +167,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     /**
      * 更新代码生成配置
+     * 
      * @param generatorDetailVO
-     */ public void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO) {
+     */
+    public void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO) {
         Integer tableId = generatorDetailVO.getBaseInfo().getTableId();
         GeneratorTable one = QueryChain.of(mapper).eq(GeneratorTable::getTableId, tableId).one();
         CommonResponseEnum.INVALID_ID.assertNull(one);
@@ -192,7 +202,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         CodeModelBuilder modelBuilder = new CodeModelBuilder();
         String rootPathApi = detailVO.getGeneratorInfo().getPathApi();
         String rootPathWeb = detailVO.getGeneratorInfo().getPathWeb();
-        Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO).builderVue(detailVO).getModel();
+        Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO)
+                .builderVue(detailVO).getModel();
         List<AbstractCodeGenerationTemplate> apiTemplates = BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model);
         for (AbstractCodeGenerationTemplate apiTemplate : apiTemplates) {
             CodeGenTempResult result = apiTemplate.buildTemplate(true);
@@ -247,7 +258,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 CodeModelBuilder modelBuilder = new CodeModelBuilder();
                 String rootPathApi = detailVO.getGeneratorInfo().getPathApi();
                 String rootPathWeb = detailVO.getGeneratorInfo().getPathWeb();
-                Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO).builderVue(detailVO).getModel();
+                Map<String, Object> model = modelBuilder.builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO)
+                        .builderPojo(detailVO).builderVue(detailVO).getModel();
 
                 List<AbstractCodeGenerationTemplate> apiTemplates = BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model);
                 for (AbstractCodeGenerationTemplate apiTemplate : apiTemplates) {
@@ -282,7 +294,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorDetailVO detailVO = detail(tableName);
         String rootPathApi = detailVO.getGeneratorInfo().getPathApi();
         String rootPathWeb = detailVO.getGeneratorInfo().getPathWeb();
-        Map<String, Object> model = new CodeModelBuilder().builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO).builderVue(detailVO).getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO)
+                .builderPojo(detailVO).builderVue(detailVO).getModel();
 
         // 处理 API 模板
         handleTemplates(BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model), previews, model);
@@ -315,7 +328,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return configurer.getConfiguration().getTemplate(File.separator + "sql" + File.separator + "menuImport.sql.ftl");
     }
 
-    private void handleTemplates(List<AbstractCodeGenerationTemplate> templates, List<GeneratorPreviewVO> previews, Map<String, Object> model) throws IOException {
+    private void handleTemplates(List<AbstractCodeGenerationTemplate> templates, List<GeneratorPreviewVO> previews, Map<String, Object> model)
+            throws IOException {
         for (AbstractCodeGenerationTemplate template : templates) {
             CodeGenTempResult tmpRes = template.buildTemplate(false);
             String relativePath = tmpRes.getRelativePath();
@@ -376,8 +390,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             menuDeep = 1;
         }
         String routerName = model.get("indexDefineOptionsName").toString(); // eg: TeacherStatisticsView
-        String path = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName(); // eg: /test/teacherStatistics
-        String component = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName() + SEPARATOR + "index"; // eg: /teacher/TeacherStatisticsView/index
+        String path = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName(); // eg:
+                                                                                                                                        // /test/teacherStatistics
+        String component = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName() + SEPARATOR
+                + "index"; // eg: /teacher/TeacherStatisticsView/index
         int count = this.mapper.selectMenuCount(parentMenuId);
         String listPermission = model.get("listPermission").toString(); // eg: sys.user.query_table
         MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep, listPermission);
@@ -421,7 +437,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return menus;
     }
 
-    private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, String btnParentId, String parentMenuId, String path, String routerName, String component, int count, int parentDeep, String permission) {
+    private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, String btnParentId, String parentMenuId, String path, String routerName,
+            String component, int count, int parentDeep, String permission) {
         MenuCreateDTO createDTO = new MenuCreateDTO();
         createDTO.setId(btnParentId);
         if (Utils.isNotNull(parentMenuId)) {
@@ -460,7 +477,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Override
     @Transactional
     public void remove(SelectTablesDTO dto) {
-        UpdateChain.of(GeneratorTableColumn.class).from(GENERATOR_TABLE_COLUMN).where(GENERATOR_TABLE_COLUMN.TABLE_ID.in(QueryWrapper.create().select(GENERATOR_TABLE.TABLE_ID).from(GENERATOR_TABLE).where(GENERATOR_TABLE.TABLE_NAME.in(dto.getTableNames())))).remove();
+        UpdateChain.of(GeneratorTableColumn.class).from(GENERATOR_TABLE_COLUMN)
+                .where(GENERATOR_TABLE_COLUMN.TABLE_ID.in(
+                        QueryWrapper.create().select(GENERATOR_TABLE.TABLE_ID).from(GENERATOR_TABLE).where(GENERATOR_TABLE.TABLE_NAME.in(dto.getTableNames()))))
+                .remove();
         QueryWrapper wrapper = QueryWrapper.create().in(GeneratorTable::getTableName, dto.getTableNames());
         remove(wrapper);
     }

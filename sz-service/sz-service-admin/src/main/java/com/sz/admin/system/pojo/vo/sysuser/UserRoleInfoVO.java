@@ -21,5 +21,4 @@ public class UserRoleInfoVO {
     @Schema(description = "角色ID")
     private String roleIds;
 
-
 }

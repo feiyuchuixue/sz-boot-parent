@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 
 import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYPE;
 
-
 /**
  * <p>
  * 字典表 服务实现类
@@ -76,18 +74,14 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     public void create(SysDictCreateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
         QueryWrapper wrapper;
-        long count = QueryChain.of(sysDictTypeMapper)
-                .eq(SysDictType::getId, dto.getSysDictTypeId())
-                .count();
+        long count = QueryChain.of(sysDictTypeMapper).eq(SysDictType::getId, dto.getSysDictTypeId()).count();
         CommonResponseEnum.NOT_EXISTS.message("SYS_DICT_TYPE不存在").assertTrue(count < 1);
 
-        wrapper = QueryWrapper.create()
-                .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
+        wrapper = QueryWrapper.create().where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
                 .where(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()));
         CommonResponseEnum.EXISTS.message("字典已存在").assertTrue(count(wrapper) > 0);
 
-        wrapper = QueryWrapper.create()
-                .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
+        wrapper = QueryWrapper.create().where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
         AtomicReference<Long> dictCount = new AtomicReference<>(0L);
         QueryWrapper finalWrapper = wrapper;
         // 跳过逻辑删除，查询真实count数
@@ -103,12 +97,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     @Override
     public void update(SysDictUpdateDTO dto) {
         SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
-        long count = QueryChain.of(this.mapper)
-                .select()
-                .from(SysDictTableDef.SYS_DICT)
-                .where(SysDictTableDef.SYS_DICT.ID.ne(dto.getId()))
-                .and(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
-                .and(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()))
+        long count = QueryChain.of(this.mapper).select().from(SysDictTableDef.SYS_DICT).where(SysDictTableDef.SYS_DICT.ID.ne(dto.getId()))
+                .and(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId())).and(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()))
                 .count();
         CommonResponseEnum.EXISTS.message(SysDictTableDef.SYS_DICT.CODE_NAME.getName() + "已存在").assertTrue(count > 0);
         sysDict.setId(dto.getId());
@@ -125,8 +115,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SysDictTableDef.SYS_DICT.ID.in(dto.getIds()));
+        QueryWrapper wrapper = QueryWrapper.create().where(SysDictTableDef.SYS_DICT.ID.in(dto.getIds()));
         List<SysDict> list = list(wrapper);
         for (SysDict sysDict : list) {
             SysDictType sysDictType = sysDictTypeService.detail(sysDict.getSysDictTypeId());
@@ -137,9 +126,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public PageResult<SysDict> list(SysDictListDTO dto) {
-        QueryChain<SysDict> chain = QueryChain.of(this.mapper)
-                .select()
-                .from(SysDictTableDef.SYS_DICT)
+        QueryChain<SysDict> chain = QueryChain.of(this.mapper).select().from(SysDictTableDef.SYS_DICT)
                 .where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
         if (Utils.isNotNull(dto.getCodeName())) {
             chain.and(SysDictTableDef.SYS_DICT.CODE_NAME.like(dto.getCodeName()));
@@ -159,12 +146,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         List<DictVO> dictVOS = this.mapper.listDict(typeCode);
         if (!dictVOS.isEmpty()) {
             redisCache.setDict(typeCode, dictVOS);
-            result = dictVOS.stream()
-                    .collect(Collectors.groupingBy(
-                            DictVO::getSysDictTypeCode,
-                            LinkedHashMap::new,
-                            Collectors.toList()
-                    ));
+            result = dictVOS.stream().collect(Collectors.groupingBy(DictVO::getSysDictTypeCode, LinkedHashMap::new, Collectors.toList()));
         }
         return result;
     }
@@ -216,12 +198,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     public String exportDictSql(SelectIdsDTO dto) {
         String generatedContent = "";
         if (Utils.isNotNull(dto.getIds())) {
-            List<SysDictType> dictTypeList = QueryChain.of(SysDictType.class)
-                    .where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
+            List<SysDictType> dictTypeList = QueryChain.of(SysDictType.class).where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
 
-            QueryWrapper queryWrapper = QueryWrapper.create()
-                    .in(SysDict::getSysDictTypeId, dto.getIds())
-                    .orderBy(SysDict::getSysDictTypeId).asc()
+            QueryWrapper queryWrapper = QueryWrapper.create().in(SysDict::getSysDictTypeId, dto.getIds()).orderBy(SysDict::getSysDictTypeId).asc()
                     .orderBy(SysDict::getSort).asc();
             List<SysDict> dictList = list(queryWrapper);
             Map<String, Object> dataModel = new HashMap<>();

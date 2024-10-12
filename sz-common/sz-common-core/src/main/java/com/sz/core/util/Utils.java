@@ -69,7 +69,6 @@ public class Utils {
         return (isNotNull(obj) && !(UNKNOWN).equals(obj)) ? (Long.valueOf(obj.toString())) : 0L;
     }
 
-
     public static String getStringVal(Object obj) {
         if (isNotNull(obj) && !(UNKNOWN).equals(obj)) {
             return obj.toString();
@@ -92,7 +91,6 @@ public class Utils {
         return md5;
     }
 
-
     public static Field[] getFields(Class<?> clazz) {
         List<Field> fieldList = new ArrayList<>();
         while (clazz != null) {
@@ -111,6 +109,5 @@ public class Utils {
         Method getter = obj.getClass().getMethod(getterName);
         return getter.invoke(obj);
     }
-
 
 }

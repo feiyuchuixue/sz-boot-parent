@@ -13,12 +13,16 @@ import java.util.regex.Pattern;
  * @Date 2021/1/9
  */
 public class DesensitizationUtil {
+
     /**
-     * 正则匹配模式 - 该正则表达式第三个()可能无法匹配以某些特殊符号开头和结尾的（如果像密码这种字段，前后如果有很多特殊字段，则无法匹配，建议密码直接加密，无需脱敏）
+     * 正则匹配模式 -
+     * 该正则表达式第三个()可能无法匹配以某些特殊符号开头和结尾的（如果像密码这种字段，前后如果有很多特殊字段，则无法匹配，建议密码直接加密，无需脱敏）
      */
-    public static final Pattern REGEX_PATTERN = Pattern.compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:=]+[^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)[\\W&&[^\\-@.]]?\\s*");
+    public static final Pattern REGEX_PATTERN = Pattern
+            .compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:=]+[^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)[\\W&&[^\\-@.]]?\\s*");
     // 该正则表达式第三个()可以匹配以某些特殊字符开头和结尾的，但是对于日志来说，处理也很麻烦
-    // public static final Pattern REGEX_PATTERN = Pattern.compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:：=><]+\\s*)([\\S]+[\\u4e00-\\u9fa5\\w]+[\\S]+)[\\W&&[^\\-@.]]?\\s*");
+    // public static final Pattern REGEX_PATTERN =
+    // Pattern.compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:：=><]+\\s*)([\\S]+[\\u4e00-\\u9fa5\\w]+[\\S]+)[\\W&&[^\\-@.]]?\\s*");
 
     /**
      * 匹配非数字
@@ -29,42 +33,52 @@ public class DesensitizationUtil {
      * 是否开启脱敏
      */
     public static Boolean openFlag = false;
+
     /**
      * 是否忽略key的大小写
      */
     public static Boolean ignoreFlag = true;
+
     /**
      * 作为ignoreFlag初始的标记
      */
     private static Boolean initIgnoreFlag = false;
+
     /**
      * 作为openFlag初始化的标记
      */
     private static Boolean initOpenFlag = false;
+
     /**
      * 所有key:value配置匹配对
      */
     public static Map<String, Object> allPattern;
+
     /**
      * key为全小写的allPattern - pattern和patterns
      */
     public static Map<String, Object> lowerCaseAllPattern;
+
     /**
      * 手机
      */
     public static final String PHONE = "phone";
+
     /**
      * 邮箱
      */
     public static final String EMAIL = "email";
+
     /**
      * 身份证
      */
     public static final String IDENTITY = "identity";
+
     /**
      * 自定义
      */
     public static final String OTHER = "other";
+
     /**
      * 密码
      */
@@ -75,7 +89,8 @@ public class DesensitizationUtil {
     /**
      * 将event对象的formattedMessage脱敏
      *
-     * @param eventFormattedMessage LoggingEvent的formattedMessage属性
+     * @param eventFormattedMessage
+     *            LoggingEvent的formattedMessage属性
      * @return 脱敏后的日志信息
      */
     public String customChange(String eventFormattedMessage) {
@@ -112,10 +127,10 @@ public class DesensitizationUtil {
                                     continue;
                                 }
                                 patternVales = patternVales.replaceAll(" ", "");
-                                if(PASSWORD.equalsIgnoreCase(patternVales)){
+                                if (PASSWORD.equalsIgnoreCase(patternVales)) {
                                     String origin = regexMatcher.group(1) + regexMatcher.group(2) + regexMatcher.group(3);
                                     originalMessage = originalMessage.replace(origin, regexMatcher.group(1) + regexMatcher.group(2) + "******");
-                                    flag=true;
+                                    flag = true;
                                     // 密码级别的，直接替换为全*，继续下一轮匹配
                                     continue;
                                 }
@@ -150,13 +165,17 @@ public class DesensitizationUtil {
         }
     }
 
-
     /**
      * 获取替换后的value
-     * @param value value
-     * @param patternVales 核心规则
-     * @param split 分割
-     * @param originalPatternValues 原始规则
+     * 
+     * @param value
+     *            value
+     * @param patternVales
+     *            核心规则
+     * @param split
+     *            分割
+     * @param originalPatternValues
+     *            原始规则
      * @return
      */
     private String getReplaceValue(String value, String patternVales, String[] split, String originalPatternValues) {
@@ -212,7 +231,8 @@ public class DesensitizationUtil {
     /**
      * 根据key获取对应的规则(也许是Map，也许是String)
      *
-     * @param key key
+     * @param key
+     *            key
      * @return key对应的规则(也许是Map ， 也许是String)
      */
     private Object getKeyIgnoreCase(String key) {
@@ -240,12 +260,11 @@ public class DesensitizationUtil {
         }
     }
 
-
-
     /**
      * 将pattern的key值全部转换为小写
      *
-     * @param pattern pattern
+     * @param pattern
+     *            pattern
      * @return 转换后的pattern
      */
     public Map<String, Object> transformUpperCase(Map<String, Object> pattern) {
@@ -255,7 +274,7 @@ public class DesensitizationUtil {
             Set<String> keySet = pattern.keySet();
             Iterator<String> iterator = keySet.iterator();
             // 黄线强迫症，用for代替while
-            for (; iterator.hasNext(); ) {
+            for (; iterator.hasNext();) {
                 String key = iterator.next();
                 // 把key转换为小写字符串
                 String newKey = key.toLowerCase();
@@ -266,12 +285,13 @@ public class DesensitizationUtil {
         return resultMap;
     }
 
-
     /**
      * 获取规则字符串
      *
-     * @param patternVale 规则
-     * @param newValue    key对应的值 - 如 name:liuchengyin  这个参数就是liuchengyn
+     * @param patternVale
+     *            规则
+     * @param newValue
+     *            key对应的值 - 如 name:liuchengyin 这个参数就是liuchengyn
      * @return 规则的字符串
      */
     private String getMultiplePattern(Object patternVale, String newValue) {
@@ -287,7 +307,7 @@ public class DesensitizationUtil {
                 if (!CollectionUtils.isEmpty(list)) {
                     Iterator<Map<String, Object>> iterator = list.iterator();
                     // 遍历每一种规则
-                    for (; iterator.hasNext(); ) {
+                    for (; iterator.hasNext();) {
                         Map<String, Object> map = iterator.next();
                         String patternValue = this.getPatternByMap(map, newValue);
                         // 如果是空的，表示没匹配上该规则，去匹配下一个规则
@@ -301,12 +321,13 @@ public class DesensitizationUtil {
         }
     }
 
-
     /**
      * 获取规则
      *
-     * @param map   规则
-     * @param value key对应的值 - 如 name:liuchengyin  这个参数就是liuchengyn
+     * @param map
+     *            规则
+     * @param value
+     *            key对应的值 - 如 name:liuchengyin 这个参数就是liuchengyn
      * @return
      */
     private String getPatternByMap(Map<String, Object> map, String value) {
@@ -340,13 +361,13 @@ public class DesensitizationUtil {
                 }
                 // 这段代码写的多多少少感觉有点问题，可以写在一个if里，但是阿里检测代码的工具会警告
                 if (!"".equals(defaultRegex)) {
-                    if(IDENTITY.equals(defaultRegex) && isIdentity(value)){
+                    if (IDENTITY.equals(defaultRegex) && isIdentity(value)) {
                         return position;
-                    }else if(EMAIL.equals(defaultRegex) && isEmail(value)){
+                    } else if (EMAIL.equals(defaultRegex) && isEmail(value)) {
                         return position;
-                    }else if(PHONE.equals(defaultRegex) && isMobile(value)){
+                    } else if (PHONE.equals(defaultRegex) && isMobile(value)) {
                         return position;
-                    }else if(OTHER.equals(defaultRegex)){
+                    } else if (OTHER.equals(defaultRegex)) {
                         return position;
                     }
                 }
@@ -355,10 +376,11 @@ public class DesensitizationUtil {
         }
     }
 
-
     /**
      * 获取规则 - 判断是否带括号，带括号则返回括号内数据
-     * @param patternVales 规则
+     * 
+     * @param patternVales
+     *            规则
      * @return 规则
      */
     private String getBracketPattern(String patternVales) {
@@ -388,7 +410,8 @@ public class DesensitizationUtil {
     /**
      * 检查是否开启脱敏
      *
-     * @param pattern Yml配置文件内容 - Map格式
+     * @param pattern
+     *            Yml配置文件内容 - Map格式
      * @return 是否开启脱敏
      */
     private Boolean checkOpen(Map<String, Object> pattern) {
@@ -403,12 +426,15 @@ public class DesensitizationUtil {
         return openFlag;
     }
 
-
     /**
      * 脱敏处理
-     * @param start 脱敏开始下标
-     * @param end 脱敏结束下标
-     * @param value value
+     * 
+     * @param start
+     *            脱敏开始下标
+     * @param end
+     *            脱敏结束下标
+     * @param value
+     *            value
      * @return
      */
     public String dataDesensitization(int start, int end, String value) {

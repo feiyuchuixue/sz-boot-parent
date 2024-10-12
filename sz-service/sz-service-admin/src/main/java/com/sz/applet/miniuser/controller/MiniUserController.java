@@ -1,6 +1,5 @@
 package com.sz.applet.miniuser.controller;
 
-
 import com.sz.applet.miniuser.pojo.dto.MiniLoginDTO;
 import com.sz.applet.miniuser.pojo.vo.MiniUserVO;
 import com.sz.applet.miniuser.service.MiniUserService;

@@ -30,28 +30,32 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 创建用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     void create(SysUserCreateDTO dto);
 
     /**
      * 更新用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     void update(SysUserUpdateDTO dto);
 
     /**
      * 删除用户
      *
-     * @param dto 用户id数组
+     * @param dto
+     *            用户id数组
      */
     void remove(SelectIdsDTO dto);
 
     /**
      * 详情
      *
-     * @param id id
+     * @param id
+     *            id
      * @return {@link SysUser}
      */
     SysUserVO detail(Long id);
@@ -72,7 +76,8 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 更改密码
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     void changePassword(SysUserPasswordDTO dto);
 

@@ -1,6 +1,5 @@
 package com.sz.generator.service;
 
-
 import com.mybatisflex.core.service.IService;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
 

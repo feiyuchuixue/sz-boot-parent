@@ -7,6 +7,5 @@ package com.sz.core.common.enums;
  * @Version 1.0
  */
 public enum TrueFalseEnum {
-    T,
-    F
+    T, F
 }

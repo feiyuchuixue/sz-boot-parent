@@ -14,7 +14,7 @@ public class SzConsoleAppender extends ConsoleAppender {
     @Override
     protected void subAppend(Object event) {
         DesensitizationAppender appender = new DesensitizationAppender();
-        appender.operation((LoggingEvent)event);
+        appender.operation((LoggingEvent) event);
         super.subAppend(event);
     }
 }

@@ -1,6 +1,6 @@
 package com.sz.core.common.event;
 
-import  org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEvent;
 
 /**
  * @ClassName BaseEvent

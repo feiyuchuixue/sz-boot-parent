@@ -14,11 +14,11 @@ import java.util.Map;
 
 /**
  * -- 弃用，后续移除
+ * 
  * @author: sz
  * @date: 2022/8/29 10:52
- * @description: 自定义参数解析器
- * - 用于 GET 请求 对象传参的 蛇形 - 驼峰 转换
- * - 实现HandlerMethodArgumentResolver 参数解析器，按照我们自定义规则进行参数处理
+ * @description: 自定义参数解析器 - 用于 GET 请求 对象传参的 蛇形 - 驼峰 转换 -
+ *               实现HandlerMethodArgumentResolver 参数解析器，按照我们自定义规则进行参数处理
  */
 @Deprecated
 public class QueryStringArgsResolver implements HandlerMethodArgumentResolver {
@@ -40,7 +40,8 @@ public class QueryStringArgsResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, Object> map = new LinkedHashMap(0);
@@ -52,6 +53,5 @@ public class QueryStringArgsResolver implements HandlerMethodArgumentResolver {
         Object result = mapper.readValue(json, parameter.getParameterType());
         return result;
     }
-
 
 }

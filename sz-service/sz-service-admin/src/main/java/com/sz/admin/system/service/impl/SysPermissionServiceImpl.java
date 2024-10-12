@@ -59,8 +59,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Override
     public Set<String> getRoles(Long userId) {
         Set<String> roles = new HashSet<>();
-        SysUser sysUser = QueryChain.of(SysUser.class)
-                .eq(SysUser::getId, userId).one();
+        SysUser sysUser = QueryChain.of(SysUser.class).eq(SysUser::getId, userId).one();
         CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         if (isSuperAdmin(sysUser)) { // 获取超管角色
             roles.add(GlobalConstant.SUPER_ROLE); // 超管角色设置为"admin"
@@ -85,14 +84,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     public List<Long> getDepts(SysUser sysUser) {
         if (isSuperAdmin(sysUser)) {
             // 查询全部的部门ID
-            return QueryChain.of(SysDept.class)
-                    .select(SYS_DEPT.ID)
-                    .listAs(Long.class);
+            return QueryChain.of(SysDept.class).select(SYS_DEPT.ID).listAs(Long.class);
         } else {
-            return QueryChain.of(SysUserDept.class)
-                    .select(SYS_USER_DEPT.DEPT_ID)
-                    .where(SYS_USER_DEPT.USER_ID.eq(sysUser.getId()))
-                    .listAs(Long.class);
+            return QueryChain.of(SysUserDept.class).select(SYS_USER_DEPT.DEPT_ID).where(SYS_USER_DEPT.USER_ID.eq(sysUser.getId())).listAs(Long.class);
         }
     }
 
@@ -100,9 +94,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     public List<Long> getDeptAndChildren(SysUser sysUser) {
         if (isSuperAdmin(sysUser)) {
             // 查询全部的部门ID
-            return QueryChain.of(SysDept.class)
-                    .select(SYS_DEPT.ID)
-                    .listAs(Long.class);
+            return QueryChain.of(SysDept.class).select(SYS_DEPT.ID).listAs(Long.class);
         } else {
             return sysDeptClosureService.descendants(getDepts(sysUser));
         }
@@ -130,32 +122,19 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
         // 获取用户数据角色的元信息
         List<SysUserDataMetaVO> metaVOList = QueryChain.of(SysUserDataRole.class)
-                .select(
-                        SYS_USER_DATA_ROLE.USER_ID,
-                        SYS_USER_DATA_ROLE.ROLE_ID,
-                        SYS_DATA_ROLE.DATA_SCOPE_CD,
-                        SYS_DATA_ROLE_MENU.MENU_ID
-                )
-                .from(SYS_USER_DATA_ROLE)
-                .leftJoin(SYS_DATA_ROLE).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE.ID))
-                .leftJoin(SYS_DATA_ROLE_MENU).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_MENU.ROLE_ID))
-                .leftJoin(SYS_MENU).on(SYS_MENU.ID.eq(SYS_DATA_ROLE_MENU.MENU_ID)).where(SYS_MENU.USE_DATA_SCOPE.eq("T"))
-                .where(SYS_USER_DATA_ROLE.USER_ID.eq(sysUser.getId()))
-                .where(SYS_DATA_ROLE.DATA_SCOPE_CD.ne("1006005"))
-                .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds))
-                .where(SYS_DATA_ROLE.DATA_SCOPE_CD.isNotNull())
-                .listAs(SysUserDataMetaVO.class);
+                .select(SYS_USER_DATA_ROLE.USER_ID, SYS_USER_DATA_ROLE.ROLE_ID, SYS_DATA_ROLE.DATA_SCOPE_CD, SYS_DATA_ROLE_MENU.MENU_ID)
+                .from(SYS_USER_DATA_ROLE).leftJoin(SYS_DATA_ROLE).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE.ID)).leftJoin(SYS_DATA_ROLE_MENU)
+                .on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_MENU.ROLE_ID)).leftJoin(SYS_MENU).on(SYS_MENU.ID.eq(SYS_DATA_ROLE_MENU.MENU_ID))
+                .where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_USER_DATA_ROLE.USER_ID.eq(sysUser.getId())).where(SYS_DATA_ROLE.DATA_SCOPE_CD.ne("1006005"))
+                .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds)).where(SYS_DATA_ROLE.DATA_SCOPE_CD.isNotNull()).listAs(SysUserDataMetaVO.class);
 
         // 聚合菜单下的权限规则 （一次聚合）
-        Map<String, List<SysUserDataMetaVO>> menuMap = metaVOList.stream()
-                .collect(Collectors.groupingBy(SysUserDataMetaVO::getMenuId));
+        Map<String, List<SysUserDataMetaVO>> menuMap = metaVOList.stream().collect(Collectors.groupingBy(SysUserDataMetaVO::getMenuId));
         // 根据最小权限规则生成最终规则映射 （二次聚合）
         for (Map.Entry<String, List<SysUserDataMetaVO>> entry : menuMap.entrySet()) {
             String menuId = entry.getKey();
             List<SysUserDataMetaVO> values = entry.getValue();
-            SysUserDataMetaVO metaVO = values.stream()
-                    .min(Comparator.comparing(SysUserDataMetaVO::getDataScopeCd))
-                    .orElse(null);
+            SysUserDataMetaVO metaVO = values.stream().min(Comparator.comparing(SysUserDataMetaVO::getDataScopeCd)).orElse(null);
             ruleMap.put(menuId, metaVO != null ? metaVO.getDataScopeCd() : "");
         }
         buildCustomScope(sysUser, findMenuIds, ruleMap);
@@ -165,23 +144,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     private static void buildCustomScope(SysUser sysUser, Set<String> findMenuIds, Map<String, String> ruleMap) {
         // 获取自定义权限
         List<SysUserDataMetaVO> customMetaList = QueryChain.of(SysUserDataRole.class)
-                .select(
-                        SYS_USER_DATA_ROLE.USER_ID,
-                        SYS_USER_DATA_ROLE.ROLE_ID,
-                        SYS_DATA_ROLE.DATA_SCOPE_CD,
-                        SYS_DATA_ROLE_MENU.MENU_ID,
-                        SYS_DATA_ROLE_RELATION.RELATION_ID,
-                        SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD
-                )
-                .from(SYS_USER_DATA_ROLE)
-                .leftJoin(SYS_DATA_ROLE).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE.ID))
-                .leftJoin(SYS_DATA_ROLE_MENU).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_MENU.ROLE_ID))
-                .leftJoin(SYS_DATA_ROLE_RELATION).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_RELATION.ROLE_ID))
-                .leftJoin(SYS_MENU).on(SYS_MENU.ID.eq(SYS_DATA_ROLE_MENU.MENU_ID)).where(SYS_MENU.USE_DATA_SCOPE.eq("T"))
-                .where(SYS_USER_DATA_ROLE.USER_ID.eq(sysUser.getId()))
-                .where(SYS_DATA_ROLE.DATA_SCOPE_CD.eq("1006005"))
-                .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds))
-                .listAs(SysUserDataMetaVO.class);
+                .select(SYS_USER_DATA_ROLE.USER_ID, SYS_USER_DATA_ROLE.ROLE_ID, SYS_DATA_ROLE.DATA_SCOPE_CD, SYS_DATA_ROLE_MENU.MENU_ID,
+                        SYS_DATA_ROLE_RELATION.RELATION_ID, SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD)
+                .from(SYS_USER_DATA_ROLE).leftJoin(SYS_DATA_ROLE).on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE.ID)).leftJoin(SYS_DATA_ROLE_MENU)
+                .on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_MENU.ROLE_ID)).leftJoin(SYS_DATA_ROLE_RELATION)
+                .on(SYS_USER_DATA_ROLE.ROLE_ID.eq(SYS_DATA_ROLE_RELATION.ROLE_ID)).leftJoin(SYS_MENU).on(SYS_MENU.ID.eq(SYS_DATA_ROLE_MENU.MENU_ID))
+                .where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_USER_DATA_ROLE.USER_ID.eq(sysUser.getId())).where(SYS_DATA_ROLE.DATA_SCOPE_CD.eq("1006005"))
+                .where(SYS_DATA_ROLE_MENU.MENU_ID.in(findMenuIds)).listAs(SysUserDataMetaVO.class);
 
         Map<String, Set<Long>> deptRuleMap = new HashMap<>(); // 自定义部门rule
         Map<String, Set<Long>> userRuleMap = new HashMap<>(); // 自定义用户rule
@@ -222,8 +191,8 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     }
 
     /**
-     * 验证用户是否是【管理员身份】
-     * 验证方式：sys_user.user_tag_cd 字段； [1001001 测试用户; 1001002 超级管理员; 1001003 普通用户] 。 详见字典：用户标签（user_tag）
+     * 验证用户是否是【管理员身份】 验证方式：sys_user.user_tag_cd 字段； [1001001 测试用户; 1001002 超级管理员;
+     * 1001003 普通用户] 。 详见字典：用户标签（user_tag）
      *
      * @param sysUser
      * @return

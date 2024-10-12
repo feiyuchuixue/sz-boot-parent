@@ -8,13 +8,16 @@ import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
  */
 public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
 
+    // @formatter:off
     MENU_NAME_EXISTS(1001, "Menu路由名称已存在"),
     ;
+    // @formatter:on
 
     /**
      * 返回码
      */
     private int code;
+
     /**
      * 返回消息
      */
@@ -28,8 +31,10 @@ public enum AdminResponseEnum implements BusinessExceptionCustomAssert {
     /**
      * 自定义断言，支持提供错误码和消息
      *
-     * @param code    自定义错误码
-     * @param message 自定义错误消息
+     * @param code
+     *            自定义错误码
+     * @param message
+     *            自定义错误消息
      * @return 当前枚举常量
      */
     public AdminResponseEnum message(int code, String message) {

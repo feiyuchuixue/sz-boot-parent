@@ -60,5 +60,4 @@ public class ControllerCodeBuilder extends AbstractCodeGenerationTemplate {
         return model.get("controllerPkg").toString();
     }
 
-
 }

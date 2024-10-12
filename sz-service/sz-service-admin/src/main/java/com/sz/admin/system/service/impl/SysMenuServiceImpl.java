@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
@@ -49,7 +48,6 @@ import static com.sz.admin.system.pojo.po.table.SysRoleMenuTableDef.SYS_ROLE_MEN
 import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER_DATA_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 
-
 /**
  * <p>
  * 系统菜单表 服务实现类
@@ -77,7 +75,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 创建菜单
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -86,14 +85,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         menu.setId(Utils.generateUUIDs());
         QueryWrapper wrapper;
         if (!("1002003").equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
-            wrapper = QueryWrapper.create()
-                    .eq(SysMenu::getName, dto.getName())
-                    .eq(SysMenu::getDelFlag, "F");
+            wrapper = QueryWrapper.create().eq(SysMenu::getName, dto.getName()).eq(SysMenu::getDelFlag, "F");
             AdminResponseEnum.MENU_NAME_EXISTS.assertTrue(count(wrapper) > 0);
 
-            wrapper = QueryWrapper.create()
-                    .eq(SysMenu::getPath, dto.getPath())
-                    .eq(SysMenu::getDelFlag, "F");
+            wrapper = QueryWrapper.create().eq(SysMenu::getPath, dto.getPath()).eq(SysMenu::getDelFlag, "F");
             CommonResponseEnum.EXISTS.message("menuPath已存在").assertTrue(count(wrapper) > 0);
         }
 
@@ -102,8 +97,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             deep = 1;
             menu.setPid("0");
         } else {
-            wrapper = QueryWrapper.create()
-                    .where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getPid()));
+            wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getPid()));
             Integer parentDeep = getOne(wrapper).getDeep();
             deep = parentDeep + 1;
         }
@@ -122,7 +116,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 更新菜单
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -130,8 +125,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         QueryWrapper wrapper;
         SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
         // 菜单是否存在
-        wrapper = QueryWrapper.create()
-                .where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
+        wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
         CommonResponseEnum.NOT_EXISTS.message("菜单不存在").assertTrue(count(wrapper) < 1);
         menu.setUpdateId(StpUtil.getLoginIdAsString());
         menu.setUpdateTime(LocalDateTime.now());
@@ -148,7 +142,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 删除
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -170,14 +165,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link List}<{@link SysMenuVO}>
      */
     @Override
     public List<SysMenuVO> menuList(SysMenuListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysMenu::getDelFlag, "F")
-                /* .orderBy(SYS_MENU.DEEP.asc())*/
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F")
+                /* .orderBy(SYS_MENU.DEEP.asc()) */
                 .orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
 
         if (!dto.isShowButton()) {
@@ -204,12 +199,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<String> menuIds = sysUserRoleMapper.queryMenuIdByUserId(userId);
         if (Utils.isNotNull(menuIds)) {
             // 菜单全部数据(当前用户下的)
-            QueryWrapper wrapper = QueryWrapper.create()
-                    .in(SysMenu::getId, menuIds)
-                    .eq(SysMenu::getDelFlag, "F")
-                    .ne(SysMenu::getMenuTypeCd, "1002003")
-                    .orderBy(SysMenu::getDeep).asc()
-                    .orderBy(SysMenu::getSort).asc();
+            QueryWrapper wrapper = QueryWrapper.create().in(SysMenu::getId, menuIds).eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, "1002003")
+                    .orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
             List<SysMenu> list = list(wrapper);
             // 构建树形
             for (SysMenuVO rootNode : getRootNodes(list)) {
@@ -232,11 +223,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         root.setPid("-1"); // 设置一个无效的值作为根目录的PID
         root.setTitle("根目录"); // 根目录的标题
 
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysMenu::getDelFlag, "F")
-                .ne(SysMenu::getMenuTypeCd, "1002003") // 排除按钮
-                .orderBy(SYS_MENU.DEEP.asc())
-                .orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, "1002003") // 排除按钮
+                .orderBy(SYS_MENU.DEEP.asc()).orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
         List<SysMenu> list = list(wrapper);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
         List<MenuTreeVO> tree = TreeUtils.buildTree(menuTreeVOS, root, nodeId);
@@ -277,10 +265,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (Utils.isNotNull(dto.getIds())) {
             // 递归查询下边的子节点id
             List<String> list = this.mapper.selectMenuAndChildrenIds((List<String>) dto.getIds());
-            QueryWrapper queryWrapper = QueryWrapper.create()
-                    .in(SysMenu::getId, list)
-                    .orderBy(SysMenu::getDeep).asc()
-                    .orderBy(SysMenu::getSort).asc();
+            QueryWrapper queryWrapper = QueryWrapper.create().in(SysMenu::getId, list).orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
             List<SysMenu> sysMenuList = list(queryWrapper);
             if (Utils.isNotNull(sysMenuList)) {
                 Map<String, Object> dataModel = new HashMap<>();
@@ -305,12 +290,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return
      */
     private List<SysMenuVO> menuListTree(List<String> excludingIds) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .notIn(SysMenu::getId, excludingIds)
-                .ne(SysMenu::getMenuTypeCd, "10023")
-                .orderBy(SysMenu::getDeep).asc()
-                .orderBy(SysMenu::getSort).asc()
-                .eq(SysMenu::getDelFlag, "F");
+        QueryWrapper wrapper = QueryWrapper.create().notIn(SysMenu::getId, excludingIds).ne(SysMenu::getMenuTypeCd, "10023").orderBy(SysMenu::getDeep).asc()
+                .orderBy(SysMenu::getSort).asc().eq(SysMenu::getDelFlag, "F");
 
         // 菜单全部数据
         List<SysMenu> list = list(wrapper);
@@ -341,7 +322,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 是否是根节点
      *
-     * @param pid 父级Id
+     * @param pid
+     *            父级Id
      * @return true:是根节点
      */
     private boolean isRoot(String pid) {
@@ -389,9 +371,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public MenuPermissionVO hasExistsPermissions(MenuPermissionDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .ne(SysMenu::getId, dto.getId())
-                .eq(SysMenu::getPermissions, dto.getPermissions());
+        QueryWrapper wrapper = QueryWrapper.create().ne(SysMenu::getId, dto.getId()).eq(SysMenu::getPermissions, dto.getPermissions());
         Long count = count(wrapper);
         MenuPermissionVO permissionVO = new MenuPermissionVO();
         permissionVO.setPermissionCount(count.intValue());
@@ -401,6 +381,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     /**
      * 查询权限按钮
+     * 
      * @return
      */
     public List<String> findPermission() {
@@ -410,26 +391,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<String> findPermissionsByUserId(Long userId) {
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .select(QueryMethods.distinct(SYS_MENU.PERMISSIONS))
-                .from(SYS_MENU)
-                .leftJoin(SYS_ROLE_MENU).on(SYS_MENU.ID.eq(SYS_ROLE_MENU.MENU_ID))
-                .leftJoin(SYS_USER_ROLE).on(SYS_ROLE_MENU.ROLE_ID.eq(SYS_USER_ROLE.ROLE_ID))
-                .where(SYS_USER_ROLE.USER_ID.eq(userId))
-                .where(SYS_MENU.PERMISSIONS.isNotNull())
-                .where(SYS_MENU.PERMISSIONS.ne(""));
+        QueryWrapper queryWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_MENU.PERMISSIONS)).from(SYS_MENU).leftJoin(SYS_ROLE_MENU)
+                .on(SYS_MENU.ID.eq(SYS_ROLE_MENU.MENU_ID)).leftJoin(SYS_USER_ROLE).on(SYS_ROLE_MENU.ROLE_ID.eq(SYS_USER_ROLE.ROLE_ID))
+                .where(SYS_USER_ROLE.USER_ID.eq(userId)).where(SYS_MENU.PERMISSIONS.isNotNull()).where(SYS_MENU.PERMISSIONS.ne(""));
         List<String> list = listAs(queryWrapper, String.class);
         return list;
     }
 
     @Override
     public List<String> findAllPermissions() {
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .select(QueryMethods.distinct(SYS_MENU.PERMISSIONS))
-                .from(SYS_MENU)
-                .eq(SysMenu::getDelFlag, "F")
-                .isNotNull(SysMenu::getPermissions)
-                .ne(SysMenu::getPermissions, "");
+        QueryWrapper queryWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_MENU.PERMISSIONS)).from(SYS_MENU).eq(SysMenu::getDelFlag, "F")
+                .isNotNull(SysMenu::getPermissions).ne(SysMenu::getPermissions, "");
 
         return listAs(queryWrapper, String.class);
     }
@@ -441,17 +413,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return btnMenuMap;
         }
         try {
-            QueryWrapper wrapper = QueryWrapper.create()
-                    .from(SYS_MENU)
-                    .where(SYS_MENU.PERMISSIONS.in(permissions));
+            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(SYS_MENU.PERMISSIONS.in(permissions));
             List<SysMenu> list = list(wrapper);
             if (list.isEmpty()) {
                 return btnMenuMap;
             }
             List<String> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toList());
-            QueryWrapper checkWrapper = QueryWrapper.create()
-                    .select(SYS_MENU.ID)
-                    .from(SYS_MENU).where(SYS_MENU.ID.in(pids));
+            QueryWrapper checkWrapper = QueryWrapper.create().select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.ID.in(pids));
             List<String> existsMenuIds = listAs(checkWrapper, String.class);
             for (SysMenu menu : list) {
                 if (existsMenuIds.contains(menu.getPid()) || existsMenuIds.contains(menu.getId())) { // 过滤脏数据
@@ -473,9 +441,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<MenuTreeVO> queryDataRoleMenu() {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SYS_MENU.USE_DATA_SCOPE.eq("T"))
-                .where(SYS_MENU.MENU_TYPE_CD.eq("1002002"));
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq("1002002"));
         List<SysMenu> list = list(wrapper);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
         return menuTreeVOS;
@@ -492,13 +458,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             menu.setUseDataScope("F");
         }
         updateById(menu);
-        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class)
-                .select(SYS_USER_DATA_ROLE.USER_ID)
-                .from(SYS_USER_DATA_ROLE)
-                .leftJoin(SYS_DATA_ROLE_MENU)
-                .on(SYS_DATA_ROLE_MENU.ROLE_ID.eq(SYS_USER_DATA_ROLE.ROLE_ID))
-                .where(SYS_DATA_ROLE_MENU.MENU_ID.eq(menuId))
-                .listAs(Long.class);
+        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class).select(SYS_USER_DATA_ROLE.USER_ID).from(SYS_USER_DATA_ROLE).leftJoin(SYS_DATA_ROLE_MENU)
+                .on(SYS_DATA_ROLE_MENU.ROLE_ID.eq(SYS_USER_DATA_ROLE.ROLE_ID)).where(SYS_DATA_ROLE_MENU.MENU_ID.eq(menuId)).listAs(Long.class);
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));
     }
 

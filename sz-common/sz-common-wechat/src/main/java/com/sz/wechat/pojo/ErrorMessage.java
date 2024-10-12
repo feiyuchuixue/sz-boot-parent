@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 微信错误信息实体类
+ * 
  * @ClassName ErrorMessage
  * @Author sz
  * @Date 2024/4/26 11:11

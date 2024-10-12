@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 @Schema(description = "SysUser添加DTO")
 public class SysUserCreateDTO {
+
     {
         deptId = -1L;
     }

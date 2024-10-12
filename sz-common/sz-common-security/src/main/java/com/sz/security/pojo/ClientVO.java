@@ -17,35 +17,34 @@ import java.util.List;
 @Schema(description = "SysClient返回vo")
 public class ClientVO {
 
-    @Schema(description =  "客户端id")
+    @Schema(description = "客户端id")
     private String clientId;
 
-    @Schema(description =  "客户端key")
+    @Schema(description = "客户端key")
     private String clientKey;
 
-    @Schema(description =  "客户端秘钥")
+    @Schema(description = "客户端秘钥")
     private String clientSecret;
 
-    @Schema(description =  "授权类型数组")
+    @Schema(description = "授权类型数组")
     private List<String> grantTypeCdList;
 
-    @Schema(description =  "授权类型")
+    @Schema(description = "授权类型")
     private String grantTypeCd;
 
-    @Schema(description =  "设备类型")
+    @Schema(description = "设备类型")
     private String deviceTypeCd;
 
-    @Schema(description =  "token活跃超时时间")
+    @Schema(description = "token活跃超时时间")
     private Integer activeTimeout;
 
-    @Schema(description =  "token固定超时")
+    @Schema(description = "token固定超时")
     private Integer timeout;
 
-    @Schema(description =  "状态")
+    @Schema(description = "状态")
     private String clientStatusCd;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
-
 
 }

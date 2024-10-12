@@ -17,13 +17,13 @@ import java.util.List;
 @Data
 public class SysMenuVO {
 
-    @Schema(description ="id")
+    @Schema(description = "id")
     private String id;
 
-    @Schema(description ="pid")
+    @Schema(description = "pid")
     private String pid;
 
-    @Schema(description ="路径")
+    @Schema(description = "路径")
     private String path;
 
     private String name;
@@ -33,7 +33,7 @@ public class SysMenuVO {
     @JsonIgnore
     private String redirect;
 
-    @Schema(description ="组件路径")
+    @Schema(description = "组件路径")
     private String component;
 
     @JsonIgnore
@@ -60,33 +60,33 @@ public class SysMenuVO {
     @JsonIgnore
     private String isKeepAlive;
 
-    @Schema(description ="元数据")
+    @Schema(description = "元数据")
     private Meta meta;
 
     private List<SysMenuVO> children;
 
-    @Schema(description ="权限标识")
+    @Schema(description = "权限标识")
     private String permissions;
 
-    @Schema(description ="菜单类型")
+    @Schema(description = "菜单类型")
     private String menuTypeCd;
 
     @Data
     public static class Meta {
 
-        @Schema(description ="菜单和面包屑对应的图标")
+        @Schema(description = "菜单和面包屑对应的图标")
         private String icon;
 
-        @Schema(description ="路由标题 (用作 document.title || 菜单的名称)")
+        @Schema(description = "路由标题 (用作 document.title || 菜单的名称)")
         private String title;
 
-        @Schema(description ="路由外链时填写的访问地址")
+        @Schema(description = "路由外链时填写的访问地址")
         private String isLink;
 
-        @Schema(description ="是否在菜单中隐藏 (通常列表详情页需要隐藏)")
+        @Schema(description = "是否在菜单中隐藏 (通常列表详情页需要隐藏)")
         private String isHidden;
 
-        @Schema(description ="菜单是否全屏 (示例：数据大屏页面)")
+        @Schema(description = "菜单是否全屏 (示例：数据大屏页面)")
         private String isFull;
 
         @Schema(description = "菜单是否固定在标签页中")

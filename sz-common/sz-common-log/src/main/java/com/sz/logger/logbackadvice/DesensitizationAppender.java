@@ -3,7 +3,6 @@ package com.sz.logger.logbackadvice;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import com.sz.logger.utils.DesensitizationUtil;
 
-
 import java.lang.reflect.Field;
 
 /**
@@ -13,16 +12,16 @@ import java.lang.reflect.Field;
  * @Date 2021/1/9
  */
 public class DesensitizationAppender {
+
     /**
-     * LoggingEvent的属性 - message
-     * 格式化前的日志信息，如log.info("your name : {}", "柳成荫")
+     * LoggingEvent的属性 - message 格式化前的日志信息，如log.info("your name : {}", "柳成荫")
      * message就是"your name : {}"
      */
     private static final String MESSAGE = "message";
+
     /**
-     * LoggingEvent的属性 - formattedMessage
-     * 格式化后的日志信息，如log.info("your name : {}", "柳成荫")
-     * formattedMessage就是"your name : 柳成荫"
+     * LoggingEvent的属性 - formattedMessage 格式化后的日志信息，如log.info("your name : {}",
+     * "柳成荫") formattedMessage就是"your name : 柳成荫"
      */
     private static final String FORMATTED_MESSAGE = "formattedMessage";
 

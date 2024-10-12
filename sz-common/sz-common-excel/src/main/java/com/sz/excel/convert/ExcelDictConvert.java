@@ -47,9 +47,12 @@ public class ExcelDictConvert implements Converter<Object> {
     /**
      * 从excel导入，字典类型处理
      *
-     * @param cellData            Excel cell data.NotNull.
-     * @param contentProperty     Content property.Nullable.
-     * @param globalConfiguration Global configuration.NotNull.
+     * @param cellData
+     *            Excel cell data.NotNull.
+     * @param contentProperty
+     *            Content property.Nullable.
+     * @param globalConfiguration
+     *            Global configuration.NotNull.
      * @return
      */
     @Override
@@ -71,9 +74,12 @@ public class ExcelDictConvert implements Converter<Object> {
     /**
      * 导出到excel，字典类型处理
      *
-     * @param object              Java Data.NotNull.
-     * @param contentProperty     Content property.Nullable.
-     * @param globalConfiguration Global configuration.NotNull.
+     * @param object
+     *            Java Data.NotNull.
+     * @param contentProperty
+     *            Content property.Nullable.
+     * @param globalConfiguration
+     *            Global configuration.NotNull.
      * @return
      */
     @Override
@@ -123,6 +129,5 @@ public class ExcelDictConvert implements Converter<Object> {
 
         throw new IllegalArgumentException("Unsupported field type: " + targetType);
     }
-
 
 }

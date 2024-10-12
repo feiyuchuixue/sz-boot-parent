@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-
 /**
  * <p>
  * 部门表 Mapper 接口
@@ -32,8 +31,5 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * @return
      */
     List<TotalDeptVO> countUsersPerDept();
-
-
-
 
 }

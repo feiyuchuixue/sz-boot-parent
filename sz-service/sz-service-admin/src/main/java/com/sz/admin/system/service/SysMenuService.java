@@ -27,32 +27,35 @@ public interface SysMenuService extends IService<SysMenu> {
     /**
      * 创建
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     void create(SysMenuCreateDTO dto);
 
     /**
      * 更新
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     void update(SysMenuCreateDTO dto);
 
     /**
      * 删除菜单
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     void remove(SelectIdsDTO dto);
 
     /**
      * 列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link List}<{@link SysMenuVO}>
      */
     List<SysMenuVO> menuList(SysMenuListDTO dto);
-
 
     List<SysMenuVO> findMenuListByUserId(Long userId);
 

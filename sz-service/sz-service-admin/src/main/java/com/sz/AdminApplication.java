@@ -32,22 +32,19 @@ public class AdminApplication {
         AdminApplication.version = appVersion;
         FlywayProperties.FlywayConfig business = flywayProperties.getBusiness();
         FlywayProperties.FlywayConfig framework = flywayProperties.getFramework();
-        if (framework.isEnabled()) frameworkFlyway.migrate();
-        if (business.isEnabled()) businessFlyway.migrate();
+        if (framework.isEnabled())
+            frameworkFlyway.migrate();
+        if (business.isEnabled())
+            businessFlyway.migrate();
     }
-
 
     public static void main(String[] args) {
         SpringApplication.run(AdminApplication.class, args);
-        System.out.println("                                   __                _\n" +
-                "                                  |  ]              (_)\n" +
-                " .--.   ____  ______  ,--.    .--.| |  _ .--..--.   __   _ .--.\n" +
-                "( (`\\] [_   ]|______|`'_\\ : / /'`\\' | [ `.-. .-. | [  | [ `.-. |\n" +
-                " `'.'.  .' /_        // | |,| \\__/  |  | | | | | |  | |  | | | |\n" +
-                "[\\__) )[_____]       \\'-;__/ '.__.;__][___||__||__][___][___||__]\n" +
-                "------------------https://szadmin.cn  (v" + getVersion() + ")-------------------"
-        );
+        System.out.println("                                   __                _\n" + "                                  |  ]              (_)\n"
+                + " .--.   ____  ______  ,--.    .--.| |  _ .--..--.   __   _ .--.\n" + "( (`\\] [_   ]|______|`'_\\ : / /'`\\' | [ `.-. .-. | [  | [ `.-. |\n"
+                + " `'.'.  .' /_        // | |,| \\__/  |  | | | | | |  | |  | | | |\n"
+                + "[\\__) )[_____]       \\'-;__/ '.__.;__][___||__||__][___][___||__]\n" + "------------------https://szadmin.cn  (v" + getVersion()
+                + ")-------------------");
     }
 
 }
-

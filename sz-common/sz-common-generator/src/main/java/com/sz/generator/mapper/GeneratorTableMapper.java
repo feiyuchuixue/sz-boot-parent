@@ -94,5 +94,4 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      */
     int countMenuBtn(@Param("permissions") String permissions);
 
-
 }

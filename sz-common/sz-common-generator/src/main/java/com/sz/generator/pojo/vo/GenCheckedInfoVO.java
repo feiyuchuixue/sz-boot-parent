@@ -11,6 +11,7 @@ import lombok.Data;
  */
 @Data
 public class GenCheckedInfoVO {
+
     {
         checkedApiPath = true;
         checkedWebPath = true;

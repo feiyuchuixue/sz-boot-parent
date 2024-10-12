@@ -23,13 +23,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry
-                //添加myHandler消息处理对象，和websocket访问地址
+                // 添加myHandler消息处理对象，和websocket访问地址
                 .addHandler(webSocketServer, "/socket")
-                //设置允许跨域访问
+                // 设置允许跨域访问
                 .setAllowedOrigins("*") // TODO 建议指定域名，不要全部开放。
-                //添加拦截器可实现用户链接前进行权限校验等操作
+                // 添加拦截器可实现用户链接前进行权限校验等操作
                 .addInterceptors(webSocketInterceptor);
     }
 
 }
-

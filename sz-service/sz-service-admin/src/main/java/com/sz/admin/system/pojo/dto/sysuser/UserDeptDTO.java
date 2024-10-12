@@ -20,9 +20,9 @@ public class UserDeptDTO {
         deptIds = new ArrayList<>();
     }
 
-    @Schema(description =  "用户id数组")
+    @Schema(description = "用户id数组")
     private List<Long> userIds;
 
-    @Schema(description =  "部门id数组")
+    @Schema(description = "部门id数组")
     private List<Long> deptIds;
 }

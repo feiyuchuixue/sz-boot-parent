@@ -13,6 +13,8 @@
         <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="1"/>
         <!--用于控制javadoc注释是否被格式化，默认为TRUE-->
         <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="true"/>
+        <!--代码行的最大长度，当代码行超过这个长度时，格式化工具会尝试在合适的位置进行换行-->
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="160"/>
 
         <!--   other settings...   -->
         <setting id="org.eclipse.jdt.core.formatter.disabling_tag" value="@formatter:off"/>

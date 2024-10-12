@@ -22,7 +22,8 @@ public interface SysFileService extends IService<SysFile> {
     /**
      * 文件列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link List}<{@link SysFile}>
      */
     PageResult<SysFile> fileList(SysFileListDTO dto);
@@ -30,7 +31,8 @@ public interface SysFileService extends IService<SysFile> {
     /**
      * 上传文件
      *
-     * @param file 文件
+     * @param file
+     *            文件
      * @return {@link ApiResult}
      */
     String uploadFile(MultipartFile file, String type);

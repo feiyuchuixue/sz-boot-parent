@@ -43,7 +43,7 @@ public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> i
     }
 
     @Override
-    public MiniLoginUser getUserByOpenId(String openId,String unionid) {
+    public MiniLoginUser getUserByOpenId(String openId, String unionid) {
         QueryWrapper wrapper = QueryWrapper.create().where(MINI_USER.OPENID.eq(openId));
         MiniUser miniUser = getOne(wrapper);
         if (miniUser == null) {
@@ -52,7 +52,7 @@ public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> i
             // 绑定了sys_user账户
             if (Utils.isNotNull(miniUser.getSysUserId())) {
                 // todo
-            }else {
+            } else {
                 // 未绑定sys_user账户
                 // todo
             }

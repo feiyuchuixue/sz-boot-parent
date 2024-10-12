@@ -13,5 +13,4 @@ public class ControlPermissions {
 
     private String mode;
 
-
 }

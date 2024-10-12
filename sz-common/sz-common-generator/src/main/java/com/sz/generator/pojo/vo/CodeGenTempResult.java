@@ -24,20 +24,19 @@ public class CodeGenTempResult {
 
     private Template template;
 
-    @Schema(description =" zip path （zip存储路径）")
+    @Schema(description = " zip path （zip存储路径）")
     private String relativePath;
 
-    @Schema(description ="扩展名")
+    @Schema(description = "扩展名")
     private String extension;
 
-    @Schema(description ="别名")
+    @Schema(description = "别名")
     private String alias;
 
-    @Schema(description ="语言")
+    @Schema(description = "语言")
     private String language;
 
-    @Schema(description ="输出信息")
+    @Schema(description = "输出信息")
     private String outputMessage;
-
 
 }

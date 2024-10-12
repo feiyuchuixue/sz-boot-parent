@@ -45,31 +45,32 @@ public class GeneratorConstants {
      */
     public static final String PARENT_MENU_NAME = "parentMenuName";
 
-
     /**
      * 数据库数字类型
      */
-    public static final String[] COLUMNTYPE_NUMBER = {"tinyint", "smallint", "mediumint", "int", "number", "integer", "bit", "bigint", "float", "double", "decimal"};
+    public static final String[] COLUMNTYPE_NUMBER = {"tinyint", "smallint", "mediumint", "int", "number", "integer", "bit", "bigint", "float", "double",
+            "decimal"};
 
     /**
      * 不需要插入的字段
      */
-    public static final String[] COLUMNNAME_NOT_INSERT = {"create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
+    public static final String[] COLUMNNAME_NOT_INSERT = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要编辑字段
      */
-    public static final String[] COLUMNNAME_NOT_EDIT = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
+    public static final String[] COLUMNNAME_NOT_EDIT = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要显示的列表字段
      */
-    public static final String[] COLUMNNAME_NOT_LIST = {"create_id", "create_time", "del_flag", "update_id", "update_time","delete_id","delete_time"};
+    public static final String[] COLUMNNAME_NOT_LIST = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要查询字段
      */
-    public static final String[] COLUMNNAME_NOT_QUERY = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark","delete_id","delete_time"};
+    public static final String[] COLUMNNAME_NOT_QUERY = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark", "delete_id",
+            "delete_time"};
 
     /**
      * 根据insert事件自动填充的字段
@@ -207,7 +208,6 @@ public class GeneratorConstants {
      */
     public static final String QUERY_EQ = "EQ";
 
-
     /**
      * 不等于
      */
@@ -237,7 +237,6 @@ public class GeneratorConstants {
      * 小于等于
      */
     public static final String QUERY_LTE = "LTE";
-
 
     /**
      * 需要

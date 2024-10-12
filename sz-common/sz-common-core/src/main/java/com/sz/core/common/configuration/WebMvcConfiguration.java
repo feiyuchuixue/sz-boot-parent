@@ -23,9 +23,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport implements W
     private ObjectProvider<HttpMessageConverters> messageConverters;
 
     /**
-     * 两种解决方案:
-     * - 一、 使用 WebMvcConfigurer 而非WebMvcConfigurationSupport
-     * - 二、 使用此方法
+     * 两种解决方案: - 一、 使用 WebMvcConfigurer 而非WebMvcConfigurationSupport - 二、 使用此方法
      * <p>
      * 参考WebMvcAutoConfiguration类中configureMessageConverters方法，使Jackson配置生效
      *
@@ -34,16 +32,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport implements W
 
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        this.messageConverters.ifAvailable(
-                (customConverters) -> converters.addAll(customConverters.getConverters()));
+        this.messageConverters.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/")
-                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/").addResourceLocations("classpath:/META-INF/resources/");
     }
-
 
 }

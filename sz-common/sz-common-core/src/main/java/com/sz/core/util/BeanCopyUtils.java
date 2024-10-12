@@ -51,6 +51,7 @@ public class BeanCopyUtils {
 
     /**
      * modelMapper bean copy, 严格匹配模式 （属性名称与类型必须一致才进行复制）
+     * 
      * @param source
      * @param clazz
      * @return
@@ -59,7 +60,7 @@ public class BeanCopyUtils {
     public static <T> T copy(Object source, Class<T> clazz) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return  mapper.map(source, clazz);
+        return mapper.map(source, clazz);
     }
 
     public static <T, M> M copy(T source, M target) {
@@ -70,7 +71,8 @@ public class BeanCopyUtils {
     }
 
     /**
-     *  modelMapper bean copy, 严格匹配，不忽略null值
+     * modelMapper bean copy, 严格匹配，不忽略null值
+     * 
      * @param source
      * @param target
      * @return
@@ -95,10 +97,7 @@ public class BeanCopyUtils {
      * @return
      */
     public static <Source, Target> List<Target> copyList(List<Source> sourceList, Class<Target> targetClass) {
-        return sourceList.stream()
-                .map(source -> modelMapper.map(source, targetClass))
-                .collect(Collectors.toList());
+        return sourceList.stream().map(source -> modelMapper.map(source, targetClass)).collect(Collectors.toList());
     }
-
 
 }

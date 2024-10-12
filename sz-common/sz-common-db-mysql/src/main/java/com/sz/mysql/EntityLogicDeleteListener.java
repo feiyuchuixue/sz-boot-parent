@@ -19,30 +19,23 @@ import static com.mybatisflex.core.constant.SqlConsts.EQUALS;
 public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
     private static final String FIELD_DELETE_TIME = "delete_time";
+
     private static final String FIELD_DELETE_ID = "delete_id";
 
     @Override
     public String buildLogicDeletedSet(String logicColumn, TableInfo tableInfo, IDialect iDialect) {
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append(iDialect.wrap(logicColumn))
-                .append(EQUALS)
-                .append(prepareValue(getLogicDeletedValue()));
+        sqlBuilder.append(iDialect.wrap(logicColumn)).append(EQUALS).append(prepareValue(getLogicDeletedValue()));
 
         List<String> columns = Arrays.asList(tableInfo.getAllColumns());
 
         if (columns.contains(FIELD_DELETE_TIME)) {
-            sqlBuilder.append(", ")
-                    .append(iDialect.wrap(FIELD_DELETE_TIME))
-                    .append(EQUALS)
-                    .append("now()");
+            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_TIME)).append(EQUALS).append("now()");
         }
 
         boolean isLogin = StpUtil.isLogin();
         if (isLogin && columns.contains(FIELD_DELETE_ID)) {
-            sqlBuilder.append(", ")
-                    .append(iDialect.wrap(FIELD_DELETE_ID))
-                    .append(EQUALS)
-                    .append(LoginUtils.getLoginUser().getUserInfo().getId());
+            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS).append(LoginUtils.getLoginUser().getUserInfo().getId());
         }
 
         return sqlBuilder.toString();

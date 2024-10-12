@@ -10,6 +10,7 @@ import lombok.Data;
  */
 @Data
 public class LoginInfoResult extends ErrorMessage {
+
     private String openid;
 
     private String session_key;

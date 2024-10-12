@@ -41,11 +41,9 @@ public class TableColumResult {
      */
     private String isIncrement;
 
-
     /**
      * 字段类型
      */
     private String columnType;
-
 
 }

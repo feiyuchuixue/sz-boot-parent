@@ -6,7 +6,6 @@ import com.sz.platform.enums.DynamicDictEnum;
 import java.util.List;
 import java.util.Map;
 
-
 public interface DictLoader {
 
     /**
@@ -15,7 +14,6 @@ public interface DictLoader {
      * @return 带有前缀的 typeCode
      */
     DynamicDictEnum getDynamicTypeCode();
-
 
     /**
      * 加载所有字典数据，以 Map 结构返回。
@@ -26,10 +24,12 @@ public interface DictLoader {
 
     /**
      * 根据typeCode获取Dict
-     * @param typeCode 类型
+     * 
+     * @param typeCode
+     *            类型
      * @return DictCustomVO集合
      */
-    default List<DictVO> getDict(String typeCode){
+    default List<DictVO> getDict(String typeCode) {
         return loadDict().get(typeCode);
     }
 

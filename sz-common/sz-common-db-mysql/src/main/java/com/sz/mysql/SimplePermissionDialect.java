@@ -6,7 +6,6 @@ import com.mybatisflex.core.constant.SqlConsts;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
-import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ControlPermissions;
 import com.sz.core.common.entity.LoginUser;
 import com.sz.core.datascope.ControlThreadLocal;
@@ -69,7 +68,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             // 判断是否是isJoin
             boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
             Map<String, QueryTable> tableMap = buildTableMap(queryTables, isJoin, joinTables);
-            if (tableMap == null) return;
+            if (tableMap == null)
+                return;
             ControlPermissions permissions = ControlThreadLocal.get();
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
@@ -83,7 +83,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
                 tableName = tableClazzAnnotation.value(); // eg: teacher_statics
             }
             QueryTable table = tableMap.get(tableName);
-            if (table == null) return;
+            if (table == null)
+                return;
 
             // 根据权限规则处理查询
             String mode = permissions.getMode();
@@ -91,17 +92,17 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String alias = Utils.isNotNull(table.getAlias()) ? table.getAlias() : table.getName();
             String logicMinUnit = SpringApplicationContextUtils.getBean(DataScopeProperties.class).getLogicMinUnit();
             switch (rule) {
-                case "1006001": // 全部 - 放行
+                case "1006001" : // 全部 - 放行
                     super.prepareAuth(queryWrapper, operateType);
                     return;
-                case "1006002": // 本部门及以下
+                case "1006002" : // 本部门及以下
                     handleDeptScope(queryWrapper, loginUser.getDeptAndChildren(), logicMinUnit, alias, tableClazz);
                     break;
-                case "1006003": // 仅本部门
+                case "1006003" : // 仅本部门
                     handleDeptScope(queryWrapper, loginUser.getDepts(), logicMinUnit, alias, tableClazz);
                     break;
-                case "1006004": // 仅本人
-                default:
+                case "1006004" : // 仅本人
+                default :
                     handlePersonalScope(queryWrapper, loginUser, table, tableClazz);
                     break;
             }
@@ -116,7 +117,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             Object context = CPI.getContext(queryWrapper, key);
 
             if (!Boolean.TRUE.equals(context)) {
-                Consumer<QueryWrapper> queryHandler = getQueryHandler(userRuleMap, deptRuleMap, customUserIds, customDeptIds, table, logicMinUnit, alias, tableClazz);
+                Consumer<QueryWrapper> queryHandler = getQueryHandler(userRuleMap, deptRuleMap, customUserIds, customDeptIds, table, logicMinUnit, alias,
+                        tableClazz);
                 if (queryHandler != null) {
                     queryWrapper.and(queryHandler);
                     CPI.putContext(queryWrapper, key, true);
@@ -132,9 +134,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     // 提取查询处理逻辑
-    private Consumer<QueryWrapper> getQueryHandler(Map<String, Set<Long>> userRuleMap, Map<String, Set<Long>> deptRuleMap,
-                                                   Set<Long> customUserIds, Set<Long> customDeptIds, QueryTable table,
-                                                   String logicMinUnit, String alias, Class<?> tableClazz) {
+    private Consumer<QueryWrapper> getQueryHandler(Map<String, Set<Long>> userRuleMap, Map<String, Set<Long>> deptRuleMap, Set<Long> customUserIds,
+            Set<Long> customDeptIds, QueryTable table, String logicMinUnit, String alias, Class<?> tableClazz) {
         if (!userRuleMap.isEmpty() && !deptRuleMap.isEmpty()) {
             return wrapper -> wrapper.and(handleCustomUserRelation(table, customUserIds))
                     .or(handleCustomDeptRelation(table, customDeptIds, logicMinUnit, alias, tableClazz));
@@ -157,7 +158,10 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private static Map<String, QueryTable> buildTableMap(List<QueryTable> queryTables, boolean isJoin, List<QueryTable> joinTables) {
         Map<String, QueryTable> tableMap = new HashMap<>();
         for (QueryTable queryTable : queryTables) {
-            if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) {  // TODO 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构 queryTables ==[SELECT * FROM TABLE]
+            if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) { // TODO
+                                                                                            // 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构
+                                                                                            // queryTables ==[SELECT *
+                                                                                            // FROM TABLE]
                 return null;
             }
             tableMap.put(queryTable.getName(), queryTable);
@@ -175,10 +179,14 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     /**
      * 根据权限和规则模式确定规则范围。
      *
-     * @param permissionKeys      权限数组。
-     * @param permissionAccessMap 权限到菜单ID的映射。
-     * @param ruleScopeMap        菜单ID到规则范围的映射。
-     * @param mode                规则模式，"or" 或 "and"。
+     * @param permissionKeys
+     *            权限数组。
+     * @param permissionAccessMap
+     *            权限到菜单ID的映射。
+     * @param ruleScopeMap
+     *            菜单ID到规则范围的映射。
+     * @param mode
+     *            规则模式，"or" 或 "and"。
      * @return 确定的scope规则范围。
      */
     private String determineRuleScope(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, String> ruleScopeMap, String mode) {
@@ -187,10 +195,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
 
         // 根据权限键获取所有相关的菜单ID
-        Set<String> menuIds = Arrays.stream(permissionKeys)
-                .filter(permissionAccessMap::containsKey)
-                .map(permissionAccessMap::get)
-                .collect(Collectors.toSet());
+        Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
 
         // 如果没有菜单ID，返回空字符串
         if (menuIds.isEmpty()) {
@@ -208,32 +213,32 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
         System.out.println("mode ==" + mode);
         // 根据"or"或"and"模式确定规则范围
-        return menuIds.stream()
-                .map(menuId -> ruleScopeMap.getOrDefault(menuId, ""))
-                .reduce((scope1, scope2) -> mode.equals("or") ? maxRuleScope(scope1, scope2) : minRuleScope(scope1, scope2))
-                .orElse(""); // 如果没有找到任何规则范围，返回空字符串
+        return menuIds.stream().map(menuId -> ruleScopeMap.getOrDefault(menuId, ""))
+                .reduce((scope1, scope2) -> mode.equals("or") ? maxRuleScope(scope1, scope2) : minRuleScope(scope1, scope2)).orElse(""); // 如果没有找到任何规则范围，返回空字符串
     }
 
     /**
      * 自定义的 根据权限和规则模式确定规则范围。
      *
-     * @param permissionKeys      权限数组
-     * @param permissionAccessMap 权限到菜单ID的映射
-     * @param ruleRelation        自定义规则Relation
-     * @param mode                规则模式，"or" 或 "and"。
+     * @param permissionKeys
+     *            权限数组
+     * @param permissionAccessMap
+     *            权限到菜单ID的映射
+     * @param ruleRelation
+     *            自定义规则Relation
+     * @param mode
+     *            规则模式，"or" 或 "and"。
      * @return 确定的规则relationId范围
      */
-    private Set<Long> determineCustomRuleRelationIds(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, Set<Long>> ruleRelation, String mode) {
+    private Set<Long> determineCustomRuleRelationIds(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, Set<Long>> ruleRelation,
+            String mode) {
         Set<Long> relationId = new HashSet<>();
         if (ruleRelation.isEmpty()) {
             return relationId; // 如果规则映射为空，返回空字符串
         }
 
         // 根据权限键获取所有相关的菜单ID
-        Set<String> menuIds = Arrays.stream(permissionKeys)
-                .filter(permissionAccessMap::containsKey)
-                .map(permissionAccessMap::get)
-                .collect(Collectors.toSet());
+        Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
 
         // 如果没有菜单ID，返回空字符串
         if (menuIds.isEmpty()) {
@@ -251,10 +256,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
         System.out.println("mode ==" + mode);
         // 根据"or"或"and"模式确定规则范围
-        return menuIds.stream()
-                .map(menuId -> ruleRelation.getOrDefault(menuId, relationId))
-                .reduce((relation1, relation2) -> mode.equals("or") ? maxRelation(relation1, relation2) : minRelation(relation1, relation2))
-                .orElse(relationId); // 如果没有找到任何规则范围，返回空字符串
+        return menuIds.stream().map(menuId -> ruleRelation.getOrDefault(menuId, relationId))
+                .reduce((relation1, relation2) -> mode.equals("or") ? maxRelation(relation1, relation2) : minRelation(relation1, relation2)).orElse(relationId); // 如果没有找到任何规则范围，返回空字符串
     }
 
     /**
@@ -301,8 +304,10 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             }
 
             String sqlParams = depts.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
-            String sql = " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field + "` = `sys_user_dept`.`user_id` )";
-            String sqlSuper = " OR  EXISTS ( SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `" + alias + "`.`" + field + "` AND  `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F' )";// 管理员Id查询
+            String sql = " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field
+                    + "` = `sys_user_dept`.`user_id` )";
+            String sqlSuper = " OR  EXISTS ( SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `" + alias + "`.`" + field
+                    + "` AND  `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F' )";// 管理员Id查询
             context = CPI.getContext(queryWrapper, field);
             if (!Boolean.TRUE.equals(context)) {
                 queryWrapper.and(sql + sqlSuper);
@@ -343,18 +348,14 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         if (!exists || isCustom) {
             return;
         }
-        QueryCondition queryCondition = QueryCondition.create(
-                new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()),
-                SqlConsts.EQUALS,
-                loginUser.getUserInfo().getId()
-        );
+        QueryCondition queryCondition = QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.EQUALS,
+                loginUser.getUserInfo().getId());
         Object context = CPI.getContext(queryWrapper, field);
         if (!Boolean.TRUE.equals(context)) {
             queryWrapper.where(queryCondition);
             CPI.putContext(queryWrapper, field, true);
         }
     }
-
 
     // 获取两个规则范围中的最大值 (1006001 ~ 1006004)
     private String maxRuleScope(String scope1, String scope2) {
@@ -388,12 +389,11 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
      * @param customUserIds
      */
     private QueryCondition handleCustomUserRelation(QueryTable table, Collection<Long> customUserIds) {
-        if (customUserIds.isEmpty()) return null;
+        if (customUserIds.isEmpty())
+            return null;
         String field;
         field = FIELD_CREATE_ID;
-        QueryCondition queryCondition = QueryCondition.create(
-                new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()),
-                SqlConsts.IN,
+        QueryCondition queryCondition = QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.IN,
                 customUserIds);
         return queryCondition;
     }
@@ -420,7 +420,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             }
 
             String sqlParams = depts.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
-            return " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field + "` = `sys_user_dept`.`user_id` )";
+            return " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field
+                    + "` = `sys_user_dept`.`user_id` )";
         } else {
             field = FIELD_DEPT_SCOPE;
             boolean exists = isFieldExists(tableClazz, StringUtils.toCamelCase(field));

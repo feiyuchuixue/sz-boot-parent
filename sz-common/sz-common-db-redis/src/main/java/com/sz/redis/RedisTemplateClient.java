@@ -9,5 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @Version 1.0
  */
 public interface RedisTemplateClient {
+
     RedisTemplate getTemplate();
 }

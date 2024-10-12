@@ -3,7 +3,6 @@ package com.sz.generator.pojo.dto;
 import com.sz.core.common.entity.PageQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * @ClassName DbTableQueryDTO
@@ -15,10 +14,10 @@ import lombok.EqualsAndHashCode;
 @Data
 public class DbTableQueryDTO extends PageQuery {
 
-    @Schema(description ="表名称")
+    @Schema(description = "表名称")
     private String tableName;
 
-    @Schema(description ="表描述")
+    @Schema(description = "表描述")
     private String tableComment;
 
 }

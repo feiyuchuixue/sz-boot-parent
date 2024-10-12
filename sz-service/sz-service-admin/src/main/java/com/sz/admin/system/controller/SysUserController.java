@@ -1,6 +1,5 @@
 package com.sz.admin.system.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
@@ -180,6 +179,5 @@ public class SysUserController {
         sysUserDataRoleService.changeRole(dto);
         return ApiPageResult.success();
     }
-
 
 }

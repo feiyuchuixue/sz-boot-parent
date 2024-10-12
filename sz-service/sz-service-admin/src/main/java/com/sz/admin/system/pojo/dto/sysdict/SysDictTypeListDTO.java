@@ -8,10 +8,10 @@ import lombok.Data;
 @Schema(description = "字典类型查询参数")
 public class SysDictTypeListDTO extends PageQuery {
 
-    @Schema(description =  "字典类型名字")
+    @Schema(description = "字典类型名字")
     private String typeName;
 
-    @Schema(description =  "字典类型码")
+    @Schema(description = "字典类型码")
     private String typeCode;
 
 }

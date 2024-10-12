@@ -14,11 +14,11 @@ import lombok.Data;
 @Schema(description = "菜单添加")
 public class SysMenuCreateDTO {
 
-    @Schema(description =  "菜单id（修改菜单时必填）")
+    @Schema(description = "菜单id（修改菜单时必填）")
     private String id;
 
     @NotNull(message = "菜单名称不能为空")
-    @Schema(description =  "菜单名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "菜单名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
 
     /**

@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -31,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYPE;
 
-
 /**
  * <p>
  * 字典类型 服务实现类
@@ -54,14 +52,16 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         if ("system".equals(type)) { // 系统字典
             AtomicReference<Long> maxId = new AtomicReference<>(0L);
             LogicDeleteManager.execWithoutLogicDelete(() -> {
-                Long count = QueryChain.of(SysDictType.class).select(QueryMethods.max(SYS_DICT_TYPE.ID)).from(SYS_DICT_TYPE).where(SYS_DICT_TYPE.ID.lt(confValue)).oneAs(Long.class);
+                Long count = QueryChain.of(SysDictType.class).select(QueryMethods.max(SYS_DICT_TYPE.ID)).from(SYS_DICT_TYPE)
+                        .where(SYS_DICT_TYPE.ID.lt(confValue)).oneAs(Long.class);
                 maxId.set(count);
             });
             sysDictType.setId(maxId.get() + 1);
         } else {
             AtomicReference<Long> maxId = new AtomicReference<>(0L);
             LogicDeleteManager.execWithoutLogicDelete(() -> {
-                Long count = QueryChain.of(SysDictType.class).select(QueryMethods.max(SYS_DICT_TYPE.ID)).from(SYS_DICT_TYPE).where(SYS_DICT_TYPE.ID.ge(confValue)).oneAs(Long.class);
+                Long count = QueryChain.of(SysDictType.class).select(QueryMethods.max(SYS_DICT_TYPE.ID)).from(SYS_DICT_TYPE)
+                        .where(SYS_DICT_TYPE.ID.ge(confValue)).oneAs(Long.class);
                 maxId.set(count);
             });
             if (Utils.isNotNull(maxId) && Utils.isNotNull(maxId.get())) {

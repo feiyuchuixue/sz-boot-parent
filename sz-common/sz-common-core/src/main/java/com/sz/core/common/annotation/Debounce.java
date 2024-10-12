@@ -14,6 +14,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
 public @interface Debounce {
+
     /**
      * 默认防抖时间，1000 ms
      *

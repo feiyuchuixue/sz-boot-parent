@@ -9,6 +9,7 @@ import java.util.List;
  * @Version 1.0
  */
 public interface Treeable<T> {
+
     Object getId();
 
     Object getPid();

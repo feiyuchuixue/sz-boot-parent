@@ -5,5 +5,4 @@ package com.sz.redis;
  */
 public class RedisKeymapConstants {
 
-
 }

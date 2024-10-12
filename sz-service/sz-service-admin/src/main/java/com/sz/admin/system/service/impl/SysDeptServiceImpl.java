@@ -124,22 +124,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDeptVO> list(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(
-                        SYS_DEPT.ALL_COLUMNS,
-                        QueryMethods.groupConcat(
-                                if_(SYS_USER.DEL_FLAG.eq("F"),
-                                        QueryMethods.concatWs(
-                                                QueryMethods.string(":"),
-                                                SYS_DEPT_LEADER.LEADER_ID,
-                                                SYS_USER.NICKNAME), null_())
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(
+                if_(SYS_USER.DEL_FLAG.eq("F"), QueryMethods.concatWs(QueryMethods.string(":"), SYS_DEPT_LEADER.LEADER_ID, SYS_USER.NICKNAME), null_())
 
-                        ).as("leader_info")
-                )
-                .from(SYS_DEPT)
-                .leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID))
-                .leftJoin(SYS_USER).on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID))
-                .groupBy(SYS_DEPT.ID);
+        ).as("leader_info")).from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
+                .on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).groupBy(SYS_DEPT.ID);
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
         List<SysDeptVO> trees = TreeUtils.buildTree(deptVOS, root);
@@ -186,15 +175,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         unset.setId(-2L);
         unset.setName("未设置部门");
 
-        QueryWrapper wrapper = QueryWrapper.create()
-                .from(SYS_USER)
-                .leftJoin(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID))
-                .leftJoin(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID))
-                .where(SYS_USER_DEPT.USER_ID.isNull().or(SYS_DEPT.DEL_FLAG.eq("T"))); // 左联查sys_user del_flag 为空或为F
+        QueryWrapper wrapper = QueryWrapper.create().from(SYS_USER).leftJoin(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID)).leftJoin(SYS_DEPT)
+                .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID)).where(SYS_USER_DEPT.USER_ID.isNull().or(SYS_DEPT.DEL_FLAG.eq("T"))); // 左联查sys_user del_flag 为空或为F
         AtomicReference<Long> total = new AtomicReference<>(0L);
-        LogicDeleteManager.execWithoutLogicDelete(() ->
-                total.set(count(wrapper))
-        );
+        LogicDeleteManager.execWithoutLogicDelete(() -> total.set(count(wrapper)));
         unset.setUserTotal(total.get());
         return unset;
     }
@@ -236,29 +220,16 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 查询直属部门的数量
         QueryWrapper wrapper = QueryWrapper.create()
                 .select(SYS_DEPT.ID, SYS_DEPT.NAME, QueryMethods.count(case_().when(SYS_USER.DEL_FLAG.eq("F")).then(SYS_USER_DEPT.USER_ID).end()).as("total"))
-                .from(SYS_DEPT)
-                .leftJoin(SYS_USER_DEPT).on(SYS_DEPT.ID.eq(SYS_USER_DEPT.DEPT_ID))
-                .leftJoin(SYS_USER).on(SYS_USER_DEPT.USER_ID.eq(SYS_USER.ID))
-                .groupBy(SYS_DEPT.ID, SYS_DEPT.NAME)
-                .orderBy(SYS_DEPT.DEEP.asc())
-                .orderBy(SYS_DEPT.SORT.asc());
+                .from(SYS_DEPT).leftJoin(SYS_USER_DEPT).on(SYS_DEPT.ID.eq(SYS_USER_DEPT.DEPT_ID)).leftJoin(SYS_USER).on(SYS_USER_DEPT.USER_ID.eq(SYS_USER.ID))
+                .groupBy(SYS_DEPT.ID, SYS_DEPT.NAME).orderBy(SYS_DEPT.DEEP.asc()).orderBy(SYS_DEPT.SORT.asc());
         List<TotalDeptVO> totalDeptVOS = listAs(wrapper, TotalDeptVO.class);
 
         /**
          * 查询非直属部门的数量
          *
-         * SELECT
-         *     d.id ,
-         *     d.name ,
-         *     COUNT(ud.user_id) AS total
-         * FROM
-         *     sys_dept d
-         * LEFT JOIN
-         *     sys_dept_closure c ON d.id = c.ancestor_id
-         * LEFT JOIN
-         *     sys_user_dept ud ON c.descendant_id = ud.dept_id
-         * GROUP BY
-         *     d.id, d.name;
+         * SELECT d.id , d.name , COUNT(ud.user_id) AS total FROM sys_dept d LEFT JOIN
+         * sys_dept_closure c ON d.id = c.ancestor_id LEFT JOIN sys_user_dept ud ON
+         * c.descendant_id = ud.dept_id GROUP BY d.id, d.name;
          *
          *
          *
@@ -266,8 +237,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
         Map<Long, Long> totalDeptMap = new HashMap<>();
         if (totalDeptVOS != null) {
-            totalDeptMap = totalDeptVOS.stream()
-                    .collect(Collectors.toMap(TotalDeptVO::getId, TotalDeptVO::getTotal));
+            totalDeptMap = totalDeptVOS.stream().collect(Collectors.toMap(TotalDeptVO::getId, TotalDeptVO::getTotal));
         }
         for (DeptTreeVO treeVO : deptTreeVOS) {
             if (totalDeptMap.containsKey(treeVO.getId())) {

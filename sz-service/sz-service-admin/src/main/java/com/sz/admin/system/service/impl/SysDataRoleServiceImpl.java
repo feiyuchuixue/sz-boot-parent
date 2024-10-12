@@ -68,7 +68,6 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
         if (Utils.isNotNull(dto.getUserOptions()))
             sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007002", dto.getUserOptions());
 
-
     }
 
     @Transactional
@@ -77,17 +76,15 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
         SysDataRole sysDataRole = BeanCopyUtils.copy(dto, SysDataRole.class);
         QueryWrapper wrapper;
         // id有效性校验
-        wrapper = QueryWrapper.create()
-                .eq(SysDataRole::getId, dto.getId());
+        wrapper = QueryWrapper.create().eq(SysDataRole::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
         sysDataRoleMenuService.batchSave(sysDataRole.getId(), dto.getSelectMenuIds());
         sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007001", dto.getSelectDeptIds());
         sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007002", dto.getUserOptions());
         saveOrUpdate(sysDataRole);
 
-        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class)  // 查询用户影响范围
-                .select(SYS_USER_DATA_ROLE.USER_ID)
-                .where(SYS_USER_DATA_ROLE.ROLE_ID.eq(dto.getId())).listAs(Long.class);
+        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class) // 查询用户影响范围
+                .select(SYS_USER_DATA_ROLE.USER_ID).where(SYS_USER_DATA_ROLE.ROLE_ID.eq(dto.getId())).listAs(Long.class);
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));
     }
 
@@ -125,10 +122,10 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
 
     private static QueryWrapper buildQueryWrapper(SysDataRoleListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create().from(SysDataRole.class);
-        if(Utils.isNotNull(dto.getRoleName())){
+        if (Utils.isNotNull(dto.getRoleName())) {
             wrapper.like(SysDataRole::getRoleName, dto.getRoleName());
         }
-        if(Utils.isNotNull(dto.getIsLock())){
+        if (Utils.isNotNull(dto.getIsLock())) {
             wrapper.eq(SysDataRole::getIsLock, dto.getIsLock());
         }
         return wrapper;
@@ -145,6 +142,5 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
         menuVO.setUserOptions(userOptions);
         return menuVO;
     }
-
 
 }

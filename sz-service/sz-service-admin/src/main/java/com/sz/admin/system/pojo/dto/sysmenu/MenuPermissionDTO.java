@@ -11,10 +11,10 @@ import lombok.Data;
 @Schema(description = "菜单权限查询")
 public class MenuPermissionDTO {
 
-    @Schema(description =  "菜单id")
+    @Schema(description = "菜单id")
     private String id;
 
-    @Schema(description =  "权限标识", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "权限标识", requiredMode = Schema.RequiredMode.REQUIRED)
     private String permissions;
 
 }

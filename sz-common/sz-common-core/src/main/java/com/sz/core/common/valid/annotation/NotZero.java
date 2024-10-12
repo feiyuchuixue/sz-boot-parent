@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = NotZeroValidator.class)
 public @interface NotZero {
+
     String message() default "Value must be non-null and non-zero";
 
     Class<?>[] groups() default {};

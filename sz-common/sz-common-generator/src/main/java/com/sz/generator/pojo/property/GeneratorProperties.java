@@ -32,7 +32,6 @@ public class GeneratorProperties {
     // service 名
     private String serviceName;
 
-
     @Data
     public static class GlobalProperties {
 
@@ -47,7 +46,6 @@ public class GeneratorProperties {
         // 包名
         private String packages;
     }
-
 
     @Data
     public static class PathProperties {

@@ -30,9 +30,7 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
 
     @Override
     public List<SysDeptClosure> ancestorsPath(Long nodeId) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SYS_DEPT_CLOSURE.DESCENDANT_ID.eq(nodeId))
-                .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.ne(nodeId))
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DEPT_CLOSURE.DESCENDANT_ID.eq(nodeId)).where(SYS_DEPT_CLOSURE.ANCESTOR_ID.ne(nodeId))
                 .where(SYS_DEPT_CLOSURE.DEPTH.gt(0));
         return list(wrapper);
     }
@@ -61,8 +59,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
         CommonResponseEnum.INVALID_ID.assertNull(one);
         List<SysDeptClosure> desList = descendants(nodeId);
         for (SysDeptClosure closure : desList) {
-            QueryWrapper removeWrapper = QueryWrapper.create().eq(SysDeptClosure::getAncestorId, closure.getAncestorId())
-                    .eq(SysDeptClosure::getDescendantId, closure.getDescendantId());
+            QueryWrapper removeWrapper = QueryWrapper.create().eq(SysDeptClosure::getAncestorId, closure.getAncestorId()).eq(SysDeptClosure::getDescendantId,
+                    closure.getDescendantId());
             remove(removeWrapper);
         }
         removeById(nodeId);
@@ -75,9 +73,7 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      * @return
      */
     public List<SysDeptClosure> descendants(Long nodeId) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(nodeId))
-                .where(SYS_DEPT_CLOSURE.DESCENDANT_ID.ne(nodeId));
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(nodeId)).where(SYS_DEPT_CLOSURE.DESCENDANT_ID.ne(nodeId));
         return list(wrapper);
     }
 
@@ -92,8 +88,7 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
         if (ancestorIds.isEmpty()) {
             return new ArrayList<>();
         }
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(QueryMethods.distinct(SYS_DEPT_CLOSURE.DESCENDANT_ID))
+        QueryWrapper wrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_DEPT_CLOSURE.DESCENDANT_ID))
                 .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.in(ancestorIds));
         return listAs(wrapper, Long.class);
     }
@@ -103,11 +98,12 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      */
     @Override
     public void move(Long nodeId, Long newNodeId) {
-        if (nodeId == newNodeId) return;
+        if (nodeId == newNodeId)
+            return;
         List<SysDeptClosure> closures = this.mapper.selectDetachTree(nodeId);
         for (SysDeptClosure closure : closures) {
-            QueryWrapper removeWrapper = QueryWrapper.create().eq(SysDeptClosure::getAncestorId, closure.getAncestorId())
-                    .eq(SysDeptClosure::getDescendantId, closure.getDescendantId());
+            QueryWrapper removeWrapper = QueryWrapper.create().eq(SysDeptClosure::getAncestorId, closure.getAncestorId()).eq(SysDeptClosure::getDescendantId,
+                    closure.getDescendantId());
             remove(removeWrapper);
         }
         this.mapper.graft(nodeId, newNodeId);

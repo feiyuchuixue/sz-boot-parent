@@ -82,7 +82,7 @@ public class RedisCache {
 
     // ---------------sys_user用户认证相关----------------
 
-    public long countPwdErr(String username,long timeout) {
+    public long countPwdErr(String username, long timeout) {
         String key = RedisUtils.getKey(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         Long increment = redisTemplate.opsForValue().increment(key, 1);
         redisTemplate.expire(key, timeout, TimeUnit.MINUTES);
@@ -96,6 +96,5 @@ public class RedisCache {
     public void clearUserInfo(String username) {
         redisTemplate.delete(getUserInfoKey(username));
     }
-
 
 }

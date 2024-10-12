@@ -1,6 +1,5 @@
 package com.sz.generator.service;
 
-
 import com.mybatisflex.core.service.IService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.generator.pojo.dto.DbTableQueryDTO;
@@ -11,7 +10,6 @@ import com.sz.generator.pojo.vo.GenCheckedInfoVO;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import com.sz.generator.pojo.vo.GeneratorPreviewVO;
 import freemarker.template.Template;
-import lombok.SneakyThrows;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -60,6 +58,7 @@ public interface GeneratorTableService extends IService<GeneratorTable> {
 
     /**
      * 更新代码生成配置
+     * 
      * @param generatorDetailVO
      */
     void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO);

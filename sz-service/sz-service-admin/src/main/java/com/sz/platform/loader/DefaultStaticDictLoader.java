@@ -44,10 +44,9 @@ public class DefaultStaticDictLoader implements DictLoader {
         if (dictVOS.isEmpty()) {
             return Map.of();
         }
-        Map<String, List<DictVO>> result = dictVOS.stream()
-                .collect(Collectors.groupingBy(DictVO::getSysDictTypeCode,
-                        LinkedHashMap::new, // 使用 LinkedHashMap 作为分组的容器,有序解决乱序问题
-                        Collectors.toList()));
+        Map<String, List<DictVO>> result = dictVOS.stream().collect(Collectors.groupingBy(DictVO::getSysDictTypeCode, LinkedHashMap::new, // 使用 LinkedHashMap
+                                                                                                                                          // 作为分组的容器,有序解决乱序问题
+                Collectors.toList()));
         redisCache.putAllDict(result);
         return result;
     }

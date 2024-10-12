@@ -22,7 +22,8 @@ import java.lang.reflect.Method;
  */
 public class MySaInterceptor extends SaInterceptor {
 
-    public MySaInterceptor() {}
+    public MySaInterceptor() {
+    }
 
     public MySaInterceptor(SaParamFunction<Object> auth) {
         super(auth);
@@ -30,11 +31,10 @@ public class MySaInterceptor extends SaInterceptor {
 
     @Override
     @SuppressWarnings("all")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
             // 这里必须确保 handler 是 HandlerMethod 类型时，才能进行注解鉴权
-            if(isAnnotation && handler instanceof HandlerMethod) {
+            if (isAnnotation && handler instanceof HandlerMethod) {
                 Method method = ((HandlerMethod) handler).getMethod();
                 SaAnnotationStrategy.instance.checkMethodAnnotation.accept(method);
 
@@ -54,9 +54,11 @@ public class MySaInterceptor extends SaInterceptor {
         } catch (BackResultException e) {
             ControlThreadLocal.clearDataScope();
             // BackResultException 异常代表：停止匹配，向前端输出结果
-            // 		请注意此处默认 Content-Type 为 text/plain，如果需要返回 JSON 信息，需要在 back 前自行设置 Content-Type 为 application/json
-            // 		例如：SaHolder.getResponse().setHeader("Content-Type", "application/json;charset=UTF-8");
-            if(response.getContentType() == null) {
+            // 请注意此处默认 Content-Type 为 text/plain，如果需要返回 JSON 信息，需要在 back 前自行设置 Content-Type
+            // 为 application/json
+            // 例如：SaHolder.getResponse().setHeader("Content-Type",
+            // "application/json;charset=UTF-8");
+            if (response.getContentType() == null) {
                 response.setContentType("text/plain; charset=utf-8");
             }
             response.getWriter().print(e.getMessage());

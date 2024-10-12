@@ -46,5 +46,4 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      */
     List<String> selectMenuAndChildrenIds(List<String> ids);
 
-
 }

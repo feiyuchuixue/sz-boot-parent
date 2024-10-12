@@ -4,9 +4,6 @@ import com.mybatisflex.core.service.IService;
 import com.sz.applet.miniuser.pojo.dto.MiniLoginDTO;
 import com.sz.applet.miniuser.pojo.po.MiniLoginUser;
 import com.sz.applet.miniuser.pojo.po.MiniUser;
-import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.core.common.entity.PageResult;
-import java.util.List;
 
 import com.sz.applet.miniuser.pojo.vo.MiniUserVO;
 
@@ -20,8 +17,7 @@ import com.sz.applet.miniuser.pojo.vo.MiniUserVO;
  */
 public interface MiniUserService extends IService<MiniUser> {
 
-
     MiniUserVO doLogin(MiniLoginDTO dto);
 
-    MiniLoginUser getUserByOpenId(String openId,String unionid);
+    MiniLoginUser getUserByOpenId(String openId, String unionid);
 }

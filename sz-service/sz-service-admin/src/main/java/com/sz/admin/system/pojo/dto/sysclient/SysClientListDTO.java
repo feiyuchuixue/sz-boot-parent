@@ -16,19 +16,19 @@ import lombok.Data;
 @Schema(description = "SysClient查询DTO")
 public class SysClientListDTO extends PageQuery {
 
-    @Schema(description =  "客户端key")
+    @Schema(description = "客户端key")
     private String clientKey;
 
-    @Schema(description =  "客户端秘钥")
+    @Schema(description = "客户端秘钥")
     private String clientSecret;
 
-    @Schema(description =  "授权类型")
+    @Schema(description = "授权类型")
     private String grantTypeCd;
 
-    @Schema(description =  "设备类型")
+    @Schema(description = "设备类型")
     private String deviceTypeCd;
 
-    @Schema(description =  "token活跃超时时间")
+    @Schema(description = "token活跃超时时间")
     private Integer activeTimeout;
 
 }

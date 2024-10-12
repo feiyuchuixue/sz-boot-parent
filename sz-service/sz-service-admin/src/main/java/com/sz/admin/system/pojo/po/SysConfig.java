@@ -22,26 +22,26 @@ import java.time.LocalDateTime;
 
 @Data
 @Table(value = "sys_config", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
-@Schema(description ="参数配置表")
+@Schema(description = "参数配置表")
 public class SysConfig implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)
-    @Schema(description ="id")
+    @Schema(description = "id")
     private Long id;
 
-    @Schema(description ="参数名")
+    @Schema(description = "参数名")
     private String configName;
 
-    @Schema(description ="参数key")
+    @Schema(description = "参数key")
     private String configKey;
 
-    @Schema(description ="参数value")
+    @Schema(description = "参数value")
     private String configValue;
 
-    @Schema(description ="备注")
+    @Schema(description = "备注")
     private String remark;
 
     @Schema(description = "是否锁定")

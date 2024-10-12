@@ -49,9 +49,12 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * @param str             源字符串
-     * @param pattern         正则rule
-     * @param replaceArrValue 替换value,有序
+     * @param str
+     *            源字符串
+     * @param pattern
+     *            正则rule
+     * @param replaceArrValue
+     *            替换value,有序
      * @return java.lang.String
      * @describe: String正则替换
      * @author sz

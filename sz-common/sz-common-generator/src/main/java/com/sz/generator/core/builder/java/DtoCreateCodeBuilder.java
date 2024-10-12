@@ -60,5 +60,4 @@ public class DtoCreateCodeBuilder extends AbstractCodeGenerationTemplate {
         return "java";
     }
 
-
 }

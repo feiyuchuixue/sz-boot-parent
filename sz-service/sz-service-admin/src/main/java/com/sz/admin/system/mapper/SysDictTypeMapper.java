@@ -13,5 +13,4 @@ import com.sz.admin.system.pojo.po.SysDictType;
  */
 public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
 
-
 }

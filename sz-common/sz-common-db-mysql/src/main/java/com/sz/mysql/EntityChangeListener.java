@@ -15,7 +15,8 @@ import java.util.List;
 /**
  * 数据表change事件处理
  * <p>
- * 约定：强制数据表类型 `create_id` int,`create_time` datetime,`update_id` int,`update_time` datetime
+ * 约定：强制数据表类型 `create_id` int,`create_time` datetime,`update_id`
+ * int,`update_time` datetime
  *
  * @ClassName MybatisInsertListener
  * @Author sz
@@ -32,7 +33,8 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
             setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
             LoginUser loginUser = LoginUtils.getLoginUser();
             List<Long> deptOptions = loginUser.getDepts();
-            if (deptOptions.isEmpty()) return;
+            if (deptOptions.isEmpty())
+                return;
             setPropertyIfPresent(o, "deptScope", deptOptions);
         }
 
@@ -41,7 +43,8 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
     @Override
     public void onUpdate(Object o) {
         setPropertyIfPresent(o, "updateTime", LocalDateTime.now());
-        if (!StpUtil.isLogin()) return;
+        if (!StpUtil.isLogin())
+            return;
         setPropertyIfPresent(o, "updateId", StpUtil.getLoginIdAsLong());
     }
 

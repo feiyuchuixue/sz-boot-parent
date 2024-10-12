@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-
 import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -47,16 +46,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Transactional
     public void change(SysRoleMenuDTO dto) {
         // 根据角色id 查询影响用户范围，获取到用户id
-        QueryWrapper userWrapper = QueryWrapper.create()
-                .select(QueryMethods.distinct(SYS_USER_ROLE.USER_ID))
-                .from(SYS_USER_ROLE)
+        QueryWrapper userWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_USER_ROLE.USER_ID)).from(SYS_USER_ROLE)
                 .where(SYS_USER_ROLE.ROLE_ID.eq(dto.getRoleId()));
         // 获取到影响范围的userId
         List<String> userIds = listAs(userWrapper, String.class);
 
         // 删除当前角色下的所有记录
-        QueryWrapper wrapper = QueryWrapper.create()
-                .eq(SysRoleMenu::getRoleId, dto.getRoleId());
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysRoleMenu::getRoleId, dto.getRoleId());
         remove(wrapper);
         if (Utils.isNotNull(dto.getMenuIds())) {
             this.mapper.insertBatchSysRoleMenu(dto.getMenuIds(), dto.getRoleId());
@@ -74,21 +70,16 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Override
     public SysRoleMenuVO queryRoleMenu(Integer roleId) {
         List<MenuTreeVO> menuTreeVOS = sysMenuService.queryRoleMenuTree(true);
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SysRoleMenu::getMenuId)
-                .eq(SysRoleMenu::getRoleId, roleId);
+        QueryWrapper wrapper = QueryWrapper.create().select(SysRoleMenu::getMenuId).eq(SysRoleMenu::getRoleId, roleId);
         List<SysRoleMenu> list = list(wrapper);
         List<String> selectIds = new ArrayList<>();
         if (Utils.isNotNull(list)) {
-            selectIds = list.stream()
-                    .map(SysRoleMenu::getMenuId)
-                    .collect(Collectors.toList());
+            selectIds = list.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
         }
         SysRoleMenuVO menuVO = new SysRoleMenuVO();
         menuVO.setMenuLists(menuTreeVOS);
         menuVO.setSelectIds(selectIds);
         return menuVO;
     }
-
 
 }

@@ -37,9 +37,12 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 接受客户端消息
      *
-     * @param session session
-     * @param message message
-     * @throws IOException e
+     * @param session
+     *            session
+     * @param message
+     *            message
+     * @throws IOException
+     *             e
      */
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
@@ -53,7 +56,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         SocketChannelEnum channel = socketBean.getChannel();
         // TODO channel 处理
         switch (channel) {
-            default:
+            default :
                 log.warn(" 【websocket】 unknown message: {}, send to service ... ", message);
                 SocketBean sb = JsonUtils.parseObject(message.getPayload(), SocketBean.class);
                 TransferMessage tm = new TransferMessage();
@@ -71,8 +74,10 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 连接建立后
      *
-     * @param session session
-     * @throws Exception e
+     * @param session
+     *            session
+     * @throws Exception
+     *             e
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -96,9 +101,12 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 连接关闭后
      *
-     * @param session session
-     * @param status  status
-     * @throws Exception e
+     * @param session
+     *            session
+     * @param status
+     *            status
+     * @throws Exception
+     *             e
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -197,4 +205,3 @@ public class WebSocketServer extends TextWebSocketHandler {
     }
 
 }
-

@@ -46,9 +46,9 @@ public class RedisConfiguration {
 
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        //以下替代旧版本 om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        // 以下替代旧版本 om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         om.activateDefaultTyping(om.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
-        //bugFix Jackson2反序列化数据处理LocalDateTime类型时出错
+        // bugFix Jackson2反序列化数据处理LocalDateTime类型时出错
         om.disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
         // java8 时间支持
         om.registerModule(new JavaTimeModule());
@@ -57,6 +57,3 @@ public class RedisConfiguration {
     }
 
 }
-
-
-

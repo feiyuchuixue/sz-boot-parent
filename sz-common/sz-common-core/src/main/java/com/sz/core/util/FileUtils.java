@@ -37,8 +37,7 @@ public class FileUtils {
             response.setCharacterEncoding(StandardCharsets.UTF_8.toString()); // 设置响应字符编码
             setAttachmentResponseHeader(response, templateFileName);
 
-            try (InputStream inputStream = resource.getInputStream();
-                 OutputStream outputStream = response.getOutputStream()) {
+            try (InputStream inputStream = resource.getInputStream(); OutputStream outputStream = response.getOutputStream()) {
                 FileCopyUtils.copy(inputStream, outputStream);
                 outputStream.flush();
             }
@@ -56,12 +55,8 @@ public class FileUtils {
     public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) {
         String percentEncodedFileName = encodeName(realFileName);
 
-        StringBuilder contentDispositionValue = new StringBuilder()
-                .append("attachment; filename=")
-                .append(percentEncodedFileName)
-                .append("; filename*=")
-                .append("utf-8''")
-                .append(percentEncodedFileName);
+        StringBuilder contentDispositionValue = new StringBuilder().append("attachment; filename=").append(percentEncodedFileName).append("; filename*=")
+                .append("utf-8''").append(percentEncodedFileName);
 
         response.addHeader("Access-Control-Expose-Headers", "Content-Disposition,download-filename");
         response.setHeader("Content-disposition", contentDispositionValue.toString());
@@ -74,6 +69,7 @@ public class FileUtils {
 
     /**
      * 检查磁盘路径是否存在
+     * 
      * @param path
      * @return
      */

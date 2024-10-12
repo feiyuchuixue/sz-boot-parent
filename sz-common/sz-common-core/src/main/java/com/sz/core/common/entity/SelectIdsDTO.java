@@ -24,5 +24,4 @@ public class SelectIdsDTO {
         this.ids = ids;
     }
 
-
 }

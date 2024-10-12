@@ -1,8 +1,6 @@
 package com.sz.admin.system.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
@@ -18,7 +16,6 @@ import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

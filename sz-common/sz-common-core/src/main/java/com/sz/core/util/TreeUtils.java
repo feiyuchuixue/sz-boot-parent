@@ -19,9 +19,12 @@ public class TreeUtils {
     /**
      * 构建树形结构
      *
-     * @param allDepts 所有部门列表
-     * @param root     自定义根节点属性
-     * @param <T>      树节点类型
+     * @param allDepts
+     *            所有部门列表
+     * @param root
+     *            自定义根节点属性
+     * @param <T>
+     *            树节点类型
      * @return 树形结构列表
      */
     public static <T extends Treeable<T>> List<T> buildTree(List<T> allDepts, T root) {
@@ -35,10 +38,14 @@ public class TreeUtils {
     /**
      * 构建树形结构（支持排除指定节点）
      *
-     * @param allDepts      所有部门列表
-     * @param excludeNodeId 排除节点的 ID
-     * @param root          自定义根节点属性
-     * @param <T>           树节点类型
+     * @param allDepts
+     *            所有部门列表
+     * @param excludeNodeId
+     *            排除节点的 ID
+     * @param root
+     *            自定义根节点属性
+     * @param <T>
+     *            树节点类型
      * @return 树形结构列表
      */
     public static <T extends Treeable<T>> List<T> buildTree(List<T> allDepts, T root, Object excludeNodeId) {
@@ -53,13 +60,15 @@ public class TreeUtils {
         return trees;
     }
 
-
     /**
      * 递归构建树形结构
      *
-     * @param parent   父节点
-     * @param allDepts 所有部门列表
-     * @param <T>      树节点类型
+     * @param parent
+     *            父节点
+     * @param allDepts
+     *            所有部门列表
+     * @param <T>
+     *            树节点类型
      */
     private static <T extends Treeable<T>> void constructTreeRecursive(T parent, List<T> allDepts) {
         // 遍历所有部门
@@ -77,14 +86,17 @@ public class TreeUtils {
         }
     }
 
-
     /**
      * 递归构建树形结构（支持排除指定节点）
      *
-     * @param parent        父节点
-     * @param allDepts      所有部门列表
-     * @param excludeNodeId 排除节点的 ID
-     * @param <T>           树节点类型
+     * @param parent
+     *            父节点
+     * @param allDepts
+     *            所有部门列表
+     * @param excludeNodeId
+     *            排除节点的 ID
+     * @param <T>
+     *            树节点类型
      */
     private static <T extends Treeable<T>> void constructTreeRecursiveExcludeNode(T parent, List<T> allDepts, Object excludeNodeId) {
         // 遍历所有节点
@@ -93,7 +105,7 @@ public class TreeUtils {
                 parent.setChildren(new ArrayList<>());
             }
             // 如果部门的父级ID等于当前父部门的ID，并且部门的ID不等于排除节点的ID
-            if (dept.getPid().equals(parent.getId()) && !dept.getId().toString().equals(excludeNodeId.toString()) ) {
+            if (dept.getPid().equals(parent.getId()) && !dept.getId().toString().equals(excludeNodeId.toString())) {
                 // 递归构建子部门的子部门
                 constructTreeRecursiveExcludeNode(dept, allDepts, excludeNodeId);
 
@@ -106,8 +118,10 @@ public class TreeUtils {
     /**
      * 获取根节点
      *
-     * @param clazz 树节点类型
-     * @param <T>   树节点类型
+     * @param clazz
+     *            树节点类型
+     * @param <T>
+     *            树节点类型
      * @return 根节点
      */
     public static <T extends Treeable<T>> T getRoot(Class<T> clazz) {
@@ -123,6 +137,5 @@ public class TreeUtils {
             throw new RuntimeException(e);
         }
     }
-
 
 }

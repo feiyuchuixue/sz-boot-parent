@@ -1,6 +1,5 @@
 package com.sz.admin.system.controller;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
@@ -76,12 +75,9 @@ public class SysDeptController {
 
     @Operation(summary = "树形列表")
     @GetMapping("/tree")
-    public ApiResult<List<DeptTreeVO>> tree(
-            @Parameter(description = "需要排除的节点ID")
-            @RequestParam(required = false) Integer excludeNodeId,
-            @Parameter(description = "是否添加根节点")
-            @RequestParam(required = false) Boolean appendRoot) {
-        return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot,false));
+    public ApiResult<List<DeptTreeVO>> tree(@Parameter(description = "需要排除的节点ID") @RequestParam(required = false) Integer excludeNodeId,
+            @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
+        return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot, false));
     }
 
     @Operation(summary = "负责人穿梭框-全部用户")

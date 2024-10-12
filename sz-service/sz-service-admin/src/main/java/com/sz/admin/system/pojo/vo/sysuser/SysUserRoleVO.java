@@ -28,5 +28,4 @@ public class SysUserRoleVO {
         private String roleName;
     }
 
-
 }

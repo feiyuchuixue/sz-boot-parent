@@ -16,19 +16,19 @@ import java.util.List;
 @Data
 public class SystemUserLoginVO {
 
-    @Schema(description ="角色")
+    @Schema(description = "角色")
     private List<Long> roles;
 
-    @Schema(description ="基础用户信息")
+    @Schema(description = "基础用户信息")
     private BaseUserInfo userInfo;
 
-    @Schema(description ="权限标识数组")
+    @Schema(description = "权限标识数组")
     private List<String> permissions;
 
-    @Schema(description ="accessToken")
+    @Schema(description = "accessToken")
     private String accessToken;
 
-    @Schema(description ="refreshToken")
+    @Schema(description = "refreshToken")
     private String refreshToken;
 
 }
