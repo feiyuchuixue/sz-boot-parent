@@ -27,12 +27,12 @@ public class GeneratorTableColumn implements Serializable {
      * 编号
      */
     @Id(keyType = KeyType.Auto)
-    private Integer columnId;
+    private Long columnId;
 
     /**
      * 归属表编号
      */
-    private Integer tableId;
+    private Long tableId;
 
     /**
      * 列名称

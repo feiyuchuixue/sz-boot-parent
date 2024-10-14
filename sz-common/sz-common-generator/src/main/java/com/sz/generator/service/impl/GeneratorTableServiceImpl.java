@@ -102,7 +102,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             generatorTable.setPathApi(pathApi);
             generatorTable.setPathWeb(pathWeb);
             save(generatorTable);
-            Integer tableId = generatorTable.getTableId();
+            Long tableId = generatorTable.getTableId();
             String tableName = table.getTableName();
             List<TableColumResult> tableColumResults = this.mapper.selectDbTableColumnsByName(tableName);
             int i = 1;
@@ -152,7 +152,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorDetailVO detailVO = new GeneratorDetailVO();
         GeneratorTable one = QueryChain.of(GeneratorTable.class).eq(GeneratorTable::getTableName, tableName).one();
         CommonResponseEnum.NOT_EXISTS.message(1002, "table不存在").assertNull(one);
-        Integer tableId = one.getTableId();
+        Long tableId = one.getTableId();
         List<GeneratorTableColumn> tableColumns = generatorTableColumnService.getTableColumnsByTableId(tableId);
         List<GeneratorDetailVO.Column> columns = BeanCopyUtils.copyList(tableColumns, GeneratorDetailVO.Column.class);
         GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.springCopy(one, GeneratorDetailVO.BaseInfo.class);
@@ -171,7 +171,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * @param generatorDetailVO
      */
     public void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO) {
-        Integer tableId = generatorDetailVO.getBaseInfo().getTableId();
+        Long tableId = generatorDetailVO.getBaseInfo().getTableId();
         GeneratorTable one = QueryChain.of(mapper).eq(GeneratorTable::getTableId, tableId).one();
         CommonResponseEnum.INVALID_ID.assertNull(one);
 

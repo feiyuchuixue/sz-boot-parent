@@ -17,9 +17,9 @@ public interface GeneratorTableColumnService extends IService<GeneratorTableColu
 
     void batchInsert(List<GeneratorTableColumn> tableColumns);
 
-    List<GeneratorTableColumn> getTableColumnsByTableId(Integer tableId);
+    List<GeneratorTableColumn> getTableColumnsByTableId(Long tableId);
 
-    List<GeneratorTableColumn> getTableColumnsByTableName(Integer tableId);
+    List<GeneratorTableColumn> getTableColumnsByTableName(Long tableId);
 
     void updateBatchTableColumns(List<GeneratorTableColumn> columns);
 

@@ -24,7 +24,7 @@ public class GeneratorTable implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)
-    private Integer tableId;
+    private Long tableId;
 
     /**
      * 表名称

@@ -28,7 +28,7 @@ public class GeneratorDetailVO {
     public static class BaseInfo {
 
         @Schema(description = "table_id")
-        private Integer tableId;
+        private Long tableId;
 
         @Schema(description = "表名称")
         private String tableName;
@@ -105,10 +105,10 @@ public class GeneratorDetailVO {
     public static class Column {
 
         @Schema(description = "column_id")
-        private Integer columnId;
+        private Long columnId;
 
         @Schema(description = "table_id")
-        private Integer tableId;
+        private Long tableId;
 
         @Schema(description = "列名称")
         private String columnName;

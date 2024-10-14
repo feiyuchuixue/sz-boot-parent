@@ -43,7 +43,7 @@ public class GeneratorUtils {
         return generatorTable;
     }
 
-    public static GeneratorTableColumn initColumnField(TableColumResult column, Integer tableId, int i) {
+    public static GeneratorTableColumn initColumnField(TableColumResult column, Long tableId, int i) {
         GeneratorTableColumn tableColumn = new GeneratorTableColumn();
         String dataType = getDbType(column.getColumnType());
         String columnName = column.getColumnName();
