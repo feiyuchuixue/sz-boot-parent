@@ -86,10 +86,10 @@ public class SysMenu implements Serializable {
     private LocalDateTime updateTime;
 
     @Schema(description = "创建人")
-    private String createId;
+    private Long createId;
 
     @Schema(description = "更新人")
-    private String updateId;
+    private Long updateId;
 
     @Schema(description = "删除与否")
     @Column(isLogicDelete = true)
@@ -97,4 +97,9 @@ public class SysMenu implements Serializable {
 
     @Schema(description = "菜单是否开启数据权限")
     private String useDataScope;
+
+    @Schema(description = "删除人ID")
+    private Long deleteId;
+
+    private LocalDateTime deleteTime;
 }

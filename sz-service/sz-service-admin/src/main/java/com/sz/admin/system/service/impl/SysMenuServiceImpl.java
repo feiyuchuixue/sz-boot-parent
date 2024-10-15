@@ -30,6 +30,7 @@ import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.RedisService;
+import com.sz.security.core.util.LoginUtils;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -102,7 +103,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             deep = parentDeep + 1;
         }
         menu.setDeep(deep);
-        menu.setCreateId(StpUtil.getLoginIdAsString());
+        menu.setCreateId(LoginUtils.getLoginUser().getUserInfo().getId());
         menu.setHasChildren("F");
         save(menu);
         this.mapper.syncTreeDeep();
@@ -127,7 +128,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         // 菜单是否存在
         wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
         CommonResponseEnum.NOT_EXISTS.message("菜单不存在").assertTrue(count(wrapper) < 1);
-        menu.setUpdateId(StpUtil.getLoginIdAsString());
+        menu.setUpdateId(LoginUtils.getLoginUser().getUserInfo().getId());
         menu.setUpdateTime(LocalDateTime.now());
         updateById(menu);
         this.mapper.syncTreeDeep();
