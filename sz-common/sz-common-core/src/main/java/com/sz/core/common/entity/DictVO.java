@@ -21,7 +21,7 @@ public class DictVO {
     private String id;
 
     @Schema(description = "字典类型id", example = "1000")
-    private Integer sysDictTypeId;
+    private Long sysDictTypeId;
 
     @Schema(description = "字典名称", example = "正常")
     private String codeName;

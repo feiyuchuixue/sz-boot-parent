@@ -34,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -111,7 +108,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         deptLeaderService.syncLeader(dto.getId(), dto.getLeaders());
         saveOrUpdate(sysDept);
         // 移动树
-        if (oldPid != dto.getPid()) {
+        if (!Objects.equals(oldPid, dto.getPid())) {
             deptClosureService.move(dto.getId(), dto.getPid());
         }
     }
@@ -132,7 +129,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
         List<SysDeptVO> trees = TreeUtils.buildTree(deptVOS, root);
-        return trees.get(0).getChildren();
+        return trees.getFirst().getChildren();
     }
 
     @Override
@@ -207,10 +204,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         root.setName("根部门");
         List<DeptTreeVO> trees = TreeUtils.buildTree(deptTreeVOS, root, excludeNodeId);
         if (appendRoot != null && !appendRoot) {
-            if (trees.get(0).getChildren() == null) {
+            if (trees.getFirst().getChildren() == null) {
                 trees = new ArrayList<>();
             } else {
-                trees = trees.get(0).getChildren();
+                trees = trees.getFirst().getChildren();
             }
         }
         return trees;
@@ -230,8 +227,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
          * SELECT d.id , d.name , COUNT(ud.user_id) AS total FROM sys_dept d LEFT JOIN
          * sys_dept_closure c ON d.id = c.ancestor_id LEFT JOIN sys_user_dept ud ON
          * c.descendant_id = ud.dept_id GROUP BY d.id, d.name;
-         *
-         *
          *
          */
 
@@ -262,7 +257,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     private static QueryWrapper buildQueryWrapper(SysDeptListDTO dto) {
         QueryWrapper wrapper = QueryWrapper.create().from(SysDept.class);
-
         return wrapper;
     }
 
