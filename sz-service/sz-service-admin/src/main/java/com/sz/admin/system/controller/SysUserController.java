@@ -91,7 +91,7 @@ public class SysUserController {
     @Operation(summary = "用户角色信息查询-（穿梭框）")
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("role")
-    public ApiResult<SysUserRoleVO> findUserRole(@NotZero @RequestParam Integer userId) {
+    public ApiResult<SysUserRoleVO> findUserRole(@NotZero @RequestParam Long userId) {
         return ApiPageResult.success(sysUserService.findSysUserRole(userId));
     }
 

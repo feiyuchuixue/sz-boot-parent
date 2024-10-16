@@ -266,7 +266,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public SysUserRoleVO findSysUserRole(Integer userId) {
+    public SysUserRoleVO findSysUserRole(Long userId) {
         List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
         List<SysUserRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(sysRoleList, SysUserRoleVO.RoleInfoVO.class);
         List<SysUserRole> userRoles = QueryChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, userId).list();
@@ -301,7 +301,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public SysUserVO getUserInfo() {
-        SysUser sysUser = getById(StpUtil.getLoginIdAsInt());
+        SysUser sysUser = getById(LoginUtils.getLoginUser().getUserInfo().getId());
         return BeanCopyUtils.springCopy(sysUser, SysUserVO.class);
     }
 

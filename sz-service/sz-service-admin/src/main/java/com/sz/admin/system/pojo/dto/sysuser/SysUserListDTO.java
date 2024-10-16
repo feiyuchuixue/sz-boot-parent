@@ -20,7 +20,7 @@ public class SysUserListDTO extends PageQuery {
     private String nickname;
 
     @Schema(description = "部门列表。0查询全部，-1 查询未分配部门的用户")
-    private Integer deptId;
+    private Long deptId;
 
     @Schema(description = "是否只查询当前层级")
     private Boolean isThisDeep;
