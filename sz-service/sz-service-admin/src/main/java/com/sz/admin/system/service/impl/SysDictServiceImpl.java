@@ -32,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -121,7 +120,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
             SysDictType sysDictType = sysDictTypeService.detail(sysDict.getSysDictTypeId());
             redisCache.clearDict(sysDictType.getTypeCode()); // 清除redis缓存
         }
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override

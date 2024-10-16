@@ -20,8 +20,6 @@ import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-
 /**
  * <p>
  * 系统角色表 服务实现类
@@ -64,7 +62,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override

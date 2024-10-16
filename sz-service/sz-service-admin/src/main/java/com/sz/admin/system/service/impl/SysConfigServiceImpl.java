@@ -75,7 +75,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         for (SysConfig sysConfig : list) {
             redisCache.clearConf(sysConfig.getConfigKey()); // 清除conf key
         }
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override

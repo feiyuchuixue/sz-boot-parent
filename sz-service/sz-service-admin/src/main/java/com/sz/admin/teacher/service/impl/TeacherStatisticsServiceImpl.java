@@ -17,6 +17,7 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.JsonUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
@@ -27,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -84,7 +84,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     @Override
     public void remove(SelectIdsDTO dto) {
         CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override

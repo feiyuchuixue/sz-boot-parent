@@ -22,7 +22,10 @@ import com.sz.admin.system.service.SysMenuService;
 import com.sz.admin.system.service.SysPermissionService;
 import com.sz.admin.system.service.SysUserDeptService;
 import com.sz.admin.system.service.SysUserService;
-import com.sz.core.common.entity.*;
+import com.sz.core.common.entity.BaseUserInfo;
+import com.sz.core.common.entity.LoginUser;
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
@@ -40,7 +43,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -113,8 +115,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 后台创建用户
      *
-     * @param dto
-     *            用户信息
+     * @param dto 用户信息
      */
     @Transactional
     @Override
@@ -139,8 +140,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更新用户
      *
-     * @param dto
-     *            用户信息
+     * @param dto 用户信息
      */
     @Override
     public void update(SysUserUpdateDTO dto) {
@@ -156,8 +156,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 删除用户 (逻辑删除，保留数据关系。如部门、权限、角色等)
      *
-     * @param dto
-     *            用户id数组
+     * @param dto 用户id数组
      */
     @Override
     @Transactional
@@ -165,14 +164,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create().in(SysUser::getId, dto.getIds());
         // 检查用户是否存在
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) < 1);
-        removeByIds((Collection<? extends Serializable>) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     /**
      * 详情
      *
-     * @param id
-     *            用户id
+     * @param id 用户id
      * @return {@link SysUser}
      */
     @Override
@@ -308,8 +306,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更改（当前用户）密码
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      */
     @Override
     public void changePassword(SysUserPasswordDTO dto) {

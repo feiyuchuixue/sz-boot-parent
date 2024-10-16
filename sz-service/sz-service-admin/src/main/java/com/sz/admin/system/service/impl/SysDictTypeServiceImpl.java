@@ -24,7 +24,6 @@ import com.sz.platform.factory.DictLoaderFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -87,7 +86,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override

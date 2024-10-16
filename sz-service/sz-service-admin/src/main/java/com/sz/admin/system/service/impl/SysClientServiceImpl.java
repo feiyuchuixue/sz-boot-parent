@@ -79,7 +79,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     @Override
     public void remove(SelectIdsDTO dto) {
         CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
-        removeById((Serializable) dto.getIds());
+        removeByIds(dto.getIds());
     }
 
     @Override
