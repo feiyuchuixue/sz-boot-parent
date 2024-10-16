@@ -76,8 +76,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 创建菜单
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      */
     @Transactional
     @Override
@@ -117,8 +116,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 更新菜单
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      */
     @Transactional
     @Override
@@ -143,8 +141,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 删除
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      */
     @Transactional
     @Override
@@ -166,8 +163,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 列表
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      * @return {@link List}<{@link SysMenuVO}>
      */
     @Override
@@ -323,8 +319,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 是否是根节点
      *
-     * @param pid
-     *            父级Id
+     * @param pid 父级Id
      * @return true:是根节点
      */
     private boolean isRoot(String pid) {
@@ -372,9 +367,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public MenuPermissionVO hasExistsPermissions(MenuPermissionDTO dto) {
+        MenuPermissionVO permissionVO = new MenuPermissionVO();
+        if (dto.getPermissions().isEmpty()) {
+            return permissionVO;
+        }
         QueryWrapper wrapper = QueryWrapper.create().ne(SysMenu::getId, dto.getId()).eq(SysMenu::getPermissions, dto.getPermissions());
         Long count = count(wrapper);
-        MenuPermissionVO permissionVO = new MenuPermissionVO();
         permissionVO.setPermissionCount(count.intValue());
         return permissionVO;
     }
@@ -382,7 +380,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     /**
      * 查询权限按钮
-     * 
+     *
      * @return
      */
     public List<String> findPermission() {
