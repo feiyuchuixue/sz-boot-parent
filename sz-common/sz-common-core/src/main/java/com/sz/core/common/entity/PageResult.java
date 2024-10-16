@@ -33,9 +33,6 @@ public class PageResult<T> implements Serializable {
     @Schema(description = "结果集")
     private List<T> rows;
 
-    @Schema(description = "额外参数")
-    private Object param;
-
     public PageResult(long current, long limit, long totalPage, long total, List<T> rows) {
         this.current = current;
         this.limit = limit;
