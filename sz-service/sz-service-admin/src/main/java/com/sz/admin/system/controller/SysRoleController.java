@@ -81,7 +81,7 @@ public class SysRoleController {
     @Operation(summary = "角色菜单信息查询")
     @SaCheckPermission(value = {"sys.role.setting_btn", "sys.role.update_btn"}, mode = SaMode.AND, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")
-    public ApiResult findRoleMenuByRoleId(@NotZero @RequestParam Integer roleId) {
+    public ApiResult findRoleMenuByRoleId(@NotZero @RequestParam Long roleId) {
         return ApiPageResult.success(sysRoleMenuService.queryRoleMenu(roleId));
     }
 

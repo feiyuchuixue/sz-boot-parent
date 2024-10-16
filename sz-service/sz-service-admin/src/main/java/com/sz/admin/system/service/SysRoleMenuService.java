@@ -17,5 +17,5 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
 
     void change(SysRoleMenuDTO dto);
 
-    SysRoleMenuVO queryRoleMenu(Integer roleId);
+    SysRoleMenuVO queryRoleMenu(Long roleId);
 }

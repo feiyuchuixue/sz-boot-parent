@@ -32,5 +32,5 @@ public class SysRoleMenu implements Serializable {
     private String menuId;
 
     @Schema(description = "sys_role_id （角色表）")
-    private Integer roleId;
+    private Long roleId;
 }

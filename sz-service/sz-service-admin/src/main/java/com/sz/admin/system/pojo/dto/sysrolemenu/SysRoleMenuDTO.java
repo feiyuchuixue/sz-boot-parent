@@ -19,6 +19,6 @@ public class SysRoleMenuDTO {
 
     @NotZero(message = "角色id不能为空")
     @Schema(description = "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer roleId;
+    Long roleId;
 
 }
