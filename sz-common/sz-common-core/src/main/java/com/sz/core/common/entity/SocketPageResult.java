@@ -26,12 +26,4 @@ public class SocketPageResult<T> extends SocketResult<T> {
         apiResult.channel = channel;
         return apiResult;
     }
-
-    public static <T> SocketPageResult<PageResult<T>> success(SocketChannelEnum channel, List<T> data, Object param) {
-        SocketPageResult<PageResult<T>> apiResult = new SocketPageResult<>();
-        apiResult.channel = channel;
-        apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>(), param);
-        return apiResult;
-    }
-
 }

@@ -52,7 +52,8 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<PageResult<T>> success(List<T> data, Object param) {
         ApiResult<PageResult<T>> apiResult = new ApiPageResult<>();
-        apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>(), param);
+        apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>());
+        apiResult.setParam(param);
         return apiResult;
     }
 

@@ -5,6 +5,7 @@ import com.sz.core.util.Utils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -16,6 +17,7 @@ import java.util.HashMap;
 @Data
 public class ApiResult<T> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Schema(description = "自定义响应码", example = "0000")
