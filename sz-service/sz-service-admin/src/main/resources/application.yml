@@ -37,6 +37,8 @@ sz:
     enabled: true
     # 全局防抖时间，单位毫秒（默认1000ms）
     global-lock-time: 500
+    # 是否忽略GET请求
+    ignore-get-method: true
   # 生成工具
   generator:
     path:

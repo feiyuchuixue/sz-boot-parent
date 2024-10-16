@@ -1,10 +1,10 @@
 package com.sz.platform.debounce;
 
+import com.sz.core.common.annotation.Debounce;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.common.annotation.Debounce;
-import com.sz.core.common.annotation.DebounceIgnore;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -45,9 +45,15 @@ public class DebounceAspect {
     @Around("methodArgs()")
     public Object debounceInterceptor(ProceedingJoinPoint point) throws Throwable {
         Method method = ((MethodSignature) point.getSignature()).getMethod();
+        String httpMethod = request.getMethod();
         // 检查：是否开启了防抖、是否标注了 @NoDebounce 注解
         if (!debounceProperties.isEnabled() || method.isAnnotationPresent(DebounceIgnore.class)) {
             return point.proceed(); // 直接执行，不做防抖处理
+        }
+        // 忽略GET请求
+        if (debounceProperties.isIgnoreGetMethod()) {
+            if ("GET".equalsIgnoreCase(httpMethod))
+                return point.proceed(); // 直接执行，不做防抖处理
         }
         long lockTime = debounceProperties.getGlobalLockTime();
 
