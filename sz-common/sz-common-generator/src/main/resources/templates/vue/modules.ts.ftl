@@ -38,7 +38,7 @@ export const ${funUpdate} = (params: ${interfaceNamespace}.Form) => {
 * @param params
 * @returns {*}
 */
-export const ${funRemove} = (params: { ids: ${idType}[] }) => {
+export const ${funRemove} = (params: { ids: (string | number)[] }) => {
  return http.delete(ADMIN_MODULE + `/${router}`, params)
 }
 

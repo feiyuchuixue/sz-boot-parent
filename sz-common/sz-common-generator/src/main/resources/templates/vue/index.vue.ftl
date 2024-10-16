@@ -235,7 +235,7 @@ const deleteInfo = async (params: ${interfaceNamespace}.Row) => {
   proTableRef.value?.getTableList()
 }
 // 批量删除信息
-const batchDelete = async (ids: string[]) => {
+const batchDelete = async (ids: (string | number)[]) => {
   await useHandleData(${funRemove}, { ids }, '删除所选${functionName}')
   proTableRef.value?.clearSelection()
   proTableRef.value?.getTableList()
