@@ -115,7 +115,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 后台创建用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     @Transactional
     @Override
@@ -140,7 +141,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更新用户
      *
-     * @param dto 用户信息
+     * @param dto
+     *            用户信息
      */
     @Override
     public void update(SysUserUpdateDTO dto) {
@@ -156,7 +158,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 删除用户 (逻辑删除，保留数据关系。如部门、权限、角色等)
      *
-     * @param dto 用户id数组
+     * @param dto
+     *            用户id数组
      */
     @Override
     @Transactional
@@ -170,7 +173,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 详情
      *
-     * @param id 用户id
+     * @param id
+     *            用户id
      * @return {@link SysUser}
      */
     @Override
@@ -306,7 +310,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更改（当前用户）密码
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Override
     public void changePassword(SysUserPasswordDTO dto) {

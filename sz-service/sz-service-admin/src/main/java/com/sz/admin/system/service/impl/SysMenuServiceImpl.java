@@ -76,7 +76,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 创建菜单
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -116,7 +117,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 更新菜单
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -141,7 +143,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 删除
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      */
     @Transactional
     @Override
@@ -163,7 +166,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link List}<{@link SysMenuVO}>
      */
     @Override
@@ -319,7 +323,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 是否是根节点
      *
-     * @param pid 父级Id
+     * @param pid
+     *            父级Id
      * @return true:是根节点
      */
     private boolean isRoot(String pid) {

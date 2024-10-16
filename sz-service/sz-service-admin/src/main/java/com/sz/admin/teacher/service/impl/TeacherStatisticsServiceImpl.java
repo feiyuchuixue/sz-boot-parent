@@ -17,7 +17,6 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.JsonUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
