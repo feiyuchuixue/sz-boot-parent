@@ -82,6 +82,6 @@ public class TeacherStatisticsVO {
     @ExcelProperty(value = "创建人id", converter = ExcelDictConvert.class)
     @DictFormat(dictType = "dynamic_user_options")
     @Schema(description = "创建人id")
-    private String createId;
+    private Long createId;
 
 }
