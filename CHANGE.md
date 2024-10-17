@@ -1,23 +1,85 @@
 # 更新日志
 
+## v0.8.0 （20241017）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-data-redis：3.3.3  -> 3.3.4。
+  - 修复：sql预览模版结尾多余空格问题。
+  - 修复：无法正常解锁用户问题 **PR**[#26](https://github.com/feiyuchuixue/sz-boot-parent/issues/26#issue-2577509320)。（感谢[andyjia](https://github.com/andyjia)）
+  - 优化：重构异常处理，引入错误前缀枚举，增强代码可读性和可维护。
+  - 新增：spotless maven 格式化插件，全局格式化。
+  - 新增：CHANGE.md 更新日志。
+  - 修改：将数据表中的自增ID字段类型升级为**bigint**，以支持更大的数据范围和避免潜在的溢出问题。|  <font color="red">可能的破坏性更新</font>
+  - 优化：自增ID字段升级为bigint：
+    - 代码生成
+    - 系统菜单
+    - 系统字典
+    - 角色
+    - 用户
+    - 教师统计（演示）
+  - 新增：自增ID字段升级为bigint DDL脚本。
+  - 修复：部分页面批量删除异常问题。
+  - 优化：[代码生成] 前端模版添加对(string | number)[] 类型的支持。
+  - 优化：验证权限标识唯一性接口。
+  - 优化：接口防抖增加GET请求忽略的支持。
+  - 优化：通用返回接口对额外参数param的处理。
+  - 优化：[代码生成] 模版对菜单预览SQL的调整。
+  - 优化：数据库迁移脚本 --业务脚本 示例修改。
+- sz-admin：
+  - 依赖升级：
+    - **vite**：**4.5.3 -> 5.4.8**。
+    - **axios**： 1.7.2 -> 1.7.7
+    - **vue**：3.4.21 -> 3.5.12
+    - pinia：2.1.7 -> 2.2.4
+    - **vue-router**：**4.4.0 -> 4.4.5**
+    - sortablejs：1.15.2 -> 1.15.3
+    - pinia-plugin-persistedstate： 3.2.1 -> 3.2.3
+    - @vueuse/core：10.11.0 -> 10.11.1
+    - prettier：3.3.2 -> 3.3.3
+    - @types/node：18.19.39 -> 18.19.55
+    - **element-plus**：**2.7.6 -> 2.8.5**
+    - **sass**：**1.77.7 -> 1.79.5**
+    - @vue/tsconfig：0.4.0 -> 0.5.1
+    - vue-tsc：1.8.27 -> 2.1.6
+  - 修复：菜单管理、字典管理 预览SQL的格式问题。
+  - 修复：代码预览组件行号展示问题。
+  - 优化: 更新API状态码常量。
+  - 优化：提取请求超时时间参数**VITE_APP_HTTP_TIMEOUT** 单位ms，（默认超时时间60s）。
+  - 优化: useSelection组件添加对number数组的支持。
+  - 优化: 修改API参数类型以支持数字和字符串。
+  - 优化: 角色标识展示样式。
+  - 优化: vite5.x 使用ESM语法 vite.config.ts 升级为vite.config.mts。
+  - 优化: eslintrc.cjs 规则。
+  - 优化: prettier format配置。
+  - 优化：代码格式化，代码清理。
+
 ## v0.7.11 （20241009）
 
 - sz-boot-parent：
   - 依赖升级：
     - spring-boot-starter-data-redis：3.3.3  -> 3.3.4。
-    - spring-boot-starter-parent：3.3.3  -> 3.3.4。
-    - commons-io：2.16.1 -> 2.17.0。
-    - HikariCP：5.1.0 -> 6.0.0。
-    - swagger-annotations：2.2.23 -> 2.2.25。
-  - 优化：sz自定义配置yml文件修改。
-  - 修复：角色-标识属性空值也参与校验（唯一校验时）问题。
-  - 优化：Excel导入支持数据覆盖参数。
-  - 优化：[代码生成器] ftl模版, 规范化Excel导入参数、controller @SaCheckPermission 模版去除orRole=xxx的默认值。
-  - 优化：@SaCheckPermission注解接口鉴权时默认添加对“超级管理员”的默认支持，无需再使用orRole=xxx指定。
-- sz-admin：
-  - 修复：菜单标签页Tabs同步问题。[#IAUD56](https://gitee.com/feiyuchuixue/sz-boot-parent/issues/IAUD56)
-  - 修复：关闭面包屑导航“目录”类型菜单的跳转。[#5](https://github.com/feiyuchuixue/sz-admin/issues/5#issue-2555540407)
-  - 优化：代码清理与格式化。
+  - 修复：sql预览模版结尾多余空格问题。
+  - 修复：无法正常解锁用户问题 **PR**[#26](https://github.com/feiyuchuixue/sz-boot-parent/issues/26#issue-2577509320)。（感谢[andyjia](https://github.com/andyjia)）
+  - 优化：重构异常处理，引入错误前缀枚举，增强代码可读性和可维护。
+  - 新增：spotless maven 格式化插件，全局格式化。
+  - 新增：CHANGE.md 更新日志。
+  - 修改：将数据表中的自增ID字段类型升级为**bigint**，以支持更大的数据范围和避免潜在的溢出问题。|  <font color="red">可能的破坏性更新</font>
+  - 优化：自增ID字段升级为bigint：
+    - 代码生成
+    - 系统菜单
+    - 系统字典
+    - 角色
+    - 用户
+    - 教师统计（演示）
+  - 新增：自增ID字段升级为bigint DDL脚本。
+  - 修复：部分页面批量删除异常问题。
+  - 优化：[代码生成] 前端模版添加对(string | number)[] 类型的支持。
+  - 优化：验证权限标识唯一性接口。
+  - 优化：接口防抖增加GET请求忽略的支持。
+  - 优化：通用返回接口对额外参数param的处理。
+  - 优化：[代码生成] 模版对菜单预览SQL的调整。
+  - 优化：数据库迁移脚本 --业务脚本 示例修改。
 
 ## v0.7.10 （20240919）
 
