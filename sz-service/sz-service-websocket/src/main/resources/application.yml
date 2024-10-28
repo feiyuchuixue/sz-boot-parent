@@ -15,3 +15,5 @@ spring:
       - classpath:config/${spring.profiles.active}/sa-token.yml
   application:
     name: websocket-service
+app:
+  version: @project.version@
