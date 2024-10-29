@@ -156,10 +156,17 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     public List<DeptTreeVO> getDepartmentTreeWithAdditionalNodes() {
         // 获取部门树
         List<DeptTreeVO> trees = getDeptTree(null, false, true);
+        // 获取所有用户数量
+        long allUserCount = count(QueryWrapper.create().from(SysUser.class));
+        QueryWrapper deptWrapper = QueryWrapper.create().from(SYS_USER_DEPT).select(SYS_USER_DEPT.USER_ID).leftJoin(SYS_DEPT)
+                .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID));
+        // 获取未设置部门的用户数量
+        long unsetDeptCount = allUserCount - count(deptWrapper);
+
         // 创建全部节点
-        DeptTreeVO all = createAllNode();
+        DeptTreeVO all = createAllNode(allUserCount);
         // 创建未设置部门节点
-        DeptTreeVO unset = createUnsetNode();
+        DeptTreeVO unset = createUnsetNode(unsetDeptCount);
         // 将‘全部’、‘未设置部门’节点添加到集合头部
         trees.add(0, all);
         trees.add(1, unset);
@@ -167,25 +174,22 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     @NotNull
-    private DeptTreeVO createUnsetNode() {
+    private DeptTreeVO createUnsetNode(Long unsetDeptCount) {
         DeptTreeVO unset = new DeptTreeVO();
         unset.setId(-2L);
         unset.setName("未设置部门");
-
-        QueryWrapper wrapper = QueryWrapper.create().from(SYS_USER).leftJoin(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID)).leftJoin(SYS_DEPT)
-                .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID)).where(SYS_USER_DEPT.USER_ID.isNull().or(SYS_DEPT.DEL_FLAG.eq("T"))); // 左联查sys_user del_flag 为空或为F
         AtomicReference<Long> total = new AtomicReference<>(0L);
-        LogicDeleteManager.execWithoutLogicDelete(() -> total.set(count(wrapper)));
+        LogicDeleteManager.execWithoutLogicDelete(() -> total.set(unsetDeptCount));
         unset.setUserTotal(total.get());
         return unset;
     }
 
     @NotNull
-    private DeptTreeVO createAllNode() {
+    private DeptTreeVO createAllNode(Long userCount) {
         DeptTreeVO all = new DeptTreeVO();
         all.setId(-1L);
         all.setName("全部");
-        all.setUserTotal(count(QueryWrapper.create().from(SysUser.class)));
+        all.setUserTotal(userCount);
         return all;
     }
 
