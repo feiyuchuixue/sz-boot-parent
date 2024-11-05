@@ -172,7 +172,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     @Override
     public String getDictLabel(String dictType, String dictValue, String separator) {
         List<DictVO> dictLists = dictLoaderFactory.getDictByType(dictType);
-        Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getId, DictVO::getCodeName); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
+        Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getId, vo -> vo.getCodeName() != null ? vo.getCodeName() : ""); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
         return map.getOrDefault(dictValue, "");
     }
 
