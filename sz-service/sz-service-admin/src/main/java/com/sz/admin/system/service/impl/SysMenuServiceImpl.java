@@ -422,7 +422,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             if (list.isEmpty()) {
                 return btnMenuMap;
             }
-            List<String> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toList());
+            Set<String> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toSet());
             QueryWrapper checkWrapper = QueryWrapper.create().select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.ID.in(pids));
             List<String> existsMenuIds = listAs(checkWrapper, String.class);
             for (SysMenu menu : list) {

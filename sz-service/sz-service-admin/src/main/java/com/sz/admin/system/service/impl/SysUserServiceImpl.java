@@ -372,14 +372,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validateUserStatus(userVo);
         // 密码校验
         validatePassword(password, userVo.getPwd(), username);
-        LoginUser loginUser = getLoginUser(userId, userVo);
+        LoginUser loginUser = getLoginUser(userVo);
         return loginUser;
     }
 
     @Override
     public LoginUser buildLoginUser(Long userId) {
         SysUserVO userVo = getSysUserByUserId(userId);
-        LoginUser loginUser = getLoginUser(userId, userVo);
+        LoginUser loginUser = getLoginUser(userVo);
         return loginUser;
     }
 
@@ -395,9 +395,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @NotNull
-    private LoginUser getLoginUser(Long userId, SysUserVO userVo) {
-        BaseUserInfo userInfo = BeanCopyUtils.springCopy(userVo, BaseUserInfo.class);
-        SysUser sysUser = QueryChain.of(SysUser.class).eq(SysUser::getId, userId).one();
+    private LoginUser getLoginUser(SysUserVO userVo) {
+        BaseUserInfo userInfo = BeanCopyUtils.copy(userVo, BaseUserInfo.class);
+        SysUser sysUser = BeanCopyUtils.copy(userVo, SysUser.class);
         CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         LoginUser loginUser = new LoginUser();
         loginUser.setUserInfo(userInfo);
