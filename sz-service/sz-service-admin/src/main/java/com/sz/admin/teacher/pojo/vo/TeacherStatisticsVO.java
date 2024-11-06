@@ -2,6 +2,7 @@ package com.sz.admin.teacher.pojo.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class TeacherStatisticsVO {
 
     @ExcelProperty(value = "统计年月")
     @Schema(description = "统计年月")
+    @CellMerge
     private String duringTime;
 
     @ExcelProperty(value = "教师id")

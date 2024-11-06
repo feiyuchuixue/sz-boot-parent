@@ -18,6 +18,10 @@
   - 优化: 使用TypeScript的模块扩展，优化package.json 的version。
   - 优化: 增强 env.d.ts 文件中的类型定义。
 
+- 文档：
+
+  - [Excel导入导出](https://szadmin.cn/md/Help/doc/excel.html)
+
 ## v0.8.0 （20241017）
 
 - sz-boot-parent：
