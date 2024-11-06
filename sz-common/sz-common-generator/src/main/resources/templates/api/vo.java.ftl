@@ -10,7 +10,6 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
   <#if hasDict == true>
 import com.sz.excel.annotation.DictFormat;
-import com.sz.excel.convert.ExcelDictConvert;
   </#if>
 </#if>
 <#if hasDateFormat == true>
@@ -33,7 +32,7 @@ public class ${voClassName} {
 <#if field.isList == "1" >
   <#if field.isExport == "1">
     <#if field.dictType != "">
-    @ExcelProperty(value = "${field.columnComment}", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "${field.columnComment}")
     @DictFormat(dictType = "${field.dictType}")
     <#else>
     @ExcelProperty(value = "${field.columnComment}")

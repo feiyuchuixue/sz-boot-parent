@@ -1,5 +1,6 @@
 package com.sz.admin.teacher.pojo.dto;
 
+import com.sz.excel.annotation.DictFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -36,8 +37,9 @@ public class TeacherStatisticsImportDTO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
+    @DictFormat(dictType = "account_status")
     @Schema(description = "讲师区分类型")
-    private Integer teacherCommonType;
+    private String teacherCommonType;
 
     @ExcelProperty(value = "授课总数")
     @Schema(description = "授课总数")
@@ -52,8 +54,9 @@ public class TeacherStatisticsImportDTO {
     private BigDecimal totalHours;
 
     @ExcelProperty(value = "核对状态")
+    /* @DictFormat(dictType = "account_status") */
     @Schema(description = "核对状态")
-    private Integer checkStatus;
+    private String checkStatus;
 
     @Schema(description = "核对时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

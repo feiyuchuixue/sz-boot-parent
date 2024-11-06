@@ -3,7 +3,6 @@ package com.sz.admin.teacher.pojo.vo;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.sz.excel.annotation.DictFormat;
-import com.sz.excel.convert.ExcelDictConvert;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -43,10 +42,10 @@ public class TeacherStatisticsVO {
     @Schema(description = "教师id")
     private String teacherId;
 
-    @ExcelProperty(value = "讲师区分类型", converter = ExcelDictConvert.class)
-    @DictFormat(dictType = "account_status")
+    @ExcelProperty(value = "讲师区分类型")
+    @DictFormat(dictType = "account_status", isSelected = true)
     @Schema(description = "讲师区分类型")
-    private Integer teacherCommonType;
+    private String teacherCommonType;
 
     @ExcelProperty(value = "授课总数")
     @Schema(description = "授课总数")
@@ -60,7 +59,7 @@ public class TeacherStatisticsVO {
     @Schema(description = "课时总数")
     private BigDecimal totalHours;
 
-    @ExcelProperty(value = "核对状态", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "核对状态")
     @Schema(description = "核对状态")
     @DictFormat(dictType = "account_status")
     private Integer checkStatus;
@@ -79,7 +78,7 @@ public class TeacherStatisticsVO {
     @Schema(description = "备注")
     private String remark;
 
-    @ExcelProperty(value = "创建人id", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "创建人id")
     @DictFormat(dictType = "dynamic_user_options")
     @Schema(description = "创建人id")
     private Long createId;

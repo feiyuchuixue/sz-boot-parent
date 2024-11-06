@@ -91,6 +91,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
             }
         }
         excelResult.getErrorList().add(errMsg);
+        exception.printStackTrace();
         throw new ExcelAnalysisException(errMsg);
     }
 

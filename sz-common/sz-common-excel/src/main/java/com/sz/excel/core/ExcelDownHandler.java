@@ -82,14 +82,14 @@ public class ExcelDownHandler implements SheetWriteHandler {
                         }
                     } else if (StringUtils.isNotBlank(dictType)) { // 根据dictType渲染下拉
                         DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
-                        Map<String, String> allDictByDictType = dictService.getAllDict(dictType);
+                        Map<String, String> allDictByDictType = dictService.getAllDictByType(dictType);
                         if (allDictByDictType != null && !allDictByDictType.isEmpty()) {
                             options = new ArrayList<>(allDictByDictType.keySet());
                         }
                     } else if (StringUtils.isNotBlank(converterExp)) { // 根据converterExp渲染下拉
                         options = ExcelUtils.listByExp(converterExp, separator);
                     }
-                    if (options != null && !options.isEmpty()) {
+                    if (!options.isEmpty()) {
                         dropDownWithSheet(helper, workbook, sheet, index, options);
                     }
                 }

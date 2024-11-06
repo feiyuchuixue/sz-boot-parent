@@ -1,5 +1,8 @@
 package com.sz.core.common.service;
 
+import com.sz.core.common.entity.DictVO;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,6 +79,13 @@ public interface DictService {
      *            字典类型
      * @return dictValue为key，dictLabel为值组成的Map
      */
-    Map<String, String> getAllDict(String dictType);
+    Map<String, String> getAllDictByType(String dictType);
+
+    /**
+     * 获取所有字典
+     *
+     * @return
+     */
+    Map<String, List<DictVO>> getAllDict();
 
 }

@@ -184,12 +184,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
-    public Map<String, String> getAllDict(String dictType) {
+    public Map<String, String> getAllDictByType(String dictType) {
         List<DictVO> dictLists = dictLoaderFactory.getDictByType(dictType);
         if (dictLists.isEmpty()) {
             return new HashMap<>();
         }
         return StreamUtils.toMap(dictLists, DictVO::getCodeName, DictVO::getId);
+    }
+
+    @Override
+    public Map<String, List<DictVO>> getAllDict() {
+        return dictLoaderFactory.loadAllDict();
     }
 
     @SneakyThrows

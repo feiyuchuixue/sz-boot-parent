@@ -17,6 +17,7 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.JsonUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.excel.core.ExcelResult;
@@ -102,6 +103,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         String analysis = excelResult.getAnalysis();
         System.out.println(" analysis : " + analysis);
         System.out.println(" isCover : " + dto.getIsCover());
+        System.out.println("list ==" + JsonUtils.toJsonString(list));
     }
 
     @SneakyThrows

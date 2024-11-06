@@ -8,7 +8,6 @@ import ${pkg};
 
 import com.alibaba.excel.annotation.ExcelProperty;
 <#if hasDict == true>
-import com.sz.excel.convert.ExcelDictConvert;
 import com.sz.excel.annotation.DictFormat;
 </#if>
 <#if hasDateFormat == true>
@@ -36,7 +35,7 @@ public class ${dtoImportClassName} {
   <#else>
     <#-- 有字典值 -->
     <#if field.dictType != "">
-    @ExcelProperty(value = "${field.columnComment}", converter = ExcelDictConvert.class)
+    @ExcelProperty(value = "${field.columnComment}")
     @DictFormat(dictType = "${field.dictType}")
     <#else>
     <#-- 无字典值-->
