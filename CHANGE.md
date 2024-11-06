@@ -1,5 +1,23 @@
 # 更新日志
 
+## v0.8.1 （20241106）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-data-redis：3.3.4  -> 3.3.5。
+    - spring-boot-starter-parent：3.3.4  -> 3.3.5。
+  - 优化：sz-service-socket添加启动Banner与版本号。
+  - 优化：部门列表-未设置部门节点用户数量查询逻辑调整
+  - 优化：账户登录的查询。
+  - 修复：excel导出字典CodeName为null时的异常问题。
+  - 优化：Excel导入导出及字典转换，提升性能。
+- sz-admin：
+  - 优化: vite.config.mts更新 SCSS 预处理器配。
+  - 优化: 锁定sass版本为~1.79.x版本。
+  - 优化: tsconfig.app.json 增加package.json的支持。
+  - 优化: 使用TypeScript的模块扩展，优化package.json 的version。
+  - 优化: 增强 env.d.ts 文件中的类型定义。
+
 ## v0.8.0 （20241017）
 
 - sz-boot-parent：
