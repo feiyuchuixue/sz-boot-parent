@@ -49,12 +49,12 @@
         </foreach>
     </delete>
     <delete id="cleanTableColumnByTableName">
-        DELETE
-        FROM generator_table_column gtc
-        WHERE EXISTS (SELECT 1
-        FROM generator_table gt
-        WHERE gtc.table_id = gt.table_id
-        AND gt.table_name in
+        DELETE FROM generator_table_column
+        WHERE EXISTS (
+        SELECT 1
+        FROM generator_table
+        WHERE generator_table_column.table_id = generator_table.table_id
+        AND generator_table.table_name IN
         <foreach collection="tableNames" item="name" open="(" separator="," close=")">
             #{name}
         </foreach>
