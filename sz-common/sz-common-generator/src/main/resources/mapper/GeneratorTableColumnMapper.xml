@@ -30,6 +30,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="options" property="options"/>
         <result column="is_logic_del" property="isLogicDel"/>
+        <result column="dict_show_way" property="dictShowWay"/>
 
     </resultMap>
 

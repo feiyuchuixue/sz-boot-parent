@@ -37,7 +37,7 @@ public class TeacherStatisticsImportDTO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
-    @DictFormat(dictType = "account_status")
+    @DictFormat(dictType = "account_status", useAlias = true)
     @Schema(description = "讲师区分类型")
     private String teacherCommonType;
 

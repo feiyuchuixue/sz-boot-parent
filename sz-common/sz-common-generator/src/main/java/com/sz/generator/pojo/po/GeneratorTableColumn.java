@@ -177,4 +177,8 @@ public class GeneratorTableColumn implements Serializable {
      */
     private String isExport;
 
+    /**
+     * 字典展示方式（0 唯一标识；1 别名）
+     */
+    private String dictShowWay;
 }

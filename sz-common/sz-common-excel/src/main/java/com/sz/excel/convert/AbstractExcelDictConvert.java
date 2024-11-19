@@ -14,6 +14,7 @@ import com.sz.excel.annotation.DictFormat;
 import com.sz.excel.utils.ExcelUtils;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,13 @@ public abstract class AbstractExcelDictConvert<T> implements Converter<T> {
             // Use readConverterExp to build dictionary template
             label = ExcelUtils.convertByExp(dictValue, anno.readConverterExp(), anno.separator());
         } else {
+            Map<String, String> map = new HashMap<>();
             List<DictVO> dictLists = dictmap.get(dictType);
-            Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getId, vo -> vo.getCodeName() != null ? vo.getCodeName() : ""); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
+            if (anno.useAlias()) {
+                map = StreamUtils.toMap(dictLists, vo -> vo.getAlias() == null ? "" : vo.getAlias(), vo -> vo.getCodeName() != null ? vo.getCodeName() : ""); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
+            } else {
+                map = StreamUtils.toMap(dictLists, DictVO::getId, vo -> vo.getCodeName() != null ? vo.getCodeName() : ""); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
+            }
             label = map.getOrDefault(dictValue, "");
         }
         return label;
@@ -45,7 +51,12 @@ public abstract class AbstractExcelDictConvert<T> implements Converter<T> {
             value = ExcelUtils.reverseByExp(dictLabel, anno.readConverterExp(), anno.separator());
         } else {
             List<DictVO> dictLists = dictmap.get(dictType);
-            Map<String, String> map = StreamUtils.toMap(dictLists, DictVO::getCodeName, DictVO::getId); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
+            Map<String, String> map = new HashMap<>();
+            if (anno.useAlias()) {
+                map = StreamUtils.toMap(dictLists, DictVO::getCodeName, vo -> vo.getAlias() == null ? "" : vo.getAlias()); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
+            } else {
+                map = StreamUtils.toMap(dictLists, DictVO::getCodeName, DictVO::getId); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
+            }
             value = map.getOrDefault(dictLabel, "");
         }
         return convertToJava(value);

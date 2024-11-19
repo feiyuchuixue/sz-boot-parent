@@ -36,7 +36,11 @@ public class ${dtoImportClassName} {
     <#-- 有字典值 -->
     <#if field.dictType != "">
     @ExcelProperty(value = "${field.columnComment}")
+      <#if field.dictShowWay == "0">
     @DictFormat(dictType = "${field.dictType}")
+      <#else>
+    @DictFormat(dictType = "${field.dictType}", useAlias = true)
+      </#if>
     <#else>
     <#-- 无字典值-->
     @ExcelProperty(value = "${field.columnComment}")

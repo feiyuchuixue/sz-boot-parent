@@ -33,7 +33,11 @@ public class ${voClassName} {
   <#if field.isExport == "1">
     <#if field.dictType != "">
     @ExcelProperty(value = "${field.columnComment}")
+      <#if field.dictShowWay == "0">
     @DictFormat(dictType = "${field.dictType}")
+      <#else>
+    @DictFormat(dictType = "${field.dictType}", useAlias = true)
+      </#if>
     <#else>
     @ExcelProperty(value = "${field.columnComment}")
     </#if>

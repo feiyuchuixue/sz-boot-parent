@@ -190,6 +190,9 @@ public class GeneratorDetailVO {
 
         @Schema(description = "是否导出字段(1 是)")
         private String isExport;
+
+        @Schema(description = "字典展示方式（0 唯一标识；1 别名）")
+        private String dictShowWay;
     }
 
 }

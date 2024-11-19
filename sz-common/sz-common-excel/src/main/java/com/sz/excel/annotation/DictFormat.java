@@ -40,4 +40,11 @@ public @interface DictFormat {
      */
     Class<? extends ExcelDynamicSelect>[] sourceClass() default {};
 
+    /**
+     * 字典是否使用别名 （为true时将使用alias而非id做映射）
+     *
+     * @return
+     */
+    boolean useAlias() default false;
+
 }

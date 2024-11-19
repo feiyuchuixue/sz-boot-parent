@@ -38,12 +38,24 @@
         <el-select v-model="paramsProps.row.${field.javaField}" clearable placeholder="请选择${field.columnComment}">
           <el-option
             v-for="item in optionsStore.getDictOptions('${field.dictType}')"
+            <#if field.dictShowWay == "0" >
             :key="item.id"
+            <#else>
+            :key="item.alias"
+            </#if>
             :label="item.codeName"
             <#if field.javaType == "Integer">
-              :value="Number(item.id)"
+              <#if field.dictShowWay == "0" >
+            :value="Number(item.id)"
+              <#else>
+            :value="Number(item.alias)"
+              </#if>
             <#else>
-              :value="item.id"
+              <#if field.dictShowWay == "0" >
+            :value="item.id"
+              <#else>
+            :value="item.alias"
+              </#if>
             </#if>
           />
         </el-select>

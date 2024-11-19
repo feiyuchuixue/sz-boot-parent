@@ -152,7 +152,11 @@ const columns: ColumnProps<${interfaceNamespace}.Row>[] = [
     enum: optionsStore.getDictOptions('${field.dictType}'),
     fieldNames: {
       label: "codeName",
+       <#if field.dictShowWay == "0" >
       value: "id",
+        <#else>
+      value: "alias",
+        </#if>
       tagType: "callbackShowStyle"
     },
   },
