@@ -21,6 +21,7 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
 import com.sz.platform.factory.DictLoaderFactory;
+import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,8 @@ import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYP
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements SysDictTypeService {
 
     private final DictLoaderFactory dictLoaderFactory;
+
+    private final RedisCache redisCache;
 
     @Override
     public void create(SysDictTypeAddDTO dto) {
@@ -78,10 +81,13 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     public void update(SysDictTypeUpDTO dto) {
         SysDictType sysDictType = BeanCopyUtils.springCopy(dto, SysDictType.class);
         sysDictType.setId(dto.getId());
+        SysDictType oldDetail = detail(dto.getId());
         // 修改时的重复性效验需要排除本身
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DICT_TYPE.TYPE_CODE.eq(dto.getTypeCode())).where(SYS_DICT_TYPE.ID.ne(dto.getId()));
         CommonResponseEnum.EXISTS.message("typeCode已存在").assertTrue(count(wrapper) > 0);
         saveOrUpdate(sysDictType);
+        redisCache.clearDict(oldDetail.getTypeCode()); // 清除redis缓存
+        dictLoaderFactory.getDictByType(sysDictType.getTypeCode()); // 更新缓存
     }
 
     @Override
@@ -119,6 +125,11 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     @Override
     public List<DictTypeVO> selectDictTypeOptions() {
         return dictLoaderFactory.getAllDictType();
+    }
+
+    private void upCache(String typeCode, String oldTypeCode) {
+        redisCache.clearDict(typeCode); // 清除redis缓存
+        dictLoaderFactory.getDictByType(typeCode); // 更新缓存
     }
 
 }
