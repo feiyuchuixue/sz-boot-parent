@@ -13,7 +13,7 @@
     <artifactId>sz-dependencies</artifactId>
 
     <properties>
-        <spring-boot.version>3.3.5</spring-boot.version>
+        <spring-boot.version>3.4.0</spring-boot.version>
         <sa-token.version>1.39.0</sa-token.version>
         <mybatis-flex.version>1.9.7</mybatis-flex.version>
         <jackson.version>2.17.2</jackson.version>
