@@ -38,7 +38,6 @@ import com.sz.redis.RedisUtils;
 import com.sz.security.core.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -394,7 +393,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
-    @NotNull
     private LoginUser getLoginUser(SysUserVO userVo) {
         BaseUserInfo userInfo = BeanCopyUtils.copy(userVo, BaseUserInfo.class);
         SysUser sysUser = BeanCopyUtils.copy(userVo, SysUser.class);

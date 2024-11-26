@@ -29,7 +29,6 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.TreeUtils;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -173,7 +172,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         return trees;
     }
 
-    @NotNull
     private DeptTreeVO createUnsetNode(Long unsetDeptCount) {
         DeptTreeVO unset = new DeptTreeVO();
         unset.setId(-2L);
@@ -184,7 +182,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         return unset;
     }
 
-    @NotNull
     private DeptTreeVO createAllNode(Long userCount) {
         DeptTreeVO all = new DeptTreeVO();
         all.setId(-1L);
