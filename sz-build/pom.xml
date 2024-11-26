@@ -18,7 +18,7 @@
 
     <properties>
         <!-- sz-boot-parent版本 -->
-        <revision>0.8.2-SNAPSHOT</revision>
+        <revision>0.8.3-SNAPSHOT</revision>
     </properties>
 
 </project>

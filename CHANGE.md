@@ -1,4 +1,28 @@
 # 更新日志
+## v0.8.3 （20241126）
+
+- sz-boot-parent：
+
+  - **删除：minio模块。** |  <font color="red">可能的破坏性更新</font>
+  - 新增：oss模块，使用**AWS S3**协议，支持更多云存储厂商（阿里、七牛、腾讯、minio等）。
+  - 修改：切换minio模块至oss模块，切换上传方法至ossClient。请将minio.yml文件切换为oss.yml。
+  - 优化：移除冗余NotNull注解。
+- sz-admin：
+
+  - 新增：文件管理。
+
+  - 修改：oss模块同步改动。
+
+  - 新增：vite-plugin-vue-devtools插件。
+
+  - 优化：完善UploadResult返回结构，优化文件代码格式。
+
+  - 新增：图片上传、批量图片上传组件 （感谢 **Geeker-Admin** https://github.com/HalseySpicy/Geeker-Admin）。
+
+  - 修改：切换用户头像上传为新的组件。
+- 文档：
+
+  - [oss存储](https://szadmin.cn/md/Help/doc/oss.html)
 
 ## v0.8.2 （20241119）
 
