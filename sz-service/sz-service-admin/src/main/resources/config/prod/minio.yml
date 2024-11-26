@@ -1,5 +1,0 @@
-minio:
-  endpoint: https://127.0.0.1/
-  access-key: bB5XVpeLKWwzP4DpsWNB
-  secret-key: ls3YhapqxByJ8fE3AkTbjOWgaSw9k2cADeMDkE0c
-  bucket-name: sz-boot-parent-test
