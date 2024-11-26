@@ -3,6 +3,7 @@ package com.sz.admin.system.controller;
 import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.service.SysFileService;
+import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
@@ -35,6 +36,7 @@ public class SysFileController {
         return ApiPageResult.success(sysFileService.fileList(dto));
     }
 
+    @DebounceIgnore
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
     public ApiResult<UploadResult> upload(@RequestParam MultipartFile file, @RequestParam(value = "dirTag") String dirTag) {
