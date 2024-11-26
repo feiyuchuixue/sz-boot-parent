@@ -16,7 +16,7 @@
         <spring-boot.version>3.3.5</spring-boot.version>
         <sa-token.version>1.39.0</sa-token.version>
         <mybatis-flex.version>1.9.7</mybatis-flex.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.18.1</jackson.version>
         <aws.s3.version>2.29.0</aws.s3.version>
     </properties>
 
