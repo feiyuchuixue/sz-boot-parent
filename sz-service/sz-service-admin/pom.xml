@@ -27,12 +27,6 @@
             <artifactId>sz-common-db-mysql</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!--minio模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-minio</artifactId>
-            <version>${revision}</version>
-        </dependency>
         <!--鉴权模块-->
         <dependency>
             <groupId>com.sz</groupId>
@@ -66,6 +60,12 @@
         <dependency>
             <groupId>com.sz.excel</groupId>
             <artifactId>sz-common-excel</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- oss模块 -->
+        <dependency>
+            <groupId>com.sz.oss</groupId>
+            <artifactId>sz-common-oss</artifactId>
             <version>${revision}</version>
         </dependency>
         <!-- flyway db ddl; https://documentation.red-gate.com/fd/mysql-184127601.html-->

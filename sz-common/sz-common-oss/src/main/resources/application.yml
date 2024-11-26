@@ -1,0 +1,11 @@
+oss:
+  # 兼容S3协议的厂商 （理论上说所有兼容S3协议的OSS厂商都可以使用）
+  provider: minio
+  endpoint: http://192.168.56.101:9001/
+  accessKey: NhQlOFYcyXiQm40DpW56
+  secretKey: O1q6YRp79cTeNrtHT8yHXgcFWcOTDJNpKpRsYMzp
+  # bucket
+  bucketName: sz-boot-parent-local
+  # 自定义域名
+  domain: http://192.168.56.101:9001/
+  is-https: false

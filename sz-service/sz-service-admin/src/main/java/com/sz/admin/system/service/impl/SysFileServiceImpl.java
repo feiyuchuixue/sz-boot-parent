@@ -10,17 +10,12 @@ import com.sz.admin.system.pojo.po.table.SysFileTableDef;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.FileUploadUtils;
-import com.sz.core.util.PageUtils;
-import com.sz.core.util.Utils;
-import com.sz.minio.MinioService;
-import io.minio.ObjectWriteResponse;
+import com.sz.core.util.*;
+import com.sz.oss.OssClient;
+import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -34,7 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
 
-    private final MinioService minioService;
+    private final OssClient ossClient;
 
     /**
      * 文件列表
@@ -59,45 +54,24 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      *
      * @param file
      *            文件
-     * @param type
+     * @param dirTag
      * @return {@link String}
      */
     @Override
-    public String uploadFile(MultipartFile file, String type) {
-        String fileUrl = "";
+    public UploadResult uploadFile(MultipartFile file, String dirTag) {
+        UploadResult uploadResult = null;
         try {
-            // 文件名
-            String filename = type + "/" + FileUploadUtils.generateFileName(file.getOriginalFilename());
-            // minio 上传文件
-            ObjectWriteResponse objectWriteResponse = minioService.uploadFile(file, filename, file.getContentType());
-            // 获取上传文件url
-            fileUrl = minioService.getPublicObjectUrl(objectWriteResponse.object());
-            Map<String, String> map = new HashMap<>();
-            map.put("filename", filename);
-            map.put("type", type);
-            map.put("url", fileUrl);
-            fileLog(file, map);
+            uploadResult = ossClient.upload(file, dirTag);
+            fileLog(uploadResult);
         } catch (Exception e) {
             e.printStackTrace();
             CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
         }
-        return fileUrl;
+        return uploadResult;
     }
 
-    /**
-     * 文件日志 文件管理数据记录,收集管理追踪文件
-     *
-     * @param file
-     *            上传文件
-     * @param fileInfo
-     *            文件信息
-     */
-    private void fileLog(MultipartFile file, Map<String, String> fileInfo) {
-        SysFile sysFile = new SysFile();
-        sysFile.setFilename(fileInfo.get("filename"));
-        sysFile.setType(fileInfo.get("type"));
-        sysFile.setSize(String.valueOf(file.getSize()));
-        sysFile.setUrl(fileInfo.get("url"));
+    private void fileLog(UploadResult uploadResult) {
+        SysFile sysFile = BeanCopyUtils.copy(uploadResult, SysFile.class);
         this.save(sysFile);
     }
 }

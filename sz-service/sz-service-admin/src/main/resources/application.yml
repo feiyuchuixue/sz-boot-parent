@@ -9,7 +9,7 @@ spring:
     import:
       - classpath:config/${spring.profiles.active}/flyway.yml
       - classpath:config/${spring.profiles.active}/knife4j.yml
-      - classpath:config/${spring.profiles.active}/minio.yml
+      - classpath:config/${spring.profiles.active}/oss.yml
       - classpath:config/${spring.profiles.active}/mybatis-flex.yml
       - classpath:config/${spring.profiles.active}/mysql.yml
       - classpath:config/${spring.profiles.active}/page-helper.yml

@@ -6,6 +6,7 @@ import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,8 @@ public class SysFileController {
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
-    public ApiResult upload(@RequestParam MultipartFile file, @RequestParam(value = "type") String type) {
-        return ApiResult.success(sysFileService.uploadFile(file, type));
+    public ApiResult<UploadResult> upload(@RequestParam MultipartFile file, @RequestParam(value = "dirTag") String dirTag) {
+        return ApiResult.success(sysFileService.uploadFile(file, dirTag));
     }
 
 }
