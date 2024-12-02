@@ -17,7 +17,7 @@
         <sa-token.version>1.39.0</sa-token.version>
         <mybatis-flex.version>1.9.7</mybatis-flex.version>
         <jackson.version>2.17.2</jackson.version>
-        <aws.s3.version>2.29.0</aws.s3.version>
+        <aws.s3.version>2.29.23</aws.s3.version>
     </properties>
 
     <!--全局依赖版本管理-->
