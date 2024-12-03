@@ -114,11 +114,6 @@
                 <version>1.9.22.1</version>
             </dependency>
             <dependency>
-                <groupId>io.minio</groupId>
-                <artifactId>minio</artifactId>
-                <version>8.5.12</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>4.5.0</version>
