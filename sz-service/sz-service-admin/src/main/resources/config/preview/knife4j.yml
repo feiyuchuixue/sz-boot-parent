@@ -1,6 +1,6 @@
 # swagger文档配置
 knife4j:
-  enable: true
+  enable: false
   setting:
     language: zh_cn
 springdoc:
