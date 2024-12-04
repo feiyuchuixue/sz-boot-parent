@@ -20,4 +20,7 @@ public class DbTableQueryDTO extends PageQuery {
     @Schema(description = "表描述")
     private String tableComment;
 
+    @Schema(description = "是否过滤系统表")
+    private boolean filterSys;
+
 }
