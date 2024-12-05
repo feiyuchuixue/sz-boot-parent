@@ -21,6 +21,11 @@ public class CommonKeyConstants {
     public static final String SYS_CONFIG = "sys_config";
 
     /**
+     * 验证码
+     */
+    public static final String SYS_VERIFY = "sys_verify:pos:${longTime}";
+
+    /**
      * sa-token token信息
      */
     public static final String TOKEN_SESSION = "Authorization:login:token-session:${token}";

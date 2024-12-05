@@ -29,6 +29,9 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     FILE_UPLOAD_ERROR(1006, "上传文件失败"),
     USERNAME_EXISTS(1007, "用户名已存在"),
     INVALID(1008, "无效的数据"),
+    VERIFY_LACK(2000, "验证参数缺失"),
+    VERIFY_EXPIRED(2001, "验证过期，请重新获取"),
+    VERIFY_ERROR(2002, "验证不通过"),
 
     UNKNOWN(9999, "未知异常"),
     ;
