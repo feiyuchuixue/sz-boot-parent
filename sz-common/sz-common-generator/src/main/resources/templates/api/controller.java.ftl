@@ -91,8 +91,8 @@ public class ${controllerClassName}  {
     public ApiResult<${voClassName}> detail(@PathVariable Object id) {
         return ApiResult.success(${serviceName}.detail(id));
     }
-
 <#if GeneratorInfo.hasImport == "1">
+
     @Operation(summary = "导入")
     @Parameters({
       @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
@@ -105,8 +105,8 @@ public class ${controllerClassName}  {
         ${serviceName}.importExcel(dto);
     }
 </#if>
-
 <#if GeneratorInfo.hasExport == "1">
+
     @Operation(summary = "导出")
   <#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${exportPermission}")

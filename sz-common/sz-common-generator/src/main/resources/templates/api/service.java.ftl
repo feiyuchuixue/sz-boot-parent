@@ -44,14 +44,13 @@ public interface ${serviceClassName} extends IService<${poClassName}> {
     void remove(SelectIdsDTO dto);
 
     ${voClassName} detail(Object id);
-
     <#if GeneratorInfo.hasImport == "1">
+
     void importExcel(ImportExcelDTO dto);
     </#if>
-
     <#if GeneratorInfo.hasExport == "1">
+
     void exportExcel(${dtoListClassName} dto, HttpServletResponse response);
     </#if>
 </#if>
-
 }
