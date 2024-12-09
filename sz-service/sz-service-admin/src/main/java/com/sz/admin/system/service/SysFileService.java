@@ -37,4 +37,6 @@ public interface SysFileService extends IService<SysFile> {
      * @return {@link ApiResult}
      */
     UploadResult uploadFile(MultipartFile file, String dirTag);
+
+    Long fileLog(UploadResult uploadResult);
 }

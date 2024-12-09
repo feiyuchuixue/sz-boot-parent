@@ -9,6 +9,8 @@ import com.sz.admin.system.pojo.dto.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.SysTempFileVO;
+import com.sz.oss.UploadResult;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -32,6 +34,5 @@ public interface SysTempFileService extends IService<SysTempFile> {
 
     SysTempFileVO detail(Object id);
 
-
-
+    UploadResult uploadFile(MultipartFile file);
 }

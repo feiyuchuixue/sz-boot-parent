@@ -1,6 +1,9 @@
 package com.sz.admin.system.service.impl;
 
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.system.service.SysFileService;
+import com.sz.oss.OssClient;
+import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.sz.admin.system.service.SysTempFileService;
@@ -8,7 +11,6 @@ import com.sz.admin.system.pojo.po.SysTempFile;
 import com.sz.admin.system.mapper.SysTempFileMapper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.query.QueryChain;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.BeanCopyUtils;
@@ -21,6 +23,7 @@ import com.sz.admin.system.pojo.dto.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.SysTempFileVO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -33,46 +36,64 @@ import com.sz.admin.system.pojo.vo.SysTempFileVO;
 @Service
 @RequiredArgsConstructor
 public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTempFile> implements SysTempFileService {
+
+    private final OssClient ossClient;
+
+    private final SysFileService sysFileService;
+
     @Override
-    public void create(SysTempFileCreateDTO dto){
+    public void create(SysTempFileCreateDTO dto) {
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
         save(sysTempFile);
     }
 
     @Override
-    public void update(SysTempFileUpdateDTO dto){
+    public void update(SysTempFileUpdateDTO dto) {
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
         QueryWrapper wrapper;
         // id有效性校验
-        wrapper = QueryWrapper.create()
-            .eq(SysTempFile::getId, dto.getId());
+        wrapper = QueryWrapper.create().eq(SysTempFile::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
 
         saveOrUpdate(sysTempFile);
     }
 
     @Override
-    public PageResult<SysTempFileVO> page(SysTempFileListDTO dto){
+    public PageResult<SysTempFileVO> page(SysTempFileListDTO dto) {
         Page<SysTempFileVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysTempFileVO.class);
         return PageUtils.getPageResult(page);
     }
 
     @Override
-    public List<SysTempFileVO> list(SysTempFileListDTO dto){
+    public List<SysTempFileVO> list(SysTempFileListDTO dto) {
         return listAs(buildQueryWrapper(dto), SysTempFileVO.class);
     }
 
     @Override
-    public void remove(SelectIdsDTO dto){
+    public void remove(SelectIdsDTO dto) {
         CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
         removeByIds(dto.getIds());
     }
 
     @Override
-    public SysTempFileVO detail(Object id){
+    public SysTempFileVO detail(Object id) {
         SysTempFile sysTempFile = getById((Serializable) id);
         CommonResponseEnum.INVALID_ID.assertNull(sysTempFile);
         return BeanCopyUtils.copy(sysTempFile, SysTempFileVO.class);
+    }
+
+    @Override
+    public UploadResult uploadFile(MultipartFile file) {
+        UploadResult uploadResult = null;
+        try {
+            uploadResult = ossClient.upload(file, "tmp");
+            Long fileId = sysFileService.fileLog(uploadResult);
+            uploadResult.setFileId(fileId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
+        }
+        return uploadResult;
     }
 
     private static QueryWrapper buildQueryWrapper(SysTempFileListDTO dto) {

@@ -36,7 +36,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
     /**
      * 文件列表
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return {@link PageResult}<{@link SysFile}>
      */
     @Override
@@ -53,7 +54,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
     /**
      * 上传文件
      *
-     * @param file   文件
+     * @param file
+     *            文件
      * @param dirTag
      * @return {@link String}
      */
@@ -71,7 +73,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
         return uploadResult;
     }
 
-    private Long fileLog(UploadResult uploadResult) {
+    @Override
+    public Long fileLog(UploadResult uploadResult) {
         SysFile sysFile = BeanCopyUtils.copy(uploadResult, SysFile.class);
         this.save(sysFile);
         return sysFile.getId();
