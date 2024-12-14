@@ -10,11 +10,14 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedUpload;
+import software.amazon.awssdk.transfer.s3.model.FileDownload;
 import software.amazon.awssdk.transfer.s3.model.Upload;
+import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -159,6 +162,23 @@ public class OssClient {
                 .getObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).build()).build()).url();
         return url.toString();
     }
+
+  /*  public Path fileDownload(String path) {
+        // 构建临时文件
+        Path tempFilePath = FileUtils.createTempFile().toPath();
+        // 使用 S3TransferManager 下载文件
+        FileDownload downloadFile = transferManager.downloadFile(
+                x -> x.getObjectRequest(
+                                y -> y.bucket(properties.getBucketName())
+                                        .key(removeBaseUrl(path))
+                                        .build())
+                        .addTransferListener(LoggingTransferListener.create())
+                        .destination(tempFilePath)
+                        .build());
+        // 等待文件下载操作完成
+        downloadFile.completionFuture().join();
+        return tempFilePath;
+    }*/
 
     private String getUrl() {
         String domain = properties.getDomain();

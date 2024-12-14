@@ -52,24 +52,24 @@ public class SysDictType implements Serializable {
     @Schema(description = "描述")
     private String remark;
 
-    @Schema(description ="创建时间")
+    @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description ="更新时间")
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description ="删除时间")
+    @Schema(description = "删除时间")
     private LocalDateTime deleteTime;
 
-    @Schema(description ="创建人ID")
+    @Schema(description = "创建人ID")
     private Long createId;
 
-    @Schema(description ="更新人ID")
+    @Schema(description = "更新人ID")
     private Long updateId;
 
-    @Schema(description ="删除人ID")
+    @Schema(description = "删除人ID")
     private Long deleteId;
 
-    @Schema(description ="字典类型: system 系统, business 业务")
+    @Schema(description = "字典类型: system 系统, business 业务")
     private String type;
 }

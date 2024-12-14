@@ -1,7 +1,9 @@
 package com.sz.admin.system.service.impl;
 
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileHistoryCreateDTO;
 import com.sz.admin.system.service.SysFileService;
+import com.sz.admin.system.service.SysTempFileHistoryService;
 import com.sz.oss.OssClient;
 import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,9 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import java.io.Serializable;
 import java.util.List;
-import com.sz.admin.system.pojo.dto.SysTempFileCreateDTO;
-import com.sz.admin.system.pojo.dto.SysTempFileUpdateDTO;
-import com.sz.admin.system.pojo.dto.SysTempFileListDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.SysTempFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,10 +43,15 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
 
     private final SysFileService sysFileService;
 
+    private final SysTempFileHistoryService sysTempFileHistoryService;
+
     @Override
     public void create(SysTempFileCreateDTO dto) {
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
         save(sysTempFile);
+        SysTempFileHistoryCreateDTO history = BeanCopyUtils.copy(sysTempFile, SysTempFileHistoryCreateDTO.class);
+        history.setSysTempFileId(sysTempFile.getId());
+        sysTempFileHistoryService.create(history);
     }
 
     @Override
@@ -56,6 +63,10 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
 
         saveOrUpdate(sysTempFile);
+
+        SysTempFileHistoryCreateDTO history = BeanCopyUtils.copy(sysTempFile, SysTempFileHistoryCreateDTO.class);
+        history.setSysTempFileId(sysTempFile.getId());
+        sysTempFileHistoryService.create(history);
     }
 
     @Override

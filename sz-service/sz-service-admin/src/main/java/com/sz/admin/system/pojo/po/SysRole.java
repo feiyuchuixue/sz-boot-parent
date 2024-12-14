@@ -40,24 +40,24 @@ public class SysRole implements Serializable {
     private String remark;
 
     @Column(isLogicDelete = true)
-    @Schema(description ="删除与否")
+    @Schema(description = "删除与否")
     private String delFlag;
 
-    @Schema(description ="创建时间")
+    @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description ="更新时间")
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description ="创建人ID")
+    @Schema(description = "创建人ID")
     private Long createId;
 
-    @Schema(description ="更新人ID")
+    @Schema(description = "更新人ID")
     private Long updateId;
 
-    @Schema(description ="是否锁定")
+    @Schema(description = "是否锁定")
     private String isLock;
 
-    @Schema(description ="标识，唯一")
+    @Schema(description = "标识，唯一")
     private String permissions;
 }

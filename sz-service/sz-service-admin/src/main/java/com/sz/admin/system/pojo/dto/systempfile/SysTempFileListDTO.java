@@ -1,10 +1,8 @@
-package com.sz.admin.system.pojo.dto;
+package com.sz.admin.system.pojo.dto.systempfile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import com.sz.core.common.entity.PageQuery;
-import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 /**
  * <p>
  * SysTempFile查询DTO
@@ -17,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "SysTempFile查询DTO")
 public class SysTempFileListDTO extends PageQuery {
 
-    @Schema(description =  "模版名")
+    @Schema(description = "模版名")
     private String tempName;
 
 }

@@ -12,9 +12,9 @@ import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.admin.system.service.SysTempFileService;
-import com.sz.admin.system.pojo.dto.SysTempFileCreateDTO;
-import com.sz.admin.system.pojo.dto.SysTempFileUpdateDTO;
-import com.sz.admin.system.pojo.dto.SysTempFileListDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.SysTempFileVO;
 import org.springframework.web.multipart.MultipartFile;
 

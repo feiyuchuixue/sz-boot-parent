@@ -3,7 +3,6 @@ package com.sz.admin.system.pojo.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -17,34 +16,34 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "SysTempFile返回vo")
 public class SysTempFileVO {
 
-    @Schema(description =  "")
+    @Schema(description = "")
     private Long id;
 
-    @Schema(description =  "文件ID")
+    @Schema(description = "文件ID")
     private Integer sysFileId;
 
-    @Schema(description =  "模版名")
+    @Schema(description = "模版名")
     private String tempName;
 
-    @Schema(description =  "地址")
+    @Schema(description = "地址")
     private String url;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
-    @Schema(description =  "逻辑删除")
+    @Schema(description = "逻辑删除")
     private String delFlag;
 
-    @Schema(description =  "创建人")
+    @Schema(description = "创建人")
     private Long createId;
 
-    @Schema(description =  "创建时间")
+    @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description =  "更新人")
+    @Schema(description = "更新人")
     private Long updateId;
 
-    @Schema(description =  "更新时间")
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
 }
