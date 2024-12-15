@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.web.bind.annotation.*;
 
-
 /**
  * <p>
  * 模版文件历史表 Controller

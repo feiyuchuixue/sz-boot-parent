@@ -1,4 +1,4 @@
-package com.sz.admin.system.pojo.vo;
+package com.sz.admin.system.pojo.vo.systempfile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

@@ -2,6 +2,7 @@ package com.sz.admin.system.service.impl;
 
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileHistoryCreateDTO;
+import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.admin.system.service.SysTempFileHistoryService;
 import com.sz.oss.OssClient;
@@ -19,13 +20,18 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.Utils;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+
 import java.io.Serializable;
 import java.util.List;
+
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
-import com.sz.admin.system.pojo.vo.SysTempFileVO;
+import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.sz.admin.system.pojo.po.table.SysFileTableDef.SYS_FILE;
+import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FILE;
 
 /**
  * <p>
@@ -114,4 +120,12 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
         }
         return wrapper;
     }
+
+    @Override
+    public SysTempFileInfoVO detailByName(String tempName) {
+        QueryWrapper wrapper = QueryWrapper.create().from(SYS_TEMP_FILE).leftJoin(SYS_FILE).on(SYS_TEMP_FILE.SYS_FILE_ID.eq(SYS_FILE.ID))
+                .where(SYS_TEMP_FILE.TEMP_NAME.eq(tempName));
+        return getOneAs(wrapper, SysTempFileInfoVO.class);
+    }
+
 }
