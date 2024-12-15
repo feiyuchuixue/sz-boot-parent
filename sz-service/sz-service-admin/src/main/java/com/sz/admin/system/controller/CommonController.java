@@ -1,16 +1,12 @@
 package com.sz.admin.system.controller;
 
-import com.sz.core.util.FileUtils;
+import com.sz.admin.system.service.CommonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 通用controller
@@ -27,16 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CommonController {
 
-    private final ResourceLoader resourceLoader;
+    private final CommonService commonService;
 
     @Operation(summary = "模板下载")
     @GetMapping("/download/templates")
     public void fileDownload(@RequestParam("templateName") String templateName, HttpServletResponse response) {
         try {
-            FileUtils.downloadTemplateFile(resourceLoader, response, templateName);
+            commonService.tempDownload(templateName, response);
         } catch (Exception e) {
             log.error("模板下载文件下载失败", e);
         }
+
     }
 
 }
