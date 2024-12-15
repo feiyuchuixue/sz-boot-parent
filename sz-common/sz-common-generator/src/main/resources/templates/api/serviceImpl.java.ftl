@@ -28,8 +28,9 @@ import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.excel.core.ExcelResult;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
-import jakarta.servlet.ServletOutputStream;
+import java.io.OutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import com.sz.core.util.FileUtils;
 </#if>
 <#if GeneratorInfo.hasImport == "1" || GeneratorInfo.hasExport == "1">
 import com.sz.excel.utils.ExcelUtils;
@@ -138,7 +139,8 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     @Override
     public void exportExcel(${dtoListClassName} dto, HttpServletResponse response) {
         List<${voClassName}> list = list(dto);
-        ServletOutputStream os = response.getOutputStream();
+        String fileName = "${functionName}模板";
+        OutputStream os = FileUtils.getOutputStream(response, fileName + ".xlsx");
         ExcelUtils.exportExcel(list, "${functionName}", ${voClassName}.class, os);
     }
 </#if>
