@@ -16,18 +16,15 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.datascope.SimpleDataScopeHelper;
-import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.JsonUtils;
-import com.sz.core.util.PageUtils;
-import com.sz.core.util.Utils;
+import com.sz.core.util.*;
 import com.sz.excel.core.ExcelResult;
 import com.sz.excel.utils.ExcelUtils;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -110,8 +107,9 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     @Override
     public void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response) {
         List<TeacherStatisticsVO> list = list(dto);
-        ServletOutputStream os = response.getOutputStream();
-        ExcelUtils.exportExcel(list, "教师统计", TeacherStatisticsVO.class, os, true);
+        String fileName = "教师统计";
+        OutputStream os = FileUtils.getOutputStream(response, fileName + ".xlsx");
+        ExcelUtils.exportExcel(list, fileName, TeacherStatisticsVO.class, os, true);
     }
 
     private static QueryWrapper buildQueryWrapper(TeacherStatisticsListDTO dto) {
