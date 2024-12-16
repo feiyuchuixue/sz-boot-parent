@@ -110,7 +110,6 @@ defineOptions({
 <#if hasSelect == true>
 const optionsStore = useOptionsStore()
 </#if>
-
 const rules = reactive({
   <#list columns as field>
   <#if field.isRequired == "1">

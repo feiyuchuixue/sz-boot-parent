@@ -16,7 +16,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        <#list columns as field><#if field.isPk == "1"><#if field.isIncrement == "0">${field.columnName}<#if !field?is_last>, </#if></#if><#else>${field.columnName}<#if !field?is_last>, </#if></#if></#list>
+        <#list columns as field>${field.columnName}<#if !field?is_last>, </#if></#list>
     </sql>
 
 </mapper>
