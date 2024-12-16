@@ -13,12 +13,16 @@
         <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="delete_id" property="deleteId"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , type_name, type_code, is_lock, is_show, remark, create_time, update_time, del_flag
+        id, type_name, type_code, is_lock, is_show, del_flag, remark, create_time, update_time, delete_time, create_id, update_id, delete_id, type
     </sql>
 
 

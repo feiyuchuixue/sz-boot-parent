@@ -27,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        username, pwd, phone, nickname, sex, birthday, logo, age, id_card, email, account_status_cd, user_tag_cd, last_login_time, create_time, update_time, del_flag, create_id, update_id
+        id, username, pwd, phone, nickname, sex, birthday, logo, age, id_card, email, account_status_cd, user_tag_cd, last_login_time, create_time, update_time, del_flag, create_id, update_id
     </sql>
 
     <!--查询（部门）用户列表-->

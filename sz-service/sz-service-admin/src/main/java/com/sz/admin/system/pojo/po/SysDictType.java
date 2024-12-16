@@ -58,6 +58,18 @@ public class SysDictType implements Serializable {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description = "字典类型")
+    @Schema(description = "删除时间")
+    private LocalDateTime deleteTime;
+
+    @Schema(description = "创建人ID")
+    private Long createId;
+
+    @Schema(description = "更新人ID")
+    private Long updateId;
+
+    @Schema(description = "删除人ID")
+    private Long deleteId;
+
+    @Schema(description = "字典类型: system 系统, business 业务")
     private String type;
 }

@@ -22,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        year, month, during_time, teacher_id, teacher_common_type, total_teaching, total_class_count, total_hours, check_status, check_time, create_time, update_time, last_sync_time, remark
+        id, year, month, during_time, teacher_id, teacher_common_type, total_teaching, total_class_count, total_hours, check_status, check_time, create_time, update_time, last_sync_time, remark
     </sql>
 
 </mapper>

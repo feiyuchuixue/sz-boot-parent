@@ -11,8 +11,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , menu_id, role_id
+        id, menu_id, role_id
     </sql>
 
     <!-- 批量插入角色菜单关联记录 -->

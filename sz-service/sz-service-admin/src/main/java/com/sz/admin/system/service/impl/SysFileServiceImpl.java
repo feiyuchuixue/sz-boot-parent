@@ -10,7 +10,9 @@ import com.sz.admin.system.pojo.po.table.SysFileTableDef;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.*;
+import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.PageUtils;
+import com.sz.core.util.Utils;
 import com.sz.oss.OssClient;
 import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +64,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
         UploadResult uploadResult = null;
         try {
             uploadResult = ossClient.upload(file, dirTag);
-            fileLog(uploadResult);
+            Long fileId = fileLog(uploadResult);
+            uploadResult.setFileId(fileId);
         } catch (Exception e) {
             e.printStackTrace();
             CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
@@ -70,8 +73,10 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
         return uploadResult;
     }
 
-    private void fileLog(UploadResult uploadResult) {
+    @Override
+    public Long fileLog(UploadResult uploadResult) {
         SysFile sysFile = BeanCopyUtils.copy(uploadResult, SysFile.class);
         this.save(sysFile);
+        return sysFile.getId();
     }
 }

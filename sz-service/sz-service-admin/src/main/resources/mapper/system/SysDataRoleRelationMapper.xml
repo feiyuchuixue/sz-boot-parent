@@ -11,7 +11,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        role_id, relation_type_cd, relation_id
+        id, role_id, relation_type_cd, relation_id
     </sql>
 
 </mapper>

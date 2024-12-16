@@ -27,12 +27,14 @@
         <result column="create_id" property="createId"/>
         <result column="update_id" property="updateId"/>
         <result column="del_flag" property="delFlag"/>
+        <result column="delete_id" property="deleteId"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="use_data_scope" property="useDataScope"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden, has_children, is_link, is_full, is_affix, is_keep_alive, create_time, update_time, create_id, update_id, del_flag
+        id, pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden, has_children, is_link, is_full, is_affix, is_keep_alive, create_time, update_time, create_id, update_id, del_flag, delete_id, delete_time, use_data_scope
     </sql>
 
     <select id="getMenuAndChildrenIds" resultType="java.lang.String">

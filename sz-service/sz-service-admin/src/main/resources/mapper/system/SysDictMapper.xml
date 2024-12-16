@@ -7,6 +7,7 @@
         <id column="id" property="id"/>
         <result column="sys_dict_type_id" property="sysDictTypeId"/>
         <result column="code_name" property="codeName"/>
+        <result column="alias" property="alias"/>
         <result column="sort" property="sort"/>
         <result column="callback_show_style" property="callbackShowStyle"/>
         <result column="remark" property="remark"/>
@@ -15,7 +16,16 @@
         <result column="del_flag" property="delFlag"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="delete_id" property="deleteId"/>
     </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sys_dict_type_id, code_name, alias, sort, callback_show_style, remark, is_lock, is_show, del_flag, create_time, update_time, delete_time, create_id, update_id, delete_id
+    </sql>
 
     <!-- 通用查询结果列 -->
     <sql id="Custom_Column_Join_List">

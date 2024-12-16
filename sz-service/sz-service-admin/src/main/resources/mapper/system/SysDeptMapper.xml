@@ -20,8 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        name
-        , pid, deep, sort, has_children, is_lock, del_flag, remark, create_id, update_id, create_time, update_time
+        id, name, pid, deep, sort, has_children, is_lock, del_flag, remark, create_id, update_id, create_time, update_time
     </sql>
 
     <select id="iterUpDeptAncestors" resultType="java.lang.Integer">

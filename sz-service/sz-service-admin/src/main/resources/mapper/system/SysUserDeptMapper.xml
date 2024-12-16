@@ -10,7 +10,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        dept_id, user_id
+        id, dept_id, user_id
     </sql>
 
 </mapper>

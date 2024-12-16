@@ -3,15 +3,14 @@
 <mapper namespace="com.sz.admin.system.mapper.SysDeptClosureMapper">
     <!-- 通用映射 -->
     <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysDeptClosure">
-        <id column="ancestor_id" property="ancestorId"/>
+        <result column="ancestor_id" property="ancestorId"/>
         <result column="descendant_id" property="descendantId"/>
         <result column="depth" property="depth"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        ancestor_id
-        , descendant_id, depth
+        ancestor_id, descendant_id, depth
     </sql>
 
 

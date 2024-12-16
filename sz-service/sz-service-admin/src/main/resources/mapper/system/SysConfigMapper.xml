@@ -8,18 +8,17 @@
         <result column="config_name" property="configName"/>
         <result column="config_key" property="configKey"/>
         <result column="config_value" property="configValue"/>
+        <result column="is_lock" property="isLock"/>
         <result column="create_id" property="createId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_id" property="updateId"/>
         <result column="update_time" property="updateTime"/>
         <result column="remark" property="remark"/>
-        <result column="is_lock" property="isLock"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , config_name, config_key, config_value, create_id, create_time, update_id, update_time, remark, is_lock
+        id, config_name, config_key, config_value, is_lock, create_id, create_time, update_id, update_time, remark
     </sql>
 
 </mapper>

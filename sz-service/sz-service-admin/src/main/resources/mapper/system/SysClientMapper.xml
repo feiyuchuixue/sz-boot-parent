@@ -23,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        client_id, client_key, client_secret, grant_type_cd, device_type_cd, active_timeout, timeout, client_status_cd,  del_flag, create_dept, create_id, create_time, update_id, update_time, remark, is_lock
+        client_id, client_key, client_secret, grant_type_cd, device_type_cd, active_timeout, timeout, client_status_cd, del_flag, create_dept, create_id, create_time, update_id, update_time, remark, is_lock
     </sql>
 
 </mapper>

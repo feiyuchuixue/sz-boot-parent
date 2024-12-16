@@ -11,8 +11,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , role_id, user_id
+        id, role_id, user_id
     </sql>
 
     <!-- 批量插入用户角色关联记录 -->

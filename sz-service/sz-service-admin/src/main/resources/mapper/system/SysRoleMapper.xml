@@ -10,12 +10,15 @@
         <result column="del_flag" property="delFlag"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="is_lock" property="isLock"/>
+        <result column="permissions" property="permissions"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , role_name, remark, del_flag, create_time, update_time
+        id, role_name, remark, del_flag, create_time, update_time, create_id, update_id, is_lock, permissions
     </sql>
 
 </mapper>
