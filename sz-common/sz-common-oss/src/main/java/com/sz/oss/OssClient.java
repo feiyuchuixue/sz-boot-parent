@@ -1,19 +1,24 @@
 package com.sz.oss;
 
+import com.sz.core.util.FileUtils;
 import com.sz.core.util.StringUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.core.async.BlockingInputStreamAsyncRequestBody;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
-import software.amazon.awssdk.transfer.s3.model.CompletedUpload;
-import software.amazon.awssdk.transfer.s3.model.Upload;
+import software.amazon.awssdk.transfer.s3.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -41,6 +46,8 @@ public class OssClient {
     private final S3Presigner s3Presigner;
 
     private final Long DEFAULT_EXPIRE_TIME = 3600L;
+
+    private final S3AsyncClient s3AsyncClient;
 
     /**
      * 上传文件
@@ -158,6 +165,63 @@ public class OssClient {
         URL url = s3Presigner.presignGetObject(x -> x.signatureDuration(Duration.ofSeconds(second))
                 .getObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).build()).build()).url();
         return url.toString();
+    }
+
+    /**
+     * 文件下载
+     *
+     * @param objectName
+     * @param outputStream
+     */
+    public void download(String objectName, OutputStream outputStream) {
+        try {
+            // 构建请求
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(properties.getBucketName()).key(objectName).build();
+
+            // 下载对象到内存字节缓冲区
+            s3AsyncClient.getObject(getObjectRequest, AsyncResponseTransformer.toBytes()).thenAccept(response -> {
+                try {
+                    // 写入输出流
+                    outputStream.write(response.asByteArray());
+                    outputStream.flush();
+                } catch (Exception e) {
+                    throw new RuntimeException("写入输出流失败", e);
+                }
+            }).join(); // 同步等待完成
+        } catch (Exception e) {
+            throw new RuntimeException("下载文件失败，Message:[" + e.getMessage() + "]", e);
+        }
+    }
+
+    /**
+     * 文件下载
+     *
+     * @param objectName
+     * @param response
+     */
+    public void download(String objectName, HttpServletResponse response, String showFileName) {
+        try {
+            // 构建请求
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(properties.getBucketName()).key(objectName).build();
+            String filename = showFileName;
+            if (showFileName.isEmpty()) {
+                filename = getFileName(objectName);
+            }
+            OutputStream os = FileUtils.getOutputStream(response, filename);
+            // 下载对象到内存字节缓冲区
+            s3AsyncClient.getObject(getObjectRequest, AsyncResponseTransformer.toBytes()).thenAccept(responseBytes -> {
+                try {
+
+                    // 写入响应流
+                    os.write(responseBytes.asByteArray());
+                    os.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException("写入响应失败", e);
+                }
+            }).join(); // 同步等待完成
+        } catch (Exception e) {
+            throw new RuntimeException("下载文件失败，Message:[" + e.getMessage() + "]", e);
+        }
     }
 
     private String getUrl() {
