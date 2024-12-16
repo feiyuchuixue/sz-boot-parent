@@ -1,4 +1,38 @@
 # 更新日志
+## v0.8.4 （20241216）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-parent：3.3.5  -> 3.4.0。
+    - mybatis-flex.version：1.9.7  -> 1.10.2。
+    - aws-crt：0.33.0 -> 0.33.3。
+    - hutool-jwt：5.8.32 -> 5.8.34。
+    - aws.s3：2.29.0 -> 2.29.23。
+    - HikariCP：6.0.0 -> 6.2.1。
+    - common-io：2.17.0 -> 2.18.0。
+    - lombok：1.18.34 -> 1.18.36。
+    - jackson：2.17.2 -> 2.18.2。
+    - swagger-annotations：2.2.25 ->  2.2.26。
+    - mysql-connector-j：9.0.0 -> 9.1.0。
+  - 修改：SpringBoot升级3.4.0后对knife4j的兼容性处理 |  <font color="red">兼容性更新，springboot升级3.4.0后knife4增强默认需禁用！！</font>
+  - 删除：minio dependency。
+  - 优化：代码生成器查询。 **PR**[#57]([https://github.com/feiyuchuixue/sz-boot-parent/pull/57)。（感谢**[AiMing317](https://github.com/AiMing317)** ）。
+  - 优化：[代码生成器] 修复若干问题。
+  - 新增：ossClient，新增oss文件流下载方法。
+  - 优化：FileUtils 新增对response header的处理方法。
+  - 优化：历史MapperXml/PO的结构映射。
+  - 新增：模板文件管理模块。
+- sz-admin：
+
+  - 优化：头像框样式。
+  - 优化：代码生成器查询。 **PR**[#57]([https://github.com/feiyuchuixue/sz-boot-parent/pull/57)。（感谢**[AiMing317](https://github.com/AiMing317)** ）。
+  - 优化：Img、Imgs上传组件增加@change事件可获取完整的UploadResul。
+  - 优化：[代码生成器] 修复一些问题，样式及便利性更新。
+  - 优化：View.DefaultParams添加参数isAdd。可用于区分新增 OR 编辑。
+  - 优化：useDownload组件！blob流式下载文件名从response中获取。
+  - 新增：模板文件管理模块。
+  - 修改：更新教师统计模板文件名。
+
 ## v0.8.3 （20241126）
 
 - sz-boot-parent：
