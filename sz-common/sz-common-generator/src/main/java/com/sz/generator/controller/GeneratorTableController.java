@@ -5,6 +5,7 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
+import com.sz.core.util.FileUtils;
 import com.sz.generator.pojo.dto.DbTableQueryDTO;
 import com.sz.generator.pojo.dto.ImportTableDTO;
 import com.sz.generator.pojo.dto.SelectTablesDTO;
@@ -18,10 +19,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -97,12 +98,9 @@ public class GeneratorTableController {
     @PostMapping("zip")
     public void downloadZip(@RequestBody SelectTablesDTO dto, HttpServletResponse response) throws IOException {
         byte[] data = generatorTableService.downloadZip(dto);
-        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        response.setHeader("Content-Disposition", "attachment; filename=\"sz-admin.zip\"");
-        response.setContentLength(data.length);
-
+        OutputStream outputStream = FileUtils.getOutputStream(response, "sz-admin-" + dto.getTableNames() + ".zip", data.length);
         // 将字节数组写入输出流
-        IOUtils.write(data, response.getOutputStream());
+        IOUtils.write(data, outputStream);
         response.flushBuffer();
     }
 
