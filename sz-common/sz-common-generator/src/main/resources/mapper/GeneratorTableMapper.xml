@@ -88,6 +88,9 @@
         WHERE table_schema = (select database())
         AND table_name NOT LIKE 'generator_%'
         AND table_name NOT IN (select table_name from generator_table)
+        <if test="queryDTO.filterSys">
+            AND table_name NOT LIKE 'sys_%'
+        </if>
         <if test="queryDTO.tableName != null and queryDTO.tableName != ''">
             AND lower(table_name) like lower(concat('%', #{queryDTO.tableName}, '%'))
         </if>
@@ -132,12 +135,9 @@
 	      AND del_flag = 'F'
     </select>
     <select id="countMenuBtn" resultType="java.lang.Integer">
-        SELECT
-            count( 1 )
-        FROM
-            sys_menu
-        WHERE
-            permissions = #{permissions}
+        SELECT count(1)
+        FROM sys_menu
+        WHERE permissions = #{permissions}
           AND menu_type_cd = '1002003'
           AND del_flag = 'F'
     </select>
