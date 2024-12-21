@@ -4,6 +4,7 @@ import type { IPage } from '@/api/interface'
 import type { ${interfaceNamespace} } from '@${interfacePkg}/${interfaceClassName}'
 <#if GeneratorInfo.hasImport == "1">
 import type { UploadRawFile } from "element-plus/es/components/upload/src/upload";
+import type { AxiosRequestConfig } from 'axios';
 </#if>
 
 /**
@@ -57,8 +58,8 @@ export const ${funDetail} = (params: { id: ${idType} }) => {
 * 导入excel
 * @param params
 */
-export const ${funImport} = (params : UploadRawFile) => {
-  return http.upload(ADMIN_MODULE + `/${router}/import`, params)
+export const ${funImport} = (params : UploadRawFile, config?: AxiosRequestConfig<{}> | undefined) => {
+  return http.upload(ADMIN_MODULE + `/${router}/import`, params, config)
 }
 </#if>
 
