@@ -63,4 +63,11 @@ public class SysConfigController {
         return ApiPageResult.success(sysConfigService.list(dto));
     }
 
+    @Operation(summary = "详情")
+    @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("/{id}")
+    public ApiResult<SysConfig> detail(@PathVariable Object id) {
+        return ApiResult.success(sysConfigService.detail(id));
+    }
+
 }

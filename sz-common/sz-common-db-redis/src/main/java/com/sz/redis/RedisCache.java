@@ -97,4 +97,24 @@ public class RedisCache {
         redisTemplate.delete(getUserInfoKey(username));
     }
 
+    public void putVerify(Long key, Integer value) {
+        String string = StringUtils.getRealKey(CommonKeyConstants.SYS_VERIFY , String.valueOf(key));
+        redisTemplate.opsForValue().set(string, value);
+        redisTemplate.expire(string, 2, TimeUnit.MINUTES);
+    }
+
+    public String getVerify(Long key) {
+        String string = StringUtils.getRealKey(CommonKeyConstants.SYS_VERIFY , String.valueOf(key));
+        Object object = redisTemplate.opsForValue().get(string);
+        if (object != null) {
+            return object.toString();
+        }
+        return "";
+    }
+
+    public void clearVerify(Long key) {
+        String string = StringUtils.getRealKey(CommonKeyConstants.SYS_VERIFY , String.valueOf(key));
+        redisTemplate.opsForValue().getOperations().delete(string);
+    }
+
 }
