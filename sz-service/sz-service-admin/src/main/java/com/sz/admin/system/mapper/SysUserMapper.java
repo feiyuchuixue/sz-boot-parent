@@ -43,7 +43,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     /**
      * 查询全部部门的用户名称列表
      * 
-     * @param dto
+     * @param ids
      * @return
      */
     List<SysUserVO> queryAllSysUserNameList(String[] ids);
@@ -79,5 +79,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     List<UserRoleInfoVO> queryUserRoleInfo(List<Long> userIds);
+
+    /**
+     * 查询（未分配部门）用户数量
+     */
+    Integer countSysUserListNotDept();
 
 }

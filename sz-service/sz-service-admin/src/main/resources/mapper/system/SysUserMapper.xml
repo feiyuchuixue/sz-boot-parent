@@ -152,4 +152,16 @@
         GROUP BY
             user_id;
     </select>
+    <select id="countSysUserListNotDept" resultType="java.lang.Integer">
+        SELECT
+            COUNT(DISTINCT su.id  )
+        FROM
+            sys_user su
+                LEFT JOIN sys_user_dept sud ON su.id = sud.user_id
+                LEFT JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
+                LEFT JOIN sys_dept sd ON sud.dept_id = sd.id
+        WHERE
+            su.del_flag = 'F'
+          AND ( sdc.descendant_id IS NULL OR sd.del_flag = 'T' )
+    </select>
 </mapper>

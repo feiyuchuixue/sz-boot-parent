@@ -159,11 +159,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         List<DeptTreeVO> trees = getDeptTree(null, false, true);
         // 获取所有用户数量
         long allUserCount = count(QueryWrapper.create().from(SysUser.class));
-        QueryWrapper deptWrapper = QueryWrapper.create().from(SYS_USER_DEPT).select(SYS_USER_DEPT.USER_ID).leftJoin(SYS_DEPT)
-                .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID));
         // 获取未设置部门的用户数量
-        long unsetDeptCount = allUserCount - count(deptWrapper);
-
+        long unsetDeptCount = userMapper.countSysUserListNotDept();
         // 创建全部节点
         DeptTreeVO all = createAllNode(allUserCount);
         // 创建未设置部门节点
