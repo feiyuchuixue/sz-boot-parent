@@ -6,8 +6,8 @@ import lombok.Data;
 import ${pkg};
 </#list>
 <#if hasExcel == true>
-import com.alibaba.excel.annotation.ExcelIgnore;
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.ExcelIgnore;
+import cn.idev.excel.annotation.ExcelProperty;
   <#if hasDict == true>
 import com.sz.excel.annotation.DictFormat;
   </#if>

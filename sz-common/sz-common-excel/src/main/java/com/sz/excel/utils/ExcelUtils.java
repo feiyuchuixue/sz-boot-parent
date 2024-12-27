@@ -1,8 +1,8 @@
 package com.sz.excel.utils;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import cn.idev.excel.FastExcel;
+import cn.idev.excel.write.builder.ExcelWriterSheetBuilder;
+import cn.idev.excel.write.metadata.style.WriteCellStyle;
 import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.service.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
@@ -44,7 +44,7 @@ public class ExcelUtils {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
         DefaultExcelListener<T> listener = new DefaultExcelListener<>(isValidate);
-        EasyExcel.read(is, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
+        FastExcel.read(is, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
                 .registerConverter(new CustomLongStringConvert(dictmap)).sheet().doRead();
         return listener.getExcelResult();
     }
@@ -52,7 +52,7 @@ public class ExcelUtils {
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz).autoCloseStream(false)
+        ExcelWriterSheetBuilder builder = FastExcel.write(os, clazz).autoCloseStream(false)
                 // 列宽自动适配
                 .registerWriteHandler(new DefaultColumnWidthStyleStrategy())
                 // 表格样式
@@ -68,7 +68,7 @@ public class ExcelUtils {
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os, boolean isMerge) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz).autoCloseStream(false)
+        ExcelWriterSheetBuilder builder = FastExcel.write(os, clazz).autoCloseStream(false)
                 // 列宽自动适配
                 .registerWriteHandler(new DefaultColumnWidthStyleStrategy())
                 // 表格样式
@@ -88,12 +88,9 @@ public class ExcelUtils {
     /**
      * 解析值(import方向) 男=0,女=1,未知=2 禁言=1000003,禁用=1000002,正常=1000001
      *
-     * @param propertyValue
-     *            参数值
-     * @param converterExp
-     *            翻译注解
-     * @param separator
-     *            分隔符
+     * @param propertyValue 参数值
+     * @param converterExp  翻译注解
+     * @param separator     分隔符
      * @return 解析后值
      */
     public static String reverseByExp(String propertyValue, String converterExp, String separator) {
@@ -110,12 +107,9 @@ public class ExcelUtils {
     /**
      * 解析值(export方向) 禁言=1000003,禁用=1000002,正常=1000001
      *
-     * @param propertyValue
-     *            参数值
-     * @param converterExp
-     *            翻译注解
-     * @param separator
-     *            分隔符
+     * @param propertyValue 参数值
+     * @param converterExp  翻译注解
+     * @param separator     分隔符
      * @return 解析后值
      */
     public static String convertByExp(String propertyValue, String converterExp, String separator) {
