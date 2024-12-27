@@ -4,8 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.common.exception.GlobalExceptionHandler;
-import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,9 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @Date 2024/2/4 15:42
  * @Version 1.0
  */
+@Order(Integer.MIN_VALUE)
 @RestControllerAdvice
-@RequiredArgsConstructor
-public class SaExceptionHandler extends GlobalExceptionHandler {
+public class SaExceptionHandler {
 
     @ExceptionHandler(NotLoginException.class)
     public ApiResult handlerNotLoginException(NotLoginException e) {

@@ -9,10 +9,7 @@ import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.excel.convert.CustomIntegerStringConvert;
 import com.sz.excel.convert.CustomLongStringConvert;
 import com.sz.excel.convert.CustomStringStringConvert;
-import com.sz.excel.core.CellMergeStrategy;
-import com.sz.excel.core.DefaultExcelListener;
-import com.sz.excel.core.ExcelDownHandler;
-import com.sz.excel.core.ExcelResult;
+import com.sz.excel.core.*;
 import com.sz.excel.strategy.DefaultCellStyleStrategy;
 import com.sz.excel.strategy.DefaultColumnWidthStyleStrategy;
 
@@ -36,14 +33,15 @@ public class ExcelUtils {
      *
      * @param is
      * @param clazz
-     * @param isValidate
+     * @param validateHeader
      * @param <T>
      * @return
      */
-    public static <T> ExcelResult<T> importExcel(InputStream is, Class<T> clazz, boolean isValidate) {
+    public static <T> ExcelResult<T> importExcel(InputStream is, Class<T> clazz, boolean validateHeader) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        DefaultExcelListener<T> listener = new DefaultExcelListener<>(isValidate);
+        ExcelListenerFactory listenerFactory = SpringApplicationContextUtils.getBean(ExcelListenerFactory.class);
+        DefaultExcelListener<T> listener = listenerFactory.createListener(validateHeader, clazz);
         FastExcel.read(is, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
                 .registerConverter(new CustomLongStringConvert(dictmap)).sheet().doRead();
         return listener.getExcelResult();
@@ -88,9 +86,12 @@ public class ExcelUtils {
     /**
      * 解析值(import方向) 男=0,女=1,未知=2 禁言=1000003,禁用=1000002,正常=1000001
      *
-     * @param propertyValue 参数值
-     * @param converterExp  翻译注解
-     * @param separator     分隔符
+     * @param propertyValue
+     *            参数值
+     * @param converterExp
+     *            翻译注解
+     * @param separator
+     *            分隔符
      * @return 解析后值
      */
     public static String reverseByExp(String propertyValue, String converterExp, String separator) {
@@ -107,9 +108,12 @@ public class ExcelUtils {
     /**
      * 解析值(export方向) 禁言=1000003,禁用=1000002,正常=1000001
      *
-     * @param propertyValue 参数值
-     * @param converterExp  翻译注解
-     * @param separator     分隔符
+     * @param propertyValue
+     *            参数值
+     * @param converterExp
+     *            翻译注解
+     * @param separator
+     *            分隔符
      * @return 解析后值
      */
     public static String convertByExp(String propertyValue, String converterExp, String separator) {

@@ -29,6 +29,7 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     FILE_UPLOAD_ERROR(1006, "上传文件失败"),
     USERNAME_EXISTS(1007, "用户名已存在"),
     INVALID(1008, "无效的数据"),
+    EXCEL_IMPORT_ERROR(1009, "Excel导入失败"),
 
     UNKNOWN(9999, "未知异常"),
     ;
