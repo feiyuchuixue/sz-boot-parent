@@ -1,4 +1,20 @@
 # 更新日志
+## v0.8.5 （20241229）
+
+- sz-boot-parent：
+  - 优化：commons-logging 引用冲突问题。
+  - 修复：部门编辑时层级deep赋值不正确问题。
+  - 修复：前端module模板文件导入excel缺少参数问题。
+  - 修复：部门列表节点数量展示问题。
+  - 优化：升级EasyExcel为FastExcel。 |  <font color="red">可能的破坏性更新 （easyExcel -> fastExcel 的Package包切换）</font>
+  - 优化：增强 Excel 导入异常处理，新增表头校验功能。详见[Excel导入导出](https://szadmin.cn/md/Help/doc/excel.html)
+  - 依赖升级：
+    - spring-boot-starter-parent：3.4.0 -> 3.4.1。
+- sz-admin：
+
+  - 优化：文件上传模板组件样式。（感谢[Alex-1116](https://github.com/Alex-1116)）
+  - 优化：Excel导入组件，增加上传进度的支持。
+  - 优化：axios对全局response error的处理。
 ## v0.8.4 （20241216）
 
 - sz-boot-parent：

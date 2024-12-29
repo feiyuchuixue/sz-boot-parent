@@ -67,28 +67,28 @@
 
 <table>
     <tr>
-        <td><img alt="登录页" src="https://minio.szadmin.cn/public/img/login.webp"/></td>
-        <td><img alt="home页" src="https://minio.szadmin.cn/public/img/home.webp"/></td>
+        <td><img alt="登录页" src="https://minioapi.szadmin.cn/public/img/login.webp"/></td>
+        <td><img alt="home页" src="https://minioapi.szadmin.cn/public/img/home.webp"/></td>
     </tr>
     <tr>
-        <td><img alt="账户管理" src="https://minio.szadmin.cn/public/img/account.webp"/></td>
-        <td><img alt="角色管理" src="https://minio.szadmin.cn/public/img/role.webp"/></td>
+        <td><img alt="账户管理" src="https://minioapi.szadmin.cn/public/img/account.webp"/></td>
+        <td><img alt="角色管理" src="https://minioapi.szadmin.cn/public/img/role.webp"/></td>
     </tr>
     <tr>
-        <td><img alt="菜单管理" src="https://minio.szadmin.cn/public/img/menu.webp"/></td>
-        <td><img alt="字典管理" src="https://minio.szadmin.cn/public/img/dict.webp"/></td>
+        <td><img alt="菜单管理" src="https://minioapi.szadmin.cn/public/img/menu.webp"/></td>
+        <td><img alt="字典管理" src="https://minioapi.szadmin.cn/public/img/dict.webp"/></td>
     </tr>
     <tr>
-        <td><img alt="配置管理" src="https://minio.szadmin.cn/public/img/config.webp"/></td>
-        <td><img alt="客户端管理" src="https://minio.szadmin.cn/public/img/client.webp"/></td>
+        <td><img alt="配置管理" src="https://minioapi.szadmin.cn/public/img/config.webp"/></td>
+        <td><img alt="客户端管理" src="https://minioapi.szadmin.cn/public/img/client.webp"/></td>
     </tr>    
     <tr>
-        <td><img alt="部门管理" src="https://minio.szadmin.cn/public/img/dept.webp"/></td>
-        <td><img alt="代码预览" src="https://minio.szadmin.cn/public/img/gen-preview.webp"/></td>
+        <td><img alt="部门管理" src="https://minioapi.szadmin.cn/public/img/dept.webp"/></td>
+        <td><img alt="代码预览" src="https://minioapi.szadmin.cn/public/img/gen-preview.webp"/></td>
     </tr>
     <tr>
-        <td><img alt="代码生成配置1" src="https://minio.szadmin.cn/public/img/gen-editor.webp"/></td>
-        <td><img alt="代码生成配置2" src="https://minio.szadmin.cn/public/img/gen-editor2.webp"/></td>
+        <td><img alt="代码生成配置1" src="https://minioapi.szadmin.cn/public/img/gen-editor.webp"/></td>
+        <td><img alt="代码生成配置2" src="https://minioapi.szadmin.cn/public/img/gen-editor2.webp"/></td>
     </tr>
 </table>
 
@@ -96,4 +96,4 @@
 
 ## 参与讨论
 
-<img alt="加入群聊" src="https://minio.szadmin.cn/public/img/wechat.webp"/>
+<img alt="加入群聊" src="https://minioapi.szadmin.cn/public/img/wechat.webp"/>
