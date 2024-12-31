@@ -73,7 +73,7 @@ public class RedisCache {
 
     public void putConf(String key, String value) {
         redisTemplate.opsForHash().put(CommonKeyConstants.SYS_CONFIG, key, value);
-        redisTemplate.expire(CommonKeyConstants.SYS_DICT, 2, TimeUnit.HOURS);
+        redisTemplate.expire(CommonKeyConstants.SYS_CONFIG, 2, TimeUnit.HOURS);
     }
 
     public void clearConf(String key) {
