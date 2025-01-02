@@ -1,4 +1,19 @@
 # 更新日志
+## v0.8.6 （20250102）
+
+- sz-boot-parent：
+  - 修复: sys_config 缓存时间问题。
+  - 修改: 移动配置文件至项目【根目录】下。|  <font color="red">可能的破坏性更新 </font>
+  - 修改: 移除pom镜像源配置
+  - 修改: Dockerfile 增加配置目录挂载的支持
+  - 新增: GitHub Action workflow |
+- sz-admin：
+
+  - 修复：VITE自定义变量验证问题
+  - 新增：gzip打包支持
+  - 新增：Dockerfile
+  - 修改：.env.production 配置
+  - 新增：GitHub Action workflow
 ## v0.8.5 （20241229）
 
 - sz-boot-parent：
