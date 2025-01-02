@@ -7,14 +7,14 @@ spring:
     active: local
   config:
     import:
-      - classpath:config/${spring.profiles.active}/flyway.yml
-      - classpath:config/${spring.profiles.active}/knife4j.yml
-      - classpath:config/${spring.profiles.active}/oss.yml
-      - classpath:config/${spring.profiles.active}/mybatis-flex.yml
-      - classpath:config/${spring.profiles.active}/mysql.yml
-      - classpath:config/${spring.profiles.active}/page-helper.yml
-      - classpath:config/${spring.profiles.active}/redis.yml
-      - classpath:config/${spring.profiles.active}/sa-token.yml
+      - file:config/${spring.profiles.active}/flyway.yml
+      - file:config/${spring.profiles.active}/knife4j.yml
+      - file:config/${spring.profiles.active}/oss.yml
+      - file:config/${spring.profiles.active}/mybatis-flex.yml
+      - file:config/${spring.profiles.active}/mysql.yml
+      - file:config/${spring.profiles.active}/page-helper.yml
+      - file:config/${spring.profiles.active}/redis.yml
+      - file:config/${spring.profiles.active}/sa-token.yml
   mvc:
     path-match:
       matching-strategy: ant_path_matcher
