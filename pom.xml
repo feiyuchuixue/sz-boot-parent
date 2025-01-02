@@ -54,9 +54,9 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <!--阿里云仓库-->
+    <!--maven仓库加速，按需引用-->
+   <!-- <repositories>
+        &lt;!&ndash;阿里云仓库&ndash;&gt;
         <repository>
             <id>public</id>
             <url>https://maven.aliyun.com/repository/public</url>
@@ -67,7 +67,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!--华为云仓库-->
+        &lt;!&ndash;华为云仓库&ndash;&gt;
         <repository>
             <id>huaweicloudmaven</id>
             <url>https://repo.huaweicloud.com/maven/</url>
@@ -78,7 +78,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!--腾讯云仓库-->
+        &lt;!&ndash;腾讯云仓库&ndash;&gt;
         <repository>
             <id>tencentcloudmaven</id>
             <url>https://mirrors.tencent.com/nexus/repository/maven-public/</url>
@@ -89,7 +89,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!--中科大仓库-->
+        &lt;!&ndash;中科大仓库&ndash;&gt;
         <repository>
             <id>ustcmaven</id>
             <url>https://maven.ustc.edu.cn/maven2/</url>
@@ -100,7 +100,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!-- 配置官方Maven中央仓库 -->
+        &lt;!&ndash; 配置官方Maven中央仓库 &ndash;&gt;
         <repository>
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
@@ -111,7 +111,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-    </repositories>
+    </repositories>-->
 
     <build>
         <plugins>
