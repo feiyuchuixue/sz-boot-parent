@@ -1,0 +1,99 @@
+name: Docker Sz-Boot CI
+
+on:
+  push:
+    branches: [ "preview" ]
+  pull_request:
+    branches: [ "preview" ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # 服务名
+      APP_NAME: sz-service-admin
+      # 端口
+      SERVICE_PORT: 9991
+      # 运行环境变量
+      RUNNING_ACTIVE: preview
+      # 日志路径
+      LOG_DIR: /home/app/sz-service-admin/logs
+      # 配置文件路径
+      CONFIG_DIR: /home/conf/sz-service-admin
+      # Docker 仓库域名
+      ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
+      # 命名空间
+      ACR_ZONE: sz-action
+      VERSION: latest
+      SHELL_RUN_DIR: /home/run
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Set up Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Copy JAR file
+        run: |
+          cd ./sz-service/sz-service-admin/target
+          cp ./*.jar ../../../app.jar
+
+      - name: Build Docker image
+        run: docker build -t ${{ env.APP_NAME }}:${{ env.VERSION }} .
+
+      - name: Log in to Docker ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
+
+      - name: Tag Docker image
+        run: docker tag ${{ env.APP_NAME }}:${{ env.VERSION }} ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+
+      - name: Push Docker image
+        run: docker push ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+
+      - name: Deploy to remote server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          script: |
+            docker pull  ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+            
+            echo "==================== 生成启动命令脚本 ===================="
+            mkdir -p ${{ env.SHELL_RUN_DIR }}
+            START_SCRIPT="${{ env.SHELL_RUN_DIR }}/docker_run_${{ env.APP_NAME }}_${{ env.RUNNING_ACTIVE }}.sh"
+            cat > $START_SCRIPT <<EOL
+            #!/bin/bash
+              echo "==================== 停止旧应用容器 ===================="
+              docker stop ${{ env.APP_NAME }} || true
+              docker rm ${{ env.APP_NAME }} || true
+              docker image prune -f
+              docker builder prune -f
+              echo "==================== 启动应用容器 ===================="
+              docker run -itd \
+              --name ${{ env.APP_NAME }} \
+              --restart always \
+              -p ${{ env.SERVICE_PORT }}:${{ env.SERVICE_PORT }} \
+              -v ${{ env.LOG_DIR }}:/logs \
+              -v ${{ env.CONFIG_DIR }}:/config \
+              -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \
+              ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+            EOL
+            chmod +x $START_SCRIPT
+            echo "启动脚本已生成：$START_SCRIPT"
+            echo "可以运行以下命令手动启动容器："
+            echo "bash $START_SCRIPT"
+            bash $START_SCRIPT
