@@ -83,13 +83,13 @@ jobs:
               docker image prune -f
               docker builder prune -f
               echo "==================== 启动应用容器 ===================="
-              docker run -itd \
-              --name ${{ env.APP_NAME }} \
-              --restart always \
-              -p ${{ env.SERVICE_PORT }}:${{ env.SERVICE_PORT }} \
-              -v ${{ env.LOG_DIR }}:/logs \
-              -v ${{ env.CONFIG_DIR }}:/config \
-              -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \
+              docker run -itd \\
+              --name ${{ env.APP_NAME }} \\
+              --restart always \\
+              -p ${{ env.SERVICE_PORT }}:${{ env.SERVICE_PORT }} \\
+              -v ${{ env.LOG_DIR }}:/logs \\
+              -v ${{ env.CONFIG_DIR }}:/config \\
+              -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \\
               ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
             EOL
             chmod +x $START_SCRIPT
