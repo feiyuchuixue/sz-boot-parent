@@ -46,8 +46,10 @@ public class CorsConfig {
             corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
         } else {
             for (String origin : allowedOrigins) {
+                System.out.println("origin: " + origin);
                 corsConfiguration.addAllowedOrigin(origin);
             }
+            // corsConfiguration.setAllowedOrigins(allowedOrigins);
         }
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
