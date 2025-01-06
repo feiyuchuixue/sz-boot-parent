@@ -5,5 +5,4 @@ server:
 sz:
   cors:
     allowed-origins:
-      - "https://*.szadmin.cn"
-  #    - "https://test.szadmin.cn"
+      - "https://test.szadmin.cn"
