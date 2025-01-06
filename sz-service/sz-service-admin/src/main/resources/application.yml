@@ -58,3 +58,7 @@ sz:
     mini:
       app-id: your_app_id
       app-secret: your_app_secret
+  cors:
+    # 定义允许跨域请求的源（Origin）。可以设置为特定的域名、IP 地址或通配符。
+    allowed-origins:
+      - "*"
