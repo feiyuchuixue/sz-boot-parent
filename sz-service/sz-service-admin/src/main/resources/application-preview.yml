@@ -6,3 +6,4 @@ sz:
   cors:
     allowed-origins:
       - "https://test.szadmin.cn"
+      - "https://preview.szadmin.cn"
