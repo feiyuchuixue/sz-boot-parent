@@ -1,4 +1,4 @@
-name: Docker Sz-Boot CI
+name: Docker Sz-Boot Test CI
 
 on:
   push:
