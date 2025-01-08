@@ -5,6 +5,7 @@ import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.util.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -46,24 +47,23 @@ public class DebounceAspect {
     public Object debounceInterceptor(ProceedingJoinPoint point) throws Throwable {
         Method method = ((MethodSignature) point.getSignature()).getMethod();
         String httpMethod = request.getMethod();
-        // 检查：是否开启了防抖、是否标注了 @NoDebounce 注解
+        boolean isDebounceAnno = method.isAnnotationPresent(Debounce.class);
+        // 检查：是否开启了防抖、是否标注了 @DebounceIgnore 注解
         if (!debounceProperties.isEnabled() || method.isAnnotationPresent(DebounceIgnore.class)) {
             return point.proceed(); // 直接执行，不做防抖处理
         }
         // 忽略GET请求
-        if (debounceProperties.isIgnoreGetMethod()) {
+        if (debounceProperties.isIgnoreGetMethod() && !isDebounceAnno) {
             if ("GET".equalsIgnoreCase(httpMethod))
                 return point.proceed(); // 直接执行，不做防抖处理
         }
         long lockTime = debounceProperties.getGlobalLockTime();
-
-        if (method.isAnnotationPresent(Debounce.class)) {
+        if (isDebounceAnno) {
             Debounce debounce = method.getAnnotation(Debounce.class);
             lockTime = debounce.time();
         }
 
-        String lockKey = generateLockKey(request);
-
+        String lockKey = Utils.generateDebounceRequestId(request);
         // 尝试获取分布式锁
         boolean lockAcquired = debounceService.acquireLock(lockKey, lockTime);
         if (!lockAcquired) {
@@ -93,15 +93,6 @@ public class DebounceAspect {
             }
         }
         return point.proceed(); // 执行方法
-    }
-
-    private String generateLockKey(HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-        String userAgent = request.getHeader("User-Agent");
-        String queryString = request.getQueryString();
-        return ip + ":" + method + ": " + uri + ":" + queryString + ":" + userAgent;
     }
 
 }
