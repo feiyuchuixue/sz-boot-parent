@@ -30,4 +30,14 @@ public class CommonKeyConstants {
      */
     public static final String SYS_PWD_ERR_CNT = "err:pwd-cnt:${username}";
 
+    /**
+     * 验证码
+     */
+    public static final String CAPTCHA_REQUEST_ID = "captcha:slide:${requestId}";
+
+    /**
+     * 验证码请求次数限制
+     */
+    public static final String CAPTCHA_REQUEST_LIMIT = "captcha:request-limit:${requestId}";
+
 }

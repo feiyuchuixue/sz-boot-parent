@@ -69,7 +69,7 @@ public class AccessLogAspect {
             filterAndConvertArguments(args);
 
             AccessRequestLog requestLog = AccessRequestLog.builder().traceId("").url(request.getRequestURI()).timestamp(System.currentTimeMillis())
-                    .method(request.getMethod()).ip(HttpReqResUtil.getIpAdrress(request)).param(urlParams).body(body).form(parameter).requestBody(args)
+                    .method(request.getMethod()).ip(HttpReqResUtil.getIpAddress(request)).param(urlParams).body(body).form(parameter).requestBody(args)
                     .type("request").contentType(contentType).build();
             List<String> whitelist = whitelistProperties.getWhitelist();
             if (!isWhitelist(requestURI, request.getContextPath(), whitelist)) {

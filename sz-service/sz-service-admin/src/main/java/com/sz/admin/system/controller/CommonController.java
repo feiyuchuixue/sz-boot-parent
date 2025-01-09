@@ -33,7 +33,6 @@ public class CommonController {
         } catch (Exception e) {
             log.error("模板下载文件下载失败", e);
         }
-
     }
 
 }

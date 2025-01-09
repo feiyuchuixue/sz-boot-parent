@@ -1,5 +1,6 @@
 package com.sz.core.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +111,53 @@ public class Utils {
         String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
         Method getter = obj.getClass().getMethod(getterName);
         return getter.invoke(obj);
+    }
+
+    /**
+     * 生成用于接口防抖的RequestId
+     * 
+     * @param request
+     *            HttpServletRequest对象
+     * @return 接口防抖用的RequestId
+     */
+    public static String generateDebounceRequestId(HttpServletRequest request) {
+        String ip = HttpReqResUtil.getIpAddress(request);
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        String userAgent = request.getHeader("User-Agent");
+        String queryString = request.getQueryString();
+        return ip + ":" + method + ":" + uri + ":" + queryString + ":" + userAgent;
+    }
+
+    /**
+     * 生成用于用户验证码的RequestId
+     * 
+     * @param request
+     *            HttpServletRequest对象
+     * @return 用户验证码用的RequestId
+     */
+    public static String generateCaptchaRequestId(HttpServletRequest request) {
+        String ip = HttpReqResUtil.getIpAddress(request);
+        String userAgent = request.getHeader("User-Agent");
+        return ip + ":" + userAgent;
+    }
+
+    public static String generateSha256Id(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(input.getBytes());
+            return bytesToHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
 }

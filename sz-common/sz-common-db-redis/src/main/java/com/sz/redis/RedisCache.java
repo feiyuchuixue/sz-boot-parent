@@ -1,7 +1,9 @@
 package com.sz.redis;
 
 import com.sz.core.common.entity.DictVO;
+import com.sz.core.common.entity.PointVO;
 import com.sz.core.util.StringUtils;
+import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -95,6 +97,55 @@ public class RedisCache {
 
     public void clearUserInfo(String username) {
         redisTemplate.delete(getUserInfoKey(username));
+    }
+
+    public void putCaptcha(String requestId, PointVO vo, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().set(key, vo);
+        redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+    }
+
+    public PointVO getCaptcha(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_ID, requestId);
+        if (existCaptcha(requestId)) {
+            return (PointVO) redisTemplate.opsForValue().get(key);
+        } else {
+            return null;
+        }
+    }
+
+    public void clearCaptcha(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().getOperations().delete(key);
+    }
+
+    public boolean existCaptcha(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_ID, requestId);
+        return redisTemplate.hasKey(key);
+    }
+
+    /**
+     * 初始化验证码请求限制
+     *
+     * @param requestId
+     *            请求ID
+     * @param timeout
+     *            过期时间（分钟）
+     */
+    public void initializeCaptchaRequestLimit(String requestId, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_LIMIT, requestId);
+        redisTemplate.opsForValue().setIfAbsent(key, 0, timeout, TimeUnit.MINUTES);
+    }
+
+    public Long countCaptchaRequestLimit(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_LIMIT, requestId);
+        Object o = redisTemplate.opsForValue().get(key);
+        return Utils.getLongVal(o);
+    }
+
+    public Long limitCaptcha(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_LIMIT, requestId);
+        return redisTemplate.opsForValue().increment(key);
     }
 
 }
