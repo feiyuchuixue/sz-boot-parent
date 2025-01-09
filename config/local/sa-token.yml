@@ -46,4 +46,3 @@ router:
     - "/swagger-ui.html"
     - "/www/**"
     - "/wechat/**"
-    - "/auth/verify"

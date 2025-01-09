@@ -29,10 +29,4 @@ public class LoginInfo {
     @Schema(description = "微信小程序登录code")
     private String code;
 
-    @Schema(description = "图形偏移量")
-    private Integer movePosX;
-
-    @Schema(description = "时间")
-    private Long longTime;
-
 }
