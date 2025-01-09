@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 教师统计总览表 Controller
@@ -84,6 +86,12 @@ public class TeacherStatisticsController {
     @PostMapping("/export")
     public void exportExcel(@RequestBody TeacherStatisticsListDTO dto, HttpServletResponse response) {
         teacherStatisticsService.exportExcel(dto, response);
+    }
+
+    @Operation(summary = "远程搜索测试接口")
+    @GetMapping("/remote/{keyword}")
+    public ApiResult<List<TeacherStatisticsVO.TeacherTypeEnum>> remoteSearch(@PathVariable String keyword) {
+        return ApiResult.success(teacherStatisticsService.remoteSearch(keyword));
     }
 
 }

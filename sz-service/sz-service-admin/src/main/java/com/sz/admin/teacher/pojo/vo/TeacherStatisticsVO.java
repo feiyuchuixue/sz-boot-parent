@@ -85,4 +85,13 @@ public class TeacherStatisticsVO {
     @Schema(description = "创建人id")
     private Long createId;
 
+    @Data
+    public static class TeacherTypeEnum {
+
+        private long id;
+
+        private String teacherId;
+
+    }
+
 }

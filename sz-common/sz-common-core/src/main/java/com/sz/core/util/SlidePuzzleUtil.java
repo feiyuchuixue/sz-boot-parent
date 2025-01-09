@@ -44,7 +44,7 @@ public class SlidePuzzleUtil {
             if ("true".equals(waterState)) {
                 // Add watermark
                 Graphics2D g2d = bigImage.createGraphics();
-                Font font = new Font(waterFont, Font.BOLD, 20); //  要注意服务器是否有此字体，如果商用要考虑字体版权问题。
+                Font font = new Font(waterFont, Font.BOLD, 20); // 要注意服务器是否有此字体，如果商用要考虑字体版权问题。
                 g2d.setFont(font);
                 g2d.setColor(Color.WHITE);
                 FontMetrics fontMetrics = g2d.getFontMetrics();
