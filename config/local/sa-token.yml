@@ -46,3 +46,6 @@ router:
     - "/swagger-ui.html"
     - "/www/**"
     - "/wechat/**"
+    - "/captcha/status"
+    - "/captcha/get"
+    - "/captcha/check"
