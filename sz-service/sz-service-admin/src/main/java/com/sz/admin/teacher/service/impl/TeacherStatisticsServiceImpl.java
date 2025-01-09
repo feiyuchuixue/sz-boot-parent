@@ -144,7 +144,18 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         if (Utils.isNotNull(dto.getCheckTimeStart()) && Utils.isNotNull(dto.getCheckTimeEnd())) {
             wrapper.between(TeacherStatistics::getCheckTime, dto.getCheckTimeStart(), dto.getCheckTimeEnd());
         }
+        if (Utils.isNotNull(dto.getRemoteTeacherId())) {
+            wrapper.eq(TeacherStatistics::getId, dto.getRemoteTeacherId());
+        }
         return wrapper;
+    }
+
+    @SneakyThrows
+    @Override
+    public List<TeacherStatisticsVO.TeacherTypeEnum> remoteSearch(String keyword) {
+        Thread.sleep(1000);
+        QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class).like(TeacherStatistics::getTeacherId, keyword);
+        return listAs(wrapper, TeacherStatisticsVO.TeacherTypeEnum.class);
     }
 
 }

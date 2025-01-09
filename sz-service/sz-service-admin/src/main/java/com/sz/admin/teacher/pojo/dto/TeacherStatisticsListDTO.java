@@ -57,4 +57,7 @@ public class TeacherStatisticsListDTO extends PageQuery {
     @Schema(description = "最近一次同步时间")
     private LocalDateTime lastSyncTime;
 
+    @Schema(description = "远程搜索KV属性ID")
+    private Long remoteTeacherId;
+
 }

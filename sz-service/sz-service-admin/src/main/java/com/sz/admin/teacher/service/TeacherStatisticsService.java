@@ -38,4 +38,6 @@ public interface TeacherStatisticsService extends IService<TeacherStatistics> {
     void importExcel(ImportExcelDTO dto);
 
     void exportExcel(TeacherStatisticsListDTO dto, HttpServletResponse response);
+
+    List<TeacherStatisticsVO.TeacherTypeEnum> remoteSearch(String keyword);
 }
