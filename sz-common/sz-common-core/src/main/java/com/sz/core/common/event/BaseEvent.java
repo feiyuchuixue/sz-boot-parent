@@ -1,5 +1,6 @@
 package com.sz.core.common.event;
 
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.context.ApplicationEvent;
  * @Version 1.0
  */
 
+@Getter
 public abstract class BaseEvent<T> extends ApplicationEvent {
 
     private final T payload;
@@ -18,7 +20,4 @@ public abstract class BaseEvent<T> extends ApplicationEvent {
         this.payload = payload;
     }
 
-    public T getPayload() {
-        return payload;
-    }
 }

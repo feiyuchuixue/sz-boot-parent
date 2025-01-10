@@ -6,6 +6,7 @@ import com.mybatisflex.annotation.Table;
 import com.sz.mysql.EntityChangeListener;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 @Table(value = "generator_table_column", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 public class GeneratorTableColumn implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

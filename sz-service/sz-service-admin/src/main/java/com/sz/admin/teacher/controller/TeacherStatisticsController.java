@@ -38,7 +38,7 @@ public class TeacherStatisticsController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "teacher.statistics.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@RequestBody TeacherStatisticsCreateDTO dto) {
+    public ApiResult<Void> create(@RequestBody TeacherStatisticsCreateDTO dto) {
         teacherStatisticsService.create(dto);
         return ApiResult.success();
     }
@@ -46,7 +46,7 @@ public class TeacherStatisticsController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "teacher.statistics.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@RequestBody TeacherStatisticsUpdateDTO dto) {
+    public ApiResult<Void> update(@RequestBody TeacherStatisticsUpdateDTO dto) {
         teacherStatisticsService.update(dto);
         return ApiResult.success();
     }
@@ -54,7 +54,7 @@ public class TeacherStatisticsController {
     @Operation(summary = "删除")
     @SaCheckPermission(value = "teacher.statistics.remove", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         teacherStatisticsService.remove(dto);
         return ApiResult.success();
     }

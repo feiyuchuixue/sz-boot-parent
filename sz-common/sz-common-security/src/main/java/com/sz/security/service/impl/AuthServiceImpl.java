@@ -29,8 +29,7 @@ public class AuthServiceImpl implements AuthService {
         CommonResponseEnum.CLIENT_INVALID.assertNull(client);
         // 验证client status 有效性
         CommonResponseEnum.CLIENT_BLOCKED.assertTrue(!("1003001").equals(client.getClientStatusCd()));
-        LoginVO login = IAuthStrategy.login(info, client, info.getGrantType());
-        return login;
+        return IAuthStrategy.login(info, client, info.getGrantType());
     }
 
 }

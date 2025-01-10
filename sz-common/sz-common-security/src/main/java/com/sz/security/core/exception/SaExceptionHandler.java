@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class SaExceptionHandler {
 
     @ExceptionHandler(NotLoginException.class)
-    public ApiResult handlerNotLoginException(NotLoginException e) {
+    public ApiResult<Void> handlerNotLoginException(NotLoginException e) {
         String message = "";
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
             message = "未能读取到有效 token";
@@ -42,7 +42,7 @@ public class SaExceptionHandler {
     }
 
     @ExceptionHandler(NotPermissionException.class)
-    public ApiResult handlerNotPermissionException(NotPermissionException e) {
+    public ApiResult<Void> handlerNotPermissionException(NotPermissionException e) {
         return ApiResult.error(CommonResponseEnum.INVALID_PERMISSION);
     }
 

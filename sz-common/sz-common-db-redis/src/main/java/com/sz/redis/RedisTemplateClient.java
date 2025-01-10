@@ -10,5 +10,5 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 public interface RedisTemplateClient {
 
-    RedisTemplate getTemplate();
+    RedisTemplate<Object, Object> getTemplate();
 }

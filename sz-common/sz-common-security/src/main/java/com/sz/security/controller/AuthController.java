@@ -40,7 +40,7 @@ public class AuthController {
 
     @Operation(summary = "登出")
     @PostMapping("logout")
-    public ApiResult logout() {
+    public ApiResult<Void> logout() {
         // 注意执行顺序，最后再执行logout
         StpUtil.getTokenSession().logout(); // 清除缓存session
         StpUtil.logout(); // 退出登录

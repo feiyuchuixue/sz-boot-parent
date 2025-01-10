@@ -441,7 +441,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
         boolean checkpwd = BCrypt.checkpw(password, hashedPassword);
         if (!checkpwd)
-            redisCache.countPwdErr(username, Utils.getLongVal(timeout).longValue());
+            redisCache.countPwdErr(username, Utils.getLongVal(timeout));
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(checkpwd);
     }
 

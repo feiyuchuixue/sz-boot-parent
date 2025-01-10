@@ -39,7 +39,7 @@ public class SysDictTypeController {
     @Operation(summary = "字典类型新增")
     @SaCheckPermission(value = "sys.dict.add_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysDictTypeAddDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysDictTypeAddDTO dto) {
         sysDictTypeService.create(dto);
         return ApiResult.success();
     }
@@ -47,7 +47,7 @@ public class SysDictTypeController {
     @Operation(summary = "字典类型修改")
     @SaCheckPermission(value = "sys.dict.update_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysDictTypeUpDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysDictTypeUpDTO dto) {
         sysDictTypeService.update(dto);
         return ApiResult.success();
     }
@@ -55,7 +55,7 @@ public class SysDictTypeController {
     @Operation(summary = "删除、批量删除")
     @SaCheckPermission(value = "sys.dict.delete_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult disable(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> disable(@RequestBody SelectIdsDTO dto) {
         sysDictTypeService.remove(dto);
         return ApiResult.success();
     }

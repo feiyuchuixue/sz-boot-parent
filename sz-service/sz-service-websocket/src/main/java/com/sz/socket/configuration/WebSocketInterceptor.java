@@ -27,7 +27,7 @@ import static com.sz.socket.cache.SocketManagerCache.SEC_WEBSOCKET_PROTOCOL_HEAD
 @Slf4j
 public class WebSocketInterceptor implements HandshakeInterceptor {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     /**
      * 握手之前

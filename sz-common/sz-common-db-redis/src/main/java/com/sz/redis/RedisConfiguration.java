@@ -52,8 +52,7 @@ public class RedisConfiguration {
         om.disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
         // java8 时间支持
         om.registerModule(new JavaTimeModule());
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(om, Object.class);
-        return jackson2JsonRedisSerializer;
+        return new Jackson2JsonRedisSerializer<>(om, Object.class);
     }
 
 }
