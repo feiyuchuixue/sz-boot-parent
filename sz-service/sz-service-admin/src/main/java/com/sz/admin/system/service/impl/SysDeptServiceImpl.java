@@ -94,13 +94,13 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // id有效性校验
         wrapper = QueryWrapper.create().eq(SysDept::getId, dto.getId());
         SysDept one = getOne(wrapper);
-        wrapper = QueryWrapper.create().eq(SysDept::getId, dto.getPid());
-        SysDept parent = getOne(wrapper);
         Long oldPid = one.getPid();
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
         if (dto.getPid() == 0) {
             sysDept.setDeep(1);
         } else {
+            wrapper = QueryWrapper.create().eq(SysDept::getId, dto.getPid());
+            SysDept parent = getOne(wrapper);
             one.setHasChildren("T");
             saveOrUpdate(one);
             sysDept.setDeep(parent.getDeep() + 1);
