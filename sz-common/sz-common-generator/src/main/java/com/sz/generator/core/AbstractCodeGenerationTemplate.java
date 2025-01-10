@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public abstract class AbstractCodeGenerationTemplate {
 
-    private FreeMarkerConfigurer configurer;
+    private final FreeMarkerConfigurer configurer;
 
     private String rootPath;
 
