@@ -35,17 +35,10 @@ sa-token:
 router:
   whitelist:
     - "/v3/api-docs/**"
-    - "/auth/login"
-    - "/register"
-    - "/sys-dict/dict"
     - "/doc.html"
     - "/webjars/**"
     - "/swagger-resources"
     - "/favicon.ico"
-    - "/common/**"
     - "/swagger-ui.html"
     - "/www/**"
     - "/wechat/**"
-    - "/captcha/status"
-    - "/captcha/get"
-    - "/captcha/check"
