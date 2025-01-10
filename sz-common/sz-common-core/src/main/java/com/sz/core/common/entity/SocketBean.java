@@ -13,7 +13,7 @@ import lombok.Data;
 public class SocketBean<T> {
 
     {
-        data = (T) "";
+        data = null;
         channel = SocketChannelEnum.DEFAULTS;
         scope = MessageTransferScopeEnum.SOCKET_CLIENT;
     }

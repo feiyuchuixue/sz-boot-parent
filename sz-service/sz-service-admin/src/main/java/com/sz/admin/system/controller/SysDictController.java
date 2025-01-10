@@ -37,7 +37,7 @@ public class SysDictController {
     @Operation(summary = "字典新增")
     @SaCheckPermission(value = "sys.dict.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysDictCreateDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysDictCreateDTO dto) {
         sysDictService.create(dto);
         return ApiResult.success();
     }
@@ -45,7 +45,7 @@ public class SysDictController {
     @Operation(summary = "字典修改")
     @SaCheckPermission(value = "sys.dict.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysDictUpdateDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysDictUpdateDTO dto) {
         sysDictService.update(dto);
         return ApiResult.success();
     }
@@ -53,7 +53,7 @@ public class SysDictController {
     @Operation(summary = "批量删除")
     @SaCheckPermission(value = "sys.dict.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysDictService.remove(dto);
         return ApiResult.success();
     }

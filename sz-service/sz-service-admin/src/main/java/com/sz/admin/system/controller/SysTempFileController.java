@@ -37,7 +37,7 @@ public class SysTempFileController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.temp.file.create")
     @PostMapping
-    public ApiResult create(@RequestBody SysTempFileCreateDTO dto) {
+    public ApiResult<Void> create(@RequestBody SysTempFileCreateDTO dto) {
         sysTempFileService.create(dto);
         return ApiResult.success();
     }
@@ -45,7 +45,7 @@ public class SysTempFileController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.temp.file.update")
     @PutMapping
-    public ApiResult update(@RequestBody SysTempFileUpdateDTO dto) {
+    public ApiResult<Void> update(@RequestBody SysTempFileUpdateDTO dto) {
         sysTempFileService.update(dto);
         return ApiResult.success();
     }
@@ -53,7 +53,7 @@ public class SysTempFileController {
     @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.temp.file.remove")
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysTempFileService.remove(dto);
         return ApiResult.success();
     }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AppStartListener implements CommandLineRunner, RedisTemplateClient {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public void run(String... args) throws Exception {
@@ -29,7 +29,7 @@ public class AppStartListener implements CommandLineRunner, RedisTemplateClient 
     }
 
     @Override
-    public RedisTemplate getTemplate() {
+    public RedisTemplate<Object, Object> getTemplate() {
         return redisTemplate;
     }
 }

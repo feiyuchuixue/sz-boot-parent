@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExcelExceptionHandler {
 
     @ExceptionHandler(value = ExcelAnalysisException.class)
-    public ApiResult handlerNotPermissionException(ExcelAnalysisException e) {
+    public ApiResult<Object> handlerNotPermissionException(ExcelAnalysisException e) {
         CommonResponseEnum message = CommonResponseEnum.EXCEL_IMPORT_ERROR.message(e.getMessage());
         // e.printStackTrace(); // 调试时可打开
         return ApiResult.error(message);

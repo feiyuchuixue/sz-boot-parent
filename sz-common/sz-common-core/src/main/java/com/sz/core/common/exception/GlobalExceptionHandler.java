@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity exceptionHandler(Exception e) {
+    public ResponseEntity<ApiResult<Object>> exceptionHandler(Exception e) {
         e.printStackTrace();
         ApiResult<Object> error = ApiResult.error(CommonResponseEnum.UNKNOWN);
-        return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -42,9 +42,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = BusinessException.class)
     @ResponseBody
-    public ApiResult handleBusinessException(BusinessException e) {
+    public ApiResult<Void> handleBusinessException(BusinessException e) {
         log.error(e.getMessage(), e);
-        return new ApiResult(e.getResponseEnum().getCode() + "", e.getMessage());
+        return new ApiResult<>(e.getResponseEnum().getCode() + "", e.getMessage());
     }
 
     /**
@@ -56,9 +56,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = BaseException.class)
     @ResponseBody
-    public ApiResult handleBaseException(BaseException e) {
+    public ApiResult<Void> handleBaseException(BaseException e) {
         log.error(e.getMessage(), e);
-        return new ApiResult(e.getResponseEnum().getCode() + "", e.getMessage());
+        return new ApiResult<>(e.getResponseEnum().getCode() + "", e.getMessage());
     }
 
     /**
@@ -68,10 +68,10 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity handleValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResult<Object>> handleValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
-        ApiResult apiResult = wrapperBindingResult(e);
-        return new ResponseEntity(apiResult, HttpStatus.UNPROCESSABLE_ENTITY);
+        ApiResult<Object> apiResult = wrapperBindingResult(e);
+        return new ResponseEntity<>(apiResult, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     /**
@@ -81,19 +81,19 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = BindException.class)
-    public ResponseEntity handleBindException(BindException e) {
+    public ResponseEntity<ApiResult<Object>> handleBindException(BindException e) {
         log.error(e.getMessage(), e);
-        ApiResult apiResult = wrapperBindingResult(e);
-        return new ResponseEntity(apiResult, HttpStatus.UNPROCESSABLE_ENTITY);
+        ApiResult<Object> apiResult = wrapperBindingResult(e);
+        return new ResponseEntity<>(apiResult, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    private ApiResult wrapperBindingResult(BindingResult bindingResult) {
+    private ApiResult<Object> wrapperBindingResult(BindingResult bindingResult) {
         StringBuilder msg = new StringBuilder();
         for (ObjectError error : bindingResult.getAllErrors()) {
             msg.append(", ");
             msg.append(error.getDefaultMessage() == null ? "" : error.getDefaultMessage());
         }
-        return new ApiResult(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
+        return new ApiResult<>(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
     }
 
     private MultiValueMap<String, String> setHeader() {

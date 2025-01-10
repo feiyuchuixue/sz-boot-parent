@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisService {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     /**
      * 发布Permission 变更消息

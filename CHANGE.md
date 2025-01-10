@@ -1,4 +1,18 @@
 # 更新日志
+## v0.8.7 （20250109）
+
+- sz-boot-parent：
+  - 新增：`sz.cors.allowedOrigins`配置项，允许用户通过配置的方式指定限定域名
+  - 修复：springboot启动时打印logback配置信息的问题 && 优化logback配置
+  - 优化：接口防抖逻辑
+    - 当全局设置忽略GET请求的参数为true时，如果GET请求的Controller未标注@Debounce注解，则跳过防抖处理；但若Controller标注了@Debounce注解，即使是GET请求，也会执行防抖逻辑。
+  - 新增：行为验证码-滑块验证。感谢([阳纸伞](https://github.com/1327614618))
+  - 新增：[演示案例] 远程搜索下拉选择组件
+- sz-admin：
+
+  - 新增：行为验证码-滑块验证
+  - 新增：远程搜索下拉选择组件
+  - 新增：[演示案例] 远程搜索下拉选择组件
 ## v0.8.6 （20250102）
 
 - sz-boot-parent：

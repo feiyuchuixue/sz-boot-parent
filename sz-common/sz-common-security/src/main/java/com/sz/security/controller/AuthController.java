@@ -1,5 +1,6 @@
 package com.sz.security.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiResult;
@@ -29,6 +30,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @SaIgnore
     @DebounceIgnore
     @Operation(summary = "登录")
     @PostMapping("login")
@@ -38,7 +40,7 @@ public class AuthController {
 
     @Operation(summary = "登出")
     @PostMapping("logout")
-    public ApiResult logout() {
+    public ApiResult<Void> logout() {
         // 注意执行顺序，最后再执行logout
         StpUtil.getTokenSession().logout(); // 清除缓存session
         StpUtil.logout(); // 退出登录

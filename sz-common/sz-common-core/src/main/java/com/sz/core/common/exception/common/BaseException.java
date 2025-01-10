@@ -1,7 +1,13 @@
 package com.sz.core.common.exception.common;
 
+import lombok.Getter;
+
+import java.io.Serial;
+
+@Getter
 public class BaseException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final IResponseEnum responseEnum;
@@ -18,14 +24,6 @@ public class BaseException extends RuntimeException {
         super(message, cause);
         this.responseEnum = responseEnum;
         this.args = args;
-    }
-
-    public IResponseEnum getResponseEnum() {
-        return responseEnum;
-    }
-
-    public Object[] getArgs() {
-        return args;
     }
 
 }

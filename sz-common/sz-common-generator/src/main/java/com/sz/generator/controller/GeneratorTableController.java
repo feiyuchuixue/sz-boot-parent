@@ -45,7 +45,7 @@ public class GeneratorTableController {
     @SaCheckPermission(value = "generator.import", orRole = GlobalConstant.SUPER_ROLE)
     @Operation(summary = "导入指定表")
     @PostMapping("import")
-    public ApiResult importTables(@RequestBody ImportTableDTO dto) {
+    public ApiResult<Void> importTables(@RequestBody ImportTableDTO dto) {
         generatorTableService.importTable(dto);
         return ApiResult.success();
     }
@@ -73,7 +73,7 @@ public class GeneratorTableController {
     @SaCheckPermission(value = "generator.update", orRole = GlobalConstant.SUPER_ROLE)
     @Operation(summary = "更新代码生成配置")
     @PutMapping()
-    public ApiResult updateGenerator(@RequestBody GeneratorDetailVO dto) {
+    public ApiResult<Void> updateGenerator(@RequestBody GeneratorDetailVO dto) {
         generatorTableService.updateGeneratorSetting(dto);
         return ApiResult.success();
     }
@@ -88,7 +88,7 @@ public class GeneratorTableController {
     @SaCheckPermission(value = "generator.remove", orRole = GlobalConstant.SUPER_ROLE)
     @Operation(summary = "删除导入的表")
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectTablesDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectTablesDTO dto) {
         generatorTableService.remove(dto);
         return ApiResult.success();
     }

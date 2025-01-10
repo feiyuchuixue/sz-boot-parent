@@ -36,7 +36,7 @@ public class SysClientController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.client.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@RequestBody SysClientCreateDTO dto) {
+    public ApiResult<Void> create(@RequestBody SysClientCreateDTO dto) {
         sysClientService.create(dto);
         return ApiResult.success();
     }
@@ -44,7 +44,7 @@ public class SysClientController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.client.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@RequestBody SysClientUpdateDTO dto) {
+    public ApiResult<Void> update(@RequestBody SysClientUpdateDTO dto) {
         sysClientService.update(dto);
         return ApiResult.success();
     }
@@ -52,7 +52,7 @@ public class SysClientController {
     @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.client.remove", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysClientService.remove(dto);
         return ApiResult.success();
     }

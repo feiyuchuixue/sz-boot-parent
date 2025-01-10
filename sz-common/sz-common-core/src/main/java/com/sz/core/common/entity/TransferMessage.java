@@ -11,14 +11,14 @@ import java.util.List;
  * @date 2023/9/8 16:10
  */
 @Data
-public class TransferMessage {
+public class TransferMessage<T> {
 
     {
         toPushAll = false;
     }
 
     @Schema(description = "消息体bean")
-    private SocketBean message;
+    private SocketBean<T> message;
 
     @Schema(description = "消息接收人")
     private List<String> toUsers = new ArrayList<>();

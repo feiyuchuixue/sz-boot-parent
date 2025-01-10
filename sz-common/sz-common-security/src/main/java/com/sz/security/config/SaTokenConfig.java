@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
+import java.util.ArrayList;
+
 /**
  * @ClassName SaTokenConfig
  * @Author sz
@@ -44,7 +46,7 @@ public class SaTokenConfig extends WebMvcConfiguration {
         // 注册 自定义 MySaInterceptor 拦截器
         registry.addInterceptor(new MySaInterceptor(handler -> {
             SaRouter.match("/**", r -> StpUtil.checkLogin()); // 这里可以结合自己业务改造
-        })).addPathPatterns("/**").excludePathPatterns(whitelistProperties.getWhitelist());
+        })).addPathPatterns("/**").excludePathPatterns(new ArrayList<>(whitelistProperties.getWhitelist()));
     }
 
 }

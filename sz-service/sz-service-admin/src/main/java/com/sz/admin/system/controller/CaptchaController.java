@@ -52,7 +52,7 @@ public class CaptchaController {
     @Debounce(time = 1000)
     @Operation(summary = "校验滑块拼图验证码")
     @PostMapping(value = "/check")
-    public ApiResult captchaCheck(@RequestBody CheckPuzzle checkPuzzle) throws Exception {
+    public ApiResult<Void> captchaCheck(@RequestBody CheckPuzzle checkPuzzle) throws Exception {
         captchaService.checkImageCode(checkPuzzle);
         return ApiResult.success();
     }

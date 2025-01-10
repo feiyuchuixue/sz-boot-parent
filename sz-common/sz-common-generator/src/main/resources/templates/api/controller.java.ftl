@@ -53,7 +53,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${createPermission}")
 </#if>
     @PostMapping
-    public ApiResult create(@RequestBody ${dtoCreateClassName} dto) {
+    public ApiResult<Void> create(@RequestBody ${dtoCreateClassName} dto) {
         ${serviceName}.create(dto);
         return ApiResult.success();
     }
@@ -63,7 +63,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${updatePermission}")
 </#if>
     @PutMapping
-    public ApiResult update(@RequestBody ${dtoUpdateClassName} dto) {
+    public ApiResult<Void> update(@RequestBody ${dtoUpdateClassName} dto) {
         ${serviceName}.update(dto);
         return ApiResult.success();
     }
@@ -73,7 +73,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${removePermission}")
 </#if>
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         ${serviceName}.remove(dto);
         return ApiResult.success();
     }

@@ -6,6 +6,7 @@ import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
+import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.service.SysMenuService;
@@ -46,7 +47,7 @@ public class SysMenuController {
     @Operation(summary = "添加菜单")
     @SaCheckPermission(value = "sys.menu.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysMenuCreateDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysMenuCreateDTO dto) {
         sysMenuService.create(dto);
         return ApiResult.success();
     }
@@ -54,7 +55,7 @@ public class SysMenuController {
     @Operation(summary = "修改菜单")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysMenuCreateDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysMenuCreateDTO dto) {
         sysMenuService.update(dto);
         return ApiResult.success();
     }
@@ -62,7 +63,7 @@ public class SysMenuController {
     @Operation(summary = "批量删除")
     @SaCheckPermission(value = "sys.menu.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysMenuService.remove(dto);
         return ApiResult.success();
     }
@@ -90,7 +91,7 @@ public class SysMenuController {
     @DebounceIgnore
     @Operation(summary = "查询用户具有的菜单")
     @GetMapping("/menu")
-    public ApiResult queryMenuByUserId() {
+    public ApiResult<List<SysMenuVO>> queryMenuByUserId() {
         Long userId = StpUtil.getLoginIdAsLong();
         List<SysMenuVO> menuList = sysMenuService.findMenuListByUserId(userId);
         return ApiResult.success(menuList);
@@ -98,7 +99,7 @@ public class SysMenuController {
 
     @Operation(summary = "查询菜单按钮权限是否存在")
     @GetMapping("/btn/exists")
-    public ApiResult findBtnPermission(MenuPermissionDTO dto) {
+    public ApiResult<MenuPermissionVO> findBtnPermission(MenuPermissionDTO dto) {
         return ApiResult.success(sysMenuService.hasExistsPermissions(dto));
     }
 
@@ -127,7 +128,7 @@ public class SysMenuController {
     @Operation(summary = "修改数据权限状态")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("/datarole/change/{id}")
-    public ApiResult changeDataRole(@PathVariable String id) {
+    public ApiResult<Void> changeDataRole(@PathVariable String id) {
         sysMenuService.changeMenuDataScope(id);
         return ApiResult.success();
     }

@@ -1,5 +1,6 @@
 package com.sz.core.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.Utils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,13 +8,13 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  * @author: sz
  * @date: 2022/8/25 11:12
  * @description: result parent类
  */
+@JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 @Data
 public class ApiResult<T> implements Serializable {
 
@@ -51,9 +52,9 @@ public class ApiResult<T> implements Serializable {
      * @param <T>
      * @return
      */
-    public static <T> ApiResult success() {
-        ApiResult<T> apiResult = new ApiResult();
-        apiResult.data = (T) new HashMap<>(1);
+    public static <T> ApiResult<T> success() {
+        ApiResult<T> apiResult = new ApiResult<>();
+        apiResult.data = null;
         return apiResult;
     }
 
@@ -66,7 +67,7 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> success(T data) {
         ApiResult<T> apiResult = new ApiResult<>();
-        apiResult.data = (data != null) ? data : (T) new HashMap<>(1);
+        apiResult.data = data;
         return apiResult;
     }
 
@@ -79,7 +80,7 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> success(T data, Object param) {
         ApiResult<T> apiResult = new ApiResult<>();
-        apiResult.data = (data != null) ? data : (T) new HashMap<>(1);
+        apiResult.data = data;
         if (Utils.isNotNull(param)) {
             apiResult.param = param;
         }
@@ -90,7 +91,7 @@ public class ApiResult<T> implements Serializable {
         ApiResult<T> apiResult = new ApiResult<>();
         apiResult.code = getResponseCode(responseEnum);
         apiResult.message = responseEnum.getMessage();
-        apiResult.data = (T) new HashMap<>(1);
+        apiResult.data = null;
         return apiResult;
     }
 

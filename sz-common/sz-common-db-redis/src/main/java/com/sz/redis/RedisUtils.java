@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisUtils {
 
-    private static final RedisTemplate TEMPLATE = SpringApplicationContextUtils.getBean(RedisTemplateClient.class).getTemplate();
+    private static final RedisTemplate<Object, Object> TEMPLATE = SpringApplicationContextUtils.getBean(RedisTemplateClient.class).getTemplate();
 
     public static String getKey(String constant, String... value) {
         return StringUtils.getRealKey(constant, value);
@@ -52,7 +52,7 @@ public class RedisUtils {
         return TEMPLATE.opsForValue().get(key);
     }
 
-    public static RedisTemplate getRestTemplate() {
+    public static RedisTemplate<Object, Object> getRestTemplate() {
         return TEMPLATE;
     }
 

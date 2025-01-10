@@ -35,7 +35,7 @@ public class SysConfigController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.config.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@RequestBody SysConfigCreateDTO dto) {
+    public ApiResult<Void> create(@RequestBody SysConfigCreateDTO dto) {
         sysConfigService.create(dto);
         return ApiResult.success();
     }
@@ -43,7 +43,7 @@ public class SysConfigController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.config.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@RequestBody SysConfigUpdateDTO dto) {
+    public ApiResult<Void> update(@RequestBody SysConfigUpdateDTO dto) {
         sysConfigService.update(dto);
         return ApiResult.success();
     }
@@ -51,7 +51,7 @@ public class SysConfigController {
     @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.config.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysConfigService.remove(dto);
         return ApiResult.success();
     }
