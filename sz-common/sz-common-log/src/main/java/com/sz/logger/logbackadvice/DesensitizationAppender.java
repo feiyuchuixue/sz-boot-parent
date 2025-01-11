@@ -37,7 +37,7 @@ public class DesensitizationAppender {
             DesensitizationUtil util = new DesensitizationUtil();
             // 获取替换后的日志信息
             String changeMessage = util.customChange(eventFormattedMessage);
-            if (!(null == changeMessage || "".equals(changeMessage))) {
+            if (!(null == changeMessage || changeMessage.isEmpty())) {
                 try {
                     // 利用反射的方式，将替换后的日志设置到原event对象中去
                     Class<? extends LoggingEvent> eventClass = event.getClass();

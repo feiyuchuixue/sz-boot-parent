@@ -70,6 +70,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         PointVO pointVO = redisCache.getCaptcha(checkPuzzle.getRequestId());
         redisCache.clearCaptcha(requestId); // 用后即消
         String str = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey()); // 解密，获取x位移距离
+        assert str != null;
         int posX = Integer.parseInt(str);
         CommonResponseEnum.CAPTCHA_FAILED.assertTrue(Math.abs(posX - pointVO.getX()) > 3);
     }

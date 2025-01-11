@@ -46,8 +46,8 @@ public class CollectorUtils {
      * @return List<T>
      */
     public static <T> List<T> union(List<T> list1, List<T> list2) {
-        List<T> listAll = new ArrayList<>(list1);  // 直接用list1初始化，避免冗余的 parallelStream
-        listAll.addAll(list2);  // 合并list2到listAll
+        List<T> listAll = new ArrayList<>(list1); // 直接用list1初始化，避免冗余的 parallelStream
+        listAll.addAll(list2); // 合并list2到listAll
         return listAll;
     }
 

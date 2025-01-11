@@ -132,10 +132,7 @@ public class YmlUtils {
             // 获取key为"patterns"的值(List<Map<String, Object>>)
             List<Map<String, Object>> list = (List<Map<String, Object>>) patterns;
             if (!CollectionUtils.isEmpty(list)) {
-                Iterator<Map<String, Object>> iterator = list.iterator();
-                // 黄线强迫症，用for代替while
-                for (; iterator.hasNext();) {
-                    Map<String, Object> maps = (Map<String, Object>) iterator.next();
+                for (Map<String, Object> maps : list) {
                     assembleMap(map, maps);
                 }
                 return map;

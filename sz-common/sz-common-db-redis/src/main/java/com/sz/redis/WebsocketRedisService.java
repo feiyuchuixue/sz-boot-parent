@@ -150,11 +150,10 @@ public class WebsocketRedisService {
      * @return
      */
     public long getOnlineUserCount() {
-        String onlineUserKey = WEBSOCKET_ONLINE_USER;
 
         // 获取在线用户列表的大小，即在线用户数
 
-        return redisTemplate.opsForHash().size(onlineUserKey);
+        return redisTemplate.opsForHash().size(WEBSOCKET_ONLINE_USER);
     }
 
     /**

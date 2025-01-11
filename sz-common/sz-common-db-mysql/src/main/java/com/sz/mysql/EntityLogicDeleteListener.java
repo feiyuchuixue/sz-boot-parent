@@ -36,7 +36,8 @@ public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
         boolean isLogin = StpUtil.isLogin();
         if (isLogin && columns.contains(FIELD_DELETE_ID)) {
-            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS).append(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
+            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS)
+                    .append(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         }
 
         return sqlBuilder.toString();

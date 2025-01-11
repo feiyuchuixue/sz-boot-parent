@@ -140,13 +140,13 @@ public class DesensitizationUtil {
                                 String originalPatternValues = patternVales;
                                 // 判断这个规则是否带括号，带括号的需要把括号拿出来 - 核心规则
                                 String filterData = this.getBracketPattern(patternVales);
-                                if (!"".equals(filterData)) {
+                                if (!filterData.isEmpty()) {
                                     patternVales = filterData;
                                 }
                                 // 以逗号分割
                                 String[] split = patternVales.split(",");
                                 value = getReplaceValue(value, patternVales, split, originalPatternValues);
-                                if (value != null && !"".equals(value)) {
+                                if (value != null && !value.isEmpty()) {
                                     flag = true;
                                     String origin = regexMatcher.group(1) + regexMatcher.group(2) + regexMatcher.group(3);
                                     originalMessage = originalMessage.replace(origin, regexMatcher.group(1) + regexMatcher.group(2) + value);
@@ -274,10 +274,8 @@ public class DesensitizationUtil {
         if (pattern != null && !pattern.isEmpty()) {
             // 获取Key的Set集合
             Set<String> keySet = pattern.keySet();
-            Iterator<String> iterator = keySet.iterator();
             // 黄线强迫症，用for代替while
-            for (; iterator.hasNext();) {
-                String key = iterator.next();
+            for (String key : keySet) {
                 // 把key转换为小写字符串
                 String newKey = key.toLowerCase();
                 // 重新放入
@@ -307,10 +305,8 @@ public class DesensitizationUtil {
             if (patternVale instanceof List) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>) patternVale;
                 if (!CollectionUtils.isEmpty(list)) {
-                    Iterator<Map<String, Object>> iterator = list.iterator();
                     // 遍历每一种规则
-                    for (; iterator.hasNext();) {
-                        Map<String, Object> map = iterator.next();
+                    for (Map<String, Object> map : list) {
                         String patternValue = this.getPatternByMap(map, newValue);
                         // 如果是空的，表示没匹配上该规则，去匹配下一个规则
                         if (!"".equals(patternValue)) {
@@ -352,7 +348,7 @@ public class DesensitizationUtil {
                 position = (String) positionObj;
             }
             // 如果日志中的值能够匹配，直接返回其对应的规则
-            if (!"".equals(customRegex) && value.matches(customRegex)) {
+            if (!customRegex.isEmpty() && value.matches(customRegex)) {
                 return position;
             } else {
                 // 如果不能匹配到正则，就看他是不是内置规则
@@ -362,7 +358,7 @@ public class DesensitizationUtil {
                     defaultRegex = (String) defaultRegexObj;
                 }
                 // 这段代码写的多多少少感觉有点问题，可以写在一个if里，但是阿里检测代码的工具会警告
-                if (!"".equals(defaultRegex)) {
+                if (!defaultRegex.isEmpty()) {
                     if (IDENTITY.equals(defaultRegex) && isIdentity(value)) {
                         return position;
                     } else if (EMAIL.equals(defaultRegex) && isEmail(value)) {
