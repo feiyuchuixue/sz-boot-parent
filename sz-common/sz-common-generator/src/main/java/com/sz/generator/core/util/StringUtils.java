@@ -330,9 +330,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         StringBuilder sb = new StringBuilder();
         // 前置字符是否大写
-        boolean preCharIsUpperCase = true;
+        boolean preCharIsUpperCase;
         // 当前字符是否大写
-        boolean curreCharIsUpperCase = true;
+        boolean curreCharIsUpperCase;
         // 下一字符是否大写
         boolean nexteCharIsUpperCase = true;
         for (int i = 0; i < str.length(); i++) {

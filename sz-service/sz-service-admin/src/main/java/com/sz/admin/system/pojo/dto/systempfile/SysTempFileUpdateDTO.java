@@ -15,7 +15,7 @@ import lombok.Data;
 @Schema(description = "SysTempFile修改DTO")
 public class SysTempFileUpdateDTO {
 
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "文件ID")

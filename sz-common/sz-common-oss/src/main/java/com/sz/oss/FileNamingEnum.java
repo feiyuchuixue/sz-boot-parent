@@ -13,5 +13,5 @@ public enum FileNamingEnum {
     UUID,
     // 优先使用文件的原始名称，以保持其直观性和易于识别。如果出现文件名冲突，将通过添加时间戳（时分秒.毫秒,eg:
     // 162615.587）来解决，确保每个文件名的唯一性。
-    ORIGINAL;
+    ORIGINAL
 }

@@ -22,7 +22,7 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
 
     @Override
     public void handleTransferMessage(TransferMessage tm) {
-        log.info(" sz-service-websocket [service-to-ws] tm = " + JsonUtils.toJsonString(tm));
+        log.info(" sz-service-websocket [service-to-ws] tm = {}", JsonUtils.toJsonString(tm));
         SocketBean tmMessage = tm.getMessage();
         SocketChannelEnum channel = tmMessage.getChannel();
         switch (tmMessage.getScope()) {

@@ -53,6 +53,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         CommonResponseEnum.FILE_NOT_EXISTS.assertNull(sliderPuzzle);
         redisCache.limitCaptcha(requestId);
         String expireTime = SysConfigUtils.getConfValue("sys.captcha.expire");
+        assert sliderPuzzle != null;
         PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey());
 
         redisCache.clearCaptcha(requestId); // 清除

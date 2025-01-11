@@ -7,5 +7,5 @@ package com.sz.oss;
  * @Version 1.0
  */
 public enum OssProviderEnum {
-    ALIYUN, QINIU, TENCENT, MINIO;
+    ALIYUN, QINIU, TENCENT, MINIO
 }

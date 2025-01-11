@@ -31,7 +31,7 @@ public class ServiceToWsListener implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         System.out.println("订阅到的消息");
         TransferMessage tm = (TransferMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [service-to-ws] tm = " + JsonUtils.toJsonString(tm));
+        log.info(" [service-to-ws] tm = {}", JsonUtils.toJsonString(tm));
         // 调用所有实现了TransferMessageHandler接口的处理器
         for (ServiceToWsMsgHandler handler : serviceToWsMsgHandlers) {
             handler.handleTransferMessage(tm);

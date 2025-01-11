@@ -16,7 +16,6 @@ import com.sz.core.util.Utils;
 import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -74,7 +73,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, String> ruleMap = loginUser.getRuleMap();
-            String tableName = "";
+            String tableName;
             Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
             if (tableClazzAnnotation == null) {
                 String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
@@ -126,7 +125,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             }
 
         } catch (Exception e) {
-            log.error(" PermissionDialect Exception :" + e.getMessage());
+            log.error(" PermissionDialect Exception :{}", e.getMessage());
         } finally {
             super.prepareAuth(queryWrapper, operateType);
         }
@@ -157,17 +156,17 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private static Map<String, QueryTable> buildTableMap(List<QueryTable> queryTables, boolean isJoin, List<QueryTable> joinTables) {
         Map<String, QueryTable> tableMap = new HashMap<>();
         for (QueryTable queryTable : queryTables) {
-            if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) { // TODO
-                                                                                            // 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构
-                                                                                            // queryTables ==[SELECT *
-                                                                                            // FROM TABLE]
+            if (queryTable.getName() == null || queryTable.getName().trim().isEmpty()) { // TODO
+                                                                                         // 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构
+                                                                                         // queryTables ==[SELECT *
+                                                                                         // FROM TABLE]
                 return null;
             }
             tableMap.put(queryTable.getName(), queryTable);
         }
         if (isJoin) {
             for (QueryTable joinTable : joinTables) {
-                if (joinTable.getName() != null && !("").equals(joinTable.getName().trim())) {
+                if (joinTable.getName() != null && !joinTable.getName().trim().isEmpty()) {
                     tableMap.put(joinTable.getName(), joinTable);
                 }
             }
@@ -269,11 +268,8 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private boolean isFieldExists(Class<?> clazz, String fieldName) {
         try {
             // 尝试获取类中的字段
-            Field field = clazz.getDeclaredField(fieldName);
-            // 检查字段是否为null
-            if (field != null) {
-                return true;
-            }
+            clazz.getDeclaredField(fieldName);
+            return true;
         } catch (NoSuchFieldException e) {
             log.error(" [DataScope]: Entity `{}` Filed `{}` not found.", clazz.getSimpleName(), fieldName);
         }
@@ -392,9 +388,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             return null;
         String field;
         field = FIELD_CREATE_ID;
-        QueryCondition queryCondition = QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.IN,
-                customUserIds);
-        return queryCondition;
+        return QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.IN, customUserIds);
     }
 
     /**

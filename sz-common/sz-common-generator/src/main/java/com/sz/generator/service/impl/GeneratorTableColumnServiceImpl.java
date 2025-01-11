@@ -31,15 +31,12 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableId(Long tableId) {
         QueryWrapper wrapper = QueryWrapper.create().eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc();
-        List<GeneratorTableColumn> list = list(wrapper);
-        return list;
+        return list(wrapper);
     }
 
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableName(Long tableId) {
-        List<GeneratorTableColumn> list = QueryChain.of(mapper).eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc()
-                .list();
-        return list;
+        return QueryChain.of(mapper).eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc().list();
     }
 
     @Override

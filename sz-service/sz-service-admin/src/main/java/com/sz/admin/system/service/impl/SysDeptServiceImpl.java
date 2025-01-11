@@ -201,6 +201,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
             setUseTotal(deptTreeVOS);
         }
         DeptTreeVO root = TreeUtils.getRoot(DeptTreeVO.class);
+        assert root != null;
         root.setName("根部门");
         List<DeptTreeVO> trees = TreeUtils.buildTree(deptTreeVOS, root, excludeNodeId);
         if (appendRoot != null && !appendRoot) {
@@ -256,8 +257,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     private static QueryWrapper buildQueryWrapper(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create().from(SysDept.class);
-        return wrapper;
+        return QueryWrapper.create().from(SysDept.class);
     }
 
 }

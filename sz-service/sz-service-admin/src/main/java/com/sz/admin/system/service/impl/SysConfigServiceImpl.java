@@ -85,10 +85,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public boolean hasConfKey(String key) {
-        if (redisCache.hasConfKey(key)) {
-            return true;
-        }
-        return false;
+        return redisCache.hasConfKey(key);
     }
 
     @Override

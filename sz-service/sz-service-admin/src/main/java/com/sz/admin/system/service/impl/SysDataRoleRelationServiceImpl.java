@@ -36,7 +36,7 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
             remove(wrapper);
         }
         List<SysDataRoleRelation> roleRelations = new ArrayList<>();
-        SysDataRoleRelation roleRelation = null;
+        SysDataRoleRelation roleRelation;
         for (Long relationId : relationIds) {
             roleRelation = new SysDataRoleRelation();
             roleRelation.setRoleId(roleId);

@@ -44,8 +44,9 @@ public class WechatService {
                     .uri(WECHAT_TOKEN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret()).retrieve()
                     .toEntity(AccessTokenResult.class);
             AccessTokenResult result = entity.getBody();
+            assert result != null;
             if (validSuccess(result)) {
-                Integer expireTime = result.getExpires_in() - 1200;
+                int expireTime = result.getExpires_in() - 1200;
                 RedisUtils.getRestTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccess_token(), expireTime, TimeUnit.SECONDS);
                 return result.getAccess_token();
             } else {
@@ -67,8 +68,7 @@ public class WechatService {
         ResponseEntity<String> entity = RestClient.create().get()
                 .uri(WECHAT_MINI_LOGIN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret(), code, accessToken).retrieve()
                 .toEntity(String.class);
-        LoginInfoResult loginInfoResult = JsonUtils.parseObject(entity.getBody(), LoginInfoResult.class);
-        return loginInfoResult;
+        return JsonUtils.parseObject(entity.getBody(), LoginInfoResult.class);
     }
 
     /**

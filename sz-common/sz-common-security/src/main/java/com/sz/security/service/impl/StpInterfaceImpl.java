@@ -24,16 +24,14 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         LoginUser loginUser = LoginUtils.getLoginUser();
-        List<String> list = new ArrayList<>();
-        list.addAll(loginUser.getPermissions());
-        return list;
+        assert loginUser != null;
+        return new ArrayList<>(loginUser.getPermissions());
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         LoginUser loginUser = LoginUtils.getLoginUser();
-        List<String> list = new ArrayList<String>();
-        list.addAll(loginUser.getRoles());
-        return list;
+        assert loginUser != null;
+        return new ArrayList<>(loginUser.getRoles());
     }
 }

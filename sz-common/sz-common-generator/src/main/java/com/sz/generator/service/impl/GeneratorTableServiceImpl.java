@@ -91,8 +91,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             String moduleName = generatorProperties.getModuleName();
             String serviceName = generatorProperties.getServiceName();
             String projectRootPath = System.getProperty("user.dir");
-            // pathApi = projectRootPath + File.separator + "sz-service" + File.separator +
-            // "sz-service-admin";
             pathApi = projectRootPath + File.separator + moduleName + File.separator + serviceName;
             pathWeb = generatorProperties.getPath().getWeb();
         }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sz.admin.system.pojo.po.table.SysRoleMenuTableDef.SYS_ROLE_MENU;
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 
 /**
@@ -70,7 +71,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Override
     public SysRoleMenuVO queryRoleMenu(Long roleId) {
         List<MenuTreeVO> menuTreeVOS = sysMenuService.queryRoleMenuTree(true);
-        QueryWrapper wrapper = QueryWrapper.create().select(SysRoleMenu::getMenuId).eq(SysRoleMenu::getRoleId, roleId);
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_ROLE_MENU.MENU_ID).eq(SysRoleMenu::getRoleId, roleId);
         List<SysRoleMenu> list = list(wrapper);
         List<String> selectIds = new ArrayList<>();
         if (Utils.isNotNull(list)) {

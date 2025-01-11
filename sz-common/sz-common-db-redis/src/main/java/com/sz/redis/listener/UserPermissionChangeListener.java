@@ -30,7 +30,7 @@ public class UserPermissionChangeListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         UserPermissionChangeMessage upcm = (UserPermissionChangeMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [user change permission ] tm = " + JsonUtils.toJsonString(upcm));
+        log.info(" [user change permission ] tm = {}", JsonUtils.toJsonString(upcm));
         // 调用所有实现了TransferMessageHandler接口的处理器
         for (UserPermissionChangeMsgHandler handler : messageHandlers) {
             handler.handlerMsg(upcm);

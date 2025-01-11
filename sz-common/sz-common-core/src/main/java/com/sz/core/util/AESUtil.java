@@ -64,7 +64,6 @@ public class AESUtil {
         kgen.init(128);
         Cipher cipher = Cipher.getInstance(ALGORITHMSTR);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.getBytes(), "AES"));
-
         return cipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
     }
 

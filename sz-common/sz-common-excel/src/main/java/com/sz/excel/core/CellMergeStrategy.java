@@ -48,10 +48,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
 
     public CellMergeStrategy(List<?> list, int rowIndex) {
         boolean hasTitleBool;
-        hasTitleBool = false;
-        if (rowIndex > 0) {
-            hasTitleBool = true;
-        }
+        hasTitleBool = rowIndex > 0;
         this.hasTitle = hasTitleBool;
         this.rowIndex = rowIndex;
         this.cellList = handle(list, hasTitle);

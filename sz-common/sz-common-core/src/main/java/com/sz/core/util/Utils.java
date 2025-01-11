@@ -61,7 +61,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(List<?> list) {
-        return list != null && list.size() > 0;
+        return list != null && !list.isEmpty();
     }
 
     public static Integer getIntVal(Object obj) {

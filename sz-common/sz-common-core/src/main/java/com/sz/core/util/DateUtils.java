@@ -42,8 +42,7 @@ public class DateUtils {
         // 创建 SimpleDateFormat 实例，指定日期格式
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // 使用 SimpleDateFormat 将 Date 对象转换为字符串
-        String dateString = sdf.format(datetime);
-        return dateString;
+        return sdf.format(datetime);
     }
 
     // 将 LocalDateTime 转换为 Date

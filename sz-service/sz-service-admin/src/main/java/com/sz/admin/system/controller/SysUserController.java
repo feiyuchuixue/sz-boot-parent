@@ -72,7 +72,7 @@ public class SysUserController {
     }
 
     @DebounceIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @Operation(summary = "查询分页列表")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping

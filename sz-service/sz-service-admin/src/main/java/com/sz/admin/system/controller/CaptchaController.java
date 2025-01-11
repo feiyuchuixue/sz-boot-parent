@@ -32,7 +32,7 @@ public class CaptchaController {
     private final CaptchaService captchaService;
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @GetMapping("status")
     @Operation(summary = "验证码是否启用")
     public ApiResult<Boolean> captchaStatus() {
@@ -41,7 +41,7 @@ public class CaptchaController {
     }
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @Operation(summary = "获取验证码")
     @PostMapping(value = "/get")
     public ApiResult<SliderPuzzle> getImageCode(HttpServletRequest request) {
@@ -49,7 +49,7 @@ public class CaptchaController {
     }
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @Operation(summary = "校验滑块拼图验证码")
     @PostMapping(value = "/check")
     public ApiResult<Void> captchaCheck(@RequestBody CheckPuzzle checkPuzzle) throws Exception {

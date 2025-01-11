@@ -32,6 +32,7 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
         if (StpUtil.isLogin()) {
             setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
             LoginUser loginUser = LoginUtils.getLoginUser();
+            assert loginUser != null;
             List<Long> deptOptions = loginUser.getDepts();
             if (deptOptions.isEmpty())
                 return;

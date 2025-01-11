@@ -40,7 +40,7 @@ public class SysUserDeptServiceImpl extends ServiceImpl<SysUserDeptMapper, SysUs
         }
 
         List<SysUserDept> batchList = new ArrayList<>();
-        SysUserDept userDept = null;
+        SysUserDept userDept;
         for (Long deptId : deptIds) {
             for (Long userId : userIds) {
                 userDept = new SysUserDept();

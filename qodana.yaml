@@ -4,3 +4,9 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+exclude:
+  - name: All
+    paths:
+      - sz-common\sz-common-log
+      - sz-service\sz-service-websocket
+      - sz-common\sz-common-generator\src\main\java\com\sz\generator\core\util\BuildTemplateUtils.java

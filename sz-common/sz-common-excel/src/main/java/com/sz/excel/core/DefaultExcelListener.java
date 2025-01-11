@@ -104,7 +104,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
      */
     @Override
     public void onException(Exception exception, AnalysisContext context) {
-        String errMsg = null;
+        String errMsg;
         if (exception instanceof ExcelDataConvertException excelDataConvertException) {
             // 如果是某一个单元格的转换异常 能获取到具体行号
             Integer rowIndex = excelDataConvertException.getRowIndex();

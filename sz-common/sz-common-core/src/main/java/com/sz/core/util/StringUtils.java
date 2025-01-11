@@ -75,7 +75,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     public static String replacePlaceholders(String input, String... args) {
         // 编译一个正则表达式模式，用于匹配 ${...} 形式的占位符
-        Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
+        Pattern pattern = Pattern.compile("\\$\\{([^}]+)}");
         Matcher matcher = pattern.matcher(input);
 
         // 使用StringBuilder来构建最终的字符串，它比StringBuffer更高效

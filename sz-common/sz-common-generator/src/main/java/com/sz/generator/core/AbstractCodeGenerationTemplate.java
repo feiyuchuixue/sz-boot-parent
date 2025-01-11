@@ -101,7 +101,7 @@ public abstract class AbstractCodeGenerationTemplate {
             String outputPath = buildAbsoluteOutputFilePath(rootPath, getProjectPrefix(), zipPath);
             outputMsg = saveToFile(outputPath, template, model);
         } else {
-            if (getZipParentPackage() != null && !("").equals(getZipParentPackage().trim())) {
+            if (getZipParentPackage() != null && !getZipParentPackage().trim().isEmpty()) {
                 zipPath = Paths.get(getZipParentPackage(), zipPath).toString();
             }
         }
@@ -117,7 +117,7 @@ public abstract class AbstractCodeGenerationTemplate {
      * @return
      */
     private static String buildAbsoluteOutputFilePath(String rootPath, String projectPrefix, String zipPath) {
-        return Paths.get(rootPath, projectPrefix, zipPath.toString()).toString();
+        return Paths.get(rootPath, projectPrefix, zipPath).toString();
     }
 
     /**

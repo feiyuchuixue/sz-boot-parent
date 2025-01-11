@@ -20,7 +20,7 @@ public class SaExceptionHandler {
 
     @ExceptionHandler(NotLoginException.class)
     public ApiResult<Void> handlerNotLoginException(NotLoginException e) {
-        String message = "";
+        String message;
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
             message = "未能读取到有效 token";
         } else if (e.getType().equals(NotLoginException.INVALID_TOKEN) || e.getType().equals(NotLoginException.TOKEN_FREEZE)) {

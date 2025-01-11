@@ -5,6 +5,7 @@ import com.mybatisflex.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import com.sz.mysql.EntityChangeListener;
 import java.time.LocalDateTime;
@@ -21,10 +22,11 @@ import java.time.LocalDateTime;
 @Schema(description = "小程序用户表")
 public class MiniUser implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Integer id;
 
     @Schema(description = "关联的系统用户ID")

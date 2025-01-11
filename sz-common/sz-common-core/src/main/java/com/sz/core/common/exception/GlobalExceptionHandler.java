@@ -7,8 +7,6 @@ import com.sz.core.common.exception.common.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -94,12 +92,6 @@ public class GlobalExceptionHandler {
             msg.append(error.getDefaultMessage() == null ? "" : error.getDefaultMessage());
         }
         return new ApiResult<>(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
-    }
-
-    private MultiValueMap<String, String> setHeader() {
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        // headers.add("X-Trace-Id", TraceLocal.getTraceId());
-        return headers;
     }
 
 }

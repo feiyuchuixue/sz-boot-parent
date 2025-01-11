@@ -159,7 +159,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public List<DictVO> getDictByType(String typeCode) {
-        List<DictVO> dictVOS = new ArrayList<>();
+        List<DictVO> dictVOS;
         if (redisCache.hasHashKey(typeCode)) {
             dictVOS = redisCache.getDictByType(typeCode);
         } else {

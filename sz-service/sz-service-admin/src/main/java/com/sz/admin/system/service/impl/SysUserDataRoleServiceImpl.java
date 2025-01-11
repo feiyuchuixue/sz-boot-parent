@@ -48,7 +48,7 @@ public class SysUserDataRoleServiceImpl extends ServiceImpl<SysUserDataRoleMappe
             remove(wrapper);
         }
         List<SysUserDataRole> dataRoles = new ArrayList<>();
-        SysUserDataRole dataRole = null;
+        SysUserDataRole dataRole ;
         for (Long roleId : dto.getRoleIds()) {
             dataRole = new SysUserDataRole();
             dataRole.setUserId(dto.getUserId());

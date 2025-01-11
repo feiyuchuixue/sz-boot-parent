@@ -25,7 +25,7 @@ public class SysUserDataRole implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "数据角色id (sys_data_role_id)")

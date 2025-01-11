@@ -103,7 +103,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             deep = parentDeep + 1;
         }
         menu.setDeep(deep);
-        menu.setCreateId(LoginUtils.getLoginUser().getUserInfo().getId());
+        menu.setCreateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         menu.setHasChildren("F");
         save(menu);
         this.mapper.syncTreeDeep();
@@ -128,7 +128,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         // 菜单是否存在
         wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
         CommonResponseEnum.NOT_EXISTS.message("菜单不存在").assertTrue(count(wrapper) < 1);
-        menu.setUpdateId(LoginUtils.getLoginUser().getUserInfo().getId());
+        menu.setUpdateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         menu.setUpdateTime(LocalDateTime.now());
         updateById(menu);
         this.mapper.syncTreeDeep();
@@ -228,8 +228,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
         List<SysMenu> list = list(wrapper);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
-        List<MenuTreeVO> tree = TreeUtils.buildTree(menuTreeVOS, root, nodeId);
-        return tree;
+        return TreeUtils.buildTree(menuTreeVOS, root, nodeId);
     }
 
     @Override
@@ -387,8 +386,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return
      */
     public List<String> findPermission() {
-        List<String> permissions = sysUserRoleMapper.queryPermissionByUserId(StpUtil.getLoginIdAsLong());
-        return permissions;
+        return sysUserRoleMapper.queryPermissionByUserId(StpUtil.getLoginIdAsLong());
     }
 
     @Override
@@ -396,8 +394,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         QueryWrapper queryWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_MENU.PERMISSIONS)).from(SYS_MENU).leftJoin(SYS_ROLE_MENU)
                 .on(SYS_MENU.ID.eq(SYS_ROLE_MENU.MENU_ID)).leftJoin(SYS_USER_ROLE).on(SYS_ROLE_MENU.ROLE_ID.eq(SYS_USER_ROLE.ROLE_ID))
                 .where(SYS_USER_ROLE.USER_ID.eq(userId)).where(SYS_MENU.PERMISSIONS.isNotNull()).where(SYS_MENU.PERMISSIONS.ne(""));
-        List<String> list = listAs(queryWrapper, String.class);
-        return list;
+        return listAs(queryWrapper, String.class);
     }
 
     @Override
@@ -445,8 +442,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public List<MenuTreeVO> queryDataRoleMenu() {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq("1002002"));
         List<SysMenu> list = list(wrapper);
-        List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
-        return menuTreeVOS;
+        return BeanCopyUtils.copyList(list, MenuTreeVO.class);
     }
 
     @Override

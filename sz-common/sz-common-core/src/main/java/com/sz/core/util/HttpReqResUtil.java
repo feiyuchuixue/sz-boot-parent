@@ -2,6 +2,7 @@ package com.sz.core.util;
 
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import java.util.Map;
  * @date: 2023/2/21 10:04
  * @description:
  */
+@Slf4j
 public class HttpReqResUtil {
 
     /**
@@ -103,25 +105,26 @@ public class HttpReqResUtil {
             if (inputStream != null) {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 char[] charBuffer = new char[128];
-                int bytesRead = -1;
+                int bytesRead;
                 while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
                     stringBuilder.append(charBuffer, 0, bytesRead);
                 }
-            } else {
             }
         } catch (IOException ex) {
-
+            log.error("Error reading the request body...", ex);
         } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
+                    log.error("Error closing inputStream...", e);
                 }
             }
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
                 } catch (IOException e) {
+                    log.error("Error closing bufferedReader...", e);
                 }
             }
         }
@@ -137,8 +140,7 @@ public class HttpReqResUtil {
     public static Map<String, Object> getParameter(ServletRequest request) {
         Map<String, Object> paramMap = new HashMap<>();
         Enumeration<String> a = request.getParameterNames();
-        String param = null;
-        String val = "";
+        String param, val;
         while (a.hasMoreElements()) {
             // 参数名
             param = a.nextElement();

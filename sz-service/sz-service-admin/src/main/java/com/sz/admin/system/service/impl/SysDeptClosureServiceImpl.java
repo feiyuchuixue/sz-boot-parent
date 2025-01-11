@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.sz.admin.system.pojo.po.table.SysDeptClosureTableDef.SYS_DEPT_CLOSURE;
 
@@ -98,7 +99,7 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      */
     @Override
     public void move(Long nodeId, Long newNodeId) {
-        if (nodeId == newNodeId)
+        if (Objects.equals(nodeId, newNodeId))
             return;
         List<SysDeptClosure> closures = this.mapper.selectDetachTree(nodeId);
         for (SysDeptClosure closure : closures) {

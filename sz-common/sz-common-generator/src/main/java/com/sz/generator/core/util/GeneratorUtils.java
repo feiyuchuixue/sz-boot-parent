@@ -232,7 +232,7 @@ public class GeneratorUtils {
 
     private static void setStringTypeAttributes(String columnType, GeneratorTableColumn tableColumn) {
         Integer columnLength = getColumnLength(columnType);
-        String htmlType = (columnLength != null && columnLength >= 500) ? GeneratorConstants.HTML_TEXTAREA : GeneratorConstants.HTML_INPUT;
+        String htmlType = columnLength >= 500 ? GeneratorConstants.HTML_TEXTAREA : GeneratorConstants.HTML_INPUT;
         tableColumn.setHtmlType(htmlType);
     }
 

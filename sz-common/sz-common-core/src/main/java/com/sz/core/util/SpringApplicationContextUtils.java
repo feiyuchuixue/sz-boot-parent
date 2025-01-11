@@ -11,6 +11,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -59,8 +60,7 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
      * @throws BeansException
      */
     public static <T> T getBean(Class<T> clz) throws BeansException {
-        T result = (T) beanFactory.getBean(clz);
-        return result;
+        return beanFactory.getBean(clz);
     }
 
     /**
@@ -185,12 +185,12 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
         SpringApplicationContextUtils.beanFactory = beanFactory;
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         SpringApplicationContextUtils.applicationContext = applicationContext;
     }
 
@@ -205,10 +205,7 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
      */
     public static boolean isLocalEnv() {
         List<String> localEnvArr = Arrays.asList(localEnv);
-        if (localEnvArr.contains(getActive())) {
-            return true;
-        }
-        return false;
+        return localEnvArr.contains(getActive());
     }
 
 }

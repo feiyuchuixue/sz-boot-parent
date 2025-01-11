@@ -30,7 +30,7 @@ public class WsToServiceListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         TransferMessage tm = (TransferMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [ws-to-service] tm = " + JsonUtils.toJsonString(tm));
+        log.info(" [ws-to-service] tm = {}", JsonUtils.toJsonString(tm));
         // 调用所有实现了TransferMessageHandler接口的处理器
         for (WsToServiceMsgHandler handler : messageHandlers) {
             handler.handlerMsg(tm);

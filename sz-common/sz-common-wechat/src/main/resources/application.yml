@@ -1,4 +1,5 @@
-wechat:
-  mini:
-    app-id: your-app-id
-    app-secret: your-app-secret
+# sz-common-wechat模块需要的配置
+#wechat:
+#  mini:
+#    app-id: your-app-id
+#    app-secret: your-app-secret

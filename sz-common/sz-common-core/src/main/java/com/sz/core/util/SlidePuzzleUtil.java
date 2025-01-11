@@ -84,7 +84,7 @@ public class SlidePuzzleUtil {
         Random random = new Random();
         int widthDifference = originalWidth - jigsawWidth;
         int heightDifference = originalHeight - jigsawHeight;
-        int x, y = 0;
+        int x, y;
 
         if (widthDifference <= 0) {
             x = 5;

@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-;
-
 /**
  * <p>
  * 系统菜单表 Mapper 接口

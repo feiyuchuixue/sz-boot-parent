@@ -198,10 +198,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      * @return
      */
     private boolean isSuperAdmin(SysUser sysUser) {
-        if (sysUser != null && ("1001002").equals(sysUser.getUserTagCd())) {
-            return true;
-        }
-        return false;
+        return sysUser != null && ("1001002").equals(sysUser.getUserTagCd());
     }
 
 }

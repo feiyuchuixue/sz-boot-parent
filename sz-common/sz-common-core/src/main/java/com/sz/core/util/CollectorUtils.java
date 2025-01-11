@@ -1,9 +1,6 @@
 package com.sz.core.util;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -49,9 +46,8 @@ public class CollectorUtils {
      * @return List<T>
      */
     public static <T> List<T> union(List<T> list1, List<T> list2) {
-        List<T> listAll = list1.parallelStream().collect(toList());
-        List<T> listAll2 = list2.parallelStream().collect(toList());
-        listAll.addAll(listAll2);
+        List<T> listAll = new ArrayList<>(list1);  // 直接用list1初始化，避免冗余的 parallelStream
+        listAll.addAll(list2);  // 合并list2到listAll
         return listAll;
     }
 
@@ -101,9 +97,7 @@ public class CollectorUtils {
         if (map == null || map.isEmpty()) {
             return null;
         }
-        TreeMap sortMap = new TreeMap();
-        sortMap.putAll(map);
-        return sortMap;
+        return new TreeMap<>(map);
     }
 
 }

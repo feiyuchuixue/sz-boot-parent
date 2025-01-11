@@ -270,7 +270,7 @@ public class DesensitizationUtil {
      * @return 转换后的pattern
      */
     public Map<String, Object> transformUpperCase(Map<String, Object> pattern) {
-        Map<String, Object> resultMap = new HashMap();
+        Map<String, Object> resultMap = new HashMap<>();
         if (pattern != null && !pattern.isEmpty()) {
             // 获取Key的Set集合
             Set<String> keySet = pattern.keySet();

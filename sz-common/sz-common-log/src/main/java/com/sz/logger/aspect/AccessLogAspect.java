@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 @Component
 @Aspect
@@ -51,10 +50,6 @@ public class AccessLogAspect {
     public void doBefore(JoinPoint joinPoint) {
         try {
             HttpServletRequest request = getCurrentHttpRequest();
-            if (request == null) {
-                return;
-            }
-
             AccessRequestLog requestLog = buildRequestLog(joinPoint, request);
             CopyOnWriteArraySet<String> whitelist = whitelistProperties.getWhitelist();
             if (isNotSaIgnoreInterface(joinPoint) && isNotWhitelist(request.getRequestURI(), request.getContextPath(), whitelist)) {
@@ -71,10 +66,6 @@ public class AccessLogAspect {
     public void doAfterReturning(JoinPoint joinPoint, Object returnValue) {
         try {
             HttpServletRequest request = getCurrentHttpRequest();
-            if (request == null) {
-                return;
-            }
-
             AccessResponseLog responseLog = buildResponseLog(joinPoint, returnValue, request);
             CopyOnWriteArraySet<String> whitelist = whitelistProperties.getWhitelist();
             whitelist.add("/auth/logout"); // 登出接口会清除 session，无法获取到用户id。加入白名单中
@@ -122,11 +113,10 @@ public class AccessLogAspect {
     private Object[] filterAndConvertArguments(Object[] args) {
         if (Objects.nonNull(args)) {
             List<Object> filteredArgs = Arrays.stream(args)
-                    .filter(arg -> !(arg instanceof HttpServletResponse || arg instanceof HttpServletRequest || arg instanceof MultipartFile))
-                    .collect(Collectors.toList());
+                    .filter(arg -> !(arg instanceof HttpServletResponse || arg instanceof HttpServletRequest || arg instanceof MultipartFile)).toList();
             return filteredArgs.toArray();
         }
-        return args;
+        return null;
     }
 
     private boolean isNotWhitelist(String requestURI, String contextPath, CopyOnWriteArraySet<String> whitelist) {

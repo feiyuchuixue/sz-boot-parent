@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -31,7 +32,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport implements W
      */
 
     @Override
-    protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    protected void configureMessageConverters(@NonNull List<HttpMessageConverter<?>> converters) {
         this.messageConverters.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
     }
 

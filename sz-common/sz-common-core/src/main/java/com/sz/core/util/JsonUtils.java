@@ -24,11 +24,11 @@ public class JsonUtils {
     private static final ObjectMapper OBJECT_MAPPER = SpringApplicationContextUtils.getBean(ObjectMapper.class);
 
     public static String readJsonFile(String filePath) {
-        String jsonStr = "";
+        String jsonStr;
         try {
             File jsonFile = new File(filePath);
             Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8);
-            int ch = 0;
+            int ch;
             StringBuilder sb = new StringBuilder();
             while ((ch = reader.read()) != -1) {
                 sb.append((char) ch);
@@ -69,6 +69,17 @@ public class JsonUtils {
         }
     }
 
+    public static String toJsonStringPretty(Object object) {
+        if (object == null) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> T parseObject(String text, Class<T> clazz) {
         if (StringUtils.isEmpty(text)) {
             return null;
@@ -91,10 +102,20 @@ public class JsonUtils {
         }
     }
 
-    public static Map<String, Object> jsonToMap(String jsonString) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static <T> T parseObject(String text, Class<?> parametrized, Class<?>... parameterClasses) {
+        if (StringUtils.isEmpty(text)) {
+            return null;
+        }
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructParametricType(parametrized, parameterClasses));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Map<String, Object> jsonToMap(String jsonString) {
+        try {
+            return OBJECT_MAPPER.readValue(jsonString, new TypeReference<Map<String, Object>>() {
             });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -112,4 +133,14 @@ public class JsonUtils {
         }
     }
 
+    public static <T> List<T> parseArray(String text, TypeReference<List<T>> typeReference) {
+        if (StringUtils.isEmpty(text)) {
+            return new ArrayList<>();
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, typeReference);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
