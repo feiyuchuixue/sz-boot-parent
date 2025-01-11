@@ -127,7 +127,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
         } catch (Exception e) {
             log.error(" PermissionDialect Exception :" + e.getMessage());
-            e.printStackTrace();
         } finally {
             super.prepareAuth(queryWrapper, operateType);
         }

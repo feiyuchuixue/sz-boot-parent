@@ -12,9 +12,6 @@ import java.util.regex.Pattern;
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
-    private StringUtils() {
-        throw new IllegalStateException("StringUtils class Illegal");
-    }
 
     private static final char SEPARATOR = '_';
 
@@ -29,7 +26,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (Character.isLowerCase(s.charAt(0))) {
             return s;
         } else {
-            return (new StringBuilder()).append(Character.toLowerCase(s.charAt(0))).append(s.substring(1)).toString();
+            return Character.toLowerCase(s.charAt(0)) + s.substring(1);
         }
     }
 
@@ -44,7 +41,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (Character.isUpperCase(s.charAt(0))) {
             return s;
         } else {
-            return (new StringBuilder()).append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).toString();
+            return Character.toUpperCase(s.charAt(0)) + s.substring(1);
         }
     }
 

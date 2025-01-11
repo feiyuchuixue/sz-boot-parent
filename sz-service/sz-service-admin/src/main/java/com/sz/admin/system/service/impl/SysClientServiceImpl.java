@@ -40,7 +40,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
 
     @Override
     public void create(SysClientCreateDTO dto) {
-        SysClient sysClient = BeanCopyUtils.springCopy(dto, SysClient.class);
+        SysClient sysClient = BeanCopyUtils.copy(dto, SysClient.class);
         String clientId = Utils.generateUUIDs();
         sysClient.setClientId(clientId);
         sysClient.setClientSecret(Utils.generateUUIDs());
@@ -54,7 +54,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
 
     @Override
     public void update(SysClientUpdateDTO dto) {
-        SysClient sysClient = BeanCopyUtils.springCopy(dto, SysClient.class);
+        SysClient sysClient = BeanCopyUtils.copy(dto, SysClient.class);
         QueryWrapper wrapper;
         // id有效性校验
         wrapper = QueryWrapper.create().eq(SysClient::getClientId, dto.getClientId());
@@ -86,7 +86,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     public ClientVO detail(Object id) {
         SysClient sysClient = getById((Serializable) id);
         CommonResponseEnum.INVALID_ID.assertNull(sysClient);
-        ClientVO clientVO = BeanCopyUtils.springCopy(sysClient, ClientVO.class);
+        ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);
         clientVO.setGrantTypeCdList(Arrays.asList(sysClient.getGrantTypeCd().split(",")));
         return clientVO;
     }
@@ -95,7 +95,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     public ClientVO getClientByClientId(Object id) {
         SysClient sysClient = getById((Serializable) id);
         CommonResponseEnum.INVALID_ID.assertNull(sysClient);
-        ClientVO clientVO = BeanCopyUtils.springCopy(sysClient, ClientVO.class);
+        ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);
         clientVO.setGrantTypeCdList(Arrays.asList(sysClient.getGrantTypeCd().split(",")));
         return clientVO;
     }
@@ -126,7 +126,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     }
 
     private static void formatGrantType(List<String> grantTypeCdList, SysClient sysClient) {
-        if (grantTypeCdList.size() > 0) {
+        if (!grantTypeCdList.isEmpty()) {
             String grantTypes = StreamUtils.listToStr(grantTypeCdList);
             sysClient.setGrantTypeCd(grantTypes);
         }

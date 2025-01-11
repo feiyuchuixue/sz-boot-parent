@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class CodeModelBuilder {
 
-    private Map<String, Object> model = new HashMap<>();
+    private final Map<String, Object> model = new HashMap<>();
 
     // vue 文件夹路径分隔符
     public static final String SEPARATOR = "/";

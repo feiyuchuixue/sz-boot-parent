@@ -79,7 +79,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     public void update(SysDictTypeUpDTO dto) {
-        SysDictType sysDictType = BeanCopyUtils.springCopy(dto, SysDictType.class);
+        SysDictType sysDictType = BeanCopyUtils.copy(dto, SysDictType.class);
         sysDictType.setId(dto.getId());
         SysDictType oldDetail = detail(dto.getId());
         // 修改时的重复性效验需要排除本身

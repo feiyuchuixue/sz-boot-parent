@@ -8,6 +8,7 @@ import com.sz.admin.system.service.SysTempFileHistoryService;
 import com.sz.oss.OssClient;
 import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.sz.admin.system.service.SysTempFileService;
 import com.sz.admin.system.pojo.po.SysTempFile;
@@ -41,6 +42,7 @@ import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FIL
  * @author sz-admin
  * @since 2024-12-05
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTempFile> implements SysTempFileService {
@@ -107,7 +109,7 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
             Long fileId = sysFileService.fileLog(uploadResult);
             uploadResult.setFileId(fileId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(" sysTempFile oss upload error", e);
             CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
         }
         return uploadResult;

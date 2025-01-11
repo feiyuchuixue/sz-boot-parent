@@ -68,13 +68,14 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private final GeneratorProperties generatorProperties;
 
-    @Override
+
     /**
      * 导入表
      * 
      * @param dto
      */
     @Transactional
+    @Override
     public void importTable(ImportTableDTO dto) {
         List<String> tableNames = dto.getTableName();
         // 禁止相同table_name的记录出现多条，先执行清除操作，再生成覆盖
@@ -155,8 +156,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Long tableId = one.getTableId();
         List<GeneratorTableColumn> tableColumns = generatorTableColumnService.getTableColumnsByTableId(tableId);
         List<GeneratorDetailVO.Column> columns = BeanCopyUtils.copyList(tableColumns, GeneratorDetailVO.Column.class);
-        GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.springCopy(one, GeneratorDetailVO.BaseInfo.class);
-        GeneratorDetailVO.GeneratorInfo generatorInfo = BeanCopyUtils.springCopy(one, GeneratorDetailVO.GeneratorInfo.class);
+        GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.BaseInfo.class);
+        GeneratorDetailVO.GeneratorInfo generatorInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.GeneratorInfo.class);
         detailVO.setBaseInfo(baseInfo);
         detailVO.setGeneratorInfo(generatorInfo);
         detailVO.setColumns(columns);
@@ -178,8 +179,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorDetailVO.BaseInfo baseInfo = generatorDetailVO.getBaseInfo();
         GeneratorDetailVO.GeneratorInfo generatorInfo = generatorDetailVO.getGeneratorInfo();
         GeneratorTable table = new GeneratorTable();
-        BeanCopyUtils.springCopy(baseInfo, table);
-        BeanCopyUtils.springCopy(generatorInfo, table);
+        BeanCopyUtils.copy(baseInfo, table);
+        BeanCopyUtils.copy(generatorInfo, table);
         // 更新配置信息
         updateById(table);
 
@@ -246,6 +247,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     @Override
+    @Transactional
     public byte[] downloadZip(SelectTablesDTO dto) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
@@ -289,6 +291,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     @Override
+    @Transactional
     public List<GeneratorPreviewVO> preview(String tableName) throws IOException {
         List<GeneratorPreviewVO> previews = new ArrayList<>();
         GeneratorDetailVO detailVO = detail(tableName);
@@ -374,7 +377,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * @param detailVO
      * @param model
      */
-    @Transactional
     public List<MenuCreateDTO> initMenu(GeneratorDetailVO detailVO, Map<String, Object> model, boolean isInsertDB) {
         List<MenuCreateDTO> menus = new ArrayList<>();
         if (("0").equals(detailVO.getGeneratorInfo().getMenuInitType())) {

@@ -92,7 +92,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
         SysUserVO sysUserVO = new SysUserVO();
-        BeanCopyUtils.springCopy(one, sysUserVO);
+        BeanCopyUtils.copy(one, sysUserVO);
         return sysUserVO;
     }
 
@@ -107,8 +107,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, userId);
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
-        SysUserVO sysUserVO = BeanCopyUtils.copy(one, SysUserVO.class);
-        return sysUserVO;
+        return BeanCopyUtils.copy(one, SysUserVO.class);
     }
 
     /**
@@ -303,7 +302,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserVO getUserInfo() {
         SysUser sysUser = getById(LoginUtils.getLoginUser().getUserInfo().getId());
-        return BeanCopyUtils.springCopy(sysUser, SysUserVO.class);
+        return BeanCopyUtils.copy(sysUser, SysUserVO.class);
     }
 
     /**

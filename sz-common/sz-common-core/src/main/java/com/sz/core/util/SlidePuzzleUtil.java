@@ -75,7 +75,6 @@ public class SlidePuzzleUtil {
             sliderPuzzle.setSecretKey(jigsawPoint.getSecretKey());
             return sliderPuzzle;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("生成验证码异常: {}", e.getMessage());
             return null;
         }

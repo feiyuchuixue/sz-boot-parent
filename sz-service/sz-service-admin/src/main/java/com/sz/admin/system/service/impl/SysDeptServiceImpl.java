@@ -66,7 +66,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @Transactional
     @Override
     public void create(SysDeptCreateDTO dto) {
-        SysDept sysDept = BeanCopyUtils.springCopy(dto, SysDept.class);
+        SysDept sysDept = BeanCopyUtils.copy(dto, SysDept.class);
         if (dto.getPid() == 0) {
             sysDept.setDeep(1);
         } else {
@@ -89,7 +89,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @Transactional
     @Override
     public void update(SysDeptUpdateDTO dto) {
-        SysDept sysDept = BeanCopyUtils.springCopy(dto, SysDept.class);
+        SysDept sysDept = BeanCopyUtils.copy(dto, SysDept.class);
         QueryWrapper wrapper;
         // id有效性校验
         wrapper = QueryWrapper.create().eq(SysDept::getId, dto.getId());

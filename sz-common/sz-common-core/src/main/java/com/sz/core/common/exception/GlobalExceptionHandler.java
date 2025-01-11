@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResult<Object>> exceptionHandler(Exception e) {
-        e.printStackTrace();
+        log.error(e.getMessage(), e);
         ApiResult<Object> error = ApiResult.error(CommonResponseEnum.UNKNOWN);
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

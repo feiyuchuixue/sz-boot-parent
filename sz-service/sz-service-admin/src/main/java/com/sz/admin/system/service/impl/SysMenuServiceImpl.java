@@ -82,7 +82,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Transactional
     @Override
     public void create(SysMenuCreateDTO dto) {
-        SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
+        SysMenu menu = BeanCopyUtils.copy(dto, SysMenu.class);
         menu.setId(Utils.generateUUIDs());
         QueryWrapper wrapper;
         if (!("1002003").equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
@@ -124,7 +124,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void update(SysMenuCreateDTO dto) {
         QueryWrapper wrapper;
-        SysMenu menu = BeanCopyUtils.springCopy(dto, SysMenu.class);
+        SysMenu menu = BeanCopyUtils.copy(dto, SysMenu.class);
         // 菜单是否存在
         wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
         CommonResponseEnum.NOT_EXISTS.message("菜单不存在").assertTrue(count(wrapper) < 1);
@@ -184,8 +184,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenuVO> treeList = new ArrayList<>();
         // 构建树形
         for (SysMenuVO rootNode : getRootNodes(list)) {
-            SysMenuVO menuVO = BeanCopyUtils.springCopy(rootNode, SysMenuVO.class);
-            SysMenuVO.Meta meta = BeanCopyUtils.springCopy(rootNode, SysMenuVO.Meta.class);
+            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
+            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
             menuVO.setMeta(meta);
             SysMenuVO childrenNode = getChildrenNode(menuVO, list);
             treeList.add(childrenNode);
@@ -205,8 +205,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             List<SysMenu> list = list(wrapper);
             // 构建树形
             for (SysMenuVO rootNode : getRootNodes(list)) {
-                SysMenuVO menuVO = BeanCopyUtils.springCopy(rootNode, SysMenuVO.class);
-                SysMenuVO.Meta meta = BeanCopyUtils.springCopy(rootNode, SysMenuVO.Meta.class);
+                SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
+                SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
                 meta.setIsLink(("T").equals(meta.getIsLink()) ? menuVO.getRedirect() : "");
                 menuVO.setMeta(meta);
                 SysMenuVO childrenNode = getChildrenNode(menuVO, list);
@@ -239,15 +239,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             childrenIds = this.mapper.getMenuAndChildrenIds(nodeId, isShowButton);
         }
         List<SysMenuVO> sysMenuVOS;
-        if (childrenIds.size() > 0) {
+        if (!childrenIds.isEmpty()) {
             sysMenuVOS = menuListTree(childrenIds);
         } else {
             SysMenuListDTO dto = new SysMenuListDTO();
             dto.setShowButton(isShowButton);
             sysMenuVOS = menuList(dto);
         }
-        List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
-        return menuTreeVOS;
+        return BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
     }
 
     @Override
@@ -255,8 +254,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         SysMenuListDTO dto = new SysMenuListDTO();
         dto.setShowButton(isShowButton);
         List<SysMenuVO> sysMenuVOS = menuList(dto);
-        List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
-        return menuTreeVOS;
+        return BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
     }
 
     @SneakyThrows
@@ -299,8 +297,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenuVO> treeList = new ArrayList<>();
         // 构建树形
         for (SysMenuVO rootNode : getRootNodes(list)) {
-            SysMenuVO menuVO = BeanCopyUtils.springCopy(rootNode, SysMenuVO.class);
-            SysMenuVO.Meta meta = BeanCopyUtils.springCopy(rootNode, SysMenuVO.Meta.class);
+            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
+            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
             menuVO.setMeta(meta);
             SysMenuVO childrenNode = getChildrenNode(menuVO, list);
             treeList.add(childrenNode);
@@ -342,7 +340,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         for (SysMenu sysMenu : list) {
             // 找到所有父级节点
             if (sysMenu.getPid() == null || sysMenu.getPid().equals("0")) {
-                SysMenuVO sysMenuTreeVO = BeanCopyUtils.springCopy(sysMenu, SysMenuVO.class);
+                SysMenuVO sysMenuTreeVO = BeanCopyUtils.copy(sysMenu, SysMenuVO.class);
                 rootList.add(sysMenuTreeVO);
             }
         }
@@ -353,8 +351,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenuVO> childrenList = new ArrayList<>();
         for (SysMenu menu : menuList) {
             if (menu.getPid().equals(sysMenu.getId())) {
-                SysMenuVO childrenNode = BeanCopyUtils.springCopy(menu, SysMenuVO.class);
-                SysMenuVO.Meta meta = BeanCopyUtils.springCopy(menu, SysMenuVO.Meta.class);
+                SysMenuVO childrenNode = BeanCopyUtils.copy(menu, SysMenuVO.class);
+                SysMenuVO.Meta meta = BeanCopyUtils.copy(menu, SysMenuVO.Meta.class);
                 meta.setIsLink(("T").equals(meta.getIsLink()) ? childrenNode.getRedirect() : "");
                 childrenNode.setMeta(meta);
                 childrenList.add(getChildrenNode(childrenNode, menuList));

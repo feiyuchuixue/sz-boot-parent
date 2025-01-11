@@ -33,7 +33,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(String str) {
-        return str != null && str.trim().length() > 0;
+        return str != null && !str.trim().isEmpty();
     }
 
     public static Boolean isNotNull(Integer str) {
@@ -53,7 +53,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(Object obj) {
-        return obj != null && !"".equals(obj) && !"".equals(obj.toString().trim());
+        return obj != null && !"".equals(obj) && !obj.toString().trim().isEmpty();
     }
 
     public static Boolean isNotNull(Map<?, ?> map) {
@@ -89,7 +89,7 @@ public class Utils {
         try {
             md5 = DigestUtils.md5DigestAsHex(str.getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
-            new Exception(e.getMessage());
+            new RuntimeException(e.getMessage());
         }
         return md5;
     }

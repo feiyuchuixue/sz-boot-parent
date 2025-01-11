@@ -4,6 +4,8 @@ import com.sz.generator.pojo.vo.CodeGenTempResult;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.File;
@@ -21,15 +23,17 @@ import java.util.Map;
  * @Date 2024/1/15 15:51
  * @Version 1.0
  */
+@Slf4j
 public abstract class AbstractCodeGenerationTemplate {
 
     private final FreeMarkerConfigurer configurer;
 
-    private String rootPath;
+    private final String rootPath;
 
-    private GeneratorDetailVO detailVO;
+    @Getter
+    private final GeneratorDetailVO detailVO;
 
-    private Map<String, Object> model;
+    private final Map<String, Object> model;
 
     public AbstractCodeGenerationTemplate(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
         this.configurer = configurer;
@@ -156,14 +160,14 @@ public abstract class AbstractCodeGenerationTemplate {
             }
 
             // Write the template content to the file
-            try (Writer writer = new FileWriter(outputPath.toString())) {
+            try (Writer writer = new FileWriter(outputPath)) {
                 template.process(model, writer);
                 System.out.println("Output Path: " + outputPath);
                 return "Output Path: " + outputPath;
             }
 
         } catch (IOException | TemplateException e) {
-            e.printStackTrace();
+            log.error("saveToFile err", e);
             return "Output Err: " + outputPath;
         }
     }

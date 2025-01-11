@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @date: 2022/10/8 18:59
  * @description:
  */
+@Slf4j
 public class JsonUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = SpringApplicationContextUtils.getBean(ObjectMapper.class);
@@ -35,7 +37,7 @@ public class JsonUtils {
             jsonStr = sb.toString();
             return jsonStr;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("readJsonFile error: {}", ex.getMessage());
             return null;
         }
     }

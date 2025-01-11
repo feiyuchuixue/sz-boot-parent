@@ -44,7 +44,7 @@ public class FileUtils {
      * @return
      */
     public static boolean isPathExists(String path) {
-        if (path == null || path.trim().length() == 0 || path.isEmpty()) {
+        if (path == null || path.trim().isEmpty() || path.isEmpty()) {
             return false;
         }
         Path pathObj = Paths.get(path);

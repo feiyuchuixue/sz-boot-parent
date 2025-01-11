@@ -2,6 +2,7 @@ package com.sz.logger.logbackadvice;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import com.sz.logger.utils.DesensitizationUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
@@ -11,6 +12,7 @@ import java.lang.reflect.Field;
  * @Author 柳成荫
  * @Date 2021/1/9
  */
+@Slf4j
 public class DesensitizationAppender {
 
     /**
@@ -47,7 +49,7 @@ public class DesensitizationAppender {
                     formattedMessage.setAccessible(true);
                     formattedMessage.set(event, changeMessage);
                 } catch (IllegalAccessException | NoSuchFieldException e) {
-                    e.printStackTrace();
+                    log.error("DesensitizationAppender err", e);
                 }
             }
 
