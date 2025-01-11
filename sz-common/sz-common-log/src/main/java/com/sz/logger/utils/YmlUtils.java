@@ -46,7 +46,8 @@ public class YmlUtils {
     /**
      * 获取Yml配置文件的内容 - 以Map的格式
      *
-     * @param fileName Yml配置文件名
+     * @param fileName
+     *            Yml配置文件名
      * @return 配置信息（Map格式）
      */
     private static Map<String, Object> getYmlByName(String fileName) {

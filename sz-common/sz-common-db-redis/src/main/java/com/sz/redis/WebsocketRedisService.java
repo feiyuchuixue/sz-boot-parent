@@ -202,9 +202,8 @@ public class WebsocketRedisService {
      * @return
      */
     public List<String> getAllOnlineUsernames() {
-        String onlineUserKey = WEBSOCKET_ONLINE_USER;
-        Set<Object> loginIds = redisTemplate.opsForHash().keys(onlineUserKey);
-        return new ArrayList<>(loginIds.stream().map(Object::toString).collect(Collectors.toList()));
+        Set<Object> loginIds = redisTemplate.opsForHash().keys(WEBSOCKET_ONLINE_USER);
+        return loginIds.stream().map(Object::toString).collect(Collectors.toList());
     }
 
     /**

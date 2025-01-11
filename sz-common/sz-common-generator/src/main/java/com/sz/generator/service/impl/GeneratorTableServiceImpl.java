@@ -68,7 +68,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private final GeneratorProperties generatorProperties;
 
-
     /**
      * 导入表
      * 

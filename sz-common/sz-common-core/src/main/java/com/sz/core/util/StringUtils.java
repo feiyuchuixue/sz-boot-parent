@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
-
     private static final char SEPARATOR = '_';
 
     /**

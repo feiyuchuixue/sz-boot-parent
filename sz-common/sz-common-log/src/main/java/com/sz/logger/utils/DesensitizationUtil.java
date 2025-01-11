@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * This class will be deprecated in future versions.
+ * 
  * @ClassName DesensitizationUtil
  * @Description 脱敏工具类
  * @Author 柳成荫

@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -86,11 +86,7 @@ public class Utils {
 
     public static String md5(String str) {
         String md5 = "  ";
-        try {
-            md5 = DigestUtils.md5DigestAsHex(str.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            new RuntimeException(e.getMessage());
-        }
+        md5 = DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
         return md5;
     }
 

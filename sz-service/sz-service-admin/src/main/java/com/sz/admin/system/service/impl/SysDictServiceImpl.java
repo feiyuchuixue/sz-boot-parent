@@ -217,7 +217,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
                 template.process(dataModel, writer);
                 generatedContent = writer.toString();
             } catch (Exception e) {
-                log.error("exportDictSql err",e);
+                log.error("exportDictSql err", e);
             }
 
         }
