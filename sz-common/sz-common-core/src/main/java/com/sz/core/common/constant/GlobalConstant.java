@@ -1,11 +1,11 @@
 package com.sz.core.common.constant;
 
 /**
- * 常量管理
+ * 常量
  *
- * @author: sz
- * @date: 2022/8/23 10:20
- * @description:
+ * @author sz
+ * @version 1.0
+ * @since 2022/8/23
  */
 public class GlobalConstant {
 

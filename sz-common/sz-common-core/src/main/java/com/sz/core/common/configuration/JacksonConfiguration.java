@@ -26,10 +26,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 /**
- * @author: sz
- * @date: 2022/8/26 10:38
- * @description: （使用Jackson）全局统一格式化处理： - Null 转为 空字符串 - date 格式化 - 时区 - 驼峰-蛇形转换
- *               - 序列化或实体匹配异常
+ * （Jackson）全局统一格式化处理
+ * <p>
+ * - Null 转为 空字符串 - date 格式化 - 时区 - 驼峰-蛇形转换
+ * </p>
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2022/8/26
  */
 @Configuration
 @JsonComponent

@@ -5,10 +5,9 @@ import java.lang.annotation.*;
 /**
  * 忽略防抖注解
  *
- * @ClassName DebounceIgnore
- * @Author sz
- * @Date 2024/9/18 11:20
- * @Version 1.0
+ * @author sz
+ * @version 1.0
+ * @since 2024/9/18
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

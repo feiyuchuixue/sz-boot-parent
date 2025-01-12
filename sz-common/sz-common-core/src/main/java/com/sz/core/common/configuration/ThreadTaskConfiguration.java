@@ -9,11 +9,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * TODO 替换为虚拟线程
- * 
- * @author: sz
- * @date: 2022/8/29 13:58
- * @description: 自定义线程池配置
+ * 自定义线程池配置
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2022/8/29
  */
 @EnableAsync
 @Configuration

@@ -10,9 +10,11 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @author: sz
- * @date: 2022/8/25 11:12
- * @description: result parent类
+ * ApiResult
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2025/1/12
  */
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 @Data
@@ -46,38 +48,18 @@ public class ApiResult<T> implements Serializable {
         this.message = message;
     }
 
-    /**
-     * 默认的无参返回结果
-     *
-     * @param <T>
-     * @return
-     */
     public static <T> ApiResult<T> success() {
         ApiResult<T> apiResult = new ApiResult<>();
         apiResult.data = null;
         return apiResult;
     }
 
-    /**
-     * 有参返回结果
-     *
-     * @param data
-     * @param <T>
-     * @return
-     */
     public static <T> ApiResult<T> success(T data) {
         ApiResult<T> apiResult = new ApiResult<>();
         apiResult.data = data;
         return apiResult;
     }
 
-    /**
-     * 有参返回结果
-     *
-     * @param data
-     * @param <T>
-     * @return
-     */
     public static <T> ApiResult<T> success(T data, Object param) {
         ApiResult<T> apiResult = new ApiResult<>();
         apiResult.data = data;

@@ -13,9 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import java.util.List;
 
 /**
- * @author: sz
- * @date: 2022/8/29 11:10
- * @description: WebMvc配置, 注意这里，实现@WebMvcConfigurer会导致全局jackson配置失效
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2022/8/29
  */
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurationSupport implements WebMvcRegistrations {
@@ -29,6 +30,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport implements W
      * 参考WebMvcAutoConfiguration类中configureMessageConverters方法，使Jackson配置生效
      *
      * @param converters
+     *            消息转换器
      */
 
     @Override
