@@ -57,7 +57,6 @@ public class AESUtil {
      * @param encryptKey
      *            加密密钥
      * @return 加密后的byte[]
-     * @throws Exception
      */
     public static byte[] aesEncryptToBytes(String content, String encryptKey) throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
@@ -75,7 +74,6 @@ public class AESUtil {
      * @param encryptKey
      *            加密密钥
      * @return 加密后的base 64 code
-     * @throws Exception
      */
     public static String aesEncrypt(String content, String encryptKey) throws Exception {
         if (StringUtils.isBlank(encryptKey)) {
@@ -92,7 +90,6 @@ public class AESUtil {
      * @param decryptKey
      *            解密密钥
      * @return 解密后的String
-     * @throws Exception
      */
     public static String aesDecryptByBytes(byte[] encryptBytes, String decryptKey) throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
@@ -112,7 +109,6 @@ public class AESUtil {
      * @param decryptKey
      *            解密密钥
      * @return 解密后的string
-     * @throws Exception
      */
     public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
         if (StringUtils.isBlank(decryptKey)) {

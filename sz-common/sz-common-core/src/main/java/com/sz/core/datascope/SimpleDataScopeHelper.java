@@ -3,10 +3,8 @@ package com.sz.core.datascope;
 import com.alibaba.ttl.TransmittableThreadLocal;
 
 /**
- * @ClassName SimpleDataScopeHelper
- * @Author sz
- * @Date 2024/6/19 8:37
- * @Version 1.0
+ * @author sz
+ * @since 2024/6/19 8:37
  */
 public class SimpleDataScopeHelper {
 

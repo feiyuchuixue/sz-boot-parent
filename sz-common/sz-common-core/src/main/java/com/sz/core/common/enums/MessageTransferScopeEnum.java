@@ -1,10 +1,11 @@
 package com.sz.core.common.enums;
 
 /**
- * @ClassName MessageTransferScopeEnum
- * @Author sz
- * @Date 2024/2/17 8:48
- * @Version 1.0
+ * MessageTransferScopeEnum - 定义消息传输范围的枚举类。
+ *
+ * @version 1.0
+ * @since 2024-02-17
+ * @author sz
  */
 public enum MessageTransferScopeEnum {
     // 后台服务端

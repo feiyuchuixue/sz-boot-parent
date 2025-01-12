@@ -8,9 +8,10 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author: sz
- * @date: 2022/8/25 10:25
- * @description: 分页对象
+ * 分页对象
+ * 
+ * @author sz
+ * @since 2022/8/25 10:25
  */
 @Data
 public class PageResult<T> implements Serializable {

@@ -5,10 +5,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName EventPublisher
- * @Author sz
- * @Date 2024/2/29 15:54
- * @Version 1.0
+ * @version 1.0
+ * @since 2024-02-29
+ * @author sz
  */
 @Component
 @RequiredArgsConstructor

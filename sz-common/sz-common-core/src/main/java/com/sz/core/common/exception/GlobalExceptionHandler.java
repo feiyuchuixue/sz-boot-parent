@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * @author: sz
- * @date: 2022/8/23 10:56
- * @description: 全局异常捕获处理
+ * 全局异常捕获处理
+ * 
+ * @author sz
+ * @since 2022/8/23 10:56
  */
 @RestControllerAdvice
 @Slf4j
@@ -63,7 +64,8 @@ public class GlobalExceptionHandler {
      * 参数校验异常
      *
      * @param e
-     * @return
+     *            参数校验异常
+     * @return 异常结果
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResult<Object>> handleValidException(MethodArgumentNotValidException e) {
@@ -76,7 +78,8 @@ public class GlobalExceptionHandler {
      * 参数绑定异常
      *
      * @param e
-     * @return
+     *            参数绑定异常
+     * @return 异常结果
      */
     @ExceptionHandler(value = BindException.class)
     public ResponseEntity<ApiResult<Object>> handleBindException(BindException e) {

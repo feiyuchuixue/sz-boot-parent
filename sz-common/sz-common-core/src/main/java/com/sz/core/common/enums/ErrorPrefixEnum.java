@@ -3,10 +3,14 @@ package com.sz.core.common.enums;
 import lombok.Getter;
 
 /**
- * @ClassName ErrorPrefixEnum
- * @Author sz
- * @Date 2024/10/11 14:06
- * @Version 1.0
+ * ErrorPrefixEnum - 定义错误前缀的枚举类。
+ * <p>
+ * 此枚举类用于集中管理和定义应用中的错误前缀，以便统一错误代码格式。
+ * </p>
+ *
+ * @version 1.0
+ * @since 2024-10-11
+ * @author sz
  */
 @Getter
 public enum ErrorPrefixEnum {
