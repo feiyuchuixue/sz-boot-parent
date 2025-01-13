@@ -284,7 +284,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 菜单属性查询(排除自己和自己的子节点)
      *
-     * @param excludingIds 排除的id
+     * @param excludingIds
+     *            排除的id
      * @return 菜单属性
      */
     private List<SysMenuVO> menuListTree(List<String> excludingIds) {
@@ -331,7 +332,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 获取父级跟节点
      *
-     * @param list 菜单列表
+     * @param list
+     *            菜单列表
      * @return 父级跟节点菜单列表
      */
     private List<SysMenuVO> getRootNodes(List<SysMenu> list) {
@@ -364,7 +366,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 验证是否有权限标识
      *
-     * @param dto dto
+     * @param dto
+     *            dto
      * @return 权限标识对象
      */
     @Override

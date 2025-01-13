@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  SysDeptLeaderVO
+ * SysDeptLeaderVO
+ * 
  * @author sz
  * @since 2024/3/26 15:56
  * @version 1.0

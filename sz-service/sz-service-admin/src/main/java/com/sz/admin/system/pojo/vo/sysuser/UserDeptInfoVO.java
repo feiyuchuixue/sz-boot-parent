@@ -4,7 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- *  UserDeptVO
+ * UserDeptVO
+ * 
  * @author sz
  * @since 2024/4/8 9:04
  * @version 1.0

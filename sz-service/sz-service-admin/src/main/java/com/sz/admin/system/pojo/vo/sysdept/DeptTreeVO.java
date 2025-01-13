@@ -7,7 +7,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- *  DeptTreeVO
+ * DeptTreeVO
+ * 
  * @author sz
  * @since 2024/3/22 9:59
  * @version 1.0

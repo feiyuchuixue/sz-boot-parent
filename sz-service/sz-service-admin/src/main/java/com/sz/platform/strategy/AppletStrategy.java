@@ -24,7 +24,8 @@ import java.util.Map;
 /**
  * 小程序认证策略
  *
- *  AppletStrategy
+ * AppletStrategy
+ * 
  * @author sz
  * @since 2024/4/26 16:08
  * @version 1.0

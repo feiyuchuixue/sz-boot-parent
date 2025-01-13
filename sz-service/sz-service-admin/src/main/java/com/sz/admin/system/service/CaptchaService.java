@@ -5,7 +5,8 @@ import com.sz.core.common.entity.CheckPuzzle;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- *  CaptchaService
+ * CaptchaService
+ * 
  * @author sz
  * @since 2025/1/8 17:01
  * @version 1.0

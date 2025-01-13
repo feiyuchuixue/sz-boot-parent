@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- *  DebounceProperties
+ * DebounceProperties
+ * 
  * @author sz
  * @since 2024/9/18 17:19
  * @version 1.0

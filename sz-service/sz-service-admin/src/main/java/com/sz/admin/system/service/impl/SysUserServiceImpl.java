@@ -82,7 +82,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取认证账户信息接角色信息
      *
-     * @param username 用户名
+     * @param username
+     *            用户名
      * @return 用户信息
      */
     @Override
@@ -99,7 +100,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取认证账户信息接角色信息
      *
-     * @param userId 用户id
+     * @param userId
+     *            用户id
      * @return 用户信息
      */
     @Override
@@ -323,7 +325,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 重置密码
      *
-     * @param id id
+     * @param id
+     *            id
      */
     @Override
     public void resetPassword(Long id) {

@@ -134,8 +134,10 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 根据loginId 推送消息
      *
-     * @param loginIds 登陆用户Id集合
-     * @param socketBean 消息对象
+     * @param loginIds
+     *            登陆用户Id集合
+     * @param socketBean
+     *            消息对象
      */
     @SneakyThrows
     public void sendMessage(List<String> loginIds, SocketBean socketBean) {
@@ -162,7 +164,8 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 根据loginId 推送消息
      *
-     * @param socketBean 消息对象
+     * @param socketBean
+     *            消息对象
      */
     @SneakyThrows
     public void sendMessageToAllUser(SocketBean socketBean) {

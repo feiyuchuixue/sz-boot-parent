@@ -29,7 +29,8 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 
 /**
- *  SysPermissionServiceImpl
+ * SysPermissionServiceImpl
+ * 
  * @author sz
  * @since 2024/2/4 15:12
  * @version 1.0
@@ -194,7 +195,8 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      * 验证用户是否是【管理员身份】 验证方式：sys_user.user_tag_cd 字段； [1001001 测试用户; 1001002 超级管理员;
      * 1001003 普通用户] 。 详见字典：用户标签（user_tag）
      *
-     * @param sysUser 用户信息
+     * @param sysUser
+     *            用户信息
      * @return 是否是超级管理员
      */
     private boolean isSuperAdmin(SysUser sysUser) {

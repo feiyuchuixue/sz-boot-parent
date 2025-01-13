@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- *  WechatServiceTest
+ * WechatServiceTest
+ * 
  * @author sz
  * @since 2024/4/26 10:41
  * @version 1.0

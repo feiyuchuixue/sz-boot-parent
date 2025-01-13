@@ -70,7 +70,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
     /**
      * 查询所有子孙节点
      *
-     * @param nodeId 节点ID
+     * @param nodeId
+     *            节点ID
      * @return 子孙节点
      */
     public List<SysDeptClosure> descendants(Long nodeId) {
@@ -81,7 +82,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
     /**
      * 查询指定祖籍节点的所有子孙节点
      *
-     * @param ancestorIds 祖籍节点ID
+     * @param ancestorIds
+     *            祖籍节点ID
      * @return 子孙节点ID
      */
     @Override

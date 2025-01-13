@@ -58,7 +58,8 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      *
      * @param file
      *            文件
-     * @param dirTag 文件夹标识
+     * @param dirTag
+     *            文件夹标识
      * @return {@link String}
      */
     @Override

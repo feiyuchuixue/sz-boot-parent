@@ -8,7 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- *  EmailAuthStrategy
+ * EmailAuthStrategy
+ * 
  * @author sz
  * @since 2024/1/23 10:29
  * @version 1.0

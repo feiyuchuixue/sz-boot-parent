@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 /**
- *  FlywayConfiguration
+ * FlywayConfiguration
+ * 
  * @author sz
  * @since 2024/7/29 13:30
  * @version 1.0

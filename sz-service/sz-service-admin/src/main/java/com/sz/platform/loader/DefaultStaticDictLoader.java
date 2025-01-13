@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 /**
  * 静态字典loader
  *
- *  StaticDictLoader
+ * StaticDictLoader
+ * 
  * @author sz
  * @since 2024/8/21 9:06
  * @version 1.0

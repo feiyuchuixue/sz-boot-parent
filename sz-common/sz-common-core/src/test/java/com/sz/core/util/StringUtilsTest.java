@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- *  StringUtilsTest
+ * StringUtilsTest
+ * 
  * @author sz
  * @since 2024/6/20 15:28
  * @version 1.0

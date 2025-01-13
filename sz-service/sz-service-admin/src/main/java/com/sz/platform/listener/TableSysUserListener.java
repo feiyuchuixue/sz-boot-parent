@@ -9,7 +9,8 @@ import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_USER_OPTIONS;
 /**
  * sys_user表监听器
  *
- *  TableUserChangeListener
+ * TableUserChangeListener
+ * 
  * @author sz
  * @since 2024/8/22 10:00
  * @version 1.0
@@ -31,7 +32,8 @@ public class TableSysUserListener extends EntityChangeListener {
     /**
      * 触发change事件
      *
-     * @param o 对象
+     * @param o
+     *            对象
      */
     private void onChange(Object o) {
         RedisCache cache = SpringApplicationContextUtils.getBean(RedisCache.class);

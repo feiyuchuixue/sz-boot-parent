@@ -29,7 +29,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     /**
      * 获取用户的角色
      * 
-     * @param userId 用户id
+     * @param userId
+     *            用户id
      * @return 用户角色集合
      */
     @Override

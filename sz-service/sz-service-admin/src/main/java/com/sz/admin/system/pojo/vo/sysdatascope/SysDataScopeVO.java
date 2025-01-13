@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  SysDataScopeVO
+ * SysDataScopeVO
+ * 
  * @author sz
  * @since 2024/6/27 13:26
  * @version 1.0

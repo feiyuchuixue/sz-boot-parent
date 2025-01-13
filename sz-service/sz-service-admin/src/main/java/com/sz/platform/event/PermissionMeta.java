@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  PermissionChangeMeta
+ * PermissionChangeMeta
+ * 
  * @author sz
  * @since 2024/2/29 15:44
  * @version 1.0
