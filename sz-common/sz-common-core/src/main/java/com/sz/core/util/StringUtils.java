@@ -594,7 +594,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *            匹配规则
      * @param url
      *            需要匹配的url
-     * @return
+     * @return 是否匹配
      */
     public static boolean isMatch(String pattern, String url) {
         AntPathMatcher matcher = new AntPathMatcher();

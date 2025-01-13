@@ -70,8 +70,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
     /**
      * 查询所有子孙节点
      *
-     * @param nodeId
-     * @return
+     * @param nodeId 节点ID
+     * @return 子孙节点
      */
     public List<SysDeptClosure> descendants(Long nodeId) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(nodeId)).where(SYS_DEPT_CLOSURE.DESCENDANT_ID.ne(nodeId));
@@ -81,8 +81,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
     /**
      * 查询指定祖籍节点的所有子孙节点
      *
-     * @param ancestorIds
-     * @return
+     * @param ancestorIds 祖籍节点ID
+     * @return 子孙节点ID
      */
     @Override
     public List<Long> descendants(List<Long> ancestorIds) {

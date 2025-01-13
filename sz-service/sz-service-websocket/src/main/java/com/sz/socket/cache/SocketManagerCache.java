@@ -43,7 +43,7 @@ public class SocketManagerCache {
     /**
      * 清除断线的sid
      *
-     * @param sid
+     * @param sid sid
      */
     public static void removeUserSession(String sid) {
         WsSession wsSession = onlineSessionMap.get(sid);

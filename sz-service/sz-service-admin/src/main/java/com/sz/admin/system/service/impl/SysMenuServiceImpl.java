@@ -284,8 +284,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 菜单属性查询(排除自己和自己的子节点)
      *
-     * @param excludingIds
-     * @return
+     * @param excludingIds 排除的id
+     * @return 菜单属性
      */
     private List<SysMenuVO> menuListTree(List<String> excludingIds) {
         QueryWrapper wrapper = QueryWrapper.create().notIn(SysMenu::getId, excludingIds).ne(SysMenu::getMenuTypeCd, "10023").orderBy(SysMenu::getDeep).asc()
@@ -331,8 +331,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 获取父级跟节点
      *
-     * @param list
-     * @return
+     * @param list 菜单列表
+     * @return 父级跟节点菜单列表
      */
     private List<SysMenuVO> getRootNodes(List<SysMenu> list) {
         List<SysMenuVO> rootList = new ArrayList<>();
@@ -364,8 +364,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 验证是否有权限标识
      *
-     * @param dto
-     * @return
+     * @param dto dto
+     * @return 权限标识对象
      */
     @Override
     public MenuPermissionVO hasExistsPermissions(MenuPermissionDTO dto) {

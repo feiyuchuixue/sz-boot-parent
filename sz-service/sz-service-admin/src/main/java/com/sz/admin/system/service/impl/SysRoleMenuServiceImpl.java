@@ -65,8 +65,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     /**
      * 查询角色分配的菜单，及全部菜单
      *
-     * @param roleId
-     * @return
+     * @param roleId 角色id
+     * @return 菜单
      */
     @Override
     public SysRoleMenuVO queryRoleMenu(Long roleId) {

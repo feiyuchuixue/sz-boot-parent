@@ -18,7 +18,7 @@ public class RedisService {
     /**
      * 发布Permission 变更消息
      *
-     * @param message
+     * @param message 消息
      */
     public void sendPermissionChangeMsg(UserPermissionChangeMessage message) {
         redisTemplate.convertAndSend(GlobalConstant.CHANGE_PERMISSIONS_SIGNAL, message);

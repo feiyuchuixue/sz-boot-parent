@@ -31,7 +31,7 @@ public class TableSysUserListener extends EntityChangeListener {
     /**
      * 触发change事件
      *
-     * @param o
+     * @param o 对象
      */
     private void onChange(Object o) {
         RedisCache cache = SpringApplicationContextUtils.getBean(RedisCache.class);
