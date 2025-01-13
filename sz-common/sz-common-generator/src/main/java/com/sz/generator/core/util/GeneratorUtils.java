@@ -8,14 +8,12 @@ import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
-
+import com.sz.core.util.StringUtils;
 import java.util.Arrays;
 
 /**
- * @ClassName GeneratorUtils
- * @Author sz
- * @Date 2023/11/28 16:06
- * @Version 1.0
+ * @author sz
+ * @since  2023/11/28 16:06
  */
 public class GeneratorUtils {
 

@@ -8,10 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @ClassName StreamUtils
- * @Author sz
- * @Date 2023/12/27 8:39
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/27 8:39
  */
 public class StreamUtils {
 

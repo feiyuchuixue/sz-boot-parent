@@ -18,10 +18,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * @ClassName CodeGenerationTemplate
- * @Author sz
- * @Date 2024/1/15 15:51
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/15 15:51
  */
 @Slf4j
 public abstract class AbstractCodeGenerationTemplate {

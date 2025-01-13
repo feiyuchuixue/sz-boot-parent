@@ -14,10 +14,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @ClassName RedisCache
- * @Author sz
- * @Date 2024/1/8 15:38
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/8 15:38
  */
 @Component
 @RequiredArgsConstructor

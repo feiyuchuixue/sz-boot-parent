@@ -10,10 +10,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * @ClassName CodeModelBuilder
- * @Author sz
- * @Date 2024/1/15 15:10
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/15 15:10
  */
 @Getter
 public class CodeModelBuilder {

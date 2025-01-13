@@ -22,10 +22,8 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * @ClassName DefaultExcelListener
- * @Author sz
- * @Date 2023/12/26 14:43
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/26 14:43
  */
 @Slf4j
 @Data
@@ -96,12 +94,18 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
     }
 
     /**
-     * 异常处理
+     * 处理发生的异常。
+     *
+     * 该方法用于处理在处理过程中出现的异常，根据异常类型和上下文信息提供适当的处理逻辑。
      *
      * @param exception
+     *            发生的异常
      * @param context
+     *            异常发生时的上下文信息，提供额外的处理依据
      * @throws Exception
+     *             如果异常无法被适当地处理，需要向上抛出
      */
+
     @Override
     public void onException(Exception exception, AnalysisContext context) {
         String errMsg;
@@ -136,6 +140,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
      * 数据解析完毕
      *
      * @param analysisContext
+     *            解析上下文
      */
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {

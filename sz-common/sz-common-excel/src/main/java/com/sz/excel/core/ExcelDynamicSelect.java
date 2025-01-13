@@ -3,10 +3,8 @@ package com.sz.excel.core;
 import java.util.List;
 
 /**
- * @ClassName ExcelDynamicSelect
- * @Author sz
- * @Date 2023/12/28 13:22
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/28 13:22
  */
 public interface ExcelDynamicSelect {
 

@@ -1,12 +1,13 @@
 package com.sz.redis;
 
 /**
- * 公用 redis key 常量
+ * 公用 Redis Key 常量类
+ * <p>
+ * 该类包含了用于 Redis 操作的常量 Redis Key，方便在整个项目中统一使用和管理。
  *
- * @ClassName CommonKeyConstants
- * @Author sz
- * @Date 2023/12/12 9:37
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/12 9:37
+ * @since 2023-12-12
  */
 public class CommonKeyConstants {
 

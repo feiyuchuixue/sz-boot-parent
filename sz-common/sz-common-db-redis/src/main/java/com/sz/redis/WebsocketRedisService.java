@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * websocket 用户管理工具
  *
  * @author sz
- * @date 2023/9/5 14:05
+ * @since 2023/9/5 14:05
  */
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class WebsocketRedisService {
      * 用户上线
      *
      * @param loginId
+     *            用户id
      */
     public void addUserToOnlineChat(String sessionId, String loginId) {
         String onlineUserKey = WEBSOCKET_ONLINE_USER;
@@ -57,7 +58,9 @@ public class WebsocketRedisService {
      * 用户下线
      *
      * @param sessionId
+     *            sessionId
      * @param loginId
+     *            用户id
      */
     public void removeUser(String sessionId, String loginId) {
         String onlineUserKey = WEBSOCKET_ONLINE_USER;
@@ -85,6 +88,7 @@ public class WebsocketRedisService {
      * 用户下线 - 根据sessionId
      *
      * @param sessionId
+     *            sessionId
      */
     public void removeUserBySessionId(String sessionId) {
         // 查找sessionId对应的用户名
@@ -111,9 +115,10 @@ public class WebsocketRedisService {
     }
 
     /**
-     * 用户下线 - 根据sessionId
+     * 用户下线
      *
      * @param loginId
+     *            用户id
      */
     public void removeUserByUsername(String loginId) {
         String onlineUserKey = WEBSOCKET_ONLINE_USER;
@@ -138,6 +143,7 @@ public class WebsocketRedisService {
      * 根据sessionId查询loginId
      *
      * @param sessionId
+     *            sessionId
      */
     public String getUserBySessionId(String sessionId) {
         // 查找sessionId对应的用户名
@@ -147,7 +153,7 @@ public class WebsocketRedisService {
     /**
      * 查询在线用户数
      *
-     * @return
+     * @return 数量
      */
     public long getOnlineUserCount() {
 
@@ -159,7 +165,7 @@ public class WebsocketRedisService {
     /**
      * 查询websocket连接数
      *
-     * @return
+     * @return 数量
      */
     public long getConnectionCount() {
         // 获取在线连接数，即sessionId映射的数量
@@ -170,7 +176,8 @@ public class WebsocketRedisService {
      * 查询某个用户的连接数（在几处登陆）
      *
      * @param loginId
-     * @return
+     *            用户id
+     * @return 数量
      */
     public long getUserConnectionCount(String loginId) {
         String onlineUserKey = WEBSOCKET_ONLINE_USER;
@@ -190,7 +197,7 @@ public class WebsocketRedisService {
     /**
      * 获取所有在线用户名列表
      *
-     * @return
+     * @return 用户名列表
      */
     public List<String> getAllOnlineUsernames() {
         Set<Object> loginIds = redisTemplate.opsForHash().keys(WEBSOCKET_ONLINE_USER);
@@ -201,7 +208,8 @@ public class WebsocketRedisService {
      * 获取用户的所有连接 sessionId 列表
      *
      * @param loginId
-     * @return
+     *            用户id
+     * @return 列表
      */
     public List<String> getUserSessionIds(String loginId) {
         String onlineUserKey = WEBSOCKET_ONLINE_USER;
@@ -219,6 +227,7 @@ public class WebsocketRedisService {
      * 透传 websocket 给 service 服务
      *
      * @param transferMessage
+     *            透传消息
      */
     public void sendWsToService(TransferMessage transferMessage) {
         redisTemplate.convertAndSend(GlobalConstant.WS_TO_SERVICE, transferMessage);
@@ -228,6 +237,7 @@ public class WebsocketRedisService {
      * 透传 service 给 websocket服务
      *
      * @param transferMessage
+     *            透传消息
      */
     public void sendServiceToWs(TransferMessage transferMessage) {
         redisTemplate.convertAndSend(GlobalConstant.SERVICE_TO_WS, transferMessage);

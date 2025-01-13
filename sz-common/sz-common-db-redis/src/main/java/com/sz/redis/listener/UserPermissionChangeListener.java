@@ -16,7 +16,7 @@ import java.util.List;
  * redis消息listener, 用于监听 用户permission change
  *
  * @author sz
- * @date 2023/9/8 10:12
+ * @since 2023/9/8 10:12
  */
 @Component
 @Slf4j

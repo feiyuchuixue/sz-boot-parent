@@ -31,7 +31,7 @@ public @interface DictFormat {
     /**
      * （导出时）是否作为下拉项
      *
-     * @return
+     * @return boolean
      */
     boolean isSelected() default false;
 
@@ -43,7 +43,7 @@ public @interface DictFormat {
     /**
      * 字典是否使用别名 （为true时将使用alias而非id做映射）
      *
-     * @return
+     * @return boolean
      */
     boolean useAlias() default false;
 

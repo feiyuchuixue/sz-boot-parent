@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author: sz
- * @date: 2022/8/23 10:20
- * @description:
+ * @author sz
+ * @since 2022/8/23 10:20
  */
 public class Utils {
 

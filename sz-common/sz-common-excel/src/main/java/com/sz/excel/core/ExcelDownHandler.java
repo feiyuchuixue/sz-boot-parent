@@ -27,10 +27,8 @@ import java.util.Optional;
 /**
  * excel下拉项
  *
- * @ClassName ExcelDownHandler
- * @Author sz
- * @Date 2023/12/28 13:32
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/28 13:32
  */
 @Slf4j
 public class ExcelDownHandler implements SheetWriteHandler {
