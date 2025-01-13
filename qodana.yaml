@@ -11,5 +11,3 @@ exclude:
       - sz-service\sz-service-websocket
       - sz-common\sz-common-generator\src\main\java\com\sz\generator\core\util\BuildTemplateUtils.java
   - name: JavadocLinkAsPlainText
-    paths:
-      - sz-common\sz-common-oss
