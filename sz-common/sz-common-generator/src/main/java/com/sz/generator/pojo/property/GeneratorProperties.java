@@ -5,10 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName GeneratorProperty
- * @Author sz
- * @Date 2024/1/15 8:38
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/15 8:38
  */
 @Data
 @Component

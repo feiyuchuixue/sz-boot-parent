@@ -72,6 +72,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * 导入表
      * 
      * @param dto
+     *            导入表名
      */
     @Transactional
     @Override
@@ -113,39 +114,41 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         generatorTableColumnService.batchInsert(tableColumns);
     }
 
-    @Override
     /**
      * 查询未导入的表
      * 
      * @param dto
-     * @return
+     * @return 未导入的表
      */
+    @Override
     public PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableNotInImport(dto);
         return PageUtils.getPageResult(generatorTables);
     }
 
-    @Override
     /**
      * 查询已经导入的表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 已经导入的表
      */
+    @Override
     public PageResult<GeneratorTable> selectDbTableByImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableByImport(dto);
         return PageUtils.getPageResult(generatorTables);
     }
 
-    @Override
     /**
      * 代码生成配置详情
      * 
-     * @param tableId
-     * @return
+     * @param tableName
+     *            表名
+     * @return 代码生成配置详情
      */
+    @Override
     public GeneratorDetailVO detail(String tableName) {
         GeneratorDetailVO detailVO = new GeneratorDetailVO();
         GeneratorTable one = QueryChain.of(GeneratorTable.class).eq(GeneratorTable::getTableName, tableName).one();
@@ -161,13 +164,14 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return detailVO;
     }
 
-    @Transactional
-    @Override
     /**
      * 更新代码生成配置
      * 
      * @param generatorDetailVO
+     *            代码生成配置
      */
+    @Transactional
+    @Override
     public void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO) {
         Long tableId = generatorDetailVO.getBaseInfo().getTableId();
         GeneratorTable one = QueryChain.of(mapper).eq(GeneratorTable::getTableId, tableId).one();
@@ -223,7 +227,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * 磁盘校验
      *
      * @param tableName
-     * @return
+     *            表名
+     * @return 校验信息
      */
     @Override
     public GenCheckedInfoVO checkDist(String tableName) {
@@ -372,7 +377,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * 菜单的生成
      *
      * @param detailVO
+     *            详情
      * @param model
+     *            模型
      */
     public List<MenuCreateDTO> initMenu(GeneratorDetailVO detailVO, Map<String, Object> model, boolean isInsertDB) {
         List<MenuCreateDTO> menus = new ArrayList<>();

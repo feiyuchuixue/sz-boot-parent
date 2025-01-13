@@ -26,7 +26,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     /**
      * 查询指定table的column列
      *
-     * @param tableName 表名
+     * @param tableName
+     *            表名
      * @return 列信息
      */
     List<TableColumResult> selectDbTableColumnsByName(@Param("tableName") String tableName);
@@ -34,14 +35,16 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     /**
      * 根据tableName清空表记录
      *
-     * @param tableNames 表名集合
+     * @param tableNames
+     *            表名集合
      */
     void cleanTableRecordByTableName(@Param("tableNames") List<String> tableNames);
 
     /**
      * 根据tableName清空字段表
      *
-     * @param tableNames 表名集合
+     * @param tableNames
+     *            表名集合
      */
     void cleanTableColumnByTableName(@Param("tableNames") List<String> tableNames);
 
@@ -55,7 +58,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     /**
      * 查询已经导入的表
      *
-     * @param queryDTO 查询条件
+     * @param queryDTO
+     *            查询条件
      * @return 表信息
      */
     List<GeneratorTable> selectDbTableByImport(@Param("queryDTO") DbTableQueryDTO queryDTO);
@@ -63,7 +67,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     /**
      * 根据pid 查询上级菜单
      *
-     * @param pid 上级菜单id
+     * @param pid
+     *            上级菜单id
      * @return 菜单信息
      */
     SysMenuResult selectSysMenuByPid(@Param("pid") String pid);

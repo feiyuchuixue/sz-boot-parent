@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName DbTableQueryDTO
- * @Author sz
- * @Date 2023/11/29 14:17
- * @Version 1.0
+ * @author sz
+ * @since 2023/11/29 14:17
  */
 @Schema(description = "导入表查询")
 @Data

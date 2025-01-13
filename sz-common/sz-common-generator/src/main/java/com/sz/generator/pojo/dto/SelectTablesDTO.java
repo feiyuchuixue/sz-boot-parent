@@ -6,10 +6,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @ClassName SelectTablesDTO
- * @Author sz
- * @Date 2023/12/4 10:36
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/4 10:36
  */
 @Data
 @Schema(description = "批量选中")

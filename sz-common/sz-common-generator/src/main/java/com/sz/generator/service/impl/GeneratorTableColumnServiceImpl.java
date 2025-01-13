@@ -45,7 +45,7 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
     }
 
     @Override
-    public void remove(List tableNames) {
+    public void remove(List<String> tableNames) {
         this.updateChain().from(GeneratorTableTableDef.GENERATOR_TABLE, GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN)
                 .where(GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN.TABLE_ID.eq(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_ID))
                 .where(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_NAME.in(tableNames)).remove();

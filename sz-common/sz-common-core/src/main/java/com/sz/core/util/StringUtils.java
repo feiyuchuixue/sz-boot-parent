@@ -147,9 +147,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return result.toString();
     }
 
-
-
-
     /**
      * 获取参数不为空值
      *

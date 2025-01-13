@@ -3,10 +3,8 @@ package com.sz.generator.pojo.result;
 import lombok.Data;
 
 /**
- * @ClassName TableResult
- * @Author sz
- * @Date 2023/11/27 13:55
- * @Version 1.0
+ * @author sz
+ * @since 2023/11/27 13:55
  */
 @Data
 public class TableResult {

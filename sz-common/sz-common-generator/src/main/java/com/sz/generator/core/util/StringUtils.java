@@ -6,6 +6,7 @@ import java.util.*;
 
 /**
  * 字符串工具类
+ * 
  * @deprecated 已弃用，请使用 {@link com.sz.core.util.StringUtils}
  * @author sz
  */

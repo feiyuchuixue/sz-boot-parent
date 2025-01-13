@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 /**
  * @author sz
- * @since  2023/11/28 16:06
+ * @since 2023/11/28 16:06
  */
 public class GeneratorUtils {
 
