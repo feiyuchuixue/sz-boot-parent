@@ -29,7 +29,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *            要转换的字符串
      * @return 首字母小写的字符串，如果首字母已是小写，则返回原字符串
      * @author sz
-     * @date 2021-09-15
+     * @since 2021-09-15
      */
     public static String toLowerCaseFirstOne(String s) {
         if (Character.isLowerCase(s.charAt(0))) {
@@ -46,7 +46,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *            要转换的字符串
      * @return 首字母大写的字符串，如果首字母已是大写，则返回原字符串
      * @author sz
-     * @date 2021-09-15
+     * @since 2021-09-15
      */
     public static String toUpperCaseFirstOne(String s) {
         if (Character.isUpperCase(s.charAt(0))) {

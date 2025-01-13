@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * @ClassName SaExceptionHandler
- * @Author sz
- * @Date 2024/2/4 15:42
- * @Version 1.0
+ * @author sz
+ * @since 2024/2/4 15:42
  */
 @Order(Integer.MIN_VALUE)
 @RestControllerAdvice

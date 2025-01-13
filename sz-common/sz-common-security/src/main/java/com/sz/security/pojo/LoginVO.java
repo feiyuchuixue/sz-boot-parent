@@ -4,10 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName LoginGlobalVO
- * @Author sz
- * @Date 2024/1/22 15:35
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/22 15:35
+ * @version 1.0
  */
 @Data
 @Schema(description = "通用用户返回")

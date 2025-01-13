@@ -7,10 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @ClassName CorsProperties
- * @Author sz
- * @Date 2025/1/6 10:02
- * @Version 1.0
+ * @author sz
+ * @since 2025/1/6 10:02
+ * @version 1.0
  */
 @Data
 @Configuration

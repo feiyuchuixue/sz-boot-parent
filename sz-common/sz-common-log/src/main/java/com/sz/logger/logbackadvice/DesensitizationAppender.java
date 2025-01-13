@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 
 /**
- * @ClassName DesensitizationAppender
- * @Description 脱敏类 - 将日志进行脱敏
- * @Author 柳成荫
- * @Date 2021/1/9
+ * 脱敏类 - 将日志进行脱敏
+ * 
+ * @author 柳成荫
+ * @since 2021/1/9
  */
 @Slf4j
 public class DesensitizationAppender {

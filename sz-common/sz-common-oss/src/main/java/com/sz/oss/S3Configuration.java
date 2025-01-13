@@ -14,10 +14,10 @@ import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import java.net.URI;
 
 /**
- * @ClassName S3AsyncConfiguration
- * @Author sz
- * @Date 2024/11/12 15:16
- * @Version 1.0
+ * S3AsyncConfiguration
+ * 
+ * @author sz
+ * @since 2024/11/12 15:16
  */
 @Configuration
 @RequiredArgsConstructor
@@ -58,24 +58,35 @@ public class S3Configuration {
     private StaticCredentialsProvider credentialsProvider() {
         return StaticCredentialsProvider.create(AwsBasicCredentials.create(ossProperties.getAccessKey(), ossProperties.getSecretKey()));
     }
-
+    /**
+     * 强制使用路径风格访问存储桶和对象的参数 `forcePathStyle` 在 MinIO 中的作用。
+     *
+     * 在 S3 兼容 API 中，访问存储桶和对象有两种方式：
+     *
+     * <ul>
+     * <li><b>虚拟主机风格</b>：存储桶名称作为 URL 的一部分，例如：
+     * <code>http://bucket-name.s3.amazonaws.com/object-name</code>。 此方式要求存储桶名称符合
+     * DNS 规则。</li>
+     * <li><b>路径风格</b>：存储桶名称作为 URL 路径的一部分，例如：
+     * <code>http://s3.amazonaws.com/bucket-name/object-name</code>。 此方式不要求存储桶名称符合
+     * DNS 规则。</li>
+     * </ul>
+     *
+     * 使用 MinIO 作为 S3 兼容服务时，如果存储桶名称不符合 DNS 规则， 或希望强制使用路径风格的 URL，可以将 `forcePathStyle`
+     * 参数设置为 `true`。 这样，即使存储桶名称不符合 DNS 规则，也可以通过路径风格访问存储桶和对象。
+     *
+     * <p>
+     * 例如，当 `forcePathStyle` 设置为 `true` 时，访问对象的 URL 格式应为：
+     * </p>
+     * <ul>
+     * <li><code>http://minio-server:9000/bucket-name/object-name</code></li>
+     * <li>而非：<code>http://bucket-name.minio-server:9000/object-name</code></li>
+     * </ul>
+     *
+     * 在某些客户端库或工具中，明确设置 `forcePathStyle` 参数对于确保与 MinIO 的兼容性非常重要， 特别是在存储桶名称不符合 DNS
+     * 命名规则时。
+     */
     private boolean isPathStyle() {
-        /**
-         * orcePathStyle参数在MinIO中的作用是强制使用路径风格的请求来访问存储桶和对象。在S3兼容的API中，有两种方式来指定存储桶和对象的名称：
-         *
-         * 虚拟主机风格：在这种风格中，存储桶名称是URL的一部分，例如http://bucket-name.s3.amazonaws.com/object-name。这种方式要求存储桶名称必须符合DNS名称的规则。
-         *
-         * 路径风格：在这种风格中，存储桶名称是URL路径的一部分，例如http://s3.amazonaws.com/bucket-name/object-name。这种方式不要求存储桶名称符合DNS名称规则。
-         *
-         * 当您使用MinIO作为S3兼容的服务时，如果您的存储桶名称不符合DNS名称规则，或者您希望确保客户端总是使用路径风格的URL，您可以设置forcePathStyle参数为true。这样，即使您的存储桶名称不符合DNS规则，您也可以通过路径风格来访问存储桶和对象。
-         *
-         * 例如，如果您的MinIO服务配置了forcePathStyle为true，那么您应该使用如下URL格式来访问对象：
-         *
-         * http://minio-server:9000/bucket-name/object-name 而不是：
-         *
-         * http://bucket-name.minio-server:9000/object-name
-         * 在一些客户端库或工具中，您可能需要明确设置forcePathStyle参数来确保使用路径风格的URL。这对于确保与MinIO的兼容性非常重要，特别是当您的存储桶名称不符合DNS命名规则时
-         */
         return ossProperties.getProvider().equals(OssProviderEnum.MINIO);
     }
 

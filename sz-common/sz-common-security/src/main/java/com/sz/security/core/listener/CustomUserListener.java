@@ -6,10 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName CustomUserListener
- * @Author sz
- * @Date 2024/1/22 16:47
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/22 16:47
+ * @version 1.0
  */
 @Component
 @Slf4j

@@ -29,10 +29,10 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 
 /**
- * @ClassName SysPermissionServiceImpl
- * @Author sz
- * @Date 2024/2/4 15:12
- * @Version 1.0
+ *  SysPermissionServiceImpl
+ * @author sz
+ * @since 2024/2/4 15:12
+ * @version 1.0
  */
 @Service
 @Slf4j

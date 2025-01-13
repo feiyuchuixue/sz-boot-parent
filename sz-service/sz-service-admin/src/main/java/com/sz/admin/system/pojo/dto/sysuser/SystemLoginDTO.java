@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @author: sz
- * @date: 2022/5/21 19:30
- * @description:
+ * @author sz
+ * @since 2022/5/21 19:30
+ * 
  */
 
 @Schema(description = "描述信息")

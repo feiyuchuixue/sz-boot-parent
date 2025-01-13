@@ -4,10 +4,8 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.FileAppender;
 
 /**
- * @ClassName FileAppenderDS
- * @Description
- * @Author 柳成荫
- * @Date 2021/1/9
+ * @author 柳成荫
+ * @since 2021/1/9
  */
 public class SzFileAppender extends FileAppender<LoggingEvent> {
 

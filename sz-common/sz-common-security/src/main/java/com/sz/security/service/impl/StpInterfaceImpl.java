@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName StpInterfaceImpl
- * @Author sz
- * @Date 2024/1/26 16:40
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/26 16:40
+ * @version 1.0
  */
 @Order(Integer.MIN_VALUE)
 @Component

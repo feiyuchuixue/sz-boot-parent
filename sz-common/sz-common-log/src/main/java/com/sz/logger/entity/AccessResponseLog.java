@@ -4,9 +4,8 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 /**
- * @author: sz
- * @date: 2023/2/20 16:33
- * @description:
+ * @author sz
+ * @since 2023/2/20 16:33
  */
 
 @Data

@@ -3,10 +3,9 @@ package com.sz.wechat;
 /**
  * 微信API常量类
  *
- * @ClassName WechatApiConstant
- * @Author sz
- * @Date 2024/4/26 9:41
- * @Version 1.0
+ * @author sz
+ * @since 2024/4/26 9:41
+ * @version 1.0
  */
 public class WechatApiConstant {
 

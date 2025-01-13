@@ -27,7 +27,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 验证用户名是否存在
      *
      * @param username
-     * @return
+     *            用户名
+     * @return 用户数量
      */
     @Select(" select count(id) from sys_user where username = #{username}  ")
     int validUsername(String username);
@@ -36,7 +37,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询全部部门的用户列表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 用户列表
      */
     List<SysUserVO> queryAllSysUserList(SysUserListDTO dto);
 
@@ -44,7 +46,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询全部部门的用户名称列表
      * 
      * @param ids
-     * @return
+     *            用户id
+     * @return 用户名称列表
      */
     List<SysUserVO> queryAllSysUserNameList(String[] ids);
 
@@ -52,7 +55,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询（部门）用户列表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 用户列表
      */
     List<SysUserVO> querySysUserListByDept(SysUserListDTO dto);
 
@@ -60,7 +64,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询（未分配部门）用户列表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 用户列表
      */
     List<SysUserVO> querySysUserListNotDept(SysUserListDTO dto);
 
@@ -68,7 +73,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询用户部门信息
      * 
      * @param userIds
-     * @return
+     *            用户id
+     * @return 用户部门信息
      */
     List<UserDeptInfoVO> queryUserDeptInfo(List<Long> userIds);
 
@@ -76,7 +82,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * 查询用户部门信息
      * 
      * @param userIds
-     * @return
+     *            用户id
+     * @return 用户部门信息
      */
     List<UserRoleInfoVO> queryUserRoleInfo(List<Long> userIds);
 

@@ -35,12 +35,14 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     /**
      * @param ids
+     *            ids
      */
     void updateMenuAndChildrenIsDelete(List<String> ids);
 
     /**
      * @param ids
-     * @return
+     *            ids
+     * @return 递归下边的子节点id集合
      */
     List<String> selectMenuAndChildrenIds(List<String> ids);
 

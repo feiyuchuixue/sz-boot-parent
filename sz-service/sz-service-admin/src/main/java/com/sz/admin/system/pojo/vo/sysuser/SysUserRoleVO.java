@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author sz
- * @date 2023/8/29 10:47
+ * @since 2023/8/29 10:47
  */
 @Data
 public class SysUserRoleVO {

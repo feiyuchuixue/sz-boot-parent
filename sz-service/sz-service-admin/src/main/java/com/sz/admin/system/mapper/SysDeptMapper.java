@@ -21,14 +21,15 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * （向上递归）查询指定层级的祖籍id
      *
      * @param deptId
-     * @return
+     *            部门id
+     * @return 祖籍id集合
      */
     List<Integer> iterUpDeptAncestors(@Param("deptId") Integer deptId);
 
     /**
      * 统计分配部门的用户数量
      *
-     * @return
+     * @return 部门用户数量
      */
     List<TotalDeptVO> countUsersPerDept();
 

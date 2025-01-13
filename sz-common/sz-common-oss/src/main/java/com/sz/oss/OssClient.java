@@ -27,10 +27,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
- * @ClassName OssClient
- * @Author sz
- * @Date 2024/11/12 14:56
- * @Version 1.0
+ * @author sz
+ * @since 2024/11/12 14:56
  */
 
 @Service
@@ -56,8 +54,9 @@ public class OssClient {
      *            文件
      * @param dirTag
      *            目录
-     * @return
+     * @return 上传结果
      * @throws IOException
+     *             IO异常
      */
     public UploadResult upload(MultipartFile file, String dirTag) throws IOException {
         FileNamingEnum naming = properties.getNaming();
@@ -86,8 +85,9 @@ public class OssClient {
      *            目录标签
      * @param filename
      *            文件名
-     * @return
+     * @return 上传结果
      * @throws IOException
+     *             IO异常
      */
     public UploadResult upload(MultipartFile file, String dirTag, String filename) throws IOException {
         String objectName = dirTag + "/" + filename;
@@ -105,7 +105,7 @@ public class OssClient {
      *            文件大小
      * @param contextType
      *            文件类型
-     * @return
+     * @return 上传结果
      */
     public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType) {
         try {
@@ -127,7 +127,8 @@ public class OssClient {
      * 验证文件是否存在
      *
      * @param key
-     * @return
+     *            文件名
+     * @return 是否存在
      */
     public boolean isFileExists(String key) {
         try {
@@ -143,7 +144,7 @@ public class OssClient {
      *
      * @param objectName
      *            对象名（唯一，可包含路径）
-     * @return
+     * @return 链接
      */
     public String getPrivateUrl(String objectName) {
         URL url = s3Presigner.presignGetObject(x -> x.signatureDuration(Duration.ofSeconds(DEFAULT_EXPIRE_TIME))
@@ -152,15 +153,27 @@ public class OssClient {
     }
 
     /**
-     * 获取私有文件链接 eg:
-     * https://your_domain.com/test/user/20241125/6%E5%AD%97%E5%85%B8%E7%AE%A1%E7%90%86.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241125T011936Z&X-Amz-SignedHeaders=host&X-Amz-Credential=EBPVrHftB014oEKdR9y8%2F20241125%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=120&X-Amz-Signature=41e40237dc426d7a3e000014183219607cd709a799c9133e3ee61a882b2d3642
+     * 获取私有文件的访问链接。
+     *
+     * 该方法生成一个带有签名的私有文件访问链接，允许在指定的有效期内访问存储在 S3 兼容服务中的私有文件。 例如：
+     * 
+     * <pre>
+     * https://your_domain.com/test/user/20241125/6%E5%AD%97%E5%85%B8%E7%AE%A1%E7%90%86.png
+     * ?X-Amz-Algorithm=AWS4-HMAC-SHA256
+     * &X-Amz-Date=20241125T011936Z
+     * &X-Amz-SignedHeaders=host
+     * &X-Amz-Credential=EBPVrHftB014oEKdR9y8%2F20241125%2Fus-east-1%2Fs3%2Faws4_request
+     * &X-Amz-Expires=120
+     * &X-Amz-Signature=41e40237dc426d7a3e000014183219607cd709a799c9133e3ee61a882b2d3642
+     * </pre>
      *
      * @param objectName
-     *            对象名（唯一，可包含路径）
+     *            对象名（唯一，可包含路径），用于指定要访问的文件
      * @param second
-     *            有效期（秒）
-     * @return
+     *            链接的有效期（秒），决定该链接在多长时间内有效
+     * @return 生成的私有文件访问链接
      */
+
     public String getPrivateUrl(String objectName, Long second) {
         URL url = s3Presigner.presignGetObject(x -> x.signatureDuration(Duration.ofSeconds(second))
                 .getObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).build()).build()).url();
@@ -171,7 +184,9 @@ public class OssClient {
      * 文件下载
      *
      * @param objectName
+     *            对象名（唯一，可包含路径）
      * @param outputStream
+     *            输出流
      */
     public void download(String objectName, OutputStream outputStream) {
         try {
@@ -197,7 +212,9 @@ public class OssClient {
      * 文件下载
      *
      * @param objectName
+     *            对象名（唯一，可包含路径）
      * @param response
+     *            响应
      */
     public void download(String objectName, HttpServletResponse response, String showFileName) {
         try {
@@ -249,7 +266,8 @@ public class OssClient {
      * 生成文件名 eg: /20231212/4150e7c6-b92f-419d-b804-0e8be80f5e71.png
      *
      * @param originalFilename
-     * @return
+     *            原始文件名
+     * @return 文件名
      */
     private String generateFileName(String originalFilename) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -264,7 +282,8 @@ public class OssClient {
      * 生成文件名 eg: /20231212/logo.jpg
      *
      * @param originalFilename
-     * @return
+     *            原始文件名
+     * @return 文件名
      */
     private String generateOriginalFileName(String originalFilename) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");

@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author sz
- * @date 2023/9/8 16:10
+ * @since 2023/9/8 16:10
  */
 @Data
 public class TransferMessage<T> {

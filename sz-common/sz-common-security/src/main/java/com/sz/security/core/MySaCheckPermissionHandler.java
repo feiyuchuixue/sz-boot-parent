@@ -12,10 +12,9 @@ import com.sz.security.core.util.LoginUtils;
 import java.lang.reflect.Method;
 
 /**
- * @ClassName MySaCheckPermissionHandler
- * @Author sz
- * @Date 2024/10/9 14:16
- * @Version 1.0
+ * @author sz
+ * @since 2024/10/9 14:16
+ * @version 1.0
  */
 public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<SaCheckPermission> {
 

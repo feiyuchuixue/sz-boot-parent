@@ -42,9 +42,8 @@ public class AESUtil {
      * @param base64Code
      *            待解码的base 64 code
      * @return 解码后的byte[]
-     * @throws Exception
      */
-    public static byte[] base64Decode(String base64Code) throws Exception {
+    public static byte[] base64Decode(String base64Code) {
         Base64.Decoder decoder = Base64.getDecoder();
         return StringUtils.isEmpty(base64Code) ? null : decoder.decode(base64Code);
     }

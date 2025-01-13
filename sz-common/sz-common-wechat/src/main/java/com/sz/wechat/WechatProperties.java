@@ -5,10 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName WechatProperties
- * @Author sz
- * @Date 2024/4/26 9:23
- * @Version 1.0
+ * @author sz
+ * @since 2024/4/26 9:23
+ * @version 1.0
  */
 @Data
 @Component

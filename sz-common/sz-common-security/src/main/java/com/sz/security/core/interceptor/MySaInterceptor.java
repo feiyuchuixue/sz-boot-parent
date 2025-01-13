@@ -16,10 +16,8 @@ import org.springframework.web.method.HandlerMethod;
 import java.lang.reflect.Method;
 
 /**
- * @ClassName MySaInterceptor
- * @Author sz
- * @Date 2024/7/9 14:29
- * @Version 1.0
+ * @author sz
+ * @since 2024/7/9 14:29
  */
 public class MySaInterceptor extends SaInterceptor {
 

@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 
 /**
  * This class will be deprecated in future versions.
+ *
+ * 脱敏工具类
  * 
- * @ClassName DesensitizationUtil
- * @Description 脱敏工具类
- * @Author 柳成荫
- * @Date 2021/1/9
+ * @author 柳成荫
+ * @since 2021/1/9
  */
 public class DesensitizationUtil {
 
@@ -21,10 +21,7 @@ public class DesensitizationUtil {
      * 该正则表达式第三个()可能无法匹配以某些特殊符号开头和结尾的（如果像密码这种字段，前后如果有很多特殊字段，则无法匹配，建议密码直接加密，无需脱敏）
      */
     public static final Pattern REGEX_PATTERN = Pattern
-            .compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:=]+[^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)[\\W&&[^\\-@.]]?\\s*");
-    // 该正则表达式第三个()可以匹配以某些特殊字符开头和结尾的，但是对于日志来说，处理也很麻烦
-    // public static final Pattern REGEX_PATTERN =
-    // Pattern.compile("\\s*([\"]?[\\w]+[\"]?)(\\s*[:：=><]+\\s*)([\\S]+[\\u4e00-\\u9fa5\\w]+[\\S]+)[\\W&&[^\\-@.]]?\\s*");
+            .compile("\\s*(\"?\\w+\"?)(\\s*[:=]+[^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)\\W&&[^\\-@.]?\\s*");
 
     /**
      * 匹配非数字
@@ -178,7 +175,7 @@ public class DesensitizationUtil {
      *            分割
      * @param originalPatternValues
      *            原始规则
-     * @return
+     * @return 替换后的value
      */
     private String getReplaceValue(String value, String patternVales, String[] split, String originalPatternValues) {
         if (split.length >= 2 && !"".equals(patternVales)) {
@@ -326,7 +323,7 @@ public class DesensitizationUtil {
      *            规则
      * @param value
      *            key对应的值 - 如 name:liuchengyin 这个参数就是liuchengyn
-     * @return
+     * @return 规则
      */
     private String getPatternByMap(Map<String, Object> map, String value) {
         if (CollectionUtils.isEmpty(map)) {
@@ -433,7 +430,7 @@ public class DesensitizationUtil {
      *            脱敏结束下标
      * @param value
      *            value
-     * @return
+     * @return 脱敏后的value
      */
     public String dataDesensitization(int start, int end, String value) {
         char[] chars;

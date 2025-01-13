@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @author sz
- * @date 2023/9/1 14:07
+ * @since 2023/9/1 14:07
  */
 @Data
 @Schema(description = "菜单权限查询")

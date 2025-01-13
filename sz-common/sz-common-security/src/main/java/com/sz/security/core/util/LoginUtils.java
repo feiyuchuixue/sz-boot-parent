@@ -11,10 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 
 /**
- * @ClassName LoginUtils
- * @Author sz
- * @Date 2024/1/24 9:38
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/24 9:38
+ * @version 1.0
  */
 @Slf4j
 public class LoginUtils {
@@ -60,7 +59,8 @@ public class LoginUtils {
      * 根据token获取用户信息
      *
      * @param token
-     * @return
+     *            token
+     * @return 用户信息
      */
     public static LoginUser getLoginUser(String token) {
         SaSession session = StpUtil.getTokenSessionByToken(token);
@@ -73,7 +73,7 @@ public class LoginUtils {
     /**
      * 是否是超级管理员
      *
-     * @return
+     * @return 是否是超级管理员
      */
     public static boolean isSuperAdmin() {
         if (!StpUtil.isLogin())

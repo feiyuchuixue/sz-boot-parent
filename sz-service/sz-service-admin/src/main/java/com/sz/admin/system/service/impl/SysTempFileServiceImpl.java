@@ -39,7 +39,7 @@ import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FIL
  * 模版文件表 服务实现类
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-12-05
  */
 @Slf4j

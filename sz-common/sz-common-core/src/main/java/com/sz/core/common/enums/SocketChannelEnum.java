@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @author sz
- * @date 2023/9/6 10:24
+ * @since 2023/9/6 10:24
  */
 @Getter
 public enum SocketChannelEnum {

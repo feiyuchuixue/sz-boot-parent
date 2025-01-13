@@ -27,11 +27,6 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
         PrintSQL.print();
     }
 
-    /**
-     * 分页插件
-     *
-     * @return
-     */
     @Bean
     public PageInterceptor pageInterceptor() {
         return new PageInterceptor();

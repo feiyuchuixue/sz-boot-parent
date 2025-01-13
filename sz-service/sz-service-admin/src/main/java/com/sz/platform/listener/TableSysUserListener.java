@@ -9,10 +9,10 @@ import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_USER_OPTIONS;
 /**
  * sys_user表监听器
  *
- * @ClassName TableUserChangeListener
- * @Author sz
- * @Date 2024/8/22 10:00
- * @Version 1.0
+ *  TableUserChangeListener
+ * @author sz
+ * @since 2024/8/22 10:00
+ * @version 1.0
  */
 public class TableSysUserListener extends EntityChangeListener {
 

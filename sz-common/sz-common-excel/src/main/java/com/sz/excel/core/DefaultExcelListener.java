@@ -102,8 +102,6 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
      *            发生的异常
      * @param context
      *            异常发生时的上下文信息，提供额外的处理依据
-     * @throws Exception
-     *             如果异常无法被适当地处理，需要向上抛出
      */
 
     @Override

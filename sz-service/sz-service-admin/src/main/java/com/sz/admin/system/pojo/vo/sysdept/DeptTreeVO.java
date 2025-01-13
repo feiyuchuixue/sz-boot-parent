@@ -7,10 +7,10 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @ClassName DeptTreeVO
- * @Author sz
- * @Date 2024/3/22 9:59
- * @Version 1.0
+ *  DeptTreeVO
+ * @author sz
+ * @since 2024/3/22 9:59
+ * @version 1.0
  */
 
 @Data

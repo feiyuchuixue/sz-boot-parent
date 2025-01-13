@@ -7,7 +7,7 @@ import lombok.Data;
 
 /**
  * @author sz
- * @date 2023/9/6 17:20
+ * @since 2023/9/6 17:20
  */
 @Data
 public class SocketBean<T> {

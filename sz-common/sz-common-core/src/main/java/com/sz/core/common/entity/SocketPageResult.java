@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author sz
- * @date 2023/9/6 10:17
+ * @since 2023/9/6 10:17
  */
 @Data
 public class SocketPageResult<T> extends SocketResult<T> {

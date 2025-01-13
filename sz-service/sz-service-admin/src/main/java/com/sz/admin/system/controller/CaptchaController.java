@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 验证码controller
  *
- * @ClassName CaptchaController
- * @Author sz
- * @Date 2025/01/07 19:07
- * @Version 1.0
+ * @author sz
+ * @since 2025/01/07 19:07
+ * @version 1.0
  */
 @Tag(name = "验证码")
 @RestController

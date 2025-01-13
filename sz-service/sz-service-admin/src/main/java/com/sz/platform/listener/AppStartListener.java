@@ -9,9 +9,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * @author: sz
- * @date: 2022/9/9 16:21
- * @description:
+ * @author sz
+ * @since 2022/9/9 16:21
+ * 
  */
 @Slf4j
 @Component

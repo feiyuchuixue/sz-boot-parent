@@ -5,8 +5,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author: sz
- * @date: 2022/8/26 15:14
+ * @author sz
+ * @since 2022/8/26 15:14
  */
 @Slf4j
 @Configuration

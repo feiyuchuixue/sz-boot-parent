@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author sz
- * @date 2023/9/6 17:27
+ * @since 2023/9/6 17:27
  */
 public class SocketUtil {
 
@@ -20,13 +20,6 @@ public class SocketUtil {
         return JsonUtils.toJsonString(bean);
     }
 
-    /**
-     * 发送消息转换
-     *
-     * @param sb
-     * @param usernames
-     * @return
-     */
     public static TransferMessage pubTransferMessage(SocketBean sb, List<String> usernames) {
         TransferMessage transferMessage = new TransferMessage();
         transferMessage.setMessage(sb);

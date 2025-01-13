@@ -379,12 +379,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return permissionVO;
     }
 
-    @Override
     /**
      * 查询权限按钮
      *
-     * @return
+     * @return 权限集合
      */
+    @Override
     public List<String> findPermission() {
         return sysUserRoleMapper.queryPermissionByUserId(StpUtil.getLoginIdAsLong());
     }
