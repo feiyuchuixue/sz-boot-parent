@@ -18,6 +18,7 @@
         <mybatis-flex.version>1.10.2</mybatis-flex.version>
         <jackson.version>2.18.2</jackson.version>
         <aws.s3.version>2.29.23</aws.s3.version>
+        <xxl-job.version>2.4.2</xxl-job.version>
     </properties>
 
     <!--全局依赖版本管理-->
@@ -165,6 +166,13 @@
                 <groupId>cn.idev.excel</groupId>
                 <artifactId>fastexcel</artifactId>
                 <version>1.0.0</version>
+            </dependency>
+
+            <!-- xxl-job-core -->
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
             </dependency>
         </dependencies>
 

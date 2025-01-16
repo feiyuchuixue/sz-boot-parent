@@ -1,0 +1,19 @@
+xxl:
+  job:
+    ### xxl-job, access token
+    accessToken: default_token
+    executor:
+      ### xxl-job executor log-retention-days
+      logretentiondays: 30
+      ### xxl-job executor log-path
+      logpath: /data/applogs/xxl-job/jobhandler
+      ### xxl-job executor server-info
+      port: 9999
+      ip:
+      ### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
+      address:
+      ### xxl-job executor appname
+      appname: xxl-job-executor-sample
+    admin:
+      ### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
+      addresses: http://127.0.0.1:9820/xxl-job-admin
