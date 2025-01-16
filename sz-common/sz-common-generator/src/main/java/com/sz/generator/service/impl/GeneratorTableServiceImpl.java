@@ -216,7 +216,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
 
         if (shouldInitializeMenu(detailVO)) {
-            initMenu(detailVO, model, true);
+            initMenu(detailVO, model, true); // 生成菜单
         }
         return messages;
     }
@@ -303,7 +303,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         handleTemplates(BuildTemplateUtils.getWebTemplates(configurer, rootPathWeb, detailVO, model), previews, model);
         // 处理 Sql模板
         if (shouldInitializeMenu(detailVO)) {
-            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
+            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false); // 预览仅生成sql，不插入sql
             if (!menuCreateDTOS.isEmpty()) {
                 model.put("sysMenuList", menuCreateDTOS);
                 MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
@@ -377,64 +377,80 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     @Transactional
     public List<MenuCreateDTO> initMenu(GeneratorDetailVO detailVO, Map<String, Object> model, boolean isInsertDB) {
         List<MenuCreateDTO> menus = new ArrayList<>();
-        if (("0").equals(detailVO.getGeneratorInfo().getMenuInitType())) {
+        if ("0".equals(detailVO.getGeneratorInfo().getMenuInitType())) { // 获取代码配置，是否启用菜单（菜单不启用，按钮也不会启用）初始化
             return menus;
         }
         String menuId = Utils.generateUUIDs(); // 按钮父级id,菜单id
-        int menuDeep;
         String parentMenuId = detailVO.getGeneratorInfo().getParentMenuId();
-        SysMenuResult sysMenuResult = this.mapper.selectSysMenuByPid(parentMenuId);
-        if (sysMenuResult != null) {
-            menuDeep = sysMenuResult.getDeep() + 1;
-        } else {
-            menuDeep = 1;
-        }
-        String routerName = model.get("indexDefineOptionsName").toString(); // eg: TeacherStatisticsView
-        String path = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName(); // eg:
-                                                                                                                                        // /test/teacherStatistics
-        String component = SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName() + SEPARATOR
-                + "index"; // eg: /teacher/TeacherStatisticsView/index
+        int menuDeep = getMenuDepth(parentMenuId);
+        String routerName = model.get("indexDefineOptionsName").toString();
+        String path = buildPath(detailVO);
+        String component = buildComponent(detailVO);
         int count = this.mapper.selectMenuCount(parentMenuId);
-        String listPermission = model.get("listPermission").toString(); // eg: sys.user.query_table
+        String listPermission = model.get("listPermission").toString();
         MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep, listPermission);
         menus.add(menuDto);
         if (isInsertDB) {
-            int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
-            String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
-            CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
+            assertMenuDoesNotExist(routerName, path, component, parentMenuId);
             this.mapper.insertMenu(menuDto);
         }
-        if (("0").equals(detailVO.getGeneratorInfo().getBtnPermissionType())) {
-            return menus;
+        if ("1".equals(detailVO.getGeneratorInfo().getBtnPermissionType())) {
+            menus.addAll(createButtonPermissions(menuId, model, menuDeep, isInsertDB));
         }
-        // 自动创建按钮权限
-        String createPermission = model.get("createPermission").toString();
-        String updatePermission = model.get("updatePermission").toString();
-        String removePermission = model.get("removePermission").toString();
-        int btnCount = this.mapper.selectMenuCount(menuId) * 100;
-        MenuCreateDTO bthCreateDto = buildBtn(menuId, "新增", createPermission, btnCount + 100, menuDeep);
-        MenuCreateDTO btnUpdateDto = buildBtn(menuId, "修改", updatePermission, btnCount + 200, menuDeep);
-        MenuCreateDTO btnRemoveDto = buildBtn(menuId, "删除", removePermission, btnCount + 300, menuDeep);
-        menus.add(bthCreateDto);
-        menus.add(btnUpdateDto);
-        menus.add(btnRemoveDto);
-        this.mapper.insertMenu(bthCreateDto);
-        this.mapper.insertMenu(btnUpdateDto);
-        this.mapper.insertMenu(btnRemoveDto);
         if ("1".equals(detailVO.getGeneratorInfo().getHasImport())) {
-            String importPermission = model.get("importPermission").toString();
-            MenuCreateDTO btnImportDto = buildBtn(menuId, "导入", importPermission, btnCount + 400, menuDeep);
-            menus.add(btnImportDto);
-            this.mapper.insertMenu(btnImportDto);
+            menus.add(createImportPermission(menuId, model, menuDeep, isInsertDB));
         }
         if ("1".equals(detailVO.getGeneratorInfo().getHasExport())) {
-            String exportPermission = model.get("exportPermission").toString();
-            MenuCreateDTO btnExportDto = buildBtn(menuId, "导出", exportPermission, btnCount + 500, menuDeep);
-            menus.add(btnExportDto);
-            this.mapper.insertMenu(btnExportDto);
+            menus.add(createExportPermission(menuId, model, menuDeep, isInsertDB));
         }
         this.mapper.syncTreeHasChildren();
         return menus;
+    }
+
+    private int getMenuDepth(String parentMenuId) {
+        SysMenuResult sysMenuResult = this.mapper.selectSysMenuByPid(parentMenuId);
+        return (sysMenuResult != null) ? sysMenuResult.getDeep() + 1 : 1;
+    }
+
+    private String buildPath(GeneratorDetailVO detailVO) {
+        return SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName();
+    }
+
+    private String buildComponent(GeneratorDetailVO detailVO) {
+        return buildPath(detailVO) + SEPARATOR + "index";
+    }
+
+    private void assertMenuDoesNotExist(String routerName, String path, String component, String parentMenuId) {
+        int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
+        String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
+        CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
+    }
+
+    private List<MenuCreateDTO> createButtonPermissions(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
+        List<MenuCreateDTO> buttonMenus = new ArrayList<>();
+        int btnCount = this.mapper.selectMenuCount(menuId) * 100;
+        buttonMenus.add(buildAndInsertButton(menuId, "新增", model.get("createPermission").toString(), btnCount + 100, menuDeep, isInsertDB));
+        buttonMenus.add(buildAndInsertButton(menuId, "修改", model.get("updatePermission").toString(), btnCount + 200, menuDeep, isInsertDB));
+        buttonMenus.add(buildAndInsertButton(menuId, "删除", model.get("removePermission").toString(), btnCount + 300, menuDeep, isInsertDB));
+        return buttonMenus;
+    }
+
+    private MenuCreateDTO createImportPermission(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
+        return buildAndInsertButton(menuId, "导入", model.get("importPermission").toString(), this.mapper.selectMenuCount(menuId) * 100 + 400, menuDeep,
+                isInsertDB);
+    }
+
+    private MenuCreateDTO createExportPermission(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
+        return buildAndInsertButton(menuId, "导出", model.get("exportPermission").toString(), this.mapper.selectMenuCount(menuId) * 100 + 500, menuDeep,
+                isInsertDB);
+    }
+
+    private MenuCreateDTO buildAndInsertButton(String menuId, String action, String permission, int order, int deep, boolean isInsertDB) {
+        MenuCreateDTO btnDto = buildBtn(menuId, action, permission, order, deep);
+        if (isInsertDB) {
+            this.mapper.insertMenu(btnDto);
+        }
+        return btnDto;
     }
 
     private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, String btnParentId, String parentMenuId, String path, String routerName,
@@ -494,8 +510,16 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return detailVOS;
     }
 
+    /**
+     * 是否应该初始化菜单
+     * 
+     * @param detailVO
+     *            配置详情
+     * @return boolean
+     */
     private boolean shouldInitializeMenu(GeneratorDetailVO detailVO) {
-        return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType()));
+        return ("1").equals(detailVO.getGeneratorInfo().getMenuInitType()) && (("all").equals(detailVO.getGeneratorInfo().getGenerateType())); // 开启菜单初始化配置 &&
+                                                                                                                                               // // 代码生成类型是all
     }
 
     @Override
