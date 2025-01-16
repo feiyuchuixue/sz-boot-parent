@@ -1,0 +1,17 @@
+spring:
+  threads:
+    virtual:
+      # 启用虚拟线程
+      enabled: true
+  profiles:
+    active: local
+  config:
+    import:
+      - file:config/${spring.profiles.active}/mysql.yml
+      - file:config/${spring.profiles.active}/xxl-job.yml
+  application:
+    name: xxl-job-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
