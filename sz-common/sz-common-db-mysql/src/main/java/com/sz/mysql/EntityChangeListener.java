@@ -1,5 +1,6 @@
 package com.sz.mysql;
 
+import cn.dev33.satoken.exception.NotWebContextException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.annotation.InsertListener;
 import com.mybatisflex.annotation.SetListener;
@@ -29,21 +30,21 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
     @Override
     public void onInsert(Object o) {
         setPropertyIfPresent(o, "createTime", LocalDateTime.now());
-        if (StpUtil.isLogin()) {
-            setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
-            LoginUser loginUser = LoginUtils.getLoginUser();
-            List<Long> deptOptions = loginUser.getDepts();
-            if (deptOptions.isEmpty())
-                return;
-            setPropertyIfPresent(o, "deptScope", deptOptions);
+        if (isNotLogin()) {
+            return;
         }
-
+        setPropertyIfPresent(o, "createId", StpUtil.getLoginIdAsLong());
+        LoginUser loginUser = LoginUtils.getLoginUser();
+        List<Long> deptOptions = loginUser.getDepts();
+        if (deptOptions.isEmpty())
+            return;
+        setPropertyIfPresent(o, "deptScope", deptOptions);
     }
 
     @Override
     public void onUpdate(Object o) {
         setPropertyIfPresent(o, "updateTime", LocalDateTime.now());
-        if (!StpUtil.isLogin())
+        if (isNotLogin())
             return;
         setPropertyIfPresent(o, "updateId", StpUtil.getLoginIdAsLong());
     }
@@ -66,6 +67,19 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
         } catch (NoSuchFieldException | IllegalAccessException e) {
             // 如果字段不存在，则忽略异常
             log.warn(" Fill EntityChangeField failed; Property {} not found. ", propertyName);
+        }
+    }
+
+    private boolean isNotLogin() {
+        try {
+            return !StpUtil.isLogin();
+        } catch (NotWebContextException e) {
+            // 处理非 Web 环境异常，返回未登录
+            return true;
+        } catch (Exception e) {
+            // 记录所有其他异常，并返回未登录
+            log.error("[EntityChangeListener] Unexpected error during login check: {}", e.getMessage(), e);
+            return true;
         }
     }
 
