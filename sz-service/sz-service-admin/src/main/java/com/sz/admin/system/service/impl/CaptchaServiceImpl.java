@@ -36,7 +36,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public SliderPuzzle getImageCode(HttpServletRequest request) {
         String requestId = Utils.generateSha256Id(Utils.generateCaptchaRequestId(request)); // 根据request标识生成Sha256Id
-        String limit = SysConfigUtils.getConfValue("sys.captcha.requestLimit");
+        int limit = Utils.getIntVal(SysConfigUtils.getConfValue("sys.captcha.requestLimit"));
         String requestCycle = SysConfigUtils.getConfValue("sys.captcha.requestCycle");
         if (Utils.getIntVal(limit) != 0) {
             redisCache.initializeCaptchaRequestLimit(requestId, Utils.getLongVal(requestCycle));
@@ -51,7 +51,11 @@ public class CaptchaServiceImpl implements CaptchaService {
         Resource resource = resources[random.nextInt(resources.length)]; // 从背景库中随机获取一张
         SliderPuzzle sliderPuzzle = SlidePuzzleUtil.createImage(resource.getInputStream(), request); // 生成验证码
         CommonResponseEnum.FILE_NOT_EXISTS.assertNull(sliderPuzzle);
-        redisCache.limitCaptcha(requestId);
+
+        if (limit != 0) {
+            redisCache.limitCaptcha(requestId);
+        }
+
         String expireTime = SysConfigUtils.getConfValue("sys.captcha.expire");
         PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey());
 
