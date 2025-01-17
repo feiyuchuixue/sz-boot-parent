@@ -150,8 +150,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, dto.getId());
         SysUser one = getOne(wrapper);
         CommonResponseEnum.INVALID_USER.assertNull(one);
-        redisCache.clearUserInfo(one.getUsername());
         updateById(user);
+        eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(Collections.singletonList(user.getId()))));
     }
 
     /**
