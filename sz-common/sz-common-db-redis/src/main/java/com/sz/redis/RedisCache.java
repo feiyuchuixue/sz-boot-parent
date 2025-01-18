@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisCache {
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     // ---------------sys_dict相关----------------
     public void setDict(String dictType, List<DictVO> list) {
@@ -37,12 +37,13 @@ public class RedisCache {
     }
 
     public Map<String, List<DictVO>> getAllDict() {
-        return redisTemplate.opsForHash().entries(CommonKeyConstants.SYS_DICT);
+        return redisTemplate.<String, List<DictVO>>opsForHash().entries(CommonKeyConstants.SYS_DICT);
     }
 
     public List<DictVO> getDictByType(String dictType) {
         if (hasHashKey(dictType)) {
-            return (List<DictVO>) redisTemplate.opsForHash().get(CommonKeyConstants.SYS_DICT, dictType);
+            List<DictVO> result = redisTemplate.<String, List<DictVO>>opsForHash().get(CommonKeyConstants.SYS_DICT, dictType);
+            return result != null ? result : new ArrayList<>();
         } else {
             return new ArrayList<>();
         }
@@ -84,7 +85,7 @@ public class RedisCache {
 
     // ---------------sys_user用户认证相关----------------
 
-    public long countPwdErr(String username, long timeout) {
+    public Long countPwdErr(String username, long timeout) {
         String key = RedisUtils.getKey(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         Long increment = redisTemplate.opsForValue().increment(key, 1);
         redisTemplate.expire(key, timeout, TimeUnit.MINUTES);

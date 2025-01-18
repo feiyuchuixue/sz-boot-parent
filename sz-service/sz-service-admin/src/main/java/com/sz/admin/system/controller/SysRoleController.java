@@ -7,6 +7,7 @@ import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysRole;
+import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 import com.sz.admin.system.service.SysRoleMenuService;
 import com.sz.admin.system.service.SysRoleService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -42,7 +43,7 @@ public class SysRoleController {
     @Operation(summary = "角色新增")
     @SaCheckPermission(value = "sys.role.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysRoleCreateDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysRoleCreateDTO dto) {
         sysRoleService.create(dto);
         return ApiResult.success();
     }
@@ -50,7 +51,7 @@ public class SysRoleController {
     @Operation(summary = "角色修改")
     @SaCheckPermission(value = "sys.role.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysRoleUpdateDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysRoleUpdateDTO dto) {
         sysRoleService.update(dto);
         return ApiResult.success();
     }
@@ -58,7 +59,7 @@ public class SysRoleController {
     @Operation(summary = "删除、批量删除")
     @SaCheckPermission(value = "sys.role.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysRoleService.remove(dto);
         return ApiResult.success();
     }
@@ -73,16 +74,16 @@ public class SysRoleController {
     @Operation(summary = "角色菜单配置")
     @SaCheckPermission(value = {"sys.role.setting_btn", "sys.role.update_btn"}, mode = SaMode.AND, orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("/menu")
-    public ApiResult changeRoleMenu(@RequestBody SysRoleMenuDTO dto) {
+    public ApiResult<Void> changeRoleMenu(@RequestBody SysRoleMenuDTO dto) {
         sysRoleMenuService.change(dto);
-        return ApiPageResult.success();
+        return ApiResult.success();
     }
 
     @Operation(summary = "角色菜单信息查询")
     @SaCheckPermission(value = {"sys.role.setting_btn", "sys.role.update_btn"}, mode = SaMode.AND, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")
-    public ApiResult findRoleMenuByRoleId(@NotZero @RequestParam Long roleId) {
-        return ApiPageResult.success(sysRoleMenuService.queryRoleMenu(roleId));
+    public ApiResult<SysRoleMenuVO> findRoleMenuByRoleId(@NotZero @RequestParam Long roleId) {
+        return ApiResult.success(sysRoleMenuService.queryRoleMenu(roleId));
     }
 
 }

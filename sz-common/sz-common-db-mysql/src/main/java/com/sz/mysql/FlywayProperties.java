@@ -1,8 +1,12 @@
 package com.sz.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+@Setter
+@Getter
 @Configuration
 @ConfigurationProperties(prefix = "flyway")
 public class FlywayProperties {
@@ -11,22 +15,8 @@ public class FlywayProperties {
 
     private FlywayConfig business;
 
-    public FlywayConfig getFramework() {
-        return framework;
-    }
-
-    public void setFramework(FlywayConfig framework) {
-        this.framework = framework;
-    }
-
-    public FlywayConfig getBusiness() {
-        return business;
-    }
-
-    public void setBusiness(FlywayConfig business) {
-        this.business = business;
-    }
-
+    @Setter
+    @Getter
     public static class FlywayConfig {
 
         {
@@ -38,6 +28,7 @@ public class FlywayProperties {
             baselineVersion = "1";
         }
 
+        // Getters and Setters
         private boolean enabled;
 
         private String locations;
@@ -50,53 +41,5 @@ public class FlywayProperties {
 
         private String baselineVersion;
 
-        // Getters and Setters
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public String getLocations() {
-            return locations;
-        }
-
-        public void setLocations(String locations) {
-            this.locations = locations;
-        }
-
-        public boolean isBaselineOnMigrate() {
-            return baselineOnMigrate;
-        }
-
-        public void setBaselineOnMigrate(boolean baselineOnMigrate) {
-            this.baselineOnMigrate = baselineOnMigrate;
-        }
-
-        public String getTable() {
-            return table;
-        }
-
-        public void setTable(String table) {
-            this.table = table;
-        }
-
-        public boolean isValidateOnMigrate() {
-            return validateOnMigrate;
-        }
-
-        public void setValidateOnMigrate(boolean validateOnMigrate) {
-            this.validateOnMigrate = validateOnMigrate;
-        }
-
-        public String getBaselineVersion() {
-            return baselineVersion;
-        }
-
-        public void setBaselineVersion(String baselineVersion) {
-            this.baselineVersion = baselineVersion;
-        }
     }
 }

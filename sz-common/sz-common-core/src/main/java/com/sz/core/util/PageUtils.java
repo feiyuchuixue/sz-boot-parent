@@ -67,8 +67,8 @@ public class PageUtils {
         return new PageResult<>(current, limit, totalPage, total, list);
     }
 
-    public static Page getPage(PageQuery query) {
-        Page<Object> page = Page.of(query.getPage(), query.getLimit());
+    public static <T> Page<T> getPage(PageQuery query) {
+        Page<T> page = Page.of(query.getPage(), query.getLimit());
         if (SimpleDataScopeHelper.isDataScope())
             page.setOptimizeCountQuery(false); // 数据权限时，关闭优化查询。
         return page;

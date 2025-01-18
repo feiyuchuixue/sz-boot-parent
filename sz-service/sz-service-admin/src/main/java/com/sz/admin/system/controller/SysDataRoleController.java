@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.system.pojo.dto.sysdatarole.SysDataRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdatarole.SysDataRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysdatarole.SysDataRoleUpdateDTO;
+import com.sz.admin.system.pojo.vo.sysdatarole.SysDataRoleMenuVO;
 import com.sz.admin.system.pojo.vo.sysdatarole.SysDataRoleVO;
 import com.sz.admin.system.service.SysDataRoleService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -35,7 +36,7 @@ public class SysDataRoleController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.data.role.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@RequestBody SysDataRoleCreateDTO dto) {
+    public ApiResult<Void> create(@RequestBody SysDataRoleCreateDTO dto) {
         sysDataRoleService.create(dto);
         return ApiResult.success();
     }
@@ -43,7 +44,7 @@ public class SysDataRoleController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.data.role.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@RequestBody SysDataRoleUpdateDTO dto) {
+    public ApiResult<Void> update(@RequestBody SysDataRoleUpdateDTO dto) {
         sysDataRoleService.update(dto);
         return ApiResult.success();
     }
@@ -51,7 +52,7 @@ public class SysDataRoleController {
     @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.data.role.remove", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysDataRoleService.remove(dto);
         return ApiResult.success();
     }
@@ -73,8 +74,8 @@ public class SysDataRoleController {
     @Operation(summary = "数据权限角色菜单信息查询")
     @SaCheckPermission(value = "sys.data.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")
-    public ApiResult findRoleMenuByRoleId() {
-        return ApiPageResult.success(sysDataRoleService.queryDataRoleMenu());
+    public ApiResult<SysDataRoleMenuVO> findRoleMenuByRoleId() {
+        return ApiResult.success(sysDataRoleService.queryDataRoleMenu());
     }
 
 }

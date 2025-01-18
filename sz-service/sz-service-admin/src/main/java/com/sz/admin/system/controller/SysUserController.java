@@ -11,12 +11,11 @@ import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
-import com.sz.core.common.constant.GlobalConstant;
-import com.sz.core.common.entity.*;
-import com.sz.core.common.enums.SocketChannelEnum;
-import com.sz.core.common.valid.annotation.NotZero;
 import com.sz.core.common.annotation.Debounce;
 import com.sz.core.common.annotation.DebounceIgnore;
+import com.sz.core.common.constant.GlobalConstant;
+import com.sz.core.common.entity.*;
+import com.sz.core.common.valid.annotation.NotZero;
 import com.sz.redis.WebsocketRedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +50,7 @@ public class SysUserController {
     @Operation(summary = "添加用户")
     @SaCheckPermission(value = "sys.user.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult create(@Valid @RequestBody SysUserCreateDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysUserCreateDTO dto) {
         sysUserService.create(dto);
         return ApiResult.success();
     }
@@ -59,7 +58,7 @@ public class SysUserController {
     @Operation(summary = "修改用户")
     @SaCheckPermission(value = "sys.user.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult update(@Valid @RequestBody SysUserUpdateDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysUserUpdateDTO dto) {
         sysUserService.update(dto);
         return ApiResult.success();
     }
@@ -67,7 +66,7 @@ public class SysUserController {
     @Operation(summary = "批量删除")
     @SaCheckPermission(value = "sys.user.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
-    public ApiResult remove(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
         sysUserService.remove(dto);
         return ApiResult.success();
     }
@@ -92,15 +91,15 @@ public class SysUserController {
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("role")
     public ApiResult<SysUserRoleVO> findUserRole(@NotZero @RequestParam Long userId) {
-        return ApiPageResult.success(sysUserService.findSysUserRole(userId));
+        return ApiResult.success(sysUserService.findSysUserRole(userId));
     }
 
     @Operation(summary = "用户角色信息修改 -（穿梭框）")
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("role")
-    public ApiResult changeUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
+    public ApiResult<Void> changeUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
         sysUserService.changeSysUserRole(dto);
-        return ApiPageResult.success();
+        return ApiResult.success();
     }
 
     @Operation(summary = "登录信息查询")
@@ -111,35 +110,22 @@ public class SysUserController {
 
     @Operation(summary = "（个人）修改密码")
     @PutMapping("/password")
-    public ApiResult changePassword(@Valid @RequestBody SysUserPasswordDTO dto) {
+    public ApiResult<Void> changePassword(@Valid @RequestBody SysUserPasswordDTO dto) {
         sysUserService.changePassword(dto);
         return ApiResult.success();
     }
 
     @Operation(summary = "重置账户密码")
     @PutMapping("/reset/password/{userId}")
-    public ApiResult resetPassword(@PathVariable Long userId) {
+    public ApiResult<Void> resetPassword(@PathVariable Long userId) {
         sysUserService.resetPassword(userId);
-        return ApiResult.success();
-    }
-
-    @Deprecated
-    @Operation(summary = "测试socket踢下线")
-    @PostMapping("kick")
-    public ApiResult testKickOff() {
-        TransferMessage tm = new TransferMessage();
-        tm.setToPushAll(true);
-        SocketBean sb = new SocketBean();
-        sb.setChannel(SocketChannelEnum.KICK_OFF);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
         return ApiResult.success();
     }
 
     @Operation(summary = "账户解锁")
     @SaCheckPermission(value = "sys.user.unlock_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("unlock")
-    public ApiResult unlock(@RequestBody SelectIdsDTO dto) {
+    public ApiResult<Void> unlock(@RequestBody SelectIdsDTO dto) {
         sysUserService.unlock(dto);
         return ApiResult.success();
     }
@@ -147,7 +133,7 @@ public class SysUserController {
     @Operation(summary = "绑定（批量）用户和部门")
     @SaCheckPermission(value = "sys.user.dept_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/dept/bind")
-    public ApiResult bindDept(@RequestBody UserDeptDTO dto) {
+    public ApiResult<Void> bindDept(@RequestBody UserDeptDTO dto) {
         sysUserService.bindUserDept(dto);
         return ApiResult.success();
     }
@@ -168,16 +154,16 @@ public class SysUserController {
     @Operation(summary = "用户数据角色信息查询-（穿梭框）")
     @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("datarole")
-    public ApiResult findUserDataRole(@NotZero @RequestParam Long userId) {
-        return ApiPageResult.success(sysUserDataRoleService.queryRoleMenu(userId));
+    public ApiResult<SysUserRoleVO> findUserDataRole(@NotZero @RequestParam Long userId) {
+        return ApiResult.success(sysUserDataRoleService.queryRoleMenu(userId));
     }
 
     @Operation(summary = "用户数据角色信息修改 -（穿梭框）")
     @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("datarole")
-    public ApiResult changeDataUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
+    public ApiResult<Void> changeDataUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
         sysUserDataRoleService.changeRole(dto);
-        return ApiPageResult.success();
+        return ApiResult.success();
     }
 
 }
