@@ -11,8 +11,8 @@ spring:
     active: local
   config:
     import:
-      - classpath:config/${spring.profiles.active}/redis.yml
-      - classpath:config/${spring.profiles.active}/sa-token.yml
+      - file:config/${spring.profiles.active}/redis.yml
+      - file:config/${spring.profiles.active}/sa-token.yml
   application:
     name: websocket-service
 app:
