@@ -25,7 +25,7 @@ public class SysDeptLeader implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id(keyType = KeyType.Auto)
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "dept_id")

@@ -16,6 +16,7 @@ import com.sz.core.util.Utils;
 import com.sz.oss.OssClient;
 import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author sz
  * @since 2023-08-31
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
@@ -57,6 +59,7 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      * @param file
      *            文件
      * @param dirTag
+     *            文件夹标识
      * @return {@link String}
      */
     @Override
@@ -67,7 +70,7 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
             Long fileId = fileLog(uploadResult);
             uploadResult.setFileId(fileId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(" sysFile oss upload error", e);
             CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
         }
         return uploadResult;

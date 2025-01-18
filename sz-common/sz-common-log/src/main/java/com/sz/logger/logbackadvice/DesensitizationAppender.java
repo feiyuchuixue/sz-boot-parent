@@ -2,15 +2,17 @@ package com.sz.logger.logbackadvice;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import com.sz.logger.utils.DesensitizationUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
 /**
- * @ClassName DesensitizationAppender
- * @Description 脱敏类 - 将日志进行脱敏
- * @Author 柳成荫
- * @Date 2021/1/9
+ * 脱敏类 - 将日志进行脱敏
+ * 
+ * @author 柳成荫
+ * @since 2021/1/9
  */
+@Slf4j
 public class DesensitizationAppender {
 
     /**
@@ -35,7 +37,7 @@ public class DesensitizationAppender {
             DesensitizationUtil util = new DesensitizationUtil();
             // 获取替换后的日志信息
             String changeMessage = util.customChange(eventFormattedMessage);
-            if (!(null == changeMessage || "".equals(changeMessage))) {
+            if (!(null == changeMessage || changeMessage.isEmpty())) {
                 try {
                     // 利用反射的方式，将替换后的日志设置到原event对象中去
                     Class<? extends LoggingEvent> eventClass = event.getClass();
@@ -47,7 +49,7 @@ public class DesensitizationAppender {
                     formattedMessage.setAccessible(true);
                     formattedMessage.set(event, changeMessage);
                 } catch (IllegalAccessException | NoSuchFieldException e) {
-                    e.printStackTrace();
+                    log.error("DesensitizationAppender err", e);
                 }
             }
 

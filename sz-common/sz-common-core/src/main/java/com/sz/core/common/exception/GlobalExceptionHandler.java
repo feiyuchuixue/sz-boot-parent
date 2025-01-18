@@ -7,8 +7,6 @@ import com.sz.core.common.exception.common.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -18,9 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * @author: sz
- * @date: 2022/8/23 10:56
- * @description: 全局异常捕获处理
+ * 全局异常捕获处理
+ * 
+ * @author sz
+ * @since 2022/8/23 10:56
  */
 @RestControllerAdvice
 @Slf4j
@@ -28,7 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResult<Object>> exceptionHandler(Exception e) {
-        e.printStackTrace();
+        log.error(e.getMessage(), e);
         ApiResult<Object> error = ApiResult.error(CommonResponseEnum.UNKNOWN);
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -65,7 +64,8 @@ public class GlobalExceptionHandler {
      * 参数校验异常
      *
      * @param e
-     * @return
+     *            参数校验异常
+     * @return 异常结果
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResult<Object>> handleValidException(MethodArgumentNotValidException e) {
@@ -78,7 +78,8 @@ public class GlobalExceptionHandler {
      * 参数绑定异常
      *
      * @param e
-     * @return
+     *            参数绑定异常
+     * @return 异常结果
      */
     @ExceptionHandler(value = BindException.class)
     public ResponseEntity<ApiResult<Object>> handleBindException(BindException e) {
@@ -94,12 +95,6 @@ public class GlobalExceptionHandler {
             msg.append(error.getDefaultMessage() == null ? "" : error.getDefaultMessage());
         }
         return new ApiResult<>(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
-    }
-
-    private MultiValueMap<String, String> setHeader() {
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        // headers.add("X-Trace-Id", TraceLocal.getTraceId());
-        return headers;
     }
 
 }

@@ -116,7 +116,7 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
         String loginId = (String) session.getAttributes().get(LOGIN_ID);
         log.info("【websocket消息】连接断开，loginId:[{}]", loginId);
-        if (session != null && session.isOpen()) {
+        if (session.isOpen()) {
             try {
                 String sid = session.getId();
                 websocketRedisService.removeUserBySessionId(sid);
@@ -125,7 +125,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                 SocketManagerCache.onlineSessionMap.remove(sid);
                 session.close();
             } catch (IOException e) {
-                log.error("【websocket消息】连接断开异常，error: {}", e);
+                log.error("【websocket消息】连接断开异常，error", e);
                 throw new RuntimeException(e);
             }
         }
@@ -135,7 +135,9 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 根据loginId 推送消息
      *
      * @param loginIds
+     *            登陆用户Id集合
      * @param socketBean
+     *            消息对象
      */
     @SneakyThrows
     public void sendMessage(List<String> loginIds, SocketBean socketBean) {
@@ -163,6 +165,7 @@ public class WebSocketServer extends TextWebSocketHandler {
      * 根据loginId 推送消息
      *
      * @param socketBean
+     *            消息对象
      */
     @SneakyThrows
     public void sendMessageToAllUser(SocketBean socketBean) {
@@ -196,7 +199,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                     wsSession.getSession().close(CloseStatus.SERVICE_RESTARTED);
                     log.info(" 优雅退出，关闭 websocket 连接 ...");
                 } catch (IOException e) {
-                    log.error("【websocket消息】连接断开异常，error: {}", e);
+                    log.error("【websocket消息】连接断开异常，error", e);
                     throw new RuntimeException(e);
                 }
             }

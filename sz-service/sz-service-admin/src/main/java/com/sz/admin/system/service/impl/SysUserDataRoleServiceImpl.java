@@ -29,7 +29,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
  * 系统用户-数据角色关联表 服务实现类
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-07-11
  */
 @Service
@@ -48,7 +48,7 @@ public class SysUserDataRoleServiceImpl extends ServiceImpl<SysUserDataRoleMappe
             remove(wrapper);
         }
         List<SysUserDataRole> dataRoles = new ArrayList<>();
-        SysUserDataRole dataRole = null;
+        SysUserDataRole dataRole;
         for (Long roleId : dto.getRoleIds()) {
             dataRole = new SysUserDataRole();
             dataRole.setUserId(dto.getUserId());

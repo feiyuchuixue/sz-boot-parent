@@ -12,10 +12,9 @@ import com.sz.security.core.util.LoginUtils;
 import java.lang.reflect.Method;
 
 /**
- * @ClassName MySaCheckPermissionHandler
- * @Author sz
- * @Date 2024/10/9 14:16
- * @Version 1.0
+ * @author sz
+ * @since 2024/10/9 14:16
+ * @version 1.0
  */
 public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<SaCheckPermission> {
 
@@ -32,12 +31,11 @@ public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<
     public static void _checkMethod(String type, String[] value, SaMode mode, String[] orRole) {
         StpLogic stpLogic = SaManager.getStpLogic(type, false);
 
-        String[] permissionArray = value;
         try {
             if (mode == SaMode.AND) {
-                stpLogic.checkPermissionAnd(permissionArray);
+                stpLogic.checkPermissionAnd(value);
             } else {
-                stpLogic.checkPermissionOr(permissionArray);
+                stpLogic.checkPermissionOr(value);
             }
         } catch (NotPermissionException e) {
             // Start------------以下是自定义代码-------

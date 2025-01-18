@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author: sz
- * @date: 2022/8/23 10:20
- * @description:
+ * @author sz
+ * @since 2022/8/23 10:20
  */
 public class Utils {
 
@@ -33,7 +32,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(String str) {
-        return str != null && str.trim().length() > 0;
+        return str != null && !str.trim().isEmpty();
     }
 
     public static Boolean isNotNull(Integer str) {
@@ -53,7 +52,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(Object obj) {
-        return obj != null && !"".equals(obj) && !"".equals(obj.toString().trim());
+        return obj != null && !"".equals(obj) && !obj.toString().trim().isEmpty();
     }
 
     public static Boolean isNotNull(Map<?, ?> map) {
@@ -61,7 +60,7 @@ public class Utils {
     }
 
     public static Boolean isNotNull(List<?> list) {
-        return list != null && list.size() > 0;
+        return list != null && !list.isEmpty();
     }
 
     public static Integer getIntVal(Object obj) {
@@ -86,11 +85,7 @@ public class Utils {
 
     public static String md5(String str) {
         String md5 = "  ";
-        try {
-            md5 = DigestUtils.md5DigestAsHex(str.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            new Exception(e.getMessage());
-        }
+        md5 = DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
         return md5;
     }
 

@@ -4,17 +4,15 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.FileAppender;
 
 /**
- * @ClassName FileAppenderDS
- * @Description
- * @Author 柳成荫
- * @Date 2021/1/9
+ * @author 柳成荫
+ * @since 2021/1/9
  */
-public class SzFileAppender extends FileAppender {
+public class SzFileAppender extends FileAppender<LoggingEvent> {
 
     @Override
-    protected void subAppend(Object event) {
+    protected void subAppend(LoggingEvent event) {
         DesensitizationAppender appender = new DesensitizationAppender();
-        appender.operation((LoggingEvent) event);
+        appender.operation(event);
         super.subAppend(event);
     }
 }

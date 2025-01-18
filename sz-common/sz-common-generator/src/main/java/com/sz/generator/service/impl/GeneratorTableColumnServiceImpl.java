@@ -31,15 +31,12 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableId(Long tableId) {
         QueryWrapper wrapper = QueryWrapper.create().eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc();
-        List<GeneratorTableColumn> list = list(wrapper);
-        return list;
+        return list(wrapper);
     }
 
     @Override
     public List<GeneratorTableColumn> getTableColumnsByTableName(Long tableId) {
-        List<GeneratorTableColumn> list = QueryChain.of(mapper).eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc()
-                .list();
-        return list;
+        return QueryChain.of(mapper).eq(GeneratorTableColumn::getTableId, tableId).orderBy(GeneratorTableColumn::getSort).asc().list();
     }
 
     @Override
@@ -48,7 +45,7 @@ public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableC
     }
 
     @Override
-    public void remove(List tableNames) {
+    public void remove(List<String> tableNames) {
         this.updateChain().from(GeneratorTableTableDef.GENERATOR_TABLE, GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN)
                 .where(GeneratorTableColumnTableDef.GENERATOR_TABLE_COLUMN.TABLE_ID.eq(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_ID))
                 .where(GeneratorTableTableDef.GENERATOR_TABLE.TABLE_NAME.in(tableNames)).remove();

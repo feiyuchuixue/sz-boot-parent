@@ -14,7 +14,6 @@ import com.sz.excel.annotation.DictFormat;
 import com.sz.excel.utils.ExcelUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +26,12 @@ public abstract class AbstractExcelDictConvert<T> implements Converter<T> {
     }
 
     protected String getLabelFromDict(String dictType, String dictValue, DictFormat anno) {
-        String label = "";
+        String label;
         if (StringUtils.isBlank(dictType) && StringUtils.isNoneBlank(anno.readConverterExp())) {
             // Use readConverterExp to build dictionary template
             label = ExcelUtils.convertByExp(dictValue, anno.readConverterExp(), anno.separator());
         } else {
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map;
             List<DictVO> dictLists = dictmap.get(dictType);
             if (anno.useAlias()) {
                 map = StreamUtils.toMap(dictLists, vo -> vo.getAlias() == null ? "" : vo.getAlias(), vo -> vo.getCodeName() != null ? vo.getCodeName() : ""); // {"1000003":"禁言","1000002":"禁用","1000001":"正常"}
@@ -46,12 +45,12 @@ public abstract class AbstractExcelDictConvert<T> implements Converter<T> {
 
     protected T getValueFromExcelData(ReadCellData<?> cellData, DictFormat anno, String dictType) {
         String dictLabel = cellData.getStringValue();
-        String value = "";
+        String value;
         if (StringUtils.isBlank(dictType) && StringUtils.isNoneBlank(anno.readConverterExp())) {
             value = ExcelUtils.reverseByExp(dictLabel, anno.readConverterExp(), anno.separator());
         } else {
             List<DictVO> dictLists = dictmap.get(dictType);
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map;
             if (anno.useAlias()) {
                 map = StreamUtils.toMap(dictLists, DictVO::getCodeName, vo -> vo.getAlias() == null ? "" : vo.getAlias()); // {"禁言":"1000003","禁用":"1000002","正常":"1000001"}
             } else {

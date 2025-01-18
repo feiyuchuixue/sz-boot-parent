@@ -23,5 +23,5 @@ public interface GeneratorTableColumnService extends IService<GeneratorTableColu
 
     void updateBatchTableColumns(List<GeneratorTableColumn> columns);
 
-    void remove(List tableNames);
+    void remove(List<String> tableNames);
 }

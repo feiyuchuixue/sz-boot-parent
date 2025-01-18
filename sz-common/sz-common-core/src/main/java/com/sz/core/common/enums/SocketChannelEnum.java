@@ -1,9 +1,12 @@
 package com.sz.core.common.enums;
 
+import lombok.Getter;
+
 /**
  * @author sz
- * @date 2023/9/6 10:24
+ * @since 2023/9/6 10:24
  */
+@Getter
 public enum SocketChannelEnum {
 
     // @formatter:off
@@ -20,17 +23,17 @@ public enum SocketChannelEnum {
     /**
      * 字符串标识
      */
-    private String name;
+    private final String name;
 
     /**
      * 备注
      */
-    private String remark;
+    private final String remark;
 
     /**
      * 状态：push 发送、1 receive、2 push_or_receive
      */
-    private String status;
+    private final String status;
 
     SocketChannelEnum(String name, String remark, String status) {
         this.name = name;

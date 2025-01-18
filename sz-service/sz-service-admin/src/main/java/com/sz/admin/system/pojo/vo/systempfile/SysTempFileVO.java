@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Schema(description = "SysTempFile返回vo")
 public class SysTempFileVO {
 
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "文件ID")

@@ -75,7 +75,6 @@ public class SlidePuzzleUtil {
             sliderPuzzle.setSecretKey(jigsawPoint.getSecretKey());
             return sliderPuzzle;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("生成验证码异常: {}", e.getMessage());
             return null;
         }
@@ -85,7 +84,7 @@ public class SlidePuzzleUtil {
         Random random = new Random();
         int widthDifference = originalWidth - jigsawWidth;
         int heightDifference = originalHeight - jigsawHeight;
-        int x, y = 0;
+        int x, y;
 
         if (widthDifference <= 0) {
             x = 5;

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mybatisflex.core.constant.SqlConsts.EQUALS;
 
@@ -35,7 +36,8 @@ public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
         boolean isLogin = StpUtil.isLogin();
         if (isLogin && columns.contains(FIELD_DELETE_ID)) {
-            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS).append(LoginUtils.getLoginUser().getUserInfo().getId());
+            sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS)
+                    .append(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         }
 
         return sqlBuilder.toString();

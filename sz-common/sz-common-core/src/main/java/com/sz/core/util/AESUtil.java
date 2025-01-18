@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Random;
 
@@ -41,9 +42,8 @@ public class AESUtil {
      * @param base64Code
      *            待解码的base 64 code
      * @return 解码后的byte[]
-     * @throws Exception
      */
-    public static byte[] base64Decode(String base64Code) throws Exception {
+    public static byte[] base64Decode(String base64Code) {
         Base64.Decoder decoder = Base64.getDecoder();
         return StringUtils.isEmpty(base64Code) ? null : decoder.decode(base64Code);
     }
@@ -56,15 +56,13 @@ public class AESUtil {
      * @param encryptKey
      *            加密密钥
      * @return 加密后的byte[]
-     * @throws Exception
      */
     public static byte[] aesEncryptToBytes(String content, String encryptKey) throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
         kgen.init(128);
         Cipher cipher = Cipher.getInstance(ALGORITHMSTR);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.getBytes(), "AES"));
-
-        return cipher.doFinal(content.getBytes("utf-8"));
+        return cipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -75,7 +73,6 @@ public class AESUtil {
      * @param encryptKey
      *            加密密钥
      * @return 加密后的base 64 code
-     * @throws Exception
      */
     public static String aesEncrypt(String content, String encryptKey) throws Exception {
         if (StringUtils.isBlank(encryptKey)) {
@@ -92,7 +89,6 @@ public class AESUtil {
      * @param decryptKey
      *            解密密钥
      * @return 解密后的String
-     * @throws Exception
      */
     public static String aesDecryptByBytes(byte[] encryptBytes, String decryptKey) throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
@@ -112,7 +108,6 @@ public class AESUtil {
      * @param decryptKey
      *            解密密钥
      * @return 解密后的string
-     * @throws Exception
      */
     public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
         if (StringUtils.isBlank(decryptKey)) {

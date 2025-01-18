@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class SysTempFileInfoVO {
 
-    @Schema(description = "")
+    @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "文件ID")

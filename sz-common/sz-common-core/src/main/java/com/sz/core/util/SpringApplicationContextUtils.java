@@ -11,6 +11,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -20,12 +21,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * spring工具类 方便在（非spring ioc）非spring管理环境中获取bean
+ * Spring 工具类：用于在非 Spring 管理的环境中获取 Bean，方便在非 Spring IoC 中使用。 提供获取 Bean、注册
+ * Bean、环境配置等实用功能。
  *
- * @author: sz
- * @date: 2021/9/15 13:37
- * @description: SpringBootApplicationContextUtil
- *               通过ApplicationContext上下文对象自定义获取bean
+ * @author sz
+ * @since 2021/9/15
  */
 @Component
 public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, ApplicationContextAware {
@@ -40,11 +40,15 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     private final static String[] localEnv = {"dev", "local"};
 
     /**
-     * 获取对象
+     * 根据名称获取 Bean 对象。
      *
      * @param name
-     * @return Object
+     *            Bean 名称
+     * @param <T>
+     *            Bean 类型
+     * @return 对应的 Bean 对象
      * @throws BeansException
+     *             如果 Bean 不存在或无法获取
      */
     @SuppressWarnings("unchecked")
     public static <T> T getBean(String name) throws BeansException {
@@ -52,64 +56,78 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     /**
-     * 获取类型为requiredType的对象
+     * 根据类型获取 Bean 对象。
      *
      * @param clz
-     * @return
+     *            Bean 类型
+     * @param <T>
+     *            Bean 类型
+     * @return 对应的 Bean 对象
      * @throws BeansException
+     *             如果 Bean 不存在或无法获取
      */
     public static <T> T getBean(Class<T> clz) throws BeansException {
-        T result = (T) beanFactory.getBean(clz);
-        return result;
+        return beanFactory.getBean(clz);
     }
 
     /**
-     * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
+     * 检查 BeanFactory 中是否包含指定名称的 Bean。
      *
      * @param name
-     * @return boolean
+     *            Bean 名称
+     * @return 如果包含则返回 true，否则返回 false
      */
     public static boolean containsBean(String name) {
         return beanFactory.containsBean(name);
     }
 
     /**
-     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
-     * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
+     * 判断指定名称的 Bean 是否是单例。
      *
      * @param name
-     * @return boolean
+     *            Bean 名称
+     * @return 如果是单例返回 true，否则返回 false
      * @throws NoSuchBeanDefinitionException
+     *             如果没有找到对应的 Bean 定义
      */
     public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
         return beanFactory.isSingleton(name);
     }
 
     /**
+     * 获取指定名称的 Bean 类型。
+     *
      * @param name
-     * @return Class 注册对象的类型
+     *            Bean 名称
+     * @return Bean 的类型
      * @throws NoSuchBeanDefinitionException
+     *             如果没有找到对应的 Bean 定义
      */
     public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         return beanFactory.getType(name);
     }
 
     /**
-     * 如果给定的bean名字在bean定义中有别名，则返回这些别名
+     * 获取指定名称的 Bean 别名列表。
      *
      * @param name
-     * @return
+     *            Bean 名称
+     * @return Bean 的别名数组
      * @throws NoSuchBeanDefinitionException
+     *             如果没有找到对应的 Bean 定义
      */
     public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
         return beanFactory.getAliases(name);
     }
 
     /**
-     * 获取aop代理对象
+     * 获取 AOP 代理对象。
      *
      * @param invoker
-     * @return
+     *            目标对象
+     * @param <T>
+     *            目标对象的类型
+     * @return AOP 代理对象
      */
     @SuppressWarnings("unchecked")
     public static <T> T getAopProxy(T invoker) {
@@ -117,26 +135,26 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     /**
-     * 获取当前的环境配置，无配置返回null
+     * 获取当前激活的环境配置。如果未配置，返回空数组。
      *
-     * @return 当前的环境配置
+     * @return 当前激活的环境配置数组
      */
     public static String[] getActiveProfiles() {
         return applicationContext.getEnvironment().getActiveProfiles();
     }
 
     /**
-     * 注册bean
+     * 注册 Bean 到 Spring 容器中。
      *
      * @param beanName
-     *            注册的bean名称
+     *            注册的 Bean 名称
      * @param clazz
-     *            类型
+     *            Bean 类型
      * @param function
-     *            bean定义
-     * @return 注册的bean实例
-     * @author sz
-     * @date 2022/3/9 9:43
+     *            定义 Bean 的函数
+     * @param <T>
+     *            Bean 类型
+     * @return 注册的 Bean 实例
      */
     public static <T> T registerBean(String beanName, Class<T> clazz, Function<BeanDefinitionBuilder, AbstractBeanDefinition> function) {
         // 生成bean定义
@@ -156,19 +174,19 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     /**
-     * 注册bean
+     * 注册带有构造参数和属性的 Bean。
      *
      * @param beanName
-     *            注册的bean名称
+     *            注册的 Bean 名称
      * @param clazz
-     *            类型
+     *            Bean 类型
      * @param args
-     *            构造参数
+     *            构造参数列表
      * @param property
-     *            bean属性集
-     * @return 注册的bean实例
-     * @author sz
-     * @date 2022/3/9 9:47
+     *            Bean 属性集
+     * @param <T>
+     *            Bean 类型
+     * @return 注册的 Bean 实例
      */
     public static <T> T registerBean(String beanName, Class<T> clazz, List<Object> args, Map<String, Object> property) {
         return registerBean(beanName, clazz, beanDefinitionBuilder -> {
@@ -185,12 +203,12 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
         SpringApplicationContextUtils.beanFactory = beanFactory;
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         SpringApplicationContextUtils.applicationContext = applicationContext;
     }
 
@@ -199,16 +217,13 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     /**
-     * 判断是否是本地环境
-     * 
-     * @return
+     * 判断是否是本地环境。
+     *
+     * @return 如果是本地环境返回 true，否则返回 false
      */
     public static boolean isLocalEnv() {
         List<String> localEnvArr = Arrays.asList(localEnv);
-        if (localEnvArr.contains(getActive())) {
-            return true;
-        }
-        return false;
+        return localEnvArr.contains(getActive());
     }
 
 }

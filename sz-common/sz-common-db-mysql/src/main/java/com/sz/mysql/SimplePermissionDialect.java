@@ -16,7 +16,6 @@ import com.sz.core.util.Utils;
 import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -24,10 +23,8 @@ import java.util.stream.Collectors;
 /**
  * 自定义方言 -- 数据权限
  *
- * @ClassName PermissionDialect
- * @Author sz
- * @Date 2024/6/17 10:36
- * @Version 1.0
+ * @author sz
+ * @since 2024/6/17 10:36
  */
 @Slf4j
 public class SimplePermissionDialect extends CommonsDialectImpl {
@@ -74,7 +71,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, String> ruleMap = loginUser.getRuleMap();
-            String tableName = "";
+            String tableName;
             Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
             if (tableClazzAnnotation == null) {
                 String simpleName = tableClazz.getSimpleName(); // eg: TeacherStatics
@@ -126,8 +123,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             }
 
         } catch (Exception e) {
-            log.error(" PermissionDialect Exception :" + e.getMessage());
-            e.printStackTrace();
+            log.error(" PermissionDialect Exception :{}", e.getMessage());
         } finally {
             super.prepareAuth(queryWrapper, operateType);
         }
@@ -158,17 +154,17 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private static Map<String, QueryTable> buildTableMap(List<QueryTable> queryTables, boolean isJoin, List<QueryTable> joinTables) {
         Map<String, QueryTable> tableMap = new HashMap<>();
         for (QueryTable queryTable : queryTables) {
-            if (queryTable.getName() == null || ("").equals(queryTable.getName().trim())) { // TODO
-                                                                                            // 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构
-                                                                                            // queryTables ==[SELECT *
-                                                                                            // FROM TABLE]
+            if (queryTable.getName() == null || queryTable.getName().trim().isEmpty()) { // TODO
+                                                                                         // 临时方案：如果name为空或空字符串直接return；等待官方修复。忽略非正常结构
+                                                                                         // queryTables ==[SELECT *
+                                                                                         // FROM TABLE]
                 return null;
             }
             tableMap.put(queryTable.getName(), queryTable);
         }
         if (isJoin) {
             for (QueryTable joinTable : joinTables) {
-                if (joinTable.getName() != null && !("").equals(joinTable.getName().trim())) {
+                if (joinTable.getName() != null && !joinTable.getName().trim().isEmpty()) {
                     tableMap.put(joinTable.getName(), joinTable);
                 }
             }
@@ -261,20 +257,22 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 字段有效性校验
+     * 字段有效性校验。
+     * <p>
+     * 该方法用于校验指定类中字段的有效性，根据字段名称检查该字段是否符合有效性规则。
      *
      * @param clazz
+     *            要校验的类的类型。
      * @param fieldName
-     * @return
+     *            需要校验的字段名称。
+     * @return 返回字段是否有效的布尔值，true 表示有效，false 表示无效。
+     * @since 2023-12-08
      */
     private boolean isFieldExists(Class<?> clazz, String fieldName) {
         try {
             // 尝试获取类中的字段
-            Field field = clazz.getDeclaredField(fieldName);
-            // 检查字段是否为null
-            if (field != null) {
-                return true;
-            }
+            clazz.getDeclaredField(fieldName);
+            return true;
         } catch (NoSuchFieldException e) {
             log.error(" [DataScope]: Entity `{}` Filed `{}` not found.", clazz.getSimpleName(), fieldName);
         }
@@ -282,14 +280,23 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 部门及部门以下、仅本部门
+     * 根据部门及部门以下、仅本部门的规则设置查询条件。
+     * <p>
+     * 该方法根据传入的参数，构建查询条件，以便进行部门及其子部门数据的筛选。
      *
      * @param queryWrapper
+     *            用于构建查询条件的包装器。
      * @param depts
+     *            当前用户所在的部门列表。
      * @param logicMinUnit
+     *            逻辑最小单位，用于限定查询范围。
      * @param alias
+     *            表的别名，用于构建查询时的字段前缀。
      * @param tableClazz
+     *            目标表的类类型，用于动态构建查询条件。
+     * @since 2023-12-08
      */
+
     private void handleDeptScope(QueryWrapper queryWrapper, Collection<Long> depts, String logicMinUnit, String alias, Class<?> tableClazz) {
         String field;
         Object context;
@@ -334,13 +341,21 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 仅本人
+     * 根据登录用户设置查询条件，限定为仅本人数据。
+     * <p>
+     * 该方法根据当前登录用户，构建查询条件，以确保查询结果仅包含该用户的数据。
      *
      * @param queryWrapper
+     *            用于构建查询条件的包装器。
      * @param loginUser
+     *            当前登录的用户对象，用于提取用户的唯一标识。
      * @param table
+     *            查询的表格对象，用于构建查询条件。
      * @param tableClazz
+     *            目标表的类类型，用于动态构建查询条件。
+     * @since 2023-12-08
      */
+
     private void handlePersonalScope(QueryWrapper queryWrapper, LoginUser loginUser, QueryTable table, Class<?> tableClazz) {
         String field = FIELD_CREATE_ID;
         boolean exists = isFieldExists(tableClazz, StringUtils.toCamelCase(field));
@@ -383,29 +398,41 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 自定义-用户维度
+     * 根据自定义的用户ID设置查询条件，限定为用户维度数据。
+     * <p>
+     * 该方法根据传入的自定义用户ID集合，构建查询条件，以确保查询结果仅包含指定用户的数据。
      *
      * @param table
+     *            查询的表格对象，用于构建查询条件。
      * @param customUserIds
+     *            自定义的用户ID集合，用于限制查询范围。
+     * @since 2023-12-08
      */
+
     private QueryCondition handleCustomUserRelation(QueryTable table, Collection<Long> customUserIds) {
         if (customUserIds.isEmpty())
             return null;
         String field;
         field = FIELD_CREATE_ID;
-        QueryCondition queryCondition = QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.IN,
-                customUserIds);
-        return queryCondition;
+        return QueryCondition.create(new QueryColumn(table.getSchema(), table.getName(), field, table.getAlias()), SqlConsts.IN, customUserIds);
     }
 
     /**
-     * 自定义-部门维度
+     * 根据自定义的部门ID设置查询条件，限定为部门维度数据。
+     * <p>
+     * 该方法根据传入的部门ID集合及其他相关参数，构建查询条件，确保查询结果仅包含指定部门及其子部门的数据。
      *
      * @param table
+     *            查询的表格对象，用于构建查询条件。
      * @param depts
+     *            自定义的部门ID集合，用于限制查询范围。
      * @param logicMinUnit
+     *            逻辑最小单元，决定部门层级的最小粒度。
      * @param alias
+     *            表的别名，用于SQL查询中区分字段。
      * @param tableClazz
+     *            表对应的实体类，用于映射查询结果。
+     * @since 2023-12-08
      */
     private String handleCustomDeptRelation(QueryTable table, Collection<Long> depts, String logicMinUnit, String alias, Class<?> tableClazz) {
         String field;

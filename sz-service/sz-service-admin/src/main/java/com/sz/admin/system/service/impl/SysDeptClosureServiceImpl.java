@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.sz.admin.system.pojo.po.table.SysDeptClosureTableDef.SYS_DEPT_CLOSURE;
 
@@ -70,7 +71,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      * 查询所有子孙节点
      *
      * @param nodeId
-     * @return
+     *            节点ID
+     * @return 子孙节点
      */
     public List<SysDeptClosure> descendants(Long nodeId) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(nodeId)).where(SYS_DEPT_CLOSURE.DESCENDANT_ID.ne(nodeId));
@@ -81,7 +83,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      * 查询指定祖籍节点的所有子孙节点
      *
      * @param ancestorIds
-     * @return
+     *            祖籍节点ID
+     * @return 子孙节点ID
      */
     @Override
     public List<Long> descendants(List<Long> ancestorIds) {
@@ -98,7 +101,7 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
      */
     @Override
     public void move(Long nodeId, Long newNodeId) {
-        if (nodeId == newNodeId)
+        if (Objects.equals(nodeId, newNodeId))
             return;
         List<SysDeptClosure> closures = this.mapper.selectDetachTree(nodeId);
         for (SysDeptClosure closure : closures) {

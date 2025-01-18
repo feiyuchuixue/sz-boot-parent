@@ -30,13 +30,13 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
      * 获取用户的角色
      * 
      * @param userId
-     * @return
+     *            用户id
+     * @return 用户角色集合
      */
     @Override
     public List<String> getUserRolesByUserId(Long userId) {
         QueryWrapper queryWrapper = QueryWrapper.create().select(SYS_USER_ROLE.ROLE_ID).from(SYS_USER_ROLE).where(SYS_USER_ROLE.USER_ID.eq(userId));
-        List<String> list = listAs(queryWrapper, String.class);
-        return list;
+        return listAs(queryWrapper, String.class);
     }
 
 }

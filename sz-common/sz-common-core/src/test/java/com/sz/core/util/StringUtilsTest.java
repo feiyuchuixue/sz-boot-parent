@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * @ClassName StringUtilsTest
- * @Author sz
- * @Date 2024/6/20 15:28
- * @Version 1.0
+ * StringUtilsTest
+ * 
+ * @author sz
+ * @since 2024/6/20 15:28
+ * @version 1.0
  */
 class StringUtilsTest {
 

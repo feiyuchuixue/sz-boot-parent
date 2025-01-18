@@ -8,10 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @ClassName StreamUtils
- * @Author sz
- * @Date 2023/12/27 8:39
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/27 8:39
  */
 public class StreamUtils {
 
@@ -34,18 +32,17 @@ public class StreamUtils {
      * @return 转化后的map
      */
     public static <E, K, V> Map<K, V> toMap(Collection<E> collection, Function<E, K> key, Function<E, V> value) {
-        if (collection == null || collection.size() == 0) {
-            return new HashMap();
+        if (collection == null || collection.isEmpty()) {
+            return new HashMap<>();
         }
         return collection.stream().filter(Objects::nonNull).collect(Collectors.toMap(key, value, (l, r) -> l));
     }
 
     public static String listToStr(Collection<String> collection) {
-        if (collection == null || collection.size() == 0) {
+        if (collection == null || collection.isEmpty()) {
             return "";
         }
-        String collect = collection.stream().collect(Collectors.joining(","));
-        return collect;
+        return String.join(",", collection);
     }
 
 }

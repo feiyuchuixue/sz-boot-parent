@@ -4,6 +4,8 @@ import com.sz.generator.pojo.vo.CodeGenTempResult;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.File;
@@ -16,20 +18,20 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * @ClassName CodeGenerationTemplate
- * @Author sz
- * @Date 2024/1/15 15:51
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/15 15:51
  */
+@Slf4j
 public abstract class AbstractCodeGenerationTemplate {
 
-    private FreeMarkerConfigurer configurer;
+    private final FreeMarkerConfigurer configurer;
 
-    private String rootPath;
+    private final String rootPath;
 
-    private GeneratorDetailVO detailVO;
+    @Getter
+    private final GeneratorDetailVO detailVO;
 
-    private Map<String, Object> model;
+    private final Map<String, Object> model;
 
     public AbstractCodeGenerationTemplate(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
         this.configurer = configurer;
@@ -38,49 +40,24 @@ public abstract class AbstractCodeGenerationTemplate {
         this.model = model;
     }
 
-    /**
-     * 模板名
-     *
-     * @return
-     */
+    // 模板名
     protected abstract String getTemplateFileName();
 
-    /**
-     * 输出文件名
-     *
-     * @param model
-     * @return
-     */
+    // 输出文件名
     protected abstract String getOutputFileName(Map<String, Object> model);
 
-    /**
-     * 开发环境对应的前缀路径 如 java 的 src/main/java
-     *
-     * @return
-     */
+    // 开发环境对应的前缀路径 如 java 的 src/main/java
     protected abstract String getProjectPrefix();
 
-    /**
-     * 文件扩展名
-     *
-     * @return
-     */
+    // 文件扩展名
     protected abstract String getExtension();
 
-    /**
-     * 别名
-     *
-     * @return
-     */
+    // 别名
     protected abstract String alias();
 
     protected abstract String language();
 
-    /**
-     * zip要存储的目录
-     *
-     * @return
-     */
+    // zip要存储的目录
     protected abstract String getZipParentPackage();
 
     protected abstract String getOutputPackage(Map<String, Object> model);
@@ -97,7 +74,7 @@ public abstract class AbstractCodeGenerationTemplate {
             String outputPath = buildAbsoluteOutputFilePath(rootPath, getProjectPrefix(), zipPath);
             outputMsg = saveToFile(outputPath, template, model);
         } else {
-            if (getZipParentPackage() != null && !("").equals(getZipParentPackage().trim())) {
+            if (getZipParentPackage() != null && !getZipParentPackage().trim().isEmpty()) {
                 zipPath = Paths.get(getZipParentPackage(), zipPath).toString();
             }
         }
@@ -105,38 +82,52 @@ public abstract class AbstractCodeGenerationTemplate {
     }
 
     /**
-     * 构建绝对路径 （完整路径）
+     * 构建绝对路径（完整路径）。
+     *
+     * 该方法根据提供的根路径、项目前缀和压缩文件路径，生成完整的绝对路径字符串。
      *
      * @param rootPath
+     *            根路径，通常为文件系统的基础路径
      * @param projectPrefix
+     *            项目前缀，用于区分不同项目的路径
      * @param zipPath
-     * @return
+     *            压缩文件的相对路径
+     * @return 生成的完整绝对路径字符串
      */
     private static String buildAbsoluteOutputFilePath(String rootPath, String projectPrefix, String zipPath) {
-        return Paths.get(rootPath, projectPrefix, zipPath.toString()).toString();
+        return Paths.get(rootPath, projectPrefix, zipPath).toString();
     }
 
     /**
-     * 构建相对路径（zip存储路径）
+     * 构建相对路径（用于存储 ZIP 文件的路径）。
+     *
+     * 该方法根据输出包路径、输出类名和文件扩展名，生成用于存储 ZIP 文件的相对路径。
      *
      * @param outputPackage
+     *            输出包路径，表示文件所在的包结构
      * @param outputClassName
+     *            输出类名，用于构成文件名的一部分
      * @param extension
-     * @return
+     *            文件扩展名，例如 ".zip" 或其他文件类型
+     * @return 生成的 ZIP 文件存储的相对路径字符串
      */
     private static String buildRelativeOutputFilePath(String outputPackage, String outputClassName, String extension) {
         return Paths.get(outputPackage.replace(".", File.separator), outputClassName + extension).toString();
     }
 
     /**
-     * 生成文件
+     * 生成文件。
+     *
+     * 该方法根据提供的模板和数据模型，生成文件并保存到指定的输出路径。
      *
      * @param outputPath
+     *            文件的输出路径，指定生成的文件保存的位置
      * @param template
+     *            使用的模板，用于生成文件的内容
      * @param model
-     * @throws IOException
+     *            数据模型，填充模板中的占位符
      */
-    private static String saveToFile(String outputPath, Template template, Map<String, Object> model) throws IOException {
+    private static String saveToFile(String outputPath, Template template, Map<String, Object> model) {
         try {
             Path path = Paths.get(outputPath);
             // Get the parent directory of the output file
@@ -156,14 +147,14 @@ public abstract class AbstractCodeGenerationTemplate {
             }
 
             // Write the template content to the file
-            try (Writer writer = new FileWriter(outputPath.toString())) {
+            try (Writer writer = new FileWriter(outputPath)) {
                 template.process(model, writer);
                 System.out.println("Output Path: " + outputPath);
                 return "Output Path: " + outputPath;
             }
 
         } catch (IOException | TemplateException e) {
-            e.printStackTrace();
+            log.error("saveToFile err", e);
             return "Output Err: " + outputPath;
         }
     }

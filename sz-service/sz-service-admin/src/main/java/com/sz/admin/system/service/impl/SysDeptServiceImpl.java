@@ -66,7 +66,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @Transactional
     @Override
     public void create(SysDeptCreateDTO dto) {
-        SysDept sysDept = BeanCopyUtils.springCopy(dto, SysDept.class);
+        SysDept sysDept = BeanCopyUtils.copy(dto, SysDept.class);
         if (dto.getPid() == 0) {
             sysDept.setDeep(1);
         } else {
@@ -201,6 +201,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
             setUseTotal(deptTreeVOS);
         }
         DeptTreeVO root = TreeUtils.getRoot(DeptTreeVO.class);
+        assert root != null;
         root.setName("根部门");
         List<DeptTreeVO> trees = TreeUtils.buildTree(deptTreeVOS, root, excludeNodeId);
         if (appendRoot != null && !appendRoot) {
@@ -221,15 +222,16 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
                 .groupBy(SYS_DEPT.ID, SYS_DEPT.NAME).orderBy(SYS_DEPT.DEEP.asc()).orderBy(SYS_DEPT.SORT.asc());
         List<TotalDeptVO> totalDeptVOS = listAs(wrapper, TotalDeptVO.class);
 
-        /**
-         * 查询非直属部门的数量
+        /*
+         * 查询非直属部门的数量。
          *
-         * SELECT d.id , d.name , COUNT(ud.user_id) AS total FROM sys_dept d LEFT JOIN
-         * sys_dept_closure c ON d.id = c.ancestor_id LEFT JOIN sys_user_dept ud ON
-         * c.descendant_id = ud.dept_id GROUP BY d.id, d.name;
+         * SQL 查询语句： SELECT d.id, d.name, COUNT(ud.user_id) AS total FROM sys_dept d
+         * LEFT JOIN sys_dept_closure c ON d.id = c.ancestor_id LEFT JOIN sys_user_dept
+         * ud ON c.descendant_id = ud.dept_id GROUP BY d.id, d.name;
          *
+         * 该查询通过 `LEFT JOIN` 连接 `sys_dept`、`sys_dept_closure` 和 `sys_user_dept` 三个表，
+         * 统计每个部门下非直属的用户数量，并按部门 ID 和名称分组。
          */
-
         Map<Long, Long> totalDeptMap = new HashMap<>();
         if (totalDeptVOS != null) {
             totalDeptMap = totalDeptVOS.stream().collect(Collectors.toMap(TotalDeptVO::getId, TotalDeptVO::getTotal));
@@ -256,8 +258,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     private static QueryWrapper buildQueryWrapper(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create().from(SysDept.class);
-        return wrapper;
+        return QueryWrapper.create().from(SysDept.class);
     }
 
 }

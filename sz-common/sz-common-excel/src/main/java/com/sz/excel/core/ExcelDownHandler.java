@@ -18,6 +18,7 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +27,8 @@ import java.util.Optional;
 /**
  * excel下拉项
  *
- * @ClassName ExcelDownHandler
- * @Author sz
- * @Date 2023/12/28 13:32
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/28 13:32
  */
 @Slf4j
 public class ExcelDownHandler implements SheetWriteHandler {
@@ -72,13 +71,15 @@ public class ExcelDownHandler implements SheetWriteHandler {
                     Class<? extends ExcelDynamicSelect>[] classes = dictFormat.sourceClass();
                     if (classes.length > 0) { // 根据
                         try {
-                            ExcelDynamicSelect excelDynamicSelect = classes[0].newInstance();
+                            ExcelDynamicSelect excelDynamicSelect = classes[0].getDeclaredConstructor().newInstance();
                             List<String> dynamicSelectSource = excelDynamicSelect.getSource();
                             if (dynamicSelectSource != null && !dynamicSelectSource.isEmpty()) {
                                 options = dynamicSelectSource;
                             }
                         } catch (InstantiationException | IllegalAccessException e) {
                             log.error("解析动态下拉框数据异常", e);
+                        } catch (InvocationTargetException | NoSuchMethodException e) {
+                            throw new RuntimeException(e);
                         }
                     } else if (StringUtils.isNotBlank(dictType)) { // 根据dictType渲染下拉
                         DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);

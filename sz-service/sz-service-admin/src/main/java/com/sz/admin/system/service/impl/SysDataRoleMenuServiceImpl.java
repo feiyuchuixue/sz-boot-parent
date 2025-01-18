@@ -18,7 +18,7 @@ import static com.sz.admin.system.pojo.po.table.SysDataRoleMenuTableDef.SYS_DATA
  * 系统数据角色-菜单表 服务实现类
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-07-11
  */
 @Service
@@ -33,7 +33,7 @@ public class SysDataRoleMenuServiceImpl extends ServiceImpl<SysDataRoleMenuMappe
         }
 
         List<SysDataRoleMenu> roleMenus = new ArrayList<>();
-        SysDataRoleMenu roleMenu = null;
+        SysDataRoleMenu roleMenu;
         for (String menuId : menuIds) {
             roleMenu = new SysDataRoleMenu();
             roleMenu.setRoleId(roleId);
@@ -47,8 +47,7 @@ public class SysDataRoleMenuServiceImpl extends ServiceImpl<SysDataRoleMenuMappe
     @Override
     public List<String> getSelectMenuIdByRoleId(Long roleId) {
         QueryWrapper wrapper = QueryWrapper.create().select(SYS_DATA_ROLE_MENU.MENU_ID).where(SYS_DATA_ROLE_MENU.ROLE_ID.eq(roleId));
-        List<String> list = listAs(wrapper, String.class);
-        return list;
+        return listAs(wrapper, String.class);
     }
 
 }

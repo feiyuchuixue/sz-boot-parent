@@ -68,13 +68,14 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private final GeneratorProperties generatorProperties;
 
-    @Override
     /**
      * 导入表
      * 
      * @param dto
+     *            导入表名
      */
     @Transactional
+    @Override
     public void importTable(ImportTableDTO dto) {
         List<String> tableNames = dto.getTableName();
         // 禁止相同table_name的记录出现多条，先执行清除操作，再生成覆盖
@@ -91,8 +92,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             String moduleName = generatorProperties.getModuleName();
             String serviceName = generatorProperties.getServiceName();
             String projectRootPath = System.getProperty("user.dir");
-            // pathApi = projectRootPath + File.separator + "sz-service" + File.separator +
-            // "sz-service-admin";
             pathApi = projectRootPath + File.separator + moduleName + File.separator + serviceName;
             pathWeb = generatorProperties.getPath().getWeb();
         }
@@ -115,39 +114,42 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         generatorTableColumnService.batchInsert(tableColumns);
     }
 
-    @Override
     /**
      * 查询未导入的表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 未导入的表
      */
+    @Override
     public PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableNotInImport(dto);
         return PageUtils.getPageResult(generatorTables);
     }
 
-    @Override
     /**
      * 查询已经导入的表
      * 
      * @param dto
-     * @return
+     *            查询条件
+     * @return 已经导入的表
      */
+    @Override
     public PageResult<GeneratorTable> selectDbTableByImport(DbTableQueryDTO dto) {
         PageUtils.toPage(dto);
         List<GeneratorTable> generatorTables = this.mapper.selectDbTableByImport(dto);
         return PageUtils.getPageResult(generatorTables);
     }
 
-    @Override
     /**
      * 代码生成配置详情
      * 
-     * @param tableId
-     * @return
+     * @param tableName
+     *            表名
+     * @return 代码生成配置详情
      */
+    @Override
     public GeneratorDetailVO detail(String tableName) {
         GeneratorDetailVO detailVO = new GeneratorDetailVO();
         GeneratorTable one = QueryChain.of(GeneratorTable.class).eq(GeneratorTable::getTableName, tableName).one();
@@ -155,21 +157,22 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Long tableId = one.getTableId();
         List<GeneratorTableColumn> tableColumns = generatorTableColumnService.getTableColumnsByTableId(tableId);
         List<GeneratorDetailVO.Column> columns = BeanCopyUtils.copyList(tableColumns, GeneratorDetailVO.Column.class);
-        GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.springCopy(one, GeneratorDetailVO.BaseInfo.class);
-        GeneratorDetailVO.GeneratorInfo generatorInfo = BeanCopyUtils.springCopy(one, GeneratorDetailVO.GeneratorInfo.class);
+        GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.BaseInfo.class);
+        GeneratorDetailVO.GeneratorInfo generatorInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.GeneratorInfo.class);
         detailVO.setBaseInfo(baseInfo);
         detailVO.setGeneratorInfo(generatorInfo);
         detailVO.setColumns(columns);
         return detailVO;
     }
 
-    @Transactional
-    @Override
     /**
      * 更新代码生成配置
      * 
      * @param generatorDetailVO
+     *            代码生成配置
      */
+    @Transactional
+    @Override
     public void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO) {
         Long tableId = generatorDetailVO.getBaseInfo().getTableId();
         GeneratorTable one = QueryChain.of(mapper).eq(GeneratorTable::getTableId, tableId).one();
@@ -178,8 +181,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorDetailVO.BaseInfo baseInfo = generatorDetailVO.getBaseInfo();
         GeneratorDetailVO.GeneratorInfo generatorInfo = generatorDetailVO.getGeneratorInfo();
         GeneratorTable table = new GeneratorTable();
-        BeanCopyUtils.springCopy(baseInfo, table);
-        BeanCopyUtils.springCopy(generatorInfo, table);
+        BeanCopyUtils.copy(baseInfo, table);
+        BeanCopyUtils.copy(generatorInfo, table);
         // 更新配置信息
         updateById(table);
 
@@ -225,7 +228,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * 磁盘校验
      *
      * @param tableName
-     * @return
+     *            表名
+     * @return 校验信息
      */
     @Override
     public GenCheckedInfoVO checkDist(String tableName) {
@@ -246,6 +250,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     @Override
+    @Transactional
     public byte[] downloadZip(SelectTablesDTO dto) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
@@ -289,6 +294,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     @Override
+    @Transactional
     public List<GeneratorPreviewVO> preview(String tableName) throws IOException {
         List<GeneratorPreviewVO> previews = new ArrayList<>();
         GeneratorDetailVO detailVO = detail(tableName);
@@ -372,9 +378,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      * 菜单的生成
      *
      * @param detailVO
+     *            详情
      * @param model
+     *            模型
      */
-    @Transactional
     public List<MenuCreateDTO> initMenu(GeneratorDetailVO detailVO, Map<String, Object> model, boolean isInsertDB) {
         List<MenuCreateDTO> menus = new ArrayList<>();
         if ("0".equals(detailVO.getGeneratorInfo().getMenuInitType())) { // 获取代码配置，是否启用菜单（菜单不启用，按钮也不会启用）初始化

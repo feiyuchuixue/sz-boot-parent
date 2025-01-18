@@ -3,20 +3,20 @@ package com.sz.generator.core;
 import com.sz.core.util.DateUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import lombok.Getter;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * @ClassName CodeModelBuilder
- * @Author sz
- * @Date 2024/1/15 15:10
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/15 15:10
  */
+@Getter
 public class CodeModelBuilder {
 
-    private Map<String, Object> model = new HashMap<>();
+    private final Map<String, Object> model = new HashMap<>();
 
     // vue 文件夹路径分隔符
     public static final String SEPARATOR = "/";
@@ -191,10 +191,6 @@ public class CodeModelBuilder {
         model.put("listPermission", listPermission);
         model.put("indexDefineOptionsName", className + "View"); // vue index DefineOptionsName
         return this;
-    }
-
-    public Map<String, Object> getModel() {
-        return this.model;
     }
 
     private static String buildPackagePath(GeneratorDetailVO detailVO, String packageGroup, String subPackage) {

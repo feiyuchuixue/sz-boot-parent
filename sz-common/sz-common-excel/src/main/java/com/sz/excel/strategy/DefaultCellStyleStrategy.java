@@ -5,6 +5,7 @@ import cn.idev.excel.write.handler.context.CellWriteHandlerContext;
 import cn.idev.excel.write.metadata.style.WriteCellStyle;
 import cn.idev.excel.write.metadata.style.WriteFont;
 import cn.idev.excel.write.style.HorizontalCellStyleStrategy;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -15,15 +16,14 @@ import java.util.List;
 /**
  * 设置表头和填充内容的样式
  */
+
 public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
 
     private final WriteCellStyle headWriteCellStyle;
 
     private final WriteCellStyle contentWriteCellStyle;
 
-    /**
-     * 操作列
-     */
+    @Getter
     private final List<Integer> columnIndexes;
 
     public DefaultCellStyleStrategy(List<Integer> columnIndexes, WriteCellStyle headWriteCellStyle, WriteCellStyle contentWriteCellStyle) {
@@ -38,21 +38,13 @@ public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
         // 获取字体实例
         WriteFont headWriteFont = new WriteFont();
         headWriteFont.setFontName("宋体");
-        // 表头不同处理
-        /*
-         * if (columnIndexes.get(0).equals(context.getRowIndex())) {
-         * System.out.println("1111111111111");
-         * headWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-         * headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-         * headWriteFont.setFontHeightInPoints((short) 12);
-         * headWriteFont.setBold(false); headWriteFont.setFontName("宋体"); } else {
-         */
+
         headWriteCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
         headWriteFont.setFontHeightInPoints((short) 14);
         headWriteFont.setBold(false);
         headWriteFont.setFontName("宋体");
-        // }
+
         headWriteCellStyle.setWriteFont(headWriteFont);
         if (stopProcessing(context)) {
             return;
@@ -78,4 +70,5 @@ public class DefaultCellStyleStrategy extends HorizontalCellStyleStrategy {
         WriteCellData<?> cellData = context.getFirstCellData();
         WriteCellStyle.merge(contentWriteCellStyle, cellData.getOrCreateStyle());
     }
+
 }

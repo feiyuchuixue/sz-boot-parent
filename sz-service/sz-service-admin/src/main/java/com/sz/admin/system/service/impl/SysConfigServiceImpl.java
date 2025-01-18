@@ -39,7 +39,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public void create(SysConfigCreateDTO dto) {
-        SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
+        SysConfig sysConfig = BeanCopyUtils.copy(dto, SysConfig.class);
         QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(sysConfig.getConfigKey()));
         CommonResponseEnum.EXISTS.message("key已存在").assertTrue(count(wrapper) > 0);
         save(sysConfig);
@@ -47,7 +47,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public void update(SysConfigUpdateDTO dto) {
-        SysConfig sysConfig = BeanCopyUtils.springCopy(dto, SysConfig.class);
+        SysConfig sysConfig = BeanCopyUtils.copy(dto, SysConfig.class);
         QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.ID.ne(dto.getId()))
                 .where(SysConfigTableDef.SYS_CONFIG.CONFIG_KEY.eq(dto.getConfigKey()));
         CommonResponseEnum.EXISTS.message(2015, "key已存在").assertTrue(count(wrapper) > 0);
@@ -85,10 +85,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public boolean hasConfKey(String key) {
-        if (redisCache.hasConfKey(key)) {
-            return true;
-        }
-        return false;
+        return redisCache.hasConfKey(key);
     }
 
     @Override

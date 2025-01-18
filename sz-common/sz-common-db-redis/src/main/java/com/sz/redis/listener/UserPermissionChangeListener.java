@@ -16,7 +16,7 @@ import java.util.List;
  * redis消息listener, 用于监听 用户permission change
  *
  * @author sz
- * @date 2023/9/8 10:12
+ * @since 2023/9/8 10:12
  */
 @Component
 @Slf4j
@@ -30,7 +30,7 @@ public class UserPermissionChangeListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         UserPermissionChangeMessage upcm = (UserPermissionChangeMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [user change permission ] tm = " + JsonUtils.toJsonString(upcm));
+        log.info(" [user change permission ] tm = {}", JsonUtils.toJsonString(upcm));
         // 调用所有实现了TransferMessageHandler接口的处理器
         for (UserPermissionChangeMsgHandler handler : messageHandlers) {
             handler.handlerMsg(upcm);

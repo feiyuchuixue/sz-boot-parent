@@ -30,6 +30,7 @@ import com.sz.redis.RedisCache;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
@@ -47,6 +48,7 @@ import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYP
  * @author sz
  * @since 2023-08-18
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> implements SysDictService, DictService {
@@ -71,7 +73,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public void create(SysDictCreateDTO dto) {
-        SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
+        SysDict sysDict = BeanCopyUtils.copy(dto, SysDict.class);
         QueryWrapper wrapper;
         long count = QueryChain.of(sysDictTypeMapper).eq(SysDictType::getId, dto.getSysDictTypeId()).count();
         CommonResponseEnum.NOT_EXISTS.message("SYS_DICT_TYPE不存在").assertTrue(count < 1);
@@ -95,7 +97,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public void update(SysDictUpdateDTO dto) {
-        SysDict sysDict = BeanCopyUtils.springCopy(dto, SysDict.class);
+        SysDict sysDict = BeanCopyUtils.copy(dto, SysDict.class);
         long count = QueryChain.of(this.mapper).select().from(SysDictTableDef.SYS_DICT).where(SysDictTableDef.SYS_DICT.ID.ne(dto.getId()))
                 .and(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId())).and(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()))
                 .count();
@@ -157,7 +159,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public List<DictVO> getDictByType(String typeCode) {
-        List<DictVO> dictVOS = new ArrayList<>();
+        List<DictVO> dictVOS;
         if (redisCache.hasHashKey(typeCode)) {
             dictVOS = redisCache.getDictByType(typeCode);
         } else {
@@ -215,7 +217,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
                 template.process(dataModel, writer);
                 generatedContent = writer.toString();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("exportDictSql err", e);
             }
 
         }

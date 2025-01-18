@@ -8,14 +8,12 @@ import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
-
+import com.sz.core.util.StringUtils;
 import java.util.Arrays;
 
 /**
- * @ClassName GeneratorUtils
- * @Author sz
- * @Date 2023/11/28 16:06
- * @Version 1.0
+ * @author sz
+ * @since 2023/11/28 16:06
  */
 public class GeneratorUtils {
 
@@ -232,7 +230,7 @@ public class GeneratorUtils {
 
     private static void setStringTypeAttributes(String columnType, GeneratorTableColumn tableColumn) {
         Integer columnLength = getColumnLength(columnType);
-        String htmlType = (columnLength != null && columnLength >= 500) ? GeneratorConstants.HTML_TEXTAREA : GeneratorConstants.HTML_INPUT;
+        String htmlType = columnLength >= 500 ? GeneratorConstants.HTML_TEXTAREA : GeneratorConstants.HTML_INPUT;
         tableColumn.setHtmlType(htmlType);
     }
 
