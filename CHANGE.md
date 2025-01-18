@@ -1,4 +1,28 @@
 # 更新日志
+## v0.8.8 （20250118）
+
+- sz-boot-parent：
+  - 修改：Jackson序列化添加对`MultipartFile`类型的支持。
+  - 修改：`router.whitelist` 属性为Set结构。
+  - 优化：系统用户更新时，同步更新缓存信息。
+  - 优化：[行为验证码-滑块验证] 增加对double精度的支持。
+  - 优化：接口白名单，删除非必要的放行接口。
+  - 修复：aop日志打印的一些问题（ http-topic.log）。
+  - 修复：[代码生成器] 预览时插入按钮SQL问题。
+  - 修复：EntityChangeListener 在处理未登录用户数据初始化时的异常问题。
+  - 修复：验证码参数`sys.captcha.requestLimit`未启用时redis中仍然记录了次数的问题。
+  - 修复：[部门管理] 上级部门为`根部门`时编辑校验未通过的问题。
+  - 依赖升级：
+    - spotless-maven-plugin：2.43.0 -> 2.44.1。
+    - mybatis-flex.version：1.10.2  -> 1.10.5。
+    - aws.s3.version：2.29.23 -> 2.29.50。
+    - springdoc-openapi-starter-webmvc-ui：2.7.0  ->  2.8.3。
+    - modelmapper：3.2.1 -> 3.2.2。
+    - swagger-annotations：2.2.26 -> 2.2.27。
+- sz-admin：
+
+  - 修复：个别浏览器Socket异常的问题。
+  - 优化：[行为验证码-滑块验证] 添加对移动端浏览器的支持。
 ## v0.8.7 （20250109）
 
 - sz-boot-parent：
