@@ -1,11 +1,9 @@
 package com.sz.oss;
 
 /**
- * @ClassName OssProviderEnum
- * @Author sz
- * @Date 2024/11/12 14:49
- * @Version 1.0
+ * @author sz
+ * @since 2024/11/12 14:49
  */
 public enum OssProviderEnum {
-    ALIYUN, QINIU, TENCENT, MINIO;
+    ALIYUN, QINIU, TENCENT, MINIO
 }

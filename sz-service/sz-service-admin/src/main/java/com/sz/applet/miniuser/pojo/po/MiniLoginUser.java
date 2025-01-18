@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName MiniLoginUser
- * @Author sz
- * @Date 2024/4/28 14:15
- * @Version 1.0
+ * MiniLoginUser
+ * 
+ * @author sz
+ * @since 2024/4/28 14:15
+ * @version 1.0
  */
 @Data
 public class MiniLoginUser {

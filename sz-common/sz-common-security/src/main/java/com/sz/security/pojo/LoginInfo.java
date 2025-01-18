@@ -6,10 +6,9 @@ import lombok.Data;
 /**
  * 登录信息
  *
- * @ClassName LoginInfo
- * @Author sz
- * @Date 2024/1/22 9:38
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/22 9:38
+ * @version 1.0
  */
 @Data
 public class LoginInfo {

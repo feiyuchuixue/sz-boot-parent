@@ -24,10 +24,11 @@ import java.util.Map;
 /**
  * 小程序认证策略
  *
- * @ClassName AppletStrategy
- * @Author sz
- * @Date 2024/4/26 16:08
- * @Version 1.0
+ * AppletStrategy
+ * 
+ * @author sz
+ * @since 2024/4/26 16:08
+ * @version 1.0
  */
 
 @Slf4j

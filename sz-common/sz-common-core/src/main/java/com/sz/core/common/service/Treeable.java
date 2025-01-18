@@ -3,10 +3,8 @@ package com.sz.core.common.service;
 import java.util.List;
 
 /**
- * @ClassName Treeable
- * @Author sz
- * @Date 2024/3/22 17:34
- * @Version 1.0
+ * @author sz
+ * @since 2024/3/22 17:34
  */
 public interface Treeable<T> {
 

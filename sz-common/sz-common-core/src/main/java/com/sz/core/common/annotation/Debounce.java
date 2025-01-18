@@ -4,11 +4,13 @@ import java.lang.annotation.*;
 
 /**
  * 防抖注解（自定义防抖时间）
+ * <p>
+ * 自定义防抖注解
+ * </p>
  *
- * @ClassName DebounceIgnore
- * @Author sz
- * @Date 2024/9/18 11:20
- * @Version 1.0
+ * @author sz
+ * @version 1.0
+ * @since 2024/9/18
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -18,7 +20,7 @@ public @interface Debounce {
     /**
      * 默认防抖时间，1000 ms
      *
-     * @return
+     * @return 超时时间（ms）
      */
     long time() default 1000;
 

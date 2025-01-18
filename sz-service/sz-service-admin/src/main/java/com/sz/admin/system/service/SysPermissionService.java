@@ -7,10 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @ClassName SysPermissionService
- * @Author sz
- * @Date 2024/2/4 15:12
- * @Version 1.0
+ * SysPermissionService
+ * 
+ * @author sz
+ * @since 2024/2/4 15:12
+ * @version 1.0
  */
 public interface SysPermissionService {
 

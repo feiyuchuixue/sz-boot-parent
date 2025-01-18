@@ -6,7 +6,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 /**
  * @author sz
- * @date 2023/9/8 8:32
+ * @since 2023/9/8 8:32
  */
 @Data
 public class WsSession {

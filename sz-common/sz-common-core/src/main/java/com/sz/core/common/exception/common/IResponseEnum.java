@@ -7,21 +7,21 @@ public interface IResponseEnum {
     /**
      * 获取错误码
      * 
-     * @return
+     * @return 错误码
      */
     int getCode();
 
     /**
      * 获取错误信息
      * 
-     * @return
+     * @return 错误信息
      */
     String getMessage();
 
     /**
      * 获取错误码前缀
      * 
-     * @return
+     * @return 错误码前缀
      */
     ErrorPrefixEnum getCodePrefixEnum();
 

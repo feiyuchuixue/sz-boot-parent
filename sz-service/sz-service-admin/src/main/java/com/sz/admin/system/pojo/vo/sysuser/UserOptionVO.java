@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName UserOptionVO
- * @Author sz
- * @Date 2024/7/1 13:32
- * @Version 1.0
+ * UserOptionVO
+ * 
+ * @author sz
+ * @since 2024/7/1 13:32
+ * @version 1.0
  */
 @Data
 @Schema(description = "select下拉用户项VO")

@@ -16,10 +16,11 @@ import java.util.Map;
 /**
  * 动态字典——系统用户loader
  *
- * @ClassName DynamicUserOptionDictLoader
- * @Author sz
- * @Date 2024/8/21 13:17
- * @Version 1.0
+ * DynamicUserOptionDictLoader
+ * 
+ * @author sz
+ * @since 2024/8/21 13:17
+ * @version 1.0
  */
 @Component
 @RequiredArgsConstructor

@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * @ClassName SaExceptionHandler
- * @Author sz
- * @Date 2024/2/4 15:42
- * @Version 1.0
+ * @author sz
+ * @since 2024/2/4 15:42
  */
 @Order(Integer.MIN_VALUE)
 @RestControllerAdvice
@@ -20,7 +18,7 @@ public class SaExceptionHandler {
 
     @ExceptionHandler(NotLoginException.class)
     public ApiResult<Void> handlerNotLoginException(NotLoginException e) {
-        String message = "";
+        String message;
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
             message = "未能读取到有效 token";
         } else if (e.getType().equals(NotLoginException.INVALID_TOKEN) || e.getType().equals(NotLoginException.TOKEN_FREEZE)) {

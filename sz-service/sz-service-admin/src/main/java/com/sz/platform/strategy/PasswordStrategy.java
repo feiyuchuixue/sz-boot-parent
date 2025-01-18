@@ -20,10 +20,11 @@ import java.util.Map;
 /**
  * 密码认证策略
  *
- * @ClassName PasswordStrategy
- * @Author sz
- * @Date 2024/1/23 10:29
- * @Version 1.0
+ * PasswordStrategy
+ * 
+ * @author sz
+ * @since 2024/1/23 10:29
+ * @version 1.0
  */
 @Slf4j
 @Service("password" + IAuthStrategy.BASE_NAME)

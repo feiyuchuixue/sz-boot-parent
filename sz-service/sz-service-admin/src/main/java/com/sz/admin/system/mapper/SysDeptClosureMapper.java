@@ -23,7 +23,8 @@ public interface SysDeptClosureMapper extends BaseMapper<SysDeptClosure> {
      * 分离子树
      *
      * @param nodeId
-     * @return
+     *            节点ID
+     * @return 分离的节点数
      */
     @Delete(" DELETE " + " FROM " + " sys_dept_closure t " + " WHERE" + " EXISTS (" + " SELECT" + " 1 " + " FROM" + " sys_dept_closure d " + " WHERE"
             + " d.ancestor_id = #{nodeId} and t.descendant_id = d.descendant_id " + " ) " + " and "
@@ -34,7 +35,8 @@ public interface SysDeptClosureMapper extends BaseMapper<SysDeptClosure> {
      * 查询指定节点的子树
      * 
      * @param nodeId
-     * @return
+     *            节点ID
+     * @return 子树
      */
     @Select(" SELECT ancestor_id,descendant_id,depth FROM sys_dept_closure " + " WHERE EXISTS (" + "    SELECT 1 " + "    FROM sys_dept_closure d "
             + "    WHERE d.ancestor_id = #{nodeId} " + "    AND sys_dept_closure.descendant_id = d.descendant_id" + ")" + " AND EXISTS (" + "    SELECT 1 "
@@ -46,8 +48,10 @@ public interface SysDeptClosureMapper extends BaseMapper<SysDeptClosure> {
      * 嫁接子树
      *
      * @param nodeId
+     *            节点ID
      * @param newNodeId
-     * @return
+     *            新节点ID
+     * @return 嫁接的节点数
      */
     @Insert("INSERT INTO sys_dept_closure ( ancestor_id, descendant_id, depth ) SELECT" + " super.ancestor_id," + " sub.descendant_id,("
             + " super.depth + sub.depth + 1 " + " ) " + " FROM" + " sys_dept_closure super" + " CROSS JOIN sys_dept_closure sub " + " WHERE"

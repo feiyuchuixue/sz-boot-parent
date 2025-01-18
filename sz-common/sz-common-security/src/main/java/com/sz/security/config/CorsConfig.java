@@ -13,10 +13,10 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @ClassName CorsConfig
- * @Author sz
- * @Date 2024/2/2 8:31
- * @Version 1.0
+ * CorsConfig
+ * 
+ * @author sz
+ * @since 2024/2/2 8:31
  */
 @Configuration
 @RequiredArgsConstructor

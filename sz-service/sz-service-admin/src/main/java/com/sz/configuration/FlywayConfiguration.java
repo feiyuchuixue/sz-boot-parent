@@ -8,10 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 /**
- * @ClassName FlywayConfiguration
- * @Author sz
- * @Date 2024/7/29 13:30
- * @Version 1.0
+ * FlywayConfiguration
+ * 
+ * @author sz
+ * @since 2024/7/29 13:30
+ * @version 1.0
  */
 @Configuration
 public class FlywayConfiguration {

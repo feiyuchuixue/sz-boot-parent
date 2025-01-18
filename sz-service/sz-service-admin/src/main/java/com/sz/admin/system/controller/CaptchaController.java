@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 验证码controller
  *
- * @ClassName CaptchaController
- * @Author sz
- * @Date 2025/01/07 19:07
- * @Version 1.0
+ * @author sz
+ * @since 2025/01/07 19:07
+ * @version 1.0
  */
 @Tag(name = "验证码")
 @RestController
@@ -32,7 +31,7 @@ public class CaptchaController {
     private final CaptchaService captchaService;
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @GetMapping("status")
     @Operation(summary = "验证码是否启用")
     public ApiResult<Boolean> captchaStatus() {
@@ -41,7 +40,7 @@ public class CaptchaController {
     }
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @Operation(summary = "获取验证码")
     @PostMapping(value = "/get")
     public ApiResult<SliderPuzzle> getImageCode(HttpServletRequest request) {
@@ -49,7 +48,7 @@ public class CaptchaController {
     }
 
     @SaIgnore
-    @Debounce(time = 1000)
+    @Debounce()
     @Operation(summary = "校验滑块拼图验证码")
     @PostMapping(value = "/check")
     public ApiResult<Void> captchaCheck(@RequestBody CheckPuzzle checkPuzzle) throws Exception {

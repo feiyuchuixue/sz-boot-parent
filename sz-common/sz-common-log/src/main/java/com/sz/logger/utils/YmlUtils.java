@@ -8,10 +8,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * @ClassName YmlUtils
- * @Description Yml配置文件操作相关
- * @Author 柳成荫
- * @Date 2021/1/9
+ * This class will be deprecated in future versions.
  */
 public class YmlUtils {
 
@@ -48,7 +45,7 @@ public class YmlUtils {
 
     /**
      * 获取Yml配置文件的内容 - 以Map的格式
-     * 
+     *
      * @param fileName
      *            Yml配置文件名
      * @return 配置信息（Map格式）
@@ -61,7 +58,7 @@ public class YmlUtils {
                 fromYml = getFromYml(fileName, YML_HEAD_KEY);
                 // LinkedHashMap，如果不是Map类型（比如配置文件里只有log-desensitize=123456），直接返回patternMap本身
                 if (fromYml instanceof Map) {
-                    return (Map) fromYml;
+                    return (Map<String, Object>) fromYml;
                 }
             } catch (Exception e) {
                 return null;
@@ -72,7 +69,7 @@ public class YmlUtils {
 
     /**
      * 通过key获取value从yml配置文件
-     * 
+     *
      * @param fileName
      *            Yml文件名
      * @param key
@@ -86,12 +83,12 @@ public class YmlUtils {
         InputStream inputStream = YmlUtils.class.getClassLoader().getResourceAsStream(fileName);
         HashMap<String, Object> map = (HashMap<String, Object>) yaml.loadAs(inputStream, HashMap.class);
         // 如果map内有值，直接返回key对应的Value，否则返回map本身
-        return Objects.nonNull(map) && map.size() > 0 ? map.get(key) : map;
+        return Objects.nonNull(map) && !map.isEmpty() ? map.get(key) : map;
     }
 
     /**
      * 获取key为pattern的值
-     * 
+     *
      * @return pattern对应的map，或者null（如pattern=123这种情况）
      */
     public static Map<String, Object> getPattern() {
@@ -105,7 +102,7 @@ public class YmlUtils {
 
     /**
      * 获取所有pattern，含key为pattern，key为patterns
-     * 
+     *
      * @return pattern
      */
     public static Map<String, Object> getAllPattern() {
@@ -124,7 +121,7 @@ public class YmlUtils {
 
     /**
      * 获取key为patterns的值
-     * 
+     *
      * @return patterns对应的map，或者null（如patterns=123这种情况）
      */
     public static Map<String, Object> getPatterns() {
@@ -135,10 +132,7 @@ public class YmlUtils {
             // 获取key为"patterns"的值(List<Map<String, Object>>)
             List<Map<String, Object>> list = (List<Map<String, Object>>) patterns;
             if (!CollectionUtils.isEmpty(list)) {
-                Iterator<Map<String, Object>> iterator = list.iterator();
-                // 黄线强迫症，用for代替while
-                for (; iterator.hasNext();) {
-                    Map<String, Object> maps = (Map<String, Object>) iterator.next();
+                for (Map<String, Object> maps : list) {
                     assembleMap(map, maps);
                 }
                 return map;
@@ -155,7 +149,7 @@ public class YmlUtils {
 
     /**
      * 将patterns中每个key对应的规则按<key,规则>的方式放入map
-     * 
+     *
      * @param map
      *            map
      * @param patterns
@@ -177,7 +171,7 @@ public class YmlUtils {
 
     /**
      * 是否开启脱敏，默认不开启
-     * 
+     *
      * @return 是否开启脱敏
      */
     public static Boolean getOpen() {
@@ -187,7 +181,7 @@ public class YmlUtils {
 
     /**
      * 是否忽略大小写匹配，默认开启
-     * 
+     *
      * @return 是否忽略大小写匹配
      */
     public static Boolean getIgnore() {

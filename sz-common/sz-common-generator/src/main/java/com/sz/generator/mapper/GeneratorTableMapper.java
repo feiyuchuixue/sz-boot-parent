@@ -27,7 +27,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      * 查询指定table的column列
      *
      * @param tableName
-     * @return
+     *            表名
+     * @return 列信息
      */
     List<TableColumResult> selectDbTableColumnsByName(@Param("tableName") String tableName);
 
@@ -35,6 +36,7 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      * 根据tableName清空表记录
      *
      * @param tableNames
+     *            表名集合
      */
     void cleanTableRecordByTableName(@Param("tableNames") List<String> tableNames);
 
@@ -42,13 +44,14 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      * 根据tableName清空字段表
      *
      * @param tableNames
+     *            表名集合
      */
     void cleanTableColumnByTableName(@Param("tableNames") List<String> tableNames);
 
     /**
      * 查询未导入的表
      *
-     * @return
+     * @return 表信息
      */
     List<GeneratorTable> selectDbTableNotInImport(@Param("queryDTO") DbTableQueryDTO queryDTO);
 
@@ -56,7 +59,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      * 查询已经导入的表
      *
      * @param queryDTO
-     * @return
+     *            查询条件
+     * @return 表信息
      */
     List<GeneratorTable> selectDbTableByImport(@Param("queryDTO") DbTableQueryDTO queryDTO);
 
@@ -64,7 +68,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      * 根据pid 查询上级菜单
      *
      * @param pid
-     * @return
+     *            上级菜单id
+     * @return 菜单信息
      */
     SysMenuResult selectSysMenuByPid(@Param("pid") String pid);
 
@@ -76,22 +81,8 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
 
     void syncTreeDeep();
 
-    /**
-     * 菜单唯一性校验
-     *
-     * @param name
-     * @param path
-     * @param component
-     * @return
-     */
     int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component, @Param("pid") String pid);
 
-    /**
-     * 按钮唯一性校验
-     *
-     * @param permissions
-     * @return
-     */
     int countMenuBtn(@Param("permissions") String permissions);
 
 }

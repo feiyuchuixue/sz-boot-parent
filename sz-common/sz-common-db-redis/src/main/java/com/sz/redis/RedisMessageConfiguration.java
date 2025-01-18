@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * 消息订阅配置
  *
  * @author sz
- * @date 2023/9/8 15:13
+ * @since 2023/9/8 15:13
  */
 @Component
 @RequiredArgsConstructor

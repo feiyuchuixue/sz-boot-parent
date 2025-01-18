@@ -4,10 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName GeneratorPreviewVO
- * @Author sz
- * @Date 2024/1/16 16:22
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/16 16:22
  */
 @Data
 @Schema(description = "preview")

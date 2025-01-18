@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * TeacherStatistics添加DTO
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-06-19
  */
 @Data

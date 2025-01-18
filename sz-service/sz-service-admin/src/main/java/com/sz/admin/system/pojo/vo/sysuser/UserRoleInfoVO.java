@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName UserRoleInfoVO
- * @Author sz
- * @Date 2024/4/9 11:00
- * @Version 1.0
+ * UserRoleInfoVO
+ * 
+ * @author sz
+ * @since 2024/4/9 11:00
+ * @version 1.0
  */
 @Data
 public class UserRoleInfoVO {

@@ -18,10 +18,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import java.util.ArrayList;
 
 /**
- * @ClassName SaTokenConfig
- * @Author sz
- * @Date 2024/1/22 16:36
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/22 16:36
  */
 @Slf4j
 @Configuration

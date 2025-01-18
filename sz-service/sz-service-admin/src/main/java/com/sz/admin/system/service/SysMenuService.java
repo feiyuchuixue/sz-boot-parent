@@ -79,7 +79,7 @@ public interface SysMenuService extends IService<SysMenu> {
     /**
      * 查询权限按钮
      *
-     * @return
+     * @return 权限按钮集合
      */
     List<String> findPermission();
 

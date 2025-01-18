@@ -10,10 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 /**
- * @ClassName SysDeptServiceImplTest
- * @Author sz
- * @Date 2024/3/22 13:43
- * @Version 1.0
+ * SysDeptServiceImplTest
+ * 
+ * @author sz
+ * @since 2024/3/22 13:43
+ * @version 1.0
  */
 
 @SpringBootTest

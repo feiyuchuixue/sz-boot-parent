@@ -14,15 +14,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 数据表change事件处理
+ * 数据表变更事件处理器。
  * <p>
- * 约定：强制数据表类型 `create_id` int,`create_time` datetime,`update_id`
- * int,`update_time` datetime
+ * 约定：数据表必须包含以下字段：
+ * <ul>
+ * <li>`create_id` - int 类型，创建者 ID</li>
+ * <li>`create_time` - datetime 类型，创建时间</li>
+ * <li>`update_id` - int 类型，更新者 ID</li>
+ * <li>`update_time` - datetime 类型，更新时间</li>
+ * </ul>
  *
- * @ClassName MybatisInsertListener
- * @Author sz
- * @Date 2023/12/8 18:27
- * @Version 1.0
+ * @since 2023-12-08
+ * @version 1.0
  */
 @Slf4j
 public class EntityChangeListener implements InsertListener, UpdateListener, SetListener {

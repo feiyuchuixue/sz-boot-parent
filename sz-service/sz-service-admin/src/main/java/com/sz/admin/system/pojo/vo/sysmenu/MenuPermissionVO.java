@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @author sz
- * @date 2023/9/1 15:32
+ * @since 2023/9/1 15:32
  */
 @Data
 public class MenuPermissionVO {

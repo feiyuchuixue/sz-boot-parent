@@ -8,10 +8,8 @@ import java.util.Map;
 /**
  * 通用字典获取
  *
- * @ClassName DictService
- * @Author sz
- * @Date 2023/12/26 16:38
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/26 16:38
  */
 public interface DictService {
 
@@ -84,7 +82,7 @@ public interface DictService {
     /**
      * 获取所有字典
      *
-     * @return
+     * @return 字典类型为key，字典列表为值的Map
      */
     Map<String, List<DictVO>> getAllDict();
 

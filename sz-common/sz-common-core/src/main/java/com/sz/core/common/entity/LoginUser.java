@@ -5,12 +5,6 @@ import lombok.Data;
 
 import java.util.*;
 
-/**
- * @ClassName LoginUser
- * @Author sz
- * @Date 2024/1/23 15:14
- * @Version 1.0
- */
 @Data
 public class LoginUser {
 

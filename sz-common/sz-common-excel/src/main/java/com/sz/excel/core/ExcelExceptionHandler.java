@@ -8,10 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * @ClassName ExcelExceptionHandler
- * @Author sz
- * @Date 2024/12/27 16:21
- * @Version 1.0
+ * @author sz
+ * @since 2024/12/27 16:21
  */
 @Order(Integer.MIN_VALUE)
 @RestControllerAdvice

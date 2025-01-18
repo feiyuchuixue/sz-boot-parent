@@ -9,10 +9,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @ClassName PoCodeBuilder
- * @Author sz
- * @Date 2024/1/16 8:02
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/16 8:02
  */
 public class IndexCodeBuilder extends AbstractCodeGenerationTemplate {
 

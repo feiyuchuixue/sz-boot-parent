@@ -22,10 +22,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * 接口防抖切面
  *
- * @ClassName DebounceAspect
- * @Author sz
- * @Date 2024/9/18 11:13
- * @Version 1.0
+ * DebounceAspect
+ * 
+ * @author sz
+ * @since 2024/9/18 11:13
+ * @version 1.0
  */
 @Component
 @Aspect

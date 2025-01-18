@@ -4,9 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @author: sz
- * @date: 2022/8/25 15:58
- * @description: 分页查询基础类
+ * 分页查询基础类
+ *
+ * @author sz
+ * @since 2022/8/25 15:58
  */
 @Data
 public class PageQuery {

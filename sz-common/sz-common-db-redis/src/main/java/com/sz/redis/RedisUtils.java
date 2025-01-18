@@ -7,10 +7,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @ClassName RedisUtil
- * @Author sz
- * @Date 2024/2/29 9:28
- * @Version 1.0
+ * @author sz
+ * @since 2024/2/29 9:28
  */
 public class RedisUtils {
 

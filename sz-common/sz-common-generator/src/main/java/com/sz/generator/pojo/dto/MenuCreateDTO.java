@@ -3,10 +3,8 @@ package com.sz.generator.pojo.dto;
 import lombok.Data;
 
 /**
- * @ClassName MenuCreateDTO
- * @Author sz
- * @Date 2023/12/21 15:31
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/21 15:31
  */
 @Data
 public class MenuCreateDTO {

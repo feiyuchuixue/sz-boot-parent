@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: sz
- * @date: 2022/8/23 10:22
- * @description: 全局通用返回结构(分页)
+ * 全局通用返回结构
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2022/8/23
  */
 @Data
 public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
@@ -26,13 +28,6 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
         message = "SUCCESS";
     }
 
-    /**
-     * 有参返回结果
-     *
-     * @param data
-     * @param <T>
-     * @return
-     */
     public static <T> ApiResult<PageResult<T>> success(List<T> data) {
         ApiResult<PageResult<T>> apiResult = new ApiPageResult<>();
         apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>());
@@ -43,13 +38,6 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
         return success(PageUtils.getPageResult(page));
     }
 
-    /**
-     * 有参返回结果
-     *
-     * @param data
-     * @param <T>
-     * @return
-     */
     public static <T> ApiResult<PageResult<T>> success(List<T> data, Object param) {
         ApiResult<PageResult<T>> apiResult = new ApiPageResult<>();
         apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>());

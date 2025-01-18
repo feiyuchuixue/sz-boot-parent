@@ -4,10 +4,10 @@ import com.mybatisflex.core.audit.AuditManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @ClassName PrintSQL
- * @Author sz
- * @Date 2024/5/11 15:03
- * @Version 1.0
+ * PrintSQL
+ * 
+ * @author sz
+ * @since 2024/5/11 15:03
  */
 @Slf4j
 public class PrintSQL {

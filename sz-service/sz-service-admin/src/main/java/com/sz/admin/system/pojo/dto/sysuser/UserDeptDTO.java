@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName UserDeptDTO
- * @Author sz
- * @Date 2024/4/2 9:44
- * @Version 1.0
+ * UserDeptDTO
+ * 
+ * @author sz
+ * @since 2024/4/2 9:44
+ * @version 1.0
  */
 @Data
 public class UserDeptDTO {

@@ -4,10 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName GenCheckedInfoVO
- * @Author sz
- * @Date 2024/4/16 16:11
- * @Version 1.0
+ * @author sz
+ * @since 2024/4/16 16:11
  */
 @Data
 public class GenCheckedInfoVO {

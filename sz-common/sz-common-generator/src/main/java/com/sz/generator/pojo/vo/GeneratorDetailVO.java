@@ -6,10 +6,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @ClassName GeneratorDetailVO
- * @Author sz
- * @Date 2023/11/29 15:25
- * @Version 1.0
+ * @author sz
+ * @since 2023/11/29 15:25
  */
 @Schema(description = "代码生成配置详情")
 @Data

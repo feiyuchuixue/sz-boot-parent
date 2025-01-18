@@ -21,22 +21,30 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @ClassName ExcelUtils
- * @Author sz
- * @Date 2023/12/26 15:16
- * @Version 1.0
+ * Excel工具类
+ * 
+ * @author sz
+ * @since 2023/12/26 15:16
  */
 public class ExcelUtils {
 
     /**
-     * 异步导入 同步返回
+     * 异步导入 Excel 数据并同步返回结果。
+     *
+     * 该方法从输入流中读取 Excel 文件，使用指定的类进行解析，并在解析过程中提供自定义字典转换。 可选择验证 Excel
+     * 文件的表头格式。解析完成后，返回包含解析结果的对象。
      *
      * @param is
+     *            Excel 文件的输入流
      * @param clazz
+     *            用于映射 Excel 数据的类类型
      * @param validateHeader
+     *            是否验证表头格式
      * @param <T>
-     * @return
+     *            解析结果的类型
+     * @return 包含解析结果的 ExcelResult 对象
      */
+
     public static <T> ExcelResult<T> importExcel(InputStream is, Class<T> clazz, boolean validateHeader) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
@@ -128,12 +136,17 @@ public class ExcelUtils {
     }
 
     /**
-     * 将exp转为list
+     * 将表达式转换为列表。
+     *
+     * 该方法根据指定的分隔符，将字符串表达式转换为字符串列表。
      *
      * @param converterExp
+     *            要转换的字符串表达式
      * @param separator
-     * @return
+     *            用于分隔表达式的分隔符
+     * @return 转换后的字符串列表
      */
+
     public static List<String> listByExp(String converterExp, String separator) {
         List<String> list = new ArrayList<>();
         String[] convertSource = converterExp.split(separator);

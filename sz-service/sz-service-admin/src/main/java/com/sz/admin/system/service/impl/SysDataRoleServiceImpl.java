@@ -38,7 +38,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
  * 数据权限管理 服务实现类
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-07-09
  */
 @Service

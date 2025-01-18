@@ -21,10 +21,11 @@ import org.springframework.stereotype.Service;
 import java.util.Random;
 
 /**
- * @ClassName CaptchaServiceImpl
- * @Author sz
- * @Date 2025/1/8 17:01
- * @Version 1.0
+ * CaptchaServiceImpl
+ *
+ * @author sz
+ * @since 2025/1/8 17:01
+ * @version 1.0
  */
 @Service
 @RequiredArgsConstructor
@@ -57,6 +58,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
 
         String expireTime = SysConfigUtils.getConfValue("sys.captcha.expire");
+        assert sliderPuzzle != null;
         PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey());
 
         redisCache.clearCaptcha(requestId); // 清除

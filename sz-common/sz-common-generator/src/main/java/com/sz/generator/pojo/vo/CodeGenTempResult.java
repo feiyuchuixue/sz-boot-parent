@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName CodeGenTempResult
- * @Author sz
- * @Date 2024/1/16 10:49
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/16 10:49
  */
 @Data
 public class CodeGenTempResult {

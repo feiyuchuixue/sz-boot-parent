@@ -6,10 +6,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @ClassName ImportTableDTO
- * @Author sz
- * @Date 2023/11/27 11:09
- * @Version 1.0
+ * @author sz
+ * @since 2023/11/27 11:09
  */
 @Data
 @Schema(description = "导入表")

@@ -6,10 +6,11 @@ import lombok.RequiredArgsConstructor;
 /**
  * 动态字典枚举类
  *
- * @ClassName DynamicDictEnum
- * @Author sz
- * @Date 2024/8/22 10:11
- * @Version 1.0
+ * DynamicDictEnum
+ * 
+ * @author sz
+ * @since 2024/8/22 10:11
+ * @version 1.0
  */
 
 @Getter

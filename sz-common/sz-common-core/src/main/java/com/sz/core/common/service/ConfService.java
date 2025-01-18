@@ -3,10 +3,8 @@ package com.sz.core.common.service;
 /**
  * 系统配置获取
  *
- * @ClassName ConfService
- * @Author sz
- * @Date 2024/1/9 15:25
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/9 15:25
  */
 public interface ConfService {
 
@@ -14,7 +12,8 @@ public interface ConfService {
      * 验证配置是否存在
      * 
      * @param key
-     * @return
+     *            配置key
+     * @return boolean
      */
     boolean hasConfKey(String key);
 
@@ -22,7 +21,8 @@ public interface ConfService {
      * 根据配置key获取value
      * 
      * @param key
-     * @return
+     *            配置key
+     * @return 配置信息
      */
     String getConfValue(String key);
 

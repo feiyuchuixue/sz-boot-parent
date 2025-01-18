@@ -15,10 +15,11 @@ import java.util.stream.Collectors;
 /**
  * 静态字典loader
  *
- * @ClassName StaticDictLoader
- * @Author sz
- * @Date 2024/8/21 9:06
- * @Version 1.0
+ * StaticDictLoader
+ * 
+ * @author sz
+ * @since 2024/8/21 9:06
+ * @version 1.0
  */
 @Component
 @RequiredArgsConstructor

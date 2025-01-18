@@ -7,22 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 树形递归，用于构建以id、pid为关联标识的树形结构
+ * 工具类，用于构建以 ID 和 PID 为关联标识的树形结构。
  *
- * @ClassName TreeUtil
- * @Author sz
- * @Date 2024/3/22 17:48
- * @Version 1.0
+ * @since 2024-03-22
+ * @version 1.0
  */
 public class TreeUtils {
 
     /**
-     * 构建树形结构
+     * 构建树形结构。
      *
      * @param allDepts
      *            所有部门列表
      * @param root
-     *            自定义根节点属性
+     *            自定义根节点
      * @param <T>
      *            树节点类型
      * @return 树形结构列表
@@ -36,14 +34,14 @@ public class TreeUtils {
     }
 
     /**
-     * 构建树形结构（支持排除指定节点）
+     * 构建树形结构，支持排除指定节点。
      *
      * @param allDepts
      *            所有部门列表
      * @param excludeNodeId
-     *            排除节点的 ID
+     *            排除的节点 ID
      * @param root
-     *            自定义根节点属性
+     *            自定义根节点
      * @param <T>
      *            树节点类型
      * @return 树形结构列表
@@ -61,7 +59,7 @@ public class TreeUtils {
     }
 
     /**
-     * 递归构建树形结构
+     * 递归构建树形结构。
      *
      * @param parent
      *            父节点
@@ -87,14 +85,14 @@ public class TreeUtils {
     }
 
     /**
-     * 递归构建树形结构（支持排除指定节点）
+     * 递归构建树形结构，支持排除指定节点。
      *
      * @param parent
      *            父节点
      * @param allDepts
      *            所有部门列表
      * @param excludeNodeId
-     *            排除节点的 ID
+     *            排除的节点 ID
      * @param <T>
      *            树节点类型
      */
@@ -116,7 +114,7 @@ public class TreeUtils {
     }
 
     /**
-     * 获取根节点
+     * 获取树的根节点。
      *
      * @param clazz
      *            树节点类型

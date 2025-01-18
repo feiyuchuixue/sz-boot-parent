@@ -14,13 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 通用controller
+ * 认证Controller。
  *
- * @ClassName CommonController
- * @Author sz
- * @Date 2023/12/25 10:07
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/25
  */
+
 @Tag(name = "认证")
 @RestController
 @RequestMapping("/auth")

@@ -83,7 +83,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * 获取认证账户信息接角色信息
      *
      * @param username
-     * @return
+     *            用户名
+     * @return 用户信息
      */
     @Override
     public SysUserVO getSysUserByUsername(String username) {
@@ -92,7 +93,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
         SysUserVO sysUserVO = new SysUserVO();
-        BeanCopyUtils.springCopy(one, sysUserVO);
+        BeanCopyUtils.copy(one, sysUserVO);
         return sysUserVO;
     }
 
@@ -100,15 +101,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * 获取认证账户信息接角色信息
      *
      * @param userId
-     * @return
+     *            用户id
+     * @return 用户信息
      */
     @Override
     public SysUserVO getSysUserByUserId(Long userId) {
         QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, userId);
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
-        SysUserVO sysUserVO = BeanCopyUtils.copy(one, SysUserVO.class);
-        return sysUserVO;
+        return BeanCopyUtils.copy(one, SysUserVO.class);
     }
 
     /**
@@ -185,7 +186,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public PageResult<SysUserVO> page(SysUserListDTO dto) {
-        PageResult<SysUserVO> result = null;
+        PageResult<SysUserVO> result;
         PageUtils.toPage(dto);
         try {
             List<SysUserVO> sysUserVOS;
@@ -302,8 +303,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public SysUserVO getUserInfo() {
-        SysUser sysUser = getById(LoginUtils.getLoginUser().getUserInfo().getId());
-        return BeanCopyUtils.springCopy(sysUser, SysUserVO.class);
+        SysUser sysUser = getById(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
+        return BeanCopyUtils.copy(sysUser, SysUserVO.class);
     }
 
     /**
@@ -325,6 +326,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * 重置密码
      *
      * @param id
+     *            id
      */
     @Override
     public void resetPassword(Long id) {
@@ -345,7 +347,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return;
         }
         for (String token : tokens) {
-            // SaSession saSession = StpUtil.stpLogic.getTokenSessionByToken(token, false);
             // // 根据token获取用户session
             SaSession saSession = StpUtil.getTokenSessionByToken(token);
             // 1. 查询当前用户的最新用户权限信息
@@ -371,15 +372,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validateUserStatus(userVo);
         // 密码校验
         validatePassword(password, userVo.getPwd(), username);
-        LoginUser loginUser = getLoginUser(userVo);
-        return loginUser;
+        return getLoginUser(userVo);
     }
 
     @Override
     public LoginUser buildLoginUser(Long userId) {
         SysUserVO userVo = getSysUserByUserId(userId);
-        LoginUser loginUser = getLoginUser(userVo);
-        return loginUser;
+        return getLoginUser(userVo);
     }
 
     @Override
@@ -407,10 +406,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
 
         Map<String, String> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
-        Set<String> findMenuIds = new HashSet<>();
-        for (String menuIds : btmPermissionMap.values()) {
-            findMenuIds.add(menuIds);
-        }
+        Set<String> findMenuIds = new HashSet<>(btmPermissionMap.values());
         loginUser.setPermissionAndMenuIds(btmPermissionMap);
         Map<String, String> ruleMap = sysPermissionService.buildMenuRuleMap(sysUser, findMenuIds);
         String customUserKey = "userRule";

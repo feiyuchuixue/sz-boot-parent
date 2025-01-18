@@ -25,47 +25,16 @@ import java.util.List;
  */
 public interface GeneratorTableService extends IService<GeneratorTable> {
 
-    /**
-     * 导入表格
-     *
-     * @param dto
-     */
     void importTable(ImportTableDTO dto);
 
-    /**
-     * 查询未导入的表
-     *
-     * @param dto
-     * @return
-     */
     PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto);
 
-    /**
-     * 查询已经导入的表
-     *
-     * @param dto
-     * @return
-     */
     PageResult<GeneratorTable> selectDbTableByImport(DbTableQueryDTO dto);
 
-    /**
-     * 代码生成配置详情
-     *
-     * @param tableName
-     * @return
-     */
     GeneratorDetailVO detail(String tableName);
 
-    /**
-     * 更新代码生成配置
-     * 
-     * @param generatorDetailVO
-     */
     void updateGeneratorSetting(GeneratorDetailVO generatorDetailVO);
 
-    /**
-     * 生成代码
-     */
     List<String> generator(String tableName) throws IOException;
 
     GenCheckedInfoVO checkDist(String tableName);

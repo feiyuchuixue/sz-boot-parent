@@ -5,10 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName OssProperties
- * @Author sz
- * @Date 2024/11/12 14:39
- * @Version 1.0
+ * @author sz
+ * @since 2024/11/12 14:39
  */
 @Data
 @Component

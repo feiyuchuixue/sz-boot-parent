@@ -6,7 +6,8 @@ public interface CustomAssert {
      * 创建异常
      *
      * @param args
-     * @return
+     *            异常信息参数
+     * @return 异常
      */
     BaseException newException(Object... args);
 
@@ -14,8 +15,10 @@ public interface CustomAssert {
      * 创建异常
      *
      * @param t
+     *            Throwable
      * @param args
-     * @return
+     *            异常信息参数
+     * @return 异常
      */
     BaseException newException(Throwable t, Object... args);
 
@@ -42,6 +45,7 @@ public interface CustomAssert {
      * boolean型的断言 true则抛出异常
      *
      * @param bool
+     *            boolean值
      */
     default void assertTrue(boolean bool) {
         if (bool) {
@@ -53,6 +57,7 @@ public interface CustomAssert {
      * boolean型的断言 false则抛出异常
      *
      * @param bool
+     *            boolean值
      */
     default void assertFalse(boolean bool) {
         if (!bool) {

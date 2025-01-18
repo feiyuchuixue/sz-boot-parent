@@ -8,10 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * @ClassName EmailAuthStrategy
- * @Author sz
- * @Date 2024/1/23 10:29
- * @Version 1.0
+ * EmailAuthStrategy
+ * 
+ * @author sz
+ * @since 2024/1/23 10:29
+ * @version 1.0
  */
 @Slf4j
 @Service("email" + IAuthStrategy.BASE_NAME)

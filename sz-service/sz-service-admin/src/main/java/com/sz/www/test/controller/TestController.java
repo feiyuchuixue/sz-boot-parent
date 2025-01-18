@@ -19,10 +19,11 @@ import java.util.List;
 /**
  * TODO: 以下为功能演示内容，生产环境请删除！！！
  * 
- * @ClassName 网站测试
- * @Author sz
- * @Date 2024/5/24
- * @Version 1.0
+ * 网站测试
+ * 
+ * @author sz
+ * @since 2024/5/24
+ * @version 1.0
  */
 @Tag(name = "测试网站")
 @RestController

@@ -4,10 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * @ClassName UploadResult
- * @Author sz
- * @Date 2024/11/12 16:22
- * @Version 1.0
+ * @author sz
+ * @since 2024/11/12 16:22
  */
 @Data
 @Builder

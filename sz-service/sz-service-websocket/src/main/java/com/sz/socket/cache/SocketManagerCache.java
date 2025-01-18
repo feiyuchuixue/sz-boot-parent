@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author sz
- * @date 2023/9/6 17:01
+ * @since 2023/9/6 17:01
  */
 @Slf4j
 public class SocketManagerCache {
@@ -44,6 +44,7 @@ public class SocketManagerCache {
      * 清除断线的sid
      *
      * @param sid
+     *            sid
      */
     public static void removeUserSession(String sid) {
         WsSession wsSession = onlineSessionMap.get(sid);

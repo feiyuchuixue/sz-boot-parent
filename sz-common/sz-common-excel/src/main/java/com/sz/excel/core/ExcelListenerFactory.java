@@ -3,10 +3,8 @@ package com.sz.excel.core;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassName ExcelListenerFactory
- * @Author sz
- * @Date 2024/12/27 16:12
- * @Version 1.0
+ * @author sz
+ * @since 2024/12/27 16:12
  */
 @Component
 public class ExcelListenerFactory {

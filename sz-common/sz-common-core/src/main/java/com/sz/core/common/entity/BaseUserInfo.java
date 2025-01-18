@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * @ClassName UserInfo
- * @Author sz
- * @Date 2023/12/12 9:53
- * @Version 1.0
+ * BaseUserInfo - 用于表示用户信息的类。
+ *
+ * @author sz
+ * @version 1.0
+ * @since 2023-12-12
  */
 @Data
 public class BaseUserInfo {

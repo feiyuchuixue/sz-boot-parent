@@ -29,10 +29,11 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 
 /**
- * @ClassName SysPermissionServiceImpl
- * @Author sz
- * @Date 2024/2/4 15:12
- * @Version 1.0
+ * SysPermissionServiceImpl
+ * 
+ * @author sz
+ * @since 2024/2/4 15:12
+ * @version 1.0
  */
 @Service
 @Slf4j
@@ -195,13 +196,11 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      * 1001003 普通用户] 。 详见字典：用户标签（user_tag）
      *
      * @param sysUser
-     * @return
+     *            用户信息
+     * @return 是否是超级管理员
      */
     private boolean isSuperAdmin(SysUser sysUser) {
-        if (sysUser != null && ("1001002").equals(sysUser.getUserTagCd())) {
-            return true;
-        }
-        return false;
+        return sysUser != null && ("1001002").equals(sysUser.getUserTagCd());
     }
 
 }

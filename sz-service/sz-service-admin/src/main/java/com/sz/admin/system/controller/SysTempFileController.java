@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 模版文件表 Controller
  * </p>
  *
- * @author sz-admin
+ * @author sz
  * @since 2024-12-05
  */
 @Tag(name = "模版文件表")

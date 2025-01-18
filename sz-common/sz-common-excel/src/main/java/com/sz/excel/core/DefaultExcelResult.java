@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName DefaultExcelResult
- * @Author sz
- * @Date 2023/12/26 14:37
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/26 14:37
  */
 @Data
 public class DefaultExcelResult<T> implements ExcelResult<T> {

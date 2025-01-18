@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author sz
- * @date 2023/8/24 10:29
+ * @since 2023/8/24 10:29
  */
 @Data
 public class SysUserVO {

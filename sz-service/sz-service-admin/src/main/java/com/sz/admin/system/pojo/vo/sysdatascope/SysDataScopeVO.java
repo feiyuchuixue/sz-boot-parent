@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName SysDataScopeVO
- * @Author sz
- * @Date 2024/6/27 13:26
- * @Version 1.0
+ * SysDataScopeVO
+ * 
+ * @author sz
+ * @since 2024/6/27 13:26
+ * @version 1.0
  */
 @Data
 @Schema(description = "SysDataScope返回vo")

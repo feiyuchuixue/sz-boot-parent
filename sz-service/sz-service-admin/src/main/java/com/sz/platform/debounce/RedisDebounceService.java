@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @ClassName RedisDebounceService
- * @Author sz
- * @Date 2024/9/18 10:05
- * @Version 1.0
+ * RedisDebounceService
+ * 
+ * @author sz
+ * @since 2024/9/18 10:05
+ * @version 1.0
  */
 @Service
 @RequiredArgsConstructor

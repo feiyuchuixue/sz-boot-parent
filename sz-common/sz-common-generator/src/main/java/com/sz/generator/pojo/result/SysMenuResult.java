@@ -3,10 +3,8 @@ package com.sz.generator.pojo.result;
 import lombok.Data;
 
 /**
- * @ClassName SysMenuResult
- * @Author sz
- * @Date 2023/12/21 14:40
- * @Version 1.0
+ * @author sz
+ * @since 2023/12/21 14:40
  */
 @Data
 public class SysMenuResult {

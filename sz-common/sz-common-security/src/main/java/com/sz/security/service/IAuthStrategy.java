@@ -9,10 +9,9 @@ import com.sz.security.pojo.LoginVO;
 /**
  * 策略接口
  *
- * @ClassName IAuthStrategy
- * @Author sz
- * @Date 2024/1/23 9:38
- * @Version 1.0
+ * @author sz
+ * @since 2024/1/23 9:38
+ * @version 1.0
  */
 public interface IAuthStrategy {
 
