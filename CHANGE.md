@@ -1,4 +1,13 @@
 # 更新日志
+## v0.9.0 （20250119）
+
+- sz-boot-parent：
+  - 优化：无效文件清理
+  - 优化：javadoc 注释
+  - 优化：[sz-service-websocket] 同步调整config路径至项目根目录下
+  - 优化：qodana 代码（质量）规范化
+- sz-admin：
+  - 无
 ## v0.8.8 （20250118）
 
 - sz-boot-parent：
