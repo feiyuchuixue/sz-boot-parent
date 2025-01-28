@@ -1,4 +1,10 @@
 # 更新日志
+## v1.0.0-beta （20250128）| 大型更新
+
+- sz-boot-parent：
+  - 优化：sonar 代码（质量）规范化
+- sz-admin：
+  - 优化：sonar 代码（质量）规范化
 ## v0.9.0 （20250119）
 
 - sz-boot-parent：
