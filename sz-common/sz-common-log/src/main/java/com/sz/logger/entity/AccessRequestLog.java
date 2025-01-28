@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class AccessRequestLog {
 
-    private String type;
+    private String type = "request";
 
     /**
      * 请求标识
@@ -55,9 +55,5 @@ public class AccessRequestLog {
     private String contentType;
 
     private Object requestBody;
-
-    {
-        type = "request";
-    }
 
 }

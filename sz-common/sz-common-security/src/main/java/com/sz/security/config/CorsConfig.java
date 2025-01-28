@@ -39,8 +39,7 @@ public class CorsConfig {
 
     private CorsConfiguration buildConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // TODO: 推荐在生产环境中，origin设置成准确域名。不要设置为*
-        // corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+        // 在生产环境中，推荐将 origin 设置为准确的域名，而不是使用 *
         CopyOnWriteArrayList<String> allowedOrigins = corsProperties.getAllowedOrigins();
         if (allowedOrigins.contains("*")) {
             corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);

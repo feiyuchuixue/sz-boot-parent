@@ -197,7 +197,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 获取所有部门信息
         List<SysDept> list = list(wrapper);
         List<DeptTreeVO> deptTreeVOS = BeanCopyUtils.copyList(list, DeptTreeVO.class);
-        if (needSetTotal) {
+        if (needSetTotal != null && needSetTotal) {
             setUseTotal(deptTreeVOS);
         }
         DeptTreeVO root = TreeUtils.getRoot(DeptTreeVO.class);

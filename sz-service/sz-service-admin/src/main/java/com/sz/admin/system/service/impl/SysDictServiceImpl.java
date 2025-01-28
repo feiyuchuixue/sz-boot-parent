@@ -86,9 +86,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         AtomicReference<Long> dictCount = new AtomicReference<>(0L);
         QueryWrapper finalWrapper = wrapper;
         // 跳过逻辑删除，查询真实count数
-        LogicDeleteManager.execWithoutLogicDelete(() -> {
-            dictCount.set(count(finalWrapper));
-        });
+        LogicDeleteManager.execWithoutLogicDelete(() -> dictCount.set(count(finalWrapper)));
         Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), dictCount.get().intValue());
         sysDict.setId(generateCustomId);
         save(sysDict);

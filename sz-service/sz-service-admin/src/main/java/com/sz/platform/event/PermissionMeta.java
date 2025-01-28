@@ -15,10 +15,6 @@ import java.util.List;
 @Data
 public class PermissionMeta {
 
-    {
-        userIds = new ArrayList<>();
-    }
-
     public PermissionMeta() {
     }
 
@@ -26,6 +22,6 @@ public class PermissionMeta {
         this.userIds = userIds;
     }
 
-    private List<?> userIds;
+    private List<?> userIds = new ArrayList<>();
 
 }

@@ -367,7 +367,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= Utils.getIntVal(maxErrCnt)));
         }
         SysUserVO userVo = getSysUserByUsername(username);
-        Long userId = userVo.getId();
         // 用户状态校验（禁用状态校验）
         validateUserStatus(userVo);
         // 密码校验

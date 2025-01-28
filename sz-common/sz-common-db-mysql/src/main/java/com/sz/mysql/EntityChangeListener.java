@@ -9,7 +9,8 @@ import com.sz.core.common.entity.LoginUser;
 import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -61,15 +62,15 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
         try {
             // 获取对象的 Class 对象
             Class<?> clazz = object.getClass();
-            // 获取对象的字段
-            Field field = clazz.getDeclaredField(propertyName);
-            // 设置字段为可访问，以便访问私有字段
-            field.setAccessible(true);
-            // 设置字段的值
-            field.set(object, propertyValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // 如果字段不存在，则忽略异常
-            log.warn(" Fill EntityChangeField failed; Property {} not found. ", propertyName);
+            // 获取属性名称对应的 setter 方法名称
+            String setterName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+            // 获取 setter 方法
+            Method setterMethod = clazz.getMethod(setterName, propertyValue.getClass());
+            // 调用 setter 方法设置字段值
+            setterMethod.invoke(object, propertyValue);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            // 如果字段不存在或者 setter 方法不可访问，则忽略异常
+            log.warn(" Fill EntityChangeField failed; Property {} not found or inaccessible. ", propertyName);
         }
     }
 

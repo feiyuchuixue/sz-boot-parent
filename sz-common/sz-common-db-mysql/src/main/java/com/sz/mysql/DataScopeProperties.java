@@ -9,13 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "sz.data-scope")
 public class DataScopeProperties {
 
-    {
-        enabled = true;
-        logicMinUnit = "user";
-    }
+    private boolean enabled = true;
 
-    private boolean enabled;
-
-    private String logicMinUnit;
+    private String logicMinUnit = "user";
 
 }

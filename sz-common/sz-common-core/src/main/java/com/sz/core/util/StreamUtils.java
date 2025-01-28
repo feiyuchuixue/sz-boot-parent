@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
  */
 public class StreamUtils {
 
+    private StreamUtils() {
+        throw new IllegalStateException("StreamUtils class Illegal");
+    }
+
     /**
      * 将Collection转化为map(value类型与collection的泛型不同)<br>
      * <B>{@code Collection<E> -----> Map<K,V>  }</B>

@@ -94,7 +94,7 @@ public class S3Configuration {
         if (ossProperties.getEndpoint().startsWith("https://") || ossProperties.getEndpoint().startsWith("http://")) {
             return URI.create(ossProperties.getEndpoint());
         }
-        String scheme = ossProperties.getIsHttps() ? "https" : "http";
+        String scheme = ossProperties.isHttps() ? "https" : "http";
         return URI.create(scheme + "://" + ossProperties.getEndpoint());
     }
 }

@@ -33,7 +33,7 @@ public class CommonServiceImpl implements CommonService {
         String templatePath = "classpath:/templates/" + templateName;
         Resource resource = resourceLoader.getResource(templatePath);
 
-        // 兼容临时目录文件。 TODO： ！！建议迁移至OSS
+        // 兼容临时目录文件。
         if (resource.exists()) {
             FileUtils.downloadTemplateFile(resourceLoader, response, templateName);
             return;

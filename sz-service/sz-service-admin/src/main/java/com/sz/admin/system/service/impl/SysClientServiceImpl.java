@@ -93,11 +93,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
 
     @Override
     public ClientVO getClientByClientId(Object id) {
-        SysClient sysClient = getById((Serializable) id);
-        CommonResponseEnum.INVALID_ID.assertNull(sysClient);
-        ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);
-        clientVO.setGrantTypeCdList(Arrays.asList(sysClient.getGrantTypeCd().split(",")));
-        return clientVO;
+        return detail(id);
     }
 
     private static QueryWrapper buildQueryWrapper(SysClientListDTO dto) {

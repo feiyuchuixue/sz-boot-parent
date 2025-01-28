@@ -11,23 +11,29 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Random;
 
 @Slf4j
 public class SlidePuzzleUtil {
 
-    private static final Integer bigWidth = 320;
+    private SlidePuzzleUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
-    private static final Integer bigHeight = 160;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    private static final Integer smallWidth = 50;
+    private static final Integer BIG_WIDTH = 320;
 
-    private static final Integer smallHeight = 50;
+    private static final Integer BIG_HEIGHT = 160;
 
-    private static final Integer smallCircle = 10;
+    private static final Integer SMALL_WIDTH = 50;
 
-    private static final Integer smallCircleR1 = 2;
+    private static final Integer SMALL_HEIGHT = 50;
+
+    private static final Integer SMALL_CIRCLE = 10;
+
+    private static final Integer SMALL_CIRCLE_R_1 = 2;
 
     public static SliderPuzzle createImage(InputStream input, HttpServletRequest request) {
         SliderPuzzle sliderPuzzle = new SliderPuzzle();
@@ -35,7 +41,7 @@ public class SlidePuzzleUtil {
             String requestId = Utils.generateSha256Id(Utils.generateCaptchaRequestId(request));
 
             BufferedImage originalImage = ImageIO.read(input);
-            BufferedImage bigImage = resizeImage(originalImage, bigWidth, bigHeight, true);
+            BufferedImage bigImage = resizeImage(originalImage, BIG_WIDTH, BIG_HEIGHT, true);
 
             String watermark = SysConfigUtils.getConfValue("sys.captcha.waterText"); // 水印文字
             String waterState = SysConfigUtils.getConfValue("sys.captcha.waterEnable"); // 是否启用水印
@@ -55,22 +61,22 @@ public class SlidePuzzleUtil {
             }
 
             String secretKey = AESUtil.getRandomString(16);
-            PointVO jigsawPoint = generateJigsawPoint(bigWidth, bigHeight, smallWidth, smallHeight, secretKey);
+            PointVO jigsawPoint = generateJigsawPoint(BIG_WIDTH, BIG_HEIGHT, SMALL_WIDTH, SMALL_HEIGHT, secretKey);
             int randomX = jigsawPoint.getX();
             int randomY = jigsawPoint.getY();
 
-            BufferedImage smallImage = new BufferedImage(smallWidth, smallHeight, BufferedImage.TYPE_4BYTE_ABGR);
+            BufferedImage smallImage = new BufferedImage(SMALL_WIDTH, SMALL_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
             int[][] slideTemplateData = getSlideTemplateData();
             cutByTemplate(bigImage, smallImage, slideTemplateData, randomX, randomY);
 
             sliderPuzzle.setRequestId(requestId);
             sliderPuzzle.setPosX(randomX);
             sliderPuzzle.setPosY(randomY);
-            sliderPuzzle.setBigWidth(bigWidth);
-            sliderPuzzle.setBigHeight(bigHeight);
+            sliderPuzzle.setBigWidth(BIG_WIDTH);
+            sliderPuzzle.setBigHeight(BIG_HEIGHT);
             sliderPuzzle.setBigImageBase64(getImageBASE64(bigImage));
-            sliderPuzzle.setSmallWidth(smallWidth);
-            sliderPuzzle.setSmallHeight(smallHeight);
+            sliderPuzzle.setSmallWidth(SMALL_WIDTH);
+            sliderPuzzle.setSmallHeight(SMALL_HEIGHT);
             sliderPuzzle.setSmallImageBase64(getImageBASE64(smallImage));
             sliderPuzzle.setSecretKey(jigsawPoint.getSecretKey());
             return sliderPuzzle;
@@ -81,7 +87,6 @@ public class SlidePuzzleUtil {
     }
 
     private static PointVO generateJigsawPoint(int originalWidth, int originalHeight, int jigsawWidth, int jigsawHeight, String secretKey) {
-        Random random = new Random();
         int widthDifference = originalWidth - jigsawWidth;
         int heightDifference = originalHeight - jigsawHeight;
         int x, y;
@@ -89,29 +94,32 @@ public class SlidePuzzleUtil {
         if (widthDifference <= 0) {
             x = 5;
         } else {
-            x = random.nextInt(widthDifference - 100) + 100 + random.nextInt(20) - 10; // Adding variability
+            x = RANDOM.nextInt(widthDifference - 100) + 100 + RANDOM.nextInt(20) - 10; // Adding variability
         }
 
         if (heightDifference <= 0) {
             y = 5;
         } else {
-            y = random.nextInt(heightDifference) + 5 + random.nextInt(20) - 10; // Adding variability
+            y = RANDOM.nextInt(heightDifference) + 5 + RANDOM.nextInt(20) - 10; // Adding variability
         }
 
         return new PointVO(x, y, secretKey);
     }
 
     private static int[][] getSlideTemplateData() {
-        int[][] data = new int[smallWidth][smallHeight];
-        int xBlank = smallWidth - smallCircle - smallCircleR1;
-        int yBlank = smallHeight - smallCircle - smallCircleR1;
-        int rxa = xBlank / 2;
-        int ryb = smallHeight - smallCircle;
-        double rPow = Math.pow(smallCircle, 2);
+        int[][] data = new int[SMALL_WIDTH][SMALL_HEIGHT];
 
-        for (int i = 0; i < smallWidth; i++) {
-            for (int j = 0; j < smallHeight; j++) {
-                double topR = Math.pow(i - rxa, 2) + Math.pow(j - 2, 2);
+        // 计算常量
+        double xBlank = (double) SMALL_WIDTH - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
+        double yBlank = (double) SMALL_HEIGHT - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
+        double rxa = xBlank / 2.0;
+        double ryb = (double) SMALL_HEIGHT - SMALL_CIRCLE;
+        double rPow = Math.pow(SMALL_CIRCLE, 2);
+
+        for (int i = 0; i < SMALL_WIDTH; i++) {
+            for (int j = 0; j < SMALL_HEIGHT; j++) {
+                // 显式类型转换
+                double topR = Math.pow(i - rxa, 2) + Math.pow(j - 2.0, 2);
                 double downR = Math.pow(i - rxa, 2) + Math.pow(j - ryb, 2);
                 double rightR = Math.pow(i - ryb, 2) + Math.pow(j - rxa, 2);
 
@@ -128,7 +136,7 @@ public class SlidePuzzleUtil {
     private static void cutByTemplate(BufferedImage bigImage, BufferedImage smallImage, int[][] slideTemplateData, int x, int y) {
         int[][] martrix = new int[3][3];
         int[] values = new int[9];
-        int yBlank = smallHeight - smallCircle - smallCircleR1;
+        int yBlank = SMALL_HEIGHT - SMALL_CIRCLE - SMALL_CIRCLE_R_1;
 
         Graphics2D g2dBig = bigImage.createGraphics();
         Graphics2D g2dSmall = smallImage.createGraphics();
@@ -140,10 +148,10 @@ public class SlidePuzzleUtil {
                 if (x + i >= bigImage.getWidth() || y + j >= bigImage.getHeight() || x + i < 0 || y + j < 0) {
                     continue; // Skip if out of bounds
                 }
-                int rgb_ori = bigImage.getRGB(x + i, y + j);
+                int rgbOri = bigImage.getRGB(x + i, y + j);
                 int rgb = slideTemplateData[i][j];
                 if (rgb == 1) {
-                    smallImage.setRGB(i, j, rgb_ori);
+                    smallImage.setRGB(i, j, rgbOri);
                     readPixel(bigImage, x + i, y + j, values);
                     fillMatrix(martrix, values);
                     bigImage.setRGB(x + i, y + j, avgMatrix(martrix));
@@ -154,7 +162,7 @@ public class SlidePuzzleUtil {
                         smallImage.setRGB(0, j, white.getRGB());
                     }
                 } else {
-                    smallImage.setRGB(i, j, rgb_ori & 0x00ffffff);
+                    smallImage.setRGB(i, j, rgbOri & 0x00ffffff);
                 }
             }
         }

@@ -13,14 +13,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "oss")
 public class OssProperties {
 
-    {
-        this.provider = OssProviderEnum.MINIO;
-        this.isHttps = true;
-        this.naming = FileNamingEnum.ORIGINAL;
-    }
-
     // 服务提供商
-    private OssProviderEnum provider;
+    private OssProviderEnum provider = OssProviderEnum.MINIO;
 
     // 访问站点
     private String endpoint;
@@ -38,9 +32,9 @@ public class OssProperties {
     private String domain;
 
     // 是否使用https
-    private Boolean isHttps;
+    private boolean isHttps = true; // 将Boolean 改为 boolean 后报错
 
     // 文件名称方式
-    private FileNamingEnum naming;
+    private FileNamingEnum naming = FileNamingEnum.ORIGINAL;
 
 }

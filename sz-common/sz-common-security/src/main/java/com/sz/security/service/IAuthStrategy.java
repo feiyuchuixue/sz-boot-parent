@@ -20,8 +20,8 @@ public interface IAuthStrategy {
     static LoginVO login(LoginInfo info, ClientVO client, String grantType) {
         // 授权类型和客户端id
         String beanName = grantType + BASE_NAME;
-        CommonResponseEnum.INVALID.message("无效的授权类型").assertFalse(SpringApplicationContextUtils.containsBean(beanName));
-        IAuthStrategy instance = SpringApplicationContextUtils.getBean(beanName);
+        CommonResponseEnum.INVALID.message("无效的授权类型").assertFalse(SpringApplicationContextUtils.getInstance().containsBean(beanName));
+        IAuthStrategy instance = SpringApplicationContextUtils.getInstance().getBean(beanName);
         return instance.login(info, client);
     }
 

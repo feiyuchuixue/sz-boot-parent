@@ -16,15 +16,11 @@ import lombok.*;
 @AllArgsConstructor
 public class DictTypeVO {
 
-    {
-        isDynamic = false;
-    }
-
     private String typeCode;
 
     private String typeName;
 
     @JsonProperty("isDynamic")
-    private boolean isDynamic;
+    private boolean isDynamic = false;
 
 }

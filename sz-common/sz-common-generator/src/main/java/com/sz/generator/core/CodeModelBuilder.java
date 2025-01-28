@@ -63,10 +63,6 @@ public class CodeModelBuilder {
                 hasUniqueValidField = true;
             }
         }
-        /*
-         * if (hasDateFormat) {
-         * importPackages.add("org.springframework.format.annotation.DateTimeFormat"); }
-         */
         model.put("importPackages", importPackages);
         model.put("hasUniqueValidField", hasUniqueValidField);
         model.put("hasDateFormat", hasDateFormat);

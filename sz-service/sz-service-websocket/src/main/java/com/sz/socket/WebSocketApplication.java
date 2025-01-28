@@ -19,7 +19,11 @@ public class WebSocketApplication {
 
     @PostConstruct
     public void init() {
-        version = appVersion;
+        setVersion(appVersion);
+    }
+
+    private static void setVersion(String appVersion) {
+        WebSocketApplication.version = appVersion;
     }
 
     public static void main(String[] args) {

@@ -24,21 +24,16 @@ public class ApiResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Schema(description = "自定义响应码", example = "0000")
-    public String code;
+    public String code = "0000";
 
     @Schema(description = "响应信息", example = "SUCCESS")
-    public String message;
+    public String message = "SUCCESS";
 
     @Schema(description = "响应数据")
     public T data;
 
     @Schema(description = "额外参数")
     private Object param = new Object();
-
-    {
-        code = "0000";
-        message = "SUCCESS";
-    }
 
     public ApiResult() {
     }

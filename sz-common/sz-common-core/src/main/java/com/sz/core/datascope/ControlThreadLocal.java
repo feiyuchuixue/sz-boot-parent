@@ -9,24 +9,26 @@ import com.sz.core.common.entity.ControlPermissions;
  */
 public class ControlThreadLocal {
 
-    protected static TransmittableThreadLocal<ControlPermissions> LOCAL = new TransmittableThreadLocal<>();
+    private ControlThreadLocal() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    protected static final TransmittableThreadLocal<ControlPermissions> LOCAL_CONTROLLER = new TransmittableThreadLocal<>();
 
     public static void set(ControlPermissions permission) {
-        LOCAL.set(permission);
+        LOCAL_CONTROLLER.set(permission);
     }
 
     public static ControlPermissions get() {
-        return LOCAL.get();
+        return LOCAL_CONTROLLER.get();
     }
 
     public static boolean hasLocal() {
-        return LOCAL.get() != null;
+        return LOCAL_CONTROLLER.get() != null;
     }
 
     public static void clearDataScope() {
-        if (LOCAL != null) {
-            LOCAL.remove();
-        }
+        LOCAL_CONTROLLER.remove();
     }
 
 }

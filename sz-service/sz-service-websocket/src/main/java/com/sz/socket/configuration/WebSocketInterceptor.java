@@ -81,5 +81,6 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
      */
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+        // 握手后 ...
     }
 }

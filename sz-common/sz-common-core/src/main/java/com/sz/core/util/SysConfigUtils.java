@@ -10,6 +10,10 @@ import com.sz.core.common.service.ConfService;
  */
 public class SysConfigUtils {
 
+    private SysConfigUtils() {
+        throw new IllegalStateException("SysConfigUtils class Illegal");
+    }
+
     /**
      * 根据指定的键获取配置信息的值。
      *
@@ -18,7 +22,7 @@ public class SysConfigUtils {
      * @return 配置项的值
      */
     public static String getConfValue(String key) {
-        ConfService confService = SpringApplicationContextUtils.getBean(ConfService.class);
+        ConfService confService = SpringApplicationContextUtils.getInstance().getBean(ConfService.class);
         return confService.getConfValue(key);
     }
 
@@ -30,7 +34,7 @@ public class SysConfigUtils {
      * @return 如果配置项存在，则返回 true；否则返回 false
      */
     public static boolean hasConf(String key) {
-        ConfService confService = SpringApplicationContextUtils.getBean(ConfService.class);
+        ConfService confService = SpringApplicationContextUtils.getInstance().getBean(ConfService.class);
         return confService.hasConfKey(key);
     }
 

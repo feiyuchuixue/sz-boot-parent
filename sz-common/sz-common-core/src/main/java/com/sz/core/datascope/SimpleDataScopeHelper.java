@@ -8,7 +8,11 @@ import com.alibaba.ttl.TransmittableThreadLocal;
  */
 public class SimpleDataScopeHelper {
 
-    protected static TransmittableThreadLocal<Class<?>> LOCAL_DATA_SCOPE = new TransmittableThreadLocal<>();
+    private SimpleDataScopeHelper() {
+        throw new IllegalStateException("SimpleDataScopeHelper class Illegal");
+    }
+
+    protected static final TransmittableThreadLocal<Class<?>> LOCAL_DATA_SCOPE = new TransmittableThreadLocal<>();
 
     public static void start(Class<?> clazz) {
         LOCAL_DATA_SCOPE.set(clazz);
@@ -23,9 +27,7 @@ public class SimpleDataScopeHelper {
     }
 
     public static void clearDataScope() {
-        if (LOCAL_DATA_SCOPE != null) {
-            LOCAL_DATA_SCOPE.remove();
-        }
+        LOCAL_DATA_SCOPE.remove();
     }
 
 }

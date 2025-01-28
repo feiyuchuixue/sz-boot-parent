@@ -12,15 +12,10 @@ import lombok.Data;
 @Data
 public class PageQuery {
 
-    {
-        page = 1;
-        limit = 10;
-    }
-
     @Schema(description = "页数", example = "1")
-    private Integer page;
+    private Integer page = 1;
 
     @Schema(description = "每页条数", example = "10")
-    private Integer limit;
+    private Integer limit = 10;
 
 }

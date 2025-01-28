@@ -14,6 +14,10 @@ import java.util.List;
  */
 public class TreeUtils {
 
+    private TreeUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * 构建树形结构。
      *
@@ -132,7 +136,7 @@ public class TreeUtils {
             // 处理异常
             return null;
         } catch (InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 

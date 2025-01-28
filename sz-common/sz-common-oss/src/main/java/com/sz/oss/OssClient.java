@@ -43,9 +43,11 @@ public class OssClient {
 
     private final S3Presigner s3Presigner;
 
-    private final Long DEFAULT_EXPIRE_TIME = 3600L;
+    private static final Long DEFAULT_EXPIRE_TIME = 3600L;
 
     private final S3AsyncClient s3AsyncClient;
+
+    private static final String FILE_SEPARATOR = "/";
 
     /**
      * 上传文件
@@ -119,7 +121,7 @@ public class OssClient {
             return UploadResult.builder().url(url).objectName(objectName).dirTag(getDirTag(objectName)).filename(getFileName(objectName))
                     .contextType(contextType).size(size).eTag(eTag).build();
         } catch (Exception e) {
-            throw new RuntimeException("上传文件失败，Message:[" + e.getMessage() + "]");
+            throw new IllegalArgumentException("上传文件失败，Message:[" + e.getMessage() + "]");
         }
     }
 
@@ -200,11 +202,11 @@ public class OssClient {
                     outputStream.write(response.asByteArray());
                     outputStream.flush();
                 } catch (Exception e) {
-                    throw new RuntimeException("写入输出流失败", e);
+                    throw new IllegalArgumentException("写入输出流失败", e);
                 }
             }).join(); // 同步等待完成
         } catch (Exception e) {
-            throw new RuntimeException("下载文件失败，Message:[" + e.getMessage() + "]", e);
+            throw new IllegalArgumentException("下载文件失败，Message:[" + e.getMessage() + "]", e);
         }
     }
 
@@ -233,18 +235,18 @@ public class OssClient {
                     os.write(responseBytes.asByteArray());
                     os.flush();
                 } catch (IOException e) {
-                    throw new RuntimeException("写入响应失败", e);
+                    throw new IllegalArgumentException("写入响应失败", e);
                 }
             }).join(); // 同步等待完成
         } catch (Exception e) {
-            throw new RuntimeException("下载文件失败，Message:[" + e.getMessage() + "]", e);
+            throw new IllegalArgumentException("下载文件失败，Message:[" + e.getMessage() + "]", e);
         }
     }
 
     private String getUrl() {
         String domain = properties.getDomain();
         String endpoint = properties.getEndpoint();
-        String scheme = properties.getIsHttps() ? "https" : "http";
+        String scheme = properties.isHttps() ? "https" : "http";
         // 非 MinIO 处理
         if (!properties.getProvider().equals(OssProviderEnum.MINIO)) {
             if (StringUtils.isNotEmpty(domain)) {
@@ -272,7 +274,7 @@ public class OssClient {
     private String generateFileName(String originalFilename) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
         String localTime = df.format(LocalDate.now());
-        String pathStr = "/" + localTime + "/";
+        String pathStr = FILE_SEPARATOR + localTime + FILE_SEPARATOR;
         String extension = org.springframework.util.StringUtils.getFilenameExtension(originalFilename);
         String fileName = UUID.randomUUID().toString();
         return pathStr + fileName + "." + extension;
@@ -288,7 +290,7 @@ public class OssClient {
     private String generateOriginalFileName(String originalFilename) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
         String localTime = df.format(LocalDate.now());
-        String pathStr = "/" + localTime + "/";
+        String pathStr = FILE_SEPARATOR + localTime + FILE_SEPARATOR;
         return pathStr + originalFilename;
     }
 
@@ -318,7 +320,7 @@ public class OssClient {
             return eTag;
         }
         // 替换掉前后的双引号
-        return eTag.replaceAll("^\"|\"$", "");
+        return eTag.replaceAll("(^\")|(\"$)", "");
     }
 
 }

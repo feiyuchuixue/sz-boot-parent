@@ -19,6 +19,6 @@ public class LoginVO {
     private Long expireIn;
 
     @Schema(description = "用户信息")
-    private Object UserInfo;
+    private Object userInfo;
 
 }

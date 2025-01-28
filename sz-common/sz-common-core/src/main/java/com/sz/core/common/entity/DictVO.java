@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DictVO {
 
-    {
-        isDynamic = false;
-    }
-
     @Schema(description = "字典id", example = "1000001")
     private String id;
 
@@ -49,5 +45,5 @@ public class DictVO {
 
     @Schema(description = "是否动态字典")
     @JsonProperty("isDynamic")
-    private boolean isDynamic;
+    private boolean isDynamic = false;
 }

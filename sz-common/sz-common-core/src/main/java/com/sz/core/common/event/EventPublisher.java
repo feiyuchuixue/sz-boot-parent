@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EventPublisher {
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public void publish(BaseEvent<?> event) {
-        eventPublisher.publishEvent(event);
+        applicationEventPublisher.publishEvent(event);
     }
 
 }

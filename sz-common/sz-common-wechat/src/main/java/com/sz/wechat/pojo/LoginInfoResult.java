@@ -1,5 +1,6 @@
 package com.sz.wechat.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -12,8 +13,10 @@ public class LoginInfoResult extends ErrorMessage {
 
     private String openid;
 
-    private String session_key;
+    @JsonProperty("session_key")
+    private String sessionKey;
 
-    private String unionid;
+    @JsonProperty("unionid")
+    private String unionId;
 
 }

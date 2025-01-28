@@ -21,12 +21,12 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * 接口防抖切面
- *
+ * <p>
  * DebounceAspect
- * 
+ *
  * @author sz
- * @since 2024/9/18 11:13
  * @version 1.0
+ * @since 2024/9/18 11:13
  */
 @Component
 @Aspect
@@ -54,9 +54,8 @@ public class DebounceAspect {
             return point.proceed(); // 直接执行，不做防抖处理
         }
         // 忽略GET请求
-        if (debounceProperties.isIgnoreGetMethod() && !isDebounceAnno) {
-            if ("GET".equalsIgnoreCase(httpMethod))
-                return point.proceed(); // 直接执行，不做防抖处理
+        if (debounceProperties.isIgnoreGetMethod() && !isDebounceAnno && "GET".equalsIgnoreCase(httpMethod)) {
+            return point.proceed(); // 直接执行，不做防抖处理
         }
         long lockTime = debounceProperties.getGlobalLockTime();
         if (isDebounceAnno) {

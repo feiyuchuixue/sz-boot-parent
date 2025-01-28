@@ -7,7 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class will be deprecated in future versions.
+ *
+ * ！！！ 后续此类警徽被移除，将不会做太多优化。 This class will be deprecated in future versions.
  *
  * 脱敏工具类
  * 
@@ -21,7 +22,7 @@ public class DesensitizationUtil {
      * 该正则表达式第三个()可能无法匹配以某些特殊符号开头和结尾的（如果像密码这种字段，前后如果有很多特殊字段，则无法匹配，建议密码直接加密，无需脱敏）
      */
     public static final Pattern REGEX_PATTERN = Pattern
-            .compile("\\s*(\"?\\w+\"?)(\\s*[:=]+[^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)\\W&&[^\\-@.]?\\s*");
+            .compile("\\s*(\"?\\w+\"?)\\s*[:=]\\s*([^\\u4e00-\\u9fa5@,.*{\\[\\w]*\\s*)([\\u4e00-\\u9fa5_\\-@.\\w]+)\\s*");
 
     /**
      * 匹配非数字
@@ -391,7 +392,9 @@ public class DesensitizationUtil {
     }
 
     public static boolean isEmail(String str) {
-        return str.matches("^[\\w-]+@[\\w-]+(\\.[\\w-]+)+$");
+        // 优化后的正则表达式
+        String emailRegex = "^[\\w-\\.]+@[\\w-]+\\.[\\w-]{2,4}$";
+        return str.matches(emailRegex);
     }
 
     public static boolean isIdentity(String str) {

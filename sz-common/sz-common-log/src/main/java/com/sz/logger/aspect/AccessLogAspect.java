@@ -116,7 +116,7 @@ public class AccessLogAspect {
                     .filter(arg -> !(arg instanceof HttpServletResponse || arg instanceof HttpServletRequest || arg instanceof MultipartFile)).toList();
             return filteredArgs.toArray();
         }
-        return null;
+        return new Object[0];
     }
 
     private boolean isNotWhitelist(String requestURI, String contextPath, CopyOnWriteArraySet<String> whitelist) {

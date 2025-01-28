@@ -19,12 +19,6 @@ import java.util.List;
 @Schema(description = "SysDept返回vo")
 public class SysDeptVO implements Treeable<SysDeptVO> {
 
-    {
-        leaders = new ArrayList<>();
-        deptIds = new ArrayList<>();
-        userIds = new ArrayList<>();
-    }
-
     @Schema(description = "ID")
     private Long id;
 
@@ -50,7 +44,7 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     private List<SysDeptVO> children;
 
     @Schema(description = "负责人")
-    private List<Long> leaders;
+    private List<Long> leaders = new ArrayList<>();
 
     @Schema(description = "负责人信息")
     private String leaderInfo;
@@ -62,9 +56,9 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     private Long scopeId;
 
     @Schema(description = "数据权限-自定义: 部门项1")
-    private List<Long> deptIds;
+    private List<Long> deptIds = new ArrayList<>();
 
     @Schema(description = "数据权限-自定义: 用户项")
-    private List<Long> userIds;
+    private List<Long> userIds = new ArrayList<>();
 
 }

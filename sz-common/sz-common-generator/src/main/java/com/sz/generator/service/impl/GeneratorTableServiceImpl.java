@@ -88,7 +88,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
         String pathApi = "";
         String pathWeb = "";
-        if (SpringApplicationContextUtils.isLocalEnv()) {
+        if (SpringApplicationContextUtils.getInstance().isLocalEnv()) {
             String moduleName = generatorProperties.getModuleName();
             String serviceName = generatorProperties.getServiceName();
             String projectRootPath = System.getProperty("user.dir");

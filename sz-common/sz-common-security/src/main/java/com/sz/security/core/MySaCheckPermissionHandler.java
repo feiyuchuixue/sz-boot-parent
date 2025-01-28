@@ -25,10 +25,10 @@ public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<
 
     @Override
     public void checkMethod(SaCheckPermission at, Method method) {
-        _checkMethod(at.type(), at.value(), at.mode(), at.orRole());
+        doCheck(at.type(), at.value(), at.mode(), at.orRole());
     }
 
-    public static void _checkMethod(String type, String[] value, SaMode mode, String[] orRole) {
+    public static void doCheck(String type, String[] value, SaMode mode, String[] orRole) {
         StpLogic stpLogic = SaManager.getStpLogic(type, false);
 
         try {

@@ -19,4 +19,7 @@ public class CheckPuzzle {
     @Schema(description = "移动变量（x轴位置）加密串")
     private String moveEncrypted;
 
+    @Schema(description = "iv向量")
+    private String iv;
+
 }

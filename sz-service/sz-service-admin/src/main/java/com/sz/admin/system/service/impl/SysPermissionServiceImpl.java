@@ -49,6 +49,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Override
     public Set<String> getMenuPermissions(SysUser sysUser) {
         Set<String> permissions = new HashSet<>();
+        CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         if (isSuperAdmin(sysUser)) { // 获取超管权限
             permissions.addAll(sysMenuService.findAllPermissions());
         } else { // 获取指定用户的权限
@@ -83,6 +84,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     public List<Long> getDepts(SysUser sysUser) {
+        CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         if (isSuperAdmin(sysUser)) {
             // 查询全部的部门ID
             return QueryChain.of(SysDept.class).select(SYS_DEPT.ID).listAs(Long.class);
@@ -103,7 +105,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     public Map<String, String> buildMenuRuleMap(SysUser sysUser, Set<String> findMenuIds) {
         Map<String, String> ruleMap = new HashMap<>();
-
+        CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         // 如果用户是超级管理员，返回空规则映射
         if (isSuperAdmin(sysUser)) {
             return ruleMap;

@@ -19,11 +19,6 @@ import java.util.List;
 @Schema(description = "SysDataScope返回vo")
 public class SysDataScopeVO {
 
-    {
-        deptOptions = new ArrayList<>();
-        userOptions = new ArrayList<>();
-    }
-
     @Schema(description = "ID")
     private Long id;
 
@@ -39,10 +34,10 @@ public class SysDataScopeVO {
 
     @Schema(description = "关联部门")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<Long> deptOptions;
+    private List<Long> deptOptions = new ArrayList<>();
 
     @Schema(description = "关联用户")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<Long> userOptions;
+    private List<Long> userOptions = new ArrayList<>();
 
 }

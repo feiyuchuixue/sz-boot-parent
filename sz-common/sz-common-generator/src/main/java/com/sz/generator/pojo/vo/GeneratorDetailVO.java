@@ -35,7 +35,7 @@ public class GeneratorDetailVO {
         private String tableComment;
 
         @Schema(description = "实体类名称")
-        private String ClassName;
+        private String className;
 
         @Schema(description = "camel实体类名称")
         private String camelClassName;

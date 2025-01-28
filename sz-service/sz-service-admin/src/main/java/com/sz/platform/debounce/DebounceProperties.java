@@ -16,14 +16,9 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "sz.debounce")
 public class DebounceProperties {
 
-    {
-        enabled = true;
-        globalLockTime = 1000;
-    }
+    private boolean enabled = true;
 
-    private boolean enabled;
-
-    private long globalLockTime;
+    private long globalLockTime = 1000;
 
     private boolean ignoreGetMethod;
 

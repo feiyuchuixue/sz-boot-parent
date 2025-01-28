@@ -13,9 +13,5 @@ import lombok.Data;
 public class SysMenuListDTO {
 
     @Schema(description = "是否查询按钮")
-    private boolean isShowButton;
-
-    {
-        isShowButton = true;
-    }
+    private boolean isShowButton = true;
 }

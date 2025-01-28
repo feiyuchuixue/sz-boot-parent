@@ -16,16 +16,8 @@ import java.util.List;
 @Data
 public class SysDeptLeaderVO {
 
-    {
-        leaderInfoVOS = new ArrayList<>();
-    }
-
-    /*
-     * @Schema(description = "选中的负责人id数组") private List<Integer> selectIds;
-     */
-
     @Schema(description = "负责人信息数组")
-    private List<LeaderInfoVO> leaderInfoVOS;
+    private List<LeaderInfoVO> leaderInfoVOS = new ArrayList<>();
 
     @Data
     public static class LeaderInfoVO {

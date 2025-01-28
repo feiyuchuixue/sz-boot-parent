@@ -33,7 +33,7 @@ public abstract class AbstractCodeGenerationTemplate {
 
     private final Map<String, Object> model;
 
-    public AbstractCodeGenerationTemplate(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
+    protected AbstractCodeGenerationTemplate(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
         this.configurer = configurer;
         this.rootPath = rootPath;
         this.detailVO = detailVO;
@@ -142,14 +142,14 @@ public abstract class AbstractCodeGenerationTemplate {
                 // File already exists, handle accordingly (e.g., change filename, throw
                 // exception)
                 String info = "File already exists: " + outputPath;
-                System.out.println(info);
+                log.error(info);
                 return info; // Do nothing or throw an exception based on your requirement
             }
 
             // Write the template content to the file
             try (Writer writer = new FileWriter(outputPath)) {
                 template.process(model, writer);
-                System.out.println("Output Path: " + outputPath);
+                log.info("Output Path: {}", outputPath);
                 return "Output Path: " + outputPath;
             }
 

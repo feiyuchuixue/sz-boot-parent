@@ -22,6 +22,10 @@ import java.util.Map;
 @Slf4j
 public class HttpReqResUtil {
 
+    private HttpReqResUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * 获取客户端的IP地址。
      * <p>
@@ -33,37 +37,51 @@ public class HttpReqResUtil {
      * @return 客户端的IP地址
      */
     public static String getIpAddress(HttpServletRequest request) {
-        String Xip = request.getHeader("X-Real-IP");
-        String XFor = request.getHeader("X-Forwarded-For");
-        if (StringUtils.isNotEmpty(XFor) && !"unKnown".equalsIgnoreCase(XFor)) {
+        String ip = getHeaderIp(request, "X-Forwarded-For");
+        if (StringUtils.isNotEmpty(ip)) {
             // 多次反向代理后会有多个ip值，第一个ip才是真实ip
-            int index = XFor.indexOf(",");
+            int index = ip.indexOf(",");
             if (index != -1) {
-                return XFor.substring(0, index);
+                return ip.substring(0, index);
             } else {
-                return XFor;
+                return ip;
             }
         }
-        XFor = Xip;
-        if (StringUtils.isNotEmpty(XFor) && !"unKnown".equalsIgnoreCase(XFor)) {
-            return XFor;
+
+        ip = getHeaderIp(request, "X-Real-IP");
+        if (StringUtils.isNotEmpty(ip)) {
+            return ip;
         }
-        if (StringUtils.isBlank(XFor) || "unknown".equalsIgnoreCase(XFor)) {
-            XFor = request.getHeader("Proxy-Client-IP");
+
+        ip = getHeaderIp(request, "Proxy-Client-IP");
+        if (StringUtils.isNotEmpty(ip)) {
+            return ip;
         }
-        if (StringUtils.isBlank(XFor) || "unknown".equalsIgnoreCase(XFor)) {
-            XFor = request.getHeader("WL-Proxy-Client-IP");
+
+        ip = getHeaderIp(request, "WL-Proxy-Client-IP");
+        if (StringUtils.isNotEmpty(ip)) {
+            return ip;
         }
-        if (StringUtils.isBlank(XFor) || "unknown".equalsIgnoreCase(XFor)) {
-            XFor = request.getHeader("HTTP_CLIENT_IP");
+
+        ip = getHeaderIp(request, "HTTP_CLIENT_IP");
+        if (StringUtils.isNotEmpty(ip)) {
+            return ip;
         }
-        if (StringUtils.isBlank(XFor) || "unknown".equalsIgnoreCase(XFor)) {
-            XFor = request.getHeader("HTTP_X_FORWARDED_FOR");
+
+        ip = getHeaderIp(request, "HTTP_X_FORWARDED_FOR");
+        if (StringUtils.isNotEmpty(ip)) {
+            return ip;
         }
-        if (StringUtils.isBlank(XFor) || "unknown".equalsIgnoreCase(XFor)) {
-            XFor = request.getRemoteAddr();
+
+        return request.getRemoteAddr();
+    }
+
+    private static String getHeaderIp(HttpServletRequest request, String header) {
+        String ip = request.getHeader(header);
+        if (StringUtils.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
         }
-        return XFor;
+        return null;
     }
 
     /**
@@ -108,37 +126,19 @@ public class HttpReqResUtil {
      */
     public static String getBody(ServletRequest request) {
         StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-        InputStream inputStream = null;
-        try {
-            inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                char[] charBuffer = new char[128];
-                int bytesRead;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    stringBuilder.append(charBuffer, 0, bytesRead);
-                }
+
+        try (InputStream inputStream = request.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+
+            char[] charBuffer = new char[128];
+            int bytesRead;
+            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                stringBuilder.append(charBuffer, 0, bytesRead);
             }
         } catch (IOException ex) {
             log.error("Error reading the request body...", ex);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    log.error("Error closing inputStream...", e);
-                }
-            }
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    log.error("Error closing bufferedReader...", e);
-                }
-            }
         }
-        return stringBuilder.toString().replaceAll(" ", "").replaceAll("\\r\\n", "");
+
+        return stringBuilder.toString().replace(" ", "").replace("\\r\\n", "");
     }
 
     /**
@@ -153,14 +153,11 @@ public class HttpReqResUtil {
      */
     public static Map<String, Object> getParameter(ServletRequest request) {
         Map<String, Object> paramMap = new HashMap<>();
-        Enumeration<String> a = request.getParameterNames();
-        String param, val;
-        while (a.hasMoreElements()) {
-            // 参数名
-            param = a.nextElement();
-            // 值
-            val = request.getParameter(param);
-            paramMap.put(param, val);
+        Enumeration<String> parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
+            String paramValue = request.getParameter(paramName);
+            paramMap.put(paramName, paramValue);
         }
         return paramMap;
     }

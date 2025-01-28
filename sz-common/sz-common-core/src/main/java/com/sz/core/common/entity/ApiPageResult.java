@@ -23,11 +23,6 @@ public class ApiPageResult<T> extends ApiResult<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    {
-        code = "0000";
-        message = "SUCCESS";
-    }
-
     public static <T> ApiResult<PageResult<T>> success(List<T> data) {
         ApiResult<PageResult<T>> apiResult = new ApiPageResult<>();
         apiResult.data = (data != null) ? PageUtils.getPageResult(data) : PageUtils.getPageResult(new ArrayList<>());

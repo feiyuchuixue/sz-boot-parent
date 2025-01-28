@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * excel下拉项
  *
@@ -50,53 +52,76 @@ public class ExcelDownHandler implements SheetWriteHandler {
 
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
-        Sheet sheet = writeSheetHolder.getSheet();
-        DataValidationHelper helper = sheet.getDataValidationHelper();
-        Workbook workbook = writeWorkbookHolder.getWorkbook();
-        FieldCache fieldCache = ClassUtils.declaredFields(writeWorkbookHolder.getClazz(), writeWorkbookHolder);
+        final Sheet sheet = writeSheetHolder.getSheet();
+        final DataValidationHelper helper = sheet.getDataValidationHelper();
+        final Workbook workbook = writeWorkbookHolder.getWorkbook();
+        final FieldCache fieldCache = ClassUtils.declaredFields(writeWorkbookHolder.getClazz(), writeWorkbookHolder);
+
         for (Map.Entry<Integer, FieldWrapper> entry : fieldCache.getSortedFieldMap().entrySet()) {
-            Integer index = entry.getKey();
-            FieldWrapper wrapper = entry.getValue();
-            Field field = wrapper.getField();
-            // 循环实体中的每个属性
-            // 可选的下拉值
-            List<String> options = new ArrayList<>();
-            // 下拉操作优先级：动态下拉sourceClass > dictType > readCoverExp
+            final Integer index = entry.getKey();
+            final FieldWrapper wrapper = entry.getValue();
+            final Field field = wrapper.getField();
+
             if (field.isAnnotationPresent(DictFormat.class)) {
-                DictFormat dictFormat = field.getDeclaredAnnotation(DictFormat.class);
-                if (dictFormat.isSelected()) { // 如果标识了某个字段作为select下拉，那么做下拉处理
-                    String dictType = dictFormat.dictType();
-                    String converterExp = dictFormat.readConverterExp();
-                    String separator = dictFormat.separator();
-                    Class<? extends ExcelDynamicSelect>[] classes = dictFormat.sourceClass();
-                    if (classes.length > 0) { // 根据
-                        try {
-                            ExcelDynamicSelect excelDynamicSelect = classes[0].getDeclaredConstructor().newInstance();
-                            List<String> dynamicSelectSource = excelDynamicSelect.getSource();
-                            if (dynamicSelectSource != null && !dynamicSelectSource.isEmpty()) {
-                                options = dynamicSelectSource;
-                            }
-                        } catch (InstantiationException | IllegalAccessException e) {
-                            log.error("解析动态下拉框数据异常", e);
-                        } catch (InvocationTargetException | NoSuchMethodException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (StringUtils.isNotBlank(dictType)) { // 根据dictType渲染下拉
-                        DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
-                        Map<String, String> allDictByDictType = dictService.getAllDictByType(dictType);
-                        if (allDictByDictType != null && !allDictByDictType.isEmpty()) {
-                            options = new ArrayList<>(allDictByDictType.keySet());
-                        }
-                    } else if (StringUtils.isNotBlank(converterExp)) { // 根据converterExp渲染下拉
-                        options = ExcelUtils.listByExp(converterExp, separator);
-                    }
-                    if (!options.isEmpty()) {
-                        dropDownWithSheet(helper, workbook, sheet, index, options);
-                    }
+                final DictFormat dictFormat = field.getDeclaredAnnotation(DictFormat.class);
+                if (dictFormat.isSelected()) {
+                    processDictFormat(helper, workbook, sheet, index, dictFormat);
                 }
             }
         }
+
         SheetWriteHandler.super.afterSheetCreate(writeWorkbookHolder, writeSheetHolder);
+    }
+
+    private void processDictFormat(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer index, DictFormat dictFormat) {
+        try {
+            final List<String> options = getOptions(dictFormat);
+            if (!options.isEmpty()) {
+                dropDownWithSheet(helper, workbook, sheet, index, options);
+            }
+        } catch (Exception e) {
+            log.error("处理 DictFormat 失败", e);
+        }
+    }
+
+    private List<String> getOptions(DictFormat dictFormat)
+            throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        List<String> options = new ArrayList<>();
+        final String dictType = dictFormat.dictType();
+        final String converterExp = dictFormat.readConverterExp();
+        final String separator = dictFormat.separator();
+        final Class<? extends ExcelDynamicSelect>[] classes = dictFormat.sourceClass();
+
+        if (classes.length > 0) {
+            options = getDynamicSelectOptions(classes);
+        } else if (isNotBlank(dictType)) {
+            options = getDictTypeOptions(dictType);
+        } else if (isNotBlank(converterExp)) {
+            options = ExcelUtils.listByExp(converterExp, separator);
+        }
+
+        return options;
+    }
+
+    private List<String> getDynamicSelectOptions(Class<? extends ExcelDynamicSelect>[] classes)
+            throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        List<String> options = new ArrayList<>();
+        final ExcelDynamicSelect excelDynamicSelect = classes[0].getDeclaredConstructor().newInstance();
+        final List<String> dynamicSelectSource = excelDynamicSelect.getSource();
+        if (dynamicSelectSource != null && !dynamicSelectSource.isEmpty()) {
+            options.addAll(dynamicSelectSource);
+        }
+        return options;
+    }
+
+    private List<String> getDictTypeOptions(String dictType) {
+        List<String> options = new ArrayList<>();
+        final DictService dictService = SpringApplicationContextUtils.getInstance().getBean(DictService.class);
+        final Map<String, String> allDictByDictType = dictService.getAllDictByType(dictType);
+        if (allDictByDictType != null && !allDictByDictType.isEmpty()) {
+            options.addAll(allDictByDictType.keySet());
+        }
+        return options;
     }
 
     private void dropDownWithSheet(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer celIndex, List<String> value) {

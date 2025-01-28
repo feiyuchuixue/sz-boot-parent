@@ -26,7 +26,7 @@ public class DefaultColumnWidthStyleStrategy extends AbstractColumnWidthStyleStr
         if (!needSetWidth) {
             return;
         }
-        Map<Integer, Integer> maxColumnWidthMap = cache.computeIfAbsent(writeSheetHolder.getSheetNo(), key -> new HashMap<>(16));
+        Map<Integer, Integer> maxColumnWidthMap = cache.computeIfAbsent(writeSheetHolder.getSheetNo(), key -> new HashMap<>(16, 0.75f));
         Integer columnWidth = getColumnWidth(cellDataList, cell, isHead);
         if (columnWidth < 0) {
             return;

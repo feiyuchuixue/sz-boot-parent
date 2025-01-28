@@ -11,6 +11,10 @@ package com.sz.redis;
  */
 public class CommonKeyConstants {
 
+    private CommonKeyConstants() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * 字典信息
      */

@@ -18,11 +18,6 @@ import java.util.List;
 @Schema(description = "SysDataRole添加DTO")
 public class SysDataRoleCreateDTO {
 
-    {
-        selectMenuIds = new ArrayList<>();
-        selectDeptIds = new ArrayList<>();
-    }
-
     @Schema(description = "角色名称")
     private String roleName;
 
@@ -30,10 +25,10 @@ public class SysDataRoleCreateDTO {
     private String dataScopeCd;
 
     @Schema(description = "选中的菜单id数组")
-    private List<String> selectMenuIds;
+    private List<String> selectMenuIds = new ArrayList<>();
 
     @Schema(description = "选中的部门id数组")
-    private List<Long> selectDeptIds;
+    private List<Long> selectDeptIds = new ArrayList<>();
 
     @Schema(description = "（自定义）选中的用户id数组")
     private List<Long> userOptions;

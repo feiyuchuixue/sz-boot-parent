@@ -38,7 +38,7 @@ public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> i
         String accessToken = wechatService.getAccessToken();
         LoginInfoResult loginInfoResult = wechatService.miniLogin(dto.getCode(), accessToken);
         log.info(" 小程序登录返回信息：{}", JsonUtils.toJsonString(loginInfoResult));
-        // todo 结合实际业务进行处理
+        // [do something ...] 结合实际业务进行处理
         return null;
     }
 
@@ -47,14 +47,14 @@ public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> i
         QueryWrapper wrapper = QueryWrapper.create().where(MINI_USER.OPENID.eq(openId));
         MiniUser miniUser = getOne(wrapper);
         if (miniUser == null) {
-            // todo 创建新的微信用户信息
+            // [do something ...] 创建新的微信用户信息
         } else {
             // 绑定了sys_user账户
             if (Utils.isNotNull(miniUser.getSysUserId())) {
-                // todo
+                // [do something ...]
             } else {
                 // 未绑定sys_user账户
-                // todo
+                // [do something ...]
             }
         }
 

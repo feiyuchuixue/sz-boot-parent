@@ -1,6 +1,6 @@
 package com.sz.excel.utils;
 
-import cn.idev.excel.FastExcel;
+import cn.idev.excel.FastExcelFactory;
 import cn.idev.excel.write.builder.ExcelWriterSheetBuilder;
 import cn.idev.excel.write.metadata.style.WriteCellStyle;
 import com.sz.core.common.entity.DictVO;
@@ -22,15 +22,19 @@ import java.util.Map;
 
 /**
  * Excel工具类
- * 
+ *
  * @author sz
  * @since 2023/12/26 15:16
  */
 public class ExcelUtils {
 
+    private ExcelUtils() {
+        throw new IllegalStateException("ExcelUtils class Illegal");
+    }
+
     /**
      * 异步导入 Excel 数据并同步返回结果。
-     *
+     * <p>
      * 该方法从输入流中读取 Excel 文件，使用指定的类进行解析，并在解析过程中提供自定义字典转换。 可选择验证 Excel
      * 文件的表头格式。解析完成后，返回包含解析结果的对象。
      *
@@ -48,17 +52,17 @@ public class ExcelUtils {
     public static <T> ExcelResult<T> importExcel(InputStream is, Class<T> clazz, boolean validateHeader) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        ExcelListenerFactory listenerFactory = SpringApplicationContextUtils.getBean(ExcelListenerFactory.class);
+        ExcelListenerFactory listenerFactory = SpringApplicationContextUtils.getInstance().getBean(ExcelListenerFactory.class);
         DefaultExcelListener<T> listener = listenerFactory.createListener(validateHeader, clazz);
-        FastExcel.read(is, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
-                .registerConverter(new CustomLongStringConvert(dictmap)).sheet().doRead();
+        FastExcelFactory.read(is, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap))
+                .registerConverter(new CustomIntegerStringConvert(dictmap)).registerConverter(new CustomLongStringConvert(dictmap)).sheet().doRead();
         return listener.getExcelResult();
     }
 
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        ExcelWriterSheetBuilder builder = FastExcel.write(os, clazz).autoCloseStream(false)
+        ExcelWriterSheetBuilder builder = FastExcelFactory.write(os, clazz).autoCloseStream(false)
                 // 列宽自动适配
                 .registerWriteHandler(new DefaultColumnWidthStyleStrategy())
                 // 表格样式
@@ -74,7 +78,7 @@ public class ExcelUtils {
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os, boolean isMerge) {
         // 在这里获取字典传递给cover，减轻redis压力
         Map<String, List<DictVO>> dictmap = getDictList();
-        ExcelWriterSheetBuilder builder = FastExcel.write(os, clazz).autoCloseStream(false)
+        ExcelWriterSheetBuilder builder = FastExcelFactory.write(os, clazz).autoCloseStream(false)
                 // 列宽自动适配
                 .registerWriteHandler(new DefaultColumnWidthStyleStrategy())
                 // 表格样式
@@ -137,7 +141,7 @@ public class ExcelUtils {
 
     /**
      * 将表达式转换为列表。
-     *
+     * <p>
      * 该方法根据指定的分隔符，将字符串表达式转换为字符串列表。
      *
      * @param converterExp
@@ -158,7 +162,7 @@ public class ExcelUtils {
     }
 
     private static Map<String, List<DictVO>> getDictList() {
-        DictService dictService = SpringApplicationContextUtils.getBean(DictService.class);
+        DictService dictService = SpringApplicationContextUtils.getInstance().getBean(DictService.class);
         return dictService.getAllDict();
     }
 

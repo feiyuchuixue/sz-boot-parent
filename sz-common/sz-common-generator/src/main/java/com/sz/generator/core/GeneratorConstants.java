@@ -9,11 +9,15 @@ import java.io.File;
  */
 public class GeneratorConstants {
 
-    public static String PROJECT_JAVA_PREFIX = "src" + File.separator + "main" + File.separator + "java";
+    private GeneratorConstants() {
+        throw new IllegalStateException("Utility class");
+    }
 
-    public static String PROJECT_XML_PREFIX = "src" + File.separator + "main" + File.separator + "resources";
+    public static final String PROJECT_JAVA_PREFIX = "src" + File.separator + "main" + File.separator + "java";
 
-    public static String PROJECT_WEB_PREFIX = "src";
+    public static final String PROJECT_XML_PREFIX = "src" + File.separator + "main" + File.separator + "resources";
+
+    public static final String PROJECT_WEB_PREFIX = "src";
 
     /**
      * 单表（增删改查）
@@ -21,76 +25,35 @@ public class GeneratorConstants {
     public static final String TPL_CRUD = "crud";
 
     /**
-     * 树编码字段
-     */
-    public static final String TREE_CODE = "treeCode";
-
-    /**
-     * 树父编码字段
-     */
-    public static final String TREE_PARENT_CODE = "treeParentCode";
-
-    /**
-     * 树名称字段
-     */
-    public static final String TREE_NAME = "treeName";
-
-    /**
-     * 上级菜单ID字段
-     */
-    public static final String PARENT_MENU_ID = "parentMenuId";
-
-    /**
-     * 上级菜单名称字段
-     */
-    public static final String PARENT_MENU_NAME = "parentMenuName";
-
-    /**
-     * 数据库数字类型
-     */
-    public static final String[] COLUMNTYPE_NUMBER = {"tinyint", "smallint", "mediumint", "int", "number", "integer", "bit", "bigint", "float", "double",
-            "decimal"};
-
-    /**
      * 不需要插入的字段
      */
-    public static final String[] COLUMNNAME_NOT_INSERT = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_INSERTABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要编辑字段
      */
-    public static final String[] COLUMNNAME_NOT_EDIT = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_EDITABLE_COLUMNS = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要显示的列表字段
      */
-    public static final String[] COLUMNNAME_NOT_LIST = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_DISPLAYABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
 
     /**
      * 页面不需要查询字段
      */
-    public static final String[] COLUMNNAME_NOT_QUERY = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark", "delete_id",
+    public static final String[] NON_QUERYABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark", "delete_id",
             "delete_time"};
 
     /**
      * 根据insert事件自动填充的字段
      */
-    public static final String[] COLUMNNAME_AUTOFILL_INSERT = {"create_id", "create_time"};
+    public static final String[] AUTO_FILL_ON_INSERT_COLUMNS = {"create_id", "create_time"};
 
     /**
      * 根据update事件自动填充的字段
      */
-    public static final String[] COLUMNNAME_AUTOFILL_UPDATE = {"update_id", "update_time"};
-
-    /**
-     * Entity基类字段
-     */
-    public static final String[] BASE_ENTITY = {"createId", "createTime", "updateId", "updateTime", "remark"};
-
-    /**
-     * Tree基类字段
-     */
-    public static final String[] TREE_ENTITY = {"parentName", "parentId", "orderNum", "ancestors", "children"};
+    public static final String[] AUTO_FILL_ON_UPDATE_COLUMNS = {"update_id", "update_time"};
 
     /**
      * 文本框
@@ -144,6 +107,16 @@ public class GeneratorConstants {
     public static final String HTML_EDITOR = "editor";
 
     /**
+     * 日期范围控件
+     */
+    public static final String HTML_DATE_PICKER = "date-picker";
+
+    /**
+     * 时间范围控件
+     */
+    public static final String HTML_TIME_PICKER = "time-picker";
+
+    /**
      * 字符串类型
      */
     public static final String TYPE_STRING = "String";
@@ -176,7 +149,7 @@ public class GeneratorConstants {
     /**
      * 高精度计算类型
      */
-    public static final String TYPE_BIGDECIMAL = "BigDecimal";
+    public static final String TYPE_BIG_DECIMAL = "BigDecimal";
 
     /**
      * 时间类型
@@ -186,12 +159,12 @@ public class GeneratorConstants {
     /**
      * 时间类型
      */
-    public static final String TYPE_LOCALDATETIME = "LocalDateTime";
+    public static final String TYPE_LOCAL_DATETIME = "LocalDateTime";
 
     /**
      * 时间类型
      */
-    public static final String TYPE_LOCALDATE = "LocalDate";
+    public static final String TYPE_LOCAL_DATE = "LocalDate";
 
     /**
      * 时间类型

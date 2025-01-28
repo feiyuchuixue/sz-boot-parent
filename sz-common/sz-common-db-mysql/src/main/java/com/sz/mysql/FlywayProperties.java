@@ -19,27 +19,18 @@ public class FlywayProperties {
     @Getter
     public static class FlywayConfig {
 
-        {
-            enabled = true;
-            locations = "classpath:db/migration";
-            baselineOnMigrate = true;
-            table = "flyway_schema_history";
-            validateOnMigrate = true;
-            baselineVersion = "1";
-        }
-
         // Getters and Setters
-        private boolean enabled;
+        private boolean enabled = true;
 
-        private String locations;
+        private String locations = "classpath:db/migration";
 
-        private boolean baselineOnMigrate;
+        private boolean baselineOnMigrate = true;
 
-        private String table;
+        private String table = "flyway_schema_history";
 
-        private boolean validateOnMigrate;
+        private boolean validateOnMigrate = true;
 
-        private String baselineVersion;
+        private String baselineVersion = "1";
 
     }
 }

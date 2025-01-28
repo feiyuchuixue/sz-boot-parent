@@ -10,7 +10,6 @@ import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -73,8 +72,8 @@ public class TeacherStatisticsController {
         return ApiResult.success(teacherStatisticsService.detail(id));
     }
 
-    @Operation(summary = "导入")
-    @Parameters({@Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),})
+    @Operation(summary = "导入", parameters = {
+            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true)})
     @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/import")
     public void importExcel(@ModelAttribute ImportExcelDTO dto) {

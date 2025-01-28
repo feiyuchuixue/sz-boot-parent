@@ -23,7 +23,7 @@ public class SaExceptionHandler {
             message = "未能读取到有效 token";
         } else if (e.getType().equals(NotLoginException.INVALID_TOKEN) || e.getType().equals(NotLoginException.TOKEN_FREEZE)) {
             message = "您的登录信息已过期，请重新登录以继续访问。";
-            // TODO: websocket close
+            // [ do something ...] websocket close
             // sendWsClose();
         } else if (e.getType().equals(NotLoginException.TOKEN_TIMEOUT)) {
             message = "token 已过期";

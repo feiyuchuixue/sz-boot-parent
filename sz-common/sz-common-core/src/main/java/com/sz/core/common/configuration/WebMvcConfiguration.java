@@ -1,9 +1,7 @@
 package com.sz.core.common.configuration;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.NonNull;
@@ -19,10 +17,13 @@ import java.util.List;
  * @since 2022/8/29
  */
 @Configuration
-public class WebMvcConfiguration extends WebMvcConfigurationSupport implements WebMvcRegistrations {
+public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
-    @Autowired
-    private ObjectProvider<HttpMessageConverters> messageConverters;
+    private final ObjectProvider<HttpMessageConverters> messageConverters;
+
+    public WebMvcConfiguration(ObjectProvider<HttpMessageConverters> messageConverters) {
+        this.messageConverters = messageConverters;
+    }
 
     /**
      * 两种解决方案: - 一、 使用 WebMvcConfigurer 而非WebMvcConfigurationSupport - 二、 使用此方法
@@ -32,15 +33,13 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport implements W
      * @param converters
      *            消息转换器
      */
-
     @Override
     protected void configureMessageConverters(@NonNull List<HttpMessageConverter<?>> converters) {
-        this.messageConverters.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
+        this.messageConverters.ifAvailable(customConverters -> converters.addAll(customConverters.getConverters()));
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/META-INF/resources/");
     }
-
 }

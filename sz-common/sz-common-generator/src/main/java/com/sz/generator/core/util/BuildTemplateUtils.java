@@ -17,6 +17,10 @@ import java.util.*;
  */
 public class BuildTemplateUtils {
 
+    private BuildTemplateUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * 使用 Java 模板生成内容。
      *

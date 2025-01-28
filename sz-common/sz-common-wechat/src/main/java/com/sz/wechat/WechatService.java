@@ -28,7 +28,7 @@ public class WechatService {
 
     private final WechatProperties wechatProperties;
 
-    private final static String WECHAT_MINI_TOKEN = "wechat:mini:token";
+    private static final String WECHAT_MINI_TOKEN = "wechat:mini:token";
 
     /**
      * 获取accessToken【小程序】
@@ -45,9 +45,9 @@ public class WechatService {
             AccessTokenResult result = entity.getBody();
             assert result != null;
             if (validSuccess(result)) {
-                int expireTime = result.getExpires_in() - 1200;
-                RedisUtils.getRestTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccess_token(), expireTime, TimeUnit.SECONDS);
-                return result.getAccess_token();
+                int expireTime = result.getExpiresIn() - 1200;
+                RedisUtils.getRestTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccessToken(), expireTime, TimeUnit.SECONDS);
+                return result.getAccessToken();
             } else {
                 log.error("【微信小程序】 获取accessToken失败，错误码：{}，错误信息：{}", result.getErrcode(), result.getErrmsg());
                 return "";

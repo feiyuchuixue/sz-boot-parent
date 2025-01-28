@@ -17,10 +17,6 @@ import java.util.List;
 @Data
 public class DeptTreeVO implements Treeable<DeptTreeVO> {
 
-    {
-        userTotal = 0L;
-    }
-
     @Schema(description = "id")
     private Long id;
 
@@ -40,6 +36,6 @@ public class DeptTreeVO implements Treeable<DeptTreeVO> {
     private String name;
 
     @Schema(description = "用户数量")
-    private Long userTotal;
+    private Long userTotal = 0L;
 
 }

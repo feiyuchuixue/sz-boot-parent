@@ -9,6 +9,10 @@ package com.sz.core.common.constant;
  */
 public class GlobalConstant {
 
+    private GlobalConstant() {
+        throw new IllegalStateException("GlobalConstant class Illegal");
+    }
+
     public static final String UTF_8 = "utf-8";
 
     /**

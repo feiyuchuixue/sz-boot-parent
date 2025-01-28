@@ -77,7 +77,7 @@ public class DateUtils {
      */
     public static String formatDateTime(Date datetime) {
         // 创建 SimpleDateFormat 实例，指定日期格式
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(TIME_PATTERN);
         // 使用 SimpleDateFormat 将 Date 对象转换为字符串
         return sdf.format(datetime);
     }

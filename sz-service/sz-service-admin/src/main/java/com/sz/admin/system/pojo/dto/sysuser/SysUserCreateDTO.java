@@ -13,10 +13,6 @@ import lombok.Data;
 @Schema(description = "SysUser添加DTO")
 public class SysUserCreateDTO {
 
-    {
-        deptId = -1L;
-    }
-
     @Schema(description = "账户", requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
 
@@ -51,5 +47,5 @@ public class SysUserCreateDTO {
     private String birthday;
 
     @Schema(description = "部门ID")
-    private Long deptId;
+    private Long deptId = -1L;
 }

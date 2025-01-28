@@ -16,14 +16,9 @@ import java.util.List;
 @Data
 public class UserDeptDTO {
 
-    {
-        userIds = new ArrayList<>();
-        deptIds = new ArrayList<>();
-    }
-
     @Schema(description = "用户id数组")
-    private List<Long> userIds;
+    private List<Long> userIds = new ArrayList<>();
 
     @Schema(description = "部门id数组")
-    private List<Long> deptIds;
+    private List<Long> deptIds = new ArrayList<>();
 }

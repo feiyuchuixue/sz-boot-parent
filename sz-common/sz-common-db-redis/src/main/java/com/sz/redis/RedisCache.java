@@ -5,6 +5,7 @@ import com.sz.core.common.entity.PointVO;
 import com.sz.core.util.StringUtils;
 import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author sz
  * @since 2024/1/8 15:38
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RedisCache {
@@ -48,7 +50,15 @@ public class RedisCache {
     }
 
     public boolean hasKey() {
-        return redisTemplate.hasKey(CommonKeyConstants.SYS_DICT);
+        // 检查 redisTemplate 是否为 null
+        if (redisTemplate == null) {
+            log.error("RedisTemplate is null, cannot check key existence");
+            return false;
+        }
+
+        // 调用 hasKey 方法并检查返回值是否为 null
+        Boolean hasKey = redisTemplate.hasKey(CommonKeyConstants.SYS_DICT);
+        return Boolean.TRUE.equals(hasKey);
     }
 
     public boolean hasHashKey(String dictType) {
@@ -120,7 +130,16 @@ public class RedisCache {
 
     public boolean existCaptcha(String requestId) {
         String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_ID, requestId);
-        return redisTemplate.hasKey(key);
+
+        // 检查 redisTemplate 是否为 null
+        if (redisTemplate == null) {
+            log.error("RedisTemplate is null, cannot check key existence");
+            return false;
+        }
+
+        Boolean hasKey = redisTemplate.hasKey(key);
+        // 检查 hasKey 是否为 null
+        return Boolean.TRUE.equals(hasKey);
     }
 
     /**

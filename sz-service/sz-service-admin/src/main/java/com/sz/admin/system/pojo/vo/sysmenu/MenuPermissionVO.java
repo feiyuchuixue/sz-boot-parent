@@ -10,11 +10,7 @@ import lombok.Data;
 @Data
 public class MenuPermissionVO {
 
-    {
-        permissionCount = 0;
-    }
-
     @Schema(description = "权限标识数量")
-    private int permissionCount;
+    private int permissionCount = 0;
 
 }

@@ -32,12 +32,13 @@ import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.RedisService;
 import com.sz.security.core.util.LoginUtils;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -155,8 +156,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             this.mapper.updateMenuAndChildrenIsDelete(list);
             this.mapper.syncTreeDeep();
             this.mapper.syncTreeHasChildren();
-            // 同时删除角色
-            // sysRoleService.removeByMenuId(new SelectIdsDTO(list));
             // 发布Permission 变更通知
             UserPermissionChangeMessage message = new UserPermissionChangeMessage(null, true);
             redisService.sendPermissionChangeMsg(message);
@@ -256,8 +255,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
     }
 
-    @SneakyThrows
-    @Override
     public String exportMenuSql(SelectIdsDTO dto) {
         String generatedContent = "";
         if (Utils.isNotNull(dto.getIds())) {
@@ -268,13 +265,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             if (Utils.isNotNull(sysMenuList)) {
                 Map<String, Object> dataModel = new HashMap<>();
                 dataModel.put("sysMenuList", sysMenuList);
-                Template template = generatorTableService.getMenuSqlTemplate();
-                StringWriter writer = new StringWriter();
-                try {
+                try (StringWriter writer = new StringWriter()) {
+                    Template template = generatorTableService.getMenuSqlTemplate();
                     template.process(dataModel, writer);
                     generatedContent = writer.toString();
-                } finally {
-                    writer.close();
+                } catch (IOException | TemplateException e) {
+                    log.error("exportMenuSql error", e);
                 }
             }
         }

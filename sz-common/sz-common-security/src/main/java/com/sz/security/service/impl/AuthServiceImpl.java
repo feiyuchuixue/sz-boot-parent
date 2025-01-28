@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginVO loginClient(LoginInfo info) {
         String clientId = info.getClientId();
-        ClientService clientService = SpringApplicationContextUtils.getBean(ClientService.class);
+        ClientService clientService = SpringApplicationContextUtils.getInstance().getBean(ClientService.class);
         ClientVO client = clientService.getClientByClientId(clientId);
         // 验证clientId有效性
         CommonResponseEnum.CLIENT_INVALID.assertNull(client);

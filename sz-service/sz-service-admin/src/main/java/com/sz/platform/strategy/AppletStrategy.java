@@ -50,8 +50,8 @@ public class AppletStrategy implements IAuthStrategy {
         LoginInfoResult result = wechatService.miniLogin(code, accessToken);
         log.info(" 小程序登录返回信息：{}", JsonUtils.toJsonString(result));
         String openid = result.getOpenid();
-        String unionid = result.getUnionid();
-        String sessionKey = result.getSession_key(); // 小程序登录凭证
+        String unionid = result.getUnionId();
+        String sessionKey = result.getSessionKey(); // 小程序登录凭证
 
         MiniLoginUser miniLoginUser = miniUserService.getUserByOpenId(openid, unionid);
 

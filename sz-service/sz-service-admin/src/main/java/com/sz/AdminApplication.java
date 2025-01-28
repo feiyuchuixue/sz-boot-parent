@@ -29,13 +29,17 @@ public class AdminApplication {
 
     @PostConstruct
     public void init() {
-        AdminApplication.version = appVersion;
+        setVersion(appVersion); // 通过辅助方法设置静态字段
         FlywayProperties.FlywayConfig business = flywayProperties.getBusiness();
         FlywayProperties.FlywayConfig framework = flywayProperties.getFramework();
         if (framework.isEnabled())
             frameworkFlyway.migrate();
         if (business.isEnabled())
             businessFlyway.migrate();
+    }
+
+    private static void setVersion(String appVersion) {
+        AdminApplication.version = appVersion;
     }
 
     public static void main(String[] args) {

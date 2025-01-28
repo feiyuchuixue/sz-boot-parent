@@ -51,12 +51,8 @@ public class AccessResponseLog {
      */
     private Object reqBody;
 
-    private String type;
+    private String type = "response";
 
     private String method;
-
-    {
-        type = "response";
-    }
 
 }

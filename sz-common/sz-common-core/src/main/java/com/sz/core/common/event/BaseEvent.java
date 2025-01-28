@@ -8,7 +8,7 @@ public abstract class BaseEvent<T> extends ApplicationEvent {
 
     private final T payload;
 
-    public BaseEvent(Object source, T payload) {
+    protected BaseEvent(Object source, T payload) {
         super(source);
         this.payload = payload;
     }

@@ -1,6 +1,6 @@
 package com.sz.socket.sever;
 
-import com.sz.core.common.entity.SocketBean;
+import com.sz.core.common.entity.SocketMessage;
 import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.entity.WsSession;
 import com.sz.core.common.enums.SocketChannelEnum;
@@ -52,15 +52,18 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
 
         String sid = session.getId();
-        SocketBean socketBean = SocketUtil.formatSocketMessage(message.getPayload());
-        SocketChannelEnum channel = socketBean.getChannel();
-        // TODO channel 处理
+        // SocketMessage<?> socketMessage =
+        // SocketUtil.formatSocketMessage(message.getPayload());
+        SocketMessage msg = JsonUtils.parseObject(message.getPayload(), SocketMessage.class);
+        assert msg != null;
+        SocketChannelEnum channel = msg.getChannel();
         switch (channel) {
             default :
                 log.warn(" 【websocket】 unknown message: {}, send to service ... ", message);
-                SocketBean sb = JsonUtils.parseObject(message.getPayload(), SocketBean.class);
-                TransferMessage tm = new TransferMessage();
-                tm.setMessage(sb);
+                // SocketMessage sb = JsonUtils.parseObject(message.getPayload(),
+                // SocketMessage.class);
+                TransferMessage<?> tm = new TransferMessage<>();
+                tm.setMessage(msg);
                 String channelUsername = websocketRedisService.getUserBySessionId(sid);
                 if (channelUsername != null) {
                     tm.setFromUser(channelUsername);
@@ -126,7 +129,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                 session.close();
             } catch (IOException e) {
                 log.error("【websocket消息】连接断开异常，error", e);
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException(e);
             }
         }
     }
@@ -136,12 +139,12 @@ public class WebSocketServer extends TextWebSocketHandler {
      *
      * @param loginIds
      *            登陆用户Id集合
-     * @param socketBean
+     * @param socketMessage
      *            消息对象
      */
     @SneakyThrows
-    public void sendMessage(List<String> loginIds, SocketBean socketBean) {
-        log.info(" 定向推送。推送用户范围:{}, message: {}", loginIds, JsonUtils.toJsonString(socketBean));
+    public void sendMessage(List<String> loginIds, SocketMessage socketMessage) {
+        log.info(" 定向推送。推送用户范围:{}, message: {}", loginIds, JsonUtils.toJsonString(socketMessage));
         for (String loginId : loginIds) {
             // 验证当前内存中【用户】是否存在
             boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(loginId);
@@ -152,9 +155,9 @@ public class WebSocketServer extends TextWebSocketHandler {
                     boolean existsUserSession = SocketManagerCache.onlineSessionMap.containsKey(notifyUserSid);
                     if (existsUserSession) {
                         WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
-                        wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
+                        wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketMessage)));
                     } else {
-                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), loginId);
+                        log.info(" websocket定向推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketMessage), loginId);
                     }
                 }
             }
@@ -164,12 +167,12 @@ public class WebSocketServer extends TextWebSocketHandler {
     /**
      * 根据loginId 推送消息
      *
-     * @param socketBean
+     * @param socketMessage
      *            消息对象
      */
     @SneakyThrows
-    public void sendMessageToAllUser(SocketBean socketBean) {
-        log.info(" 全员推送。message: {}", JsonUtils.toJsonString(socketBean));
+    public void sendMessageToAllUser(SocketMessage socketMessage) {
+        log.info(" 全员推送。message: {}", JsonUtils.toJsonString(socketMessage));
         List<String> allOnlineUsernames = new ArrayList<>(SocketManagerCache.onlineUserSessionIdMap.keySet());
         for (String loginId : allOnlineUsernames) {
             List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(loginId);
@@ -177,9 +180,9 @@ public class WebSocketServer extends TextWebSocketHandler {
                 boolean existsUserSession = SocketManagerCache.onlineSessionMap.containsKey(notifyUserSid);
                 if (existsUserSession) {
                     WsSession wsSession = SocketManagerCache.onlineSessionMap.get(notifyUserSid);
-                    wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketBean)));
+                    wsSession.getSession().sendMessage(new TextMessage(SocketUtil.transferMessage(socketMessage)));
                 } else {
-                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketBean), loginId);
+                    log.info(" websocket全员推送。message: {}。用户:{}推送失败", JsonUtils.toJsonString(socketMessage), loginId);
                 }
             }
         }
@@ -200,7 +203,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                     log.info(" 优雅退出，关闭 websocket 连接 ...");
                 } catch (IOException e) {
                     log.error("【websocket消息】连接断开异常，error", e);
-                    throw new RuntimeException(e);
+                    throw new IllegalArgumentException(e);
                 }
             }
         }

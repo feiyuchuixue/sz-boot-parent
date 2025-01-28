@@ -127,9 +127,4 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         return dictLoaderFactory.getAllDictType();
     }
 
-    private void upCache(String typeCode, String oldTypeCode) {
-        redisCache.clearDict(typeCode); // 清除redis缓存
-        dictLoaderFactory.getDictByType(typeCode); // 更新缓存
-    }
-
 }

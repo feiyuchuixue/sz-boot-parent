@@ -31,35 +31,35 @@ public class Utils {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
-    public static Boolean isNotNull(String str) {
+    public static boolean isNotNull(String str) {
         return str != null && !str.trim().isEmpty();
     }
 
-    public static Boolean isNotNull(Integer str) {
+    public static boolean isNotNull(Integer str) {
         return str != null;
     }
 
-    public static Boolean isNotNull(Boolean str) {
+    public static boolean isNotNull(Boolean str) {
         return str != null;
     }
 
-    public static Boolean isNotNull(Double str) {
+    public static boolean isNotNull(Double str) {
         return str != null;
     }
 
-    public static Boolean isNotNull(MultipartFile file) {
+    public static boolean isNotNull(MultipartFile file) {
         return file != null && !file.isEmpty();
     }
 
-    public static Boolean isNotNull(Object obj) {
+    public static boolean isNotNull(Object obj) {
         return obj != null && !"".equals(obj) && !obj.toString().trim().isEmpty();
     }
 
-    public static Boolean isNotNull(Map<?, ?> map) {
+    public static boolean isNotNull(Map<?, ?> map) {
         return map != null && !map.isEmpty();
     }
 
-    public static Boolean isNotNull(List<?> list) {
+    public static boolean isNotNull(List<?> list) {
         return list != null && !list.isEmpty();
     }
 
@@ -84,9 +84,7 @@ public class Utils {
     }
 
     public static String md5(String str) {
-        String md5 = "  ";
-        md5 = DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
-        return md5;
+        return DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
     }
 
     public static Field[] getFields(Class<?> clazz) {
@@ -94,8 +92,10 @@ public class Utils {
         while (clazz != null) {
             Field[] declaredFields = clazz.getDeclaredFields();
             for (Field field : declaredFields) {
-                field.setAccessible(true);
-                fieldList.add(field);
+                // Do not increase accessibility
+                if (java.lang.reflect.Modifier.isPublic(field.getModifiers())) {
+                    fieldList.add(field);
+                }
             }
             clazz = clazz.getSuperclass();
         }
@@ -143,7 +143,7 @@ public class Utils {
             byte[] digest = md.digest(input.getBytes());
             return bytesToHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 

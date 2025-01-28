@@ -79,7 +79,7 @@ public class DictLoaderFactory {
      * @return DictTypeVO 集合
      */
     public List<DictTypeVO> getAllDictType() {
-        SysDictTypeService dictTypeService = SpringApplicationContextUtils.getBean(SysDictTypeService.class);
+        SysDictTypeService dictTypeService = SpringApplicationContextUtils.getInstance().getBean(SysDictTypeService.class);
         List<DictTypeVO> dictTypeVOS = dictTypeService.findDictType(); // 查询静态字典类型
         List<DictTypeVO> result = new ArrayList<>(dictTypeVOS);
 

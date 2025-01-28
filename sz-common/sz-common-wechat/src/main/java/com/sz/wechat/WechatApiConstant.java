@@ -9,6 +9,10 @@ package com.sz.wechat;
  */
 public class WechatApiConstant {
 
+    private WechatApiConstant() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final String WECHAT_API_BASE_URL = "https://api.weixin.qq.com";
 
     // 小程序接口调用凭证

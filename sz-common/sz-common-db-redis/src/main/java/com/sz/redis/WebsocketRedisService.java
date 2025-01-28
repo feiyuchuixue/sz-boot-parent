@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WebsocketRedisService {
 
-    public final static String WEBSOCKET_ONLINE_SID = "socket:online:sid";
+    public static final String WEBSOCKET_ONLINE_SID = "socket:online:sid";
 
-    public final static String WEBSOCKET_ONLINE_USER = "socket:online:user";
+    public static final String WEBSOCKET_ONLINE_USER = "socket:online:user";
 
     private final RedisTemplate<Object, Object> redisTemplate;
 

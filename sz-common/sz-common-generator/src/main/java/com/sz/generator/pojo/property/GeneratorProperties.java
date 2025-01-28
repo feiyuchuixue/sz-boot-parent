@@ -13,11 +13,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "sz.generator")
 public class GeneratorProperties {
 
-    {
-        moduleName = "sz-service";
-        serviceName = "sz-service-admin";
-    }
-
     // 初始值配置
     private PathProperties path;
 
@@ -25,24 +20,19 @@ public class GeneratorProperties {
     private GlobalProperties global;
 
     // 模块名
-    private String moduleName;
+    private String moduleName = "sz-service";
 
     // service 名
-    private String serviceName;
+    private String serviceName = "sz-service-admin";
 
     @Data
     public static class GlobalProperties {
 
-        {
-            author = "sz-admin";
-            packages = "com.sz.admin";
-        }
-
         // 作者
-        private String author;
+        private String author = "sz-admin";
 
         // 包名
-        private String packages;
+        private String packages = "com.sz.admin";
     }
 
     @Data

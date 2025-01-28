@@ -1,6 +1,6 @@
 package com.sz.socket.configuration;
 
-import com.sz.core.common.entity.SocketBean;
+import com.sz.core.common.entity.SocketMessage;
 import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.util.JsonUtils;
@@ -23,7 +23,7 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
     @Override
     public void handleTransferMessage(TransferMessage tm) {
         log.info(" sz-service-websocket [service-to-ws] tm = {}", JsonUtils.toJsonString(tm));
-        SocketBean tmMessage = tm.getMessage();
+        SocketMessage tmMessage = tm.getMessage();
         SocketChannelEnum channel = tmMessage.getChannel();
         switch (tmMessage.getScope()) {
             case SERVER : // 通知到后台服务端

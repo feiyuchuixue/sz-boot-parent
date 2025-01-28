@@ -201,7 +201,7 @@ public class CollectorUtils {
      */
     public static Map<String, Object> sortMap(Map<String, Object> map) {
         if (map == null || map.isEmpty()) {
-            return null;
+            return Collections.emptyMap();
         }
         return new TreeMap<>(map);
     }

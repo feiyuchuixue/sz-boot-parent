@@ -25,7 +25,7 @@ public class UserPermissionChangeListener implements MessageListener {
 
     private final List<UserPermissionChangeMsgHandler> messageHandlers;
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {

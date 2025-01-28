@@ -10,12 +10,8 @@ import java.util.List;
 @Data
 public class SelectIdsDTO {
 
-    {
-        ids = new ArrayList<>();
-    }
-
     @Schema(description = "选择的标识数组")
-    private List<? extends Serializable> ids;
+    private List<? extends Serializable> ids = new ArrayList<>();
 
     public SelectIdsDTO() {
     }

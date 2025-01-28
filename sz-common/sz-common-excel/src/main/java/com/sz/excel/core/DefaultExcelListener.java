@@ -30,14 +30,10 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements ExcelListener<T> {
 
-    {
-        validateHeader = Boolean.TRUE;
-    }
-
     /**
      * 是否Validator检验，默认为是
      */
-    private Boolean validateHeader;
+    private boolean validateHeader = true;
 
     /**
      * excel 表头数据
