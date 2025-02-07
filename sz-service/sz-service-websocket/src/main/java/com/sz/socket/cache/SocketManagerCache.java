@@ -21,12 +21,12 @@ public class SocketManagerCache {
     /**
      * sid <==> session 关系
      */
-    public static ConcurrentHashMap<String, WsSession> onlineSessionMap = new ConcurrentHashMap<String, WsSession>();
+    public static ConcurrentHashMap<String, WsSession> onlineSessionMap = new ConcurrentHashMap<>();
 
     /**
      * loginId <==> sid 关系; 1对多,一个用户有可能在多个浏览器上登录
      */
-    public static ConcurrentHashMap<String, List<String>> onlineUserSessionIdMap = new ConcurrentHashMap<String, List<String>>();
+    public static ConcurrentHashMap<String, List<String>> onlineUserSessionIdMap = new ConcurrentHashMap<>();
 
     public static void addOnlineSid(String loginId, String sid) {
         if (onlineUserSessionIdMap.containsKey(loginId)) {

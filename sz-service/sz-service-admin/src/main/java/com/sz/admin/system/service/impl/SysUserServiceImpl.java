@@ -36,6 +36,7 @@ import com.sz.redis.CommonKeyConstants;
 import com.sz.redis.RedisCache;
 import com.sz.redis.RedisUtils;
 import com.sz.security.core.util.LoginUtils;
+import com.sz.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,6 +79,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
+
+    private final AuthService authService;
 
     /**
      * 获取认证账户信息接角色信息
@@ -315,11 +318,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public void changePassword(SysUserPasswordDTO dto) {
-        SysUser sysUser = getById(StpUtil.getLoginIdAsInt()); // 获取当前用户id
+        SysUser sysUser = getById(StpUtil.getLoginIdAsLong()); // 获取当前用户id
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getOldPwd(), sysUser.getPwd()));
         sysUser.setPwd(getEncoderPwd(dto.getNewPwd()));
         updateById(sysUser);
         redisCache.clearUserInfo(sysUser.getUsername());
+        authService.kickOut(StpUtil.getLoginIdAsLong());
     }
 
     /**
@@ -334,6 +338,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         CommonResponseEnum.INVALID_ID.assertNull(user);
         user.setPwd(getEncoderPwd(getInitPassword()));
         updateById(user);
+        authService.kickOut(id);
     }
 
     private String getInitPassword() {
