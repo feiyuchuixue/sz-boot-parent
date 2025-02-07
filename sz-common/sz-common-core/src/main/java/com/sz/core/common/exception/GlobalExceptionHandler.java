@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 全局异常捕获处理
- * 
+ *
  * @author sz
  * @since 2022/8/23 10:56
  */
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ApiResult<Void> handleBusinessException(BusinessException e) {
         log.error(e.getMessage(), e);
-        return new ApiResult<>(e.getResponseEnum().getCode() + "", e.getMessage());
+        return new ApiResult<>(getCode(e), e.getMessage());
     }
 
     /**
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ApiResult<Void> handleBaseException(BaseException e) {
         log.error(e.getMessage(), e);
-        return new ApiResult<>(e.getResponseEnum().getCode() + "", e.getMessage());
+        return new ApiResult<>(getCode(e), e.getMessage());
     }
 
     /**
@@ -94,7 +94,11 @@ public class GlobalExceptionHandler {
             msg.append(", ");
             msg.append(error.getDefaultMessage() == null ? "" : error.getDefaultMessage());
         }
-        return new ApiResult<>(CommonResponseEnum.VALID_ERROR.getCode() + "", msg.substring(2));
+        return new ApiResult<>(CommonResponseEnum.VALID_ERROR.getCodePrefixEnum().getPrefix() + CommonResponseEnum.VALID_ERROR.getCode(), msg.substring(2));
+    }
+
+    private String getCode(BaseException e) {
+        return e.getResponseEnum().getCodePrefixEnum().getPrefix() + e.getResponseEnum().getCode();
     }
 
 }

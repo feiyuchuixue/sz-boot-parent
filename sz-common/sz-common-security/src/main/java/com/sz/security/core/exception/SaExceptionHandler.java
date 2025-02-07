@@ -36,7 +36,7 @@ public class SaExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        return new ApiResult<>(CommonResponseEnum.INVALID_TOKEN.getCode() + "", message);
+        return new ApiResult<>(CommonResponseEnum.INVALID_TOKEN.getCodePrefixEnum().getPrefix() + CommonResponseEnum.INVALID_TOKEN.getCode(), message);
     }
 
     @ExceptionHandler(NotPermissionException.class)
