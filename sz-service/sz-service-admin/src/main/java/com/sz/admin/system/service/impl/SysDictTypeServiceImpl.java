@@ -92,6 +92,12 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     public void remove(SelectIdsDTO dto) {
+        CommonResponseEnum.INVALID_ID.assertNull(dto.getIds());
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DICT_TYPE.TYPE_CODE).where(SYS_DICT_TYPE.ID.in(dto.getIds()));
+        List<String> typeCodes = listAs(wrapper, String.class);
+        for (String typeCode : typeCodes) {
+            redisCache.clearDict(typeCode); // 清除redis缓存
+        }
         removeByIds(dto.getIds());
     }
 
