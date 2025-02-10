@@ -36,6 +36,11 @@ public class MenuTreeVO implements Treeable<MenuTreeVO> {
     @Schema(description = "按钮权限")
     private String permissions;
 
+    @Schema(description = "路由名称")
+    private String name;
+
     @Schema(description = "子级")
     private List<MenuTreeVO> children;
+
+
 }
