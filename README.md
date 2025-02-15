@@ -1,8 +1,13 @@
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">Sz-Admin</h1>
 <h4 align="center">基于SpringBoot3、Vue3的轻量级脚手架</h4>
 <p align="center">
+<a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub"></a>
+<a href="https://github.com/feiyuchuixue/sz-boot-parent/network/members"><img src="https://img.shields.io/github/forks/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub"></a>
+<a href='https://gitee.com/feiyuchuixue/sz-boot-parent/stargazers'><img src='https://gitee.com/feiyuchuixue/sz-boot-parent/badge/star.svg?theme=dark' alt='star'></img></a>
+<a href='https://gitee.com/feiyuchuixue/sz-boot-parent/members'><img src='https://gitee.com/feiyuchuixue/sz-boot-parent/badge/fork.svg?theme=dark' alt='fork'></img></a>
 <a href="https://github.com/feiyuchuixue/sz-boot-parent/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg"></a>
 </p>
+
 
 # 简介
 
@@ -33,7 +38,7 @@
 - JDK >= 21
 - MySQL >= 8.0.34
 - Maven >= 3.8
-- Node >= 16.x
+- Node >= 18.x
 
 ## 核心技术
 
@@ -42,11 +47,12 @@
 - **Mybatis Flex**：一个优雅的 `MyBatis` 增强框架，它非常轻量、同时拥有极高的性能与灵活性。
 - **Flyway**：`数据库版本控制`工具，确保数据库迁移的可靠性。
 - **Knife4j**：一个为 `Swagger` 接口文档增强的工具，提供了更直观的 API 文档展示和更便捷的接口测试体验。
-- **Minio**：一个开源的对象存储服务，提供高性能、分布式存储解决方案，兼容 S3 API。
+- ~~**Minio**：一个开源的对象存储服务，提供高性能、分布式存储解决方案，兼容 S3 API。~~
+- **AWS S3：** 一个广泛兼容的存储解决方案。通过采用 AWS S3 协议，我们的服务现在能够无缝集成并兼容多种对象存储服务，包括但不限于 MinIO、阿里云OSS和腾讯云OSS等。
 - **HikariCP**：选择 `HikariCP` 作为 JDBC 连接池，提供快速且高效的数据库连接管理。
 
-- **Vue 3.4**：采用 `Vue 3.4`，Vue.js 的最新稳定版本，提供更强的性能和更丰富的功能，构建响应式用户界面。
-- **Vite 5**：使用 `Vite 5` 作为前端开发和构建工具，它利用现代浏览器的原生 ES 模块导入特性，提供了快速的冷启动和即时模块热更新。
+- **Vue 3.x**：采用 `Vue 3.x`，Vue.js 的最新稳定版本，提供更强的性能和更丰富的功能，构建响应式用户界面。
+- **Vite 5.x**：使用 `Vite 5`.x 作为前端开发和构建工具，它利用现代浏览器的原生 ES 模块导入特性，提供了快速的冷启动和即时模块热更新。
 - **TypeScript**：通过 `TypeScript` 的集成，引入静态类型检查，增强了代码的可维护性和可读性，提前避免潜在的错误。
 - **Pinia**：状态管理采用 `Pinia`，这是 Vue 3 的解构式状态管理库，它简单、灵活且易于使用，优化了应用的状态管理。
 - **Element-Plus**：一个基于 Vue 3 的组件库，提供了一系列高质量的 UI 组件，帮助开发者快速构建美观、功能完备的用户界面。
@@ -62,6 +68,8 @@
 - **部门管理**：构建组织架构，通过树状结构展示，支持数据权限的层级化管理，加强信息的有序性和安全性。
 - **代码生成器**：自动化生成前后端代码模板，支持CRUD操作，加速开发周期，提升开发效率。
 - **WebSocket**：提供WebSocket支持。
+- **数据权限支持**：通过精细控制和灵活配置，确保用户仅访问授权的数据，强化数据安全性和系统响应性。
+- **接口防抖**：通过限制短时间内的重复请求，防止脏数据产生，确保数据的准确性和系统稳定性。
 
 ## 系统美照
 
@@ -97,3 +105,7 @@
 ## 参与讨论
 
 <img alt="加入群聊" src="https://minioapi.szadmin.cn/public/img/wechat.webp"/>
+
+------
+
+**邮箱：feiyuchuixue@163.com**
