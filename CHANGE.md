@@ -1,4 +1,24 @@
 # 更新日志
+## v1.0.1-beta （20250215）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-parent：3.4.1  -> 3.4.2。
+    - mybatis-flex.version：1.10.5  -> 1.10.7。
+    - sa-token：1.39.0 -> 1.40.0。
+    - excel-fastexcel：1.0.0 -> 1.1.0。
+    - mysql-connector-j：9.1.0 -> 9.2.0。
+  - 优化：字典类型删除时同步清除缓存。
+  - 优化：统一异常code规范，追加prefix。
+  - 优化：指定目标账户密码修改后，触发“踢下线”功能。
+  - 修改：菜单树增加返回参数。
+  - 优化: 日志格式。**Issue**[#10](https://github.com/feiyuchuixue/sz-admin/issues/10)。（感谢[129duckflew](https://github.com/129duckflew)）。
+  - 新增：第三方开源库和许可证文件说明
+- sz-admin：
+  - 修复：无效Token响应码不一致的问题。
+  - 修复：AES-GCM加密方法在某些场景（浏览器）不可用的问题（行为验证码）。
+  - 优化：【代码生成器】- 生成信息中**上级菜单=目录**时与模块名的联动。
+  - 新增：第三方开源库和许可证文件说明
 ## v1.0.0-beta （20250128）| 大型更新
 
 - sz-boot-parent：
