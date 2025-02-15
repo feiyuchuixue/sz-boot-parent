@@ -42,5 +42,4 @@ public class MenuTreeVO implements Treeable<MenuTreeVO> {
     @Schema(description = "子级")
     private List<MenuTreeVO> children;
 
-
 }

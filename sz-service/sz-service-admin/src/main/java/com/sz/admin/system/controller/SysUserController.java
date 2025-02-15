@@ -11,8 +11,6 @@ import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
-import com.sz.core.common.annotation.Debounce;
-import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.valid.annotation.NotZero;
@@ -71,8 +69,6 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @DebounceIgnore
-    @Debounce()
     @Operation(summary = "查询分页列表")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
