@@ -32,9 +32,13 @@ public class OssProperties {
     private String domain;
 
     // 是否使用https
-    private boolean isHttps = true; // 将Boolean 改为 boolean 后报错
+    // 此方法不符合规范已被弃用
+    @Deprecated(since = "v1.0.2-beta")
+    private boolean isHttps = true;
 
     // 文件名称方式
     private FileNamingEnum naming = FileNamingEnum.ORIGINAL;
+
+    private SchemeEnum scheme = SchemeEnum.https;
 
 }
