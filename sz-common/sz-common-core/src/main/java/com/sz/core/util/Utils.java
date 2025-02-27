@@ -10,10 +10,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author sz
@@ -59,8 +56,8 @@ public class Utils {
         return map != null && !map.isEmpty();
     }
 
-    public static boolean isNotNull(List<?> list) {
-        return list != null && !list.isEmpty();
+    public static boolean isNotNull(Collection<?> collection) {
+        return collection != null && !collection.isEmpty();
     }
 
     public static Integer getIntVal(Object obj) {
