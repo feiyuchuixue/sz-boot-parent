@@ -72,6 +72,10 @@ public class GeneratorUtils {
         if (!isNotPrimaryKey(tableColumn.getIsPk()) && (("int").equals(tableColumn.getColumnType()) || ("bigint").equals(tableColumn.getColumnType()))) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
         }
+        // 将bigint类型映射成long
+        if (("bigint").equals(tableColumn.getColumnType())) {
+            tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
+        }
         // 【约定】： 使用create_id, update_id, delete_id change更新时，强制类型Long
         if (("create_id").equals(columnName) || ("update_id").equals(columnName) || ("delete_id").equals(columnName)) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
