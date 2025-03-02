@@ -20,7 +20,7 @@
 ## 在线体验
 
 - 官网地址：https://szadmin.cn
-- 文档地址：https://szadmin.cn/md/Help/doc/start.html
+- 文档地址：https://szadmin.cn/md/Help/doc/info/start.html
 - 预览地址：https://preview.szadmin.cn
 - 代码仓库：
     - 前端：

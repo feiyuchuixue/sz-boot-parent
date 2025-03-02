@@ -1,4 +1,22 @@
 # 更新日志
+## v1.0.2-beta （20250302）
+
+- sz-boot-parent：
+  - 依赖升级：
+    - mybatis-flex.version：1.10.7  -> 1.10.8。
+  - 优化：更新OSS配置，添加协议scheme支持并**弃用isHttps字段**。
+    -  <font color="red">可能的破坏性更新： </font>请切换`isHttps=true/false"` 为` scheme="https/http"`
+  - 优化：重构isNotNull方法，支持更广泛的集合类型。
+  - 优化：重构BeanCopyUtils以使用单例ModelMapper实例。
+  - 优化：【代码生成器】添加将bigint类型映射成long Java类型处理。
+  - 优化：在EntityChangeListener onInsert事件中添加对updateTime和updateId的初始设置。
+  - 修复：Excel导出时Long类型在某些情况下报错的问题。
+  - 新增：系统字典查询-根据类型查询接口。
+- sz-admin：
+  - 新增：[Hook] useDict 方法。（可使用此方法更新指定typeCode的字典缓存）。
+  - 新增：[Hook] useDict 的演示案例。
+  - 修改：删除字典接口注释。**Issue**[#11](https://github.com/feiyuchuixue/sz-admin/issues/11)（感谢[Kang-Yang](https://github.com/Kang-Yang)）。
+  - 修改：README中的地址更正。**Issue**[#12](https://github.com/feiyuchuixue/sz-admin/issues/12)（感谢[Kang-Yang](https://github.com/Kang-Yang)）。
 ## v1.0.1-beta （20250215）
 
 - sz-boot-parent：
