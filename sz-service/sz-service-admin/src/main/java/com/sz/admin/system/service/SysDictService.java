@@ -37,4 +37,6 @@ public interface SysDictService extends IService<SysDict> {
     List<DictVO> getDictByType(String typeCode);
 
     String exportDictSql(SelectIdsDTO dto);
+
+    Map<String, List<DictVO>> getDictByCode(List<String> typeCode);
 }

@@ -157,16 +157,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public List<DictVO> getDictByType(String typeCode) {
-        List<DictVO> dictVOS;
-        if (redisCache.hasHashKey(typeCode)) {
-            dictVOS = redisCache.getDictByType(typeCode);
-        } else {
-            dictVOS = this.mapper.listDict(typeCode);
-            if (Utils.isNotNull(dictVOS)) {
-                redisCache.setDict(typeCode, dictVOS);
-            }
-        }
-        return dictVOS;
+        return dictLoaderFactory.getDictByType(typeCode);
     }
 
     @Override
@@ -220,6 +211,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
         }
         return generatedContent;
+    }
+
+    @Override
+    public Map<String, List<DictVO>> getDictByCode(List<String> typeCode) {
+        return typeCode.stream().collect(Collectors.toMap(code -> code, this::getDictByType));
     }
 
 }

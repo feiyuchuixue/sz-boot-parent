@@ -85,4 +85,11 @@ public class SysDictController {
         return ApiResult.success(sysDictService.exportDictSql(dto));
     }
 
+    @DebounceIgnore
+    @Operation(summary = "系统字典查询-根据类型查询")
+    @GetMapping("code")
+    public ApiResult<Map<String, List<DictVO>>> listDictByCode(@RequestParam("typeCode") List<String> typeCodes) {
+        return ApiResult.success(sysDictService.getDictByCode(typeCodes));
+    }
+
 }
