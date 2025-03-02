@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +44,9 @@ public class CustomLongStringConvert extends AbstractExcelDictConvert<Long> {
         if (str.length() > 15) {
             return new WriteCellData<>(str);
         } else {
-            WriteCellData<Long> cellData = new WriteCellData<>(String.valueOf(object));
+            WriteCellData<Long> cellData = new WriteCellData<>();
             cellData.setType(CellDataTypeEnum.NUMBER);
+            cellData.setNumberValue(new BigDecimal(object));
             return cellData;
         }
     }
