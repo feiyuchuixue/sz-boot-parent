@@ -46,6 +46,10 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
 
+    private static final long JS_SAFE_INTEGER_MAX = 9007199254740991L;
+
+    private static final long JS_SAFE_INTEGER_MIN = -9007199254740991L;
+
     @Bean
     public Converter<String, LocalDate> localDateConverter() {
         return source -> {
@@ -105,6 +109,18 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
         // 对MultipleFile序列化的支持
         SimpleModule module = new SimpleModule();
         module.addSerializer(MultipartFile.class, new MultipartFileSerializer());
+        // 添加Long类型的自定义序列化器
+        module.addSerializer(Long.class, new JsonSerializer<>() {
+
+            @Override
+            public void serialize(Long value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                if (value > JS_SAFE_INTEGER_MAX || value < JS_SAFE_INTEGER_MIN) {
+                    gen.writeString(value.toString());
+                } else {
+                    gen.writeNumber(value);
+                }
+            }
+        });
         objectMapper.registerModule(module);
         return objectMapper;
     }
