@@ -47,7 +47,7 @@ public class TeacherStatisticsVO {
     @ExcelProperty(value = "讲师区分类型")
     @DictFormat(dictType = "account_status", isSelected = true, useAlias = true)
     @Schema(description = "讲师区分类型")
-    private String teacherCommonType;
+    private Integer teacherCommonType;
 
     @ExcelProperty(value = "授课总数")
     @Schema(description = "授课总数")

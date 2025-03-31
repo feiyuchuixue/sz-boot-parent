@@ -12,26 +12,25 @@ import java.util.Map;
  * @author sz
  * @since 2024/1/16 8:02
  */
-@Deprecated
-public class IndexCodeBuilder extends AbstractCodeGenerationTemplate {
+public class TypeCodeBuilder extends AbstractCodeGenerationTemplate {
 
-    public IndexCodeBuilder(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
+    public TypeCodeBuilder(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {
         super(configurer, rootPath, detailVO, model);
     }
 
     @Override
     protected String getTemplateFileName() {
-        return File.separator + "vue" + File.separator + "index.vue.ftl";
+        return File.separator + "vue" + File.separator + "type.ts.ftl";
     }
 
     @Override
     protected String getOutputFileName(Map<String, Object> model) {
-        return model.get("indexClassName").toString();
+        return model.get("typeClassName").toString();
     }
 
     @Override
     protected String getOutputPackage(Map<String, Object> model) {
-        return model.get("indexPkg").toString();
+        return model.get("typePkg").toString();
     }
 
     @Override
@@ -41,7 +40,7 @@ public class IndexCodeBuilder extends AbstractCodeGenerationTemplate {
 
     @Override
     protected String getExtension() {
-        return ".vue";
+        return ".ts";
     }
 
     @Override
@@ -51,11 +50,12 @@ public class IndexCodeBuilder extends AbstractCodeGenerationTemplate {
 
     @Override
     protected String alias() {
-        return "index.vue";
+        return "type.ts";
     }
 
     @Override
     protected String language() {
-        return "html";
+        return "ts";
     }
+
 }

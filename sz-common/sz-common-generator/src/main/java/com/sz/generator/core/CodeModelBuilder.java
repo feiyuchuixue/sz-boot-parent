@@ -147,7 +147,11 @@ public class CodeModelBuilder {
         String interfacePkg = SEPARATOR + "api" + SEPARATOR + "interface" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
         model.put("interfacePkg", interfacePkg);
         model.put("interfaceClassName", detailVO.getGeneratorInfo().getBusinessName());
-        model.put("interfaceNamespace", "I" + detailVO.getBaseInfo().getClassName());
+        model.put("interfaceNamespace", detailVO.getBaseInfo().getClassName());
+
+        String typePkg = SEPARATOR + "api" + SEPARATOR + "types" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
+        model.put("typePkg", typePkg);
+        model.put("typeClassName", detailVO.getGeneratorInfo().getBusinessName());
 
         String modulesPkg = SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
         model.put("modulesPkg", modulesPkg);

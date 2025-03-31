@@ -2,10 +2,7 @@ package com.sz.generator.core.util;
 
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.builder.java.*;
-import com.sz.generator.core.builder.vue.FormCodeBuilder;
-import com.sz.generator.core.builder.vue.IndexCodeBuilder;
-import com.sz.generator.core.builder.vue.InterfaceCodeBuilder;
-import com.sz.generator.core.builder.vue.ModulesCodeBuilder;
+import com.sz.generator.core.builder.vue.*;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
@@ -81,7 +78,7 @@ public class BuildTemplateUtils {
             Map<String, Object> model) {
         List<AbstractCodeGenerationTemplate> list = new ArrayList<>(
                 Arrays.asList(new IndexCodeBuilder(configurer, rootPath, detailVO, model), new FormCodeBuilder(configurer, rootPath, detailVO, model),
-                        new InterfaceCodeBuilder(configurer, rootPath, detailVO, model), new ModulesCodeBuilder(configurer, rootPath, detailVO, model)));
+                        new ModulesCodeBuilder(configurer, rootPath, detailVO, model), new TypeCodeBuilder(configurer, rootPath, detailVO, model)));
         return switch (detailVO.getGeneratorInfo().getGenerateType()) {
             case "all" -> list;
             default -> Collections.emptyList();

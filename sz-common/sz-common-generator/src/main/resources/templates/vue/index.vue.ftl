@@ -121,27 +121,23 @@ import {
 import { useHandleData } from '@/hooks/useHandleData';
 import ${ formClassName } from '@${formPkg}/${formClassName}.vue';
 <#if hasDict == true>
-import { useOptionsStore } from '@/stores/modules/options';
+import { useDictOptions } from '@/hooks/useDictOptions';
 </#if>
 import type { ColumnProps, ProTableInstance, SearchProps } from '@/components/ProTable/interface';
-import type { ${interfaceNamespace} } from '@${interfacePkg}/${interfaceClassName}';
+import type { ${interfaceNamespace}Query, ${interfaceNamespace}Row } from '@${typePkg}/${interfaceClassName}';
 <#if GeneratorInfo.hasImport == "1">
 import ImportExcel from '@/components/ImportExcel/index.vue';
 import { downloadTemplate } from '@/api/modules/system/common';
 </#if>
 <#if GeneratorInfo.hasExport == "1">
-import { ElMessageBox } from "element-plus";
 import { useDownload } from "@/hooks/useDownload";
 </#if>
 defineOptions({
   name: '${indexDefineOptionsName}'
 })
-<#if hasDict == true>
-const optionsStore = useOptionsStore();
-</#if>
 const proTableRef = ref<ProTableInstance>();
 // 表格配置项
-const columns: ColumnProps<${interfaceNamespace}.Row>[] = [
+const columns: ColumnProps<${interfaceNamespace}Row>[] = [
   { type: 'selection', width: 80 },
   <#list columns as field>
   <#if field.isList == "1" && field.isPk == "0">
@@ -149,7 +145,7 @@ const columns: ColumnProps<${interfaceNamespace}.Row>[] = [
   { prop: '${field.javaField}',
     label: '${field.columnComment}',
     tag: true,
-    enum: optionsStore.getDictOptions('${field.dictType}'),
+    enum: useDictOptions('${field.dictType}'),
     fieldNames: {
       label: "codeName",
        <#if field.dictShowWay == "0" >
@@ -185,7 +181,7 @@ const searchColumns: SearchProps[] = [
   { prop: '${field.javaField}',
     label: '${field.columnComment}',
     el: '${field.searchType}',
-    enum: optionsStore.getDictOptions('${field.dictType}'),
+    enum: useDictOptions('${field.dictType}'),
     fieldNames: {
       label: "codeName",
       value: "id",
@@ -199,17 +195,20 @@ const searchColumns: SearchProps[] = [
   </#list>
 ]
 // 获取table列表
-const getTableList = (params: ${interfaceNamespace}.Query) => {
+const getTableList = (params: ${interfaceNamespace}Query) => {
   let newParams = formatParams(params);
   return ${funGetList}(newParams);
 };
-const formatParams = (params: ${interfaceNamespace}.Query) =>{
+const formatParams = (params: ${interfaceNamespace}Query) =>{
   let newParams = JSON.parse(JSON.stringify(params));
   <#list columns as field>
   <#if field.queryType == "BETWEEN">
-  newParams.${field.javaField} && (newParams.${field.javaField}Start = newParams.${field.javaField}[0]);
-  newParams.${field.javaField} && (newParams.${field.javaField}End = newParams.${field.javaField}[1]);
-  delete newParams.${field.javaField};
+  if(newParams.${field.javaField}) {
+    newParams.${field.javaField}Start = newParams.${field.javaField}[0];
+    newParams.${field.javaField}End = newParams.${field.javaField}[1];
+    delete newParams.${field.javaField};
+  }
+
   </#if>
   </#list>
   return newParams;
@@ -230,7 +229,7 @@ const openAddEdit = async(title: string, row: any = {}, isAdd = true) => {
   ${businessName}Ref.value?.acceptParams(params)
 }
 // 删除信息
-const deleteInfo = async (params: ${interfaceNamespace}.Row) => {
+const deleteInfo = async (params: ${interfaceNamespace}Row) => {
   await useHandleData(
     ${funRemove},
     { ids: [params.${pkName}] },
@@ -261,7 +260,7 @@ const importData = () => {
 <#if GeneratorInfo.hasExport == "1">
 // 导出
 const downloadFile = async () => {
-  let newParams = formatParams(proTableRef.value?.searchParam as ${interfaceNamespace}.Query);
+  let newParams = formatParams(proTableRef.value?.searchParam as ${interfaceNamespace}Query);
   useDownload(${funExport}, "${functionName}", newParams);
 };
 </#if>
