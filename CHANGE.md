@@ -1,4 +1,30 @@
 # 更新日志
+## v1.1.0-beta （20250406）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html)
+
+- sz-boot-parent：
+  - 依赖升级：
+    - spring-boot-starter-parent：3.4.2  -> 3.4.4。
+    - mybatis-flex.version：1.10.8  -> 1.10.9。
+    - sa-token：1.40.0 -> 1.41.0。
+    - swagger-annotations：2.2.27 -> 2.2.29。
+    - aspectjweaver：1.9.22.10 -> 1.9.23。
+    - springdoc-openapi-starter-webmvc-ui: 2.8.3 -> 2.8.6
+    - aws-crt： 0.33.7 -> 0.37.0
+    - HikariCP：6.2.1 -> 6.3.0
+    - aws.s3：2.29.50 -> 2.31.11
+  - 优化：[代码生成器] - 添加/api/types/*.ts生成模板
+- sz-admin：
+  - 升级：Eslint8.x -> Eslint9
+  - 新增：`useDictOptions` Hook
+  - 优化：同步`useDictOptions` Hook写法
+  - 修复：某些情况下部门树多选报错的问题
+  - 优化：@import scss 官方已不推荐使用，修改为 @use
+  - 更新：pnpm 依赖
+
 ## v1.0.2-beta （20250302）
 
 - sz-boot-parent：
