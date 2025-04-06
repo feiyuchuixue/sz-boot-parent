@@ -2,6 +2,9 @@ package com.sz.security.core.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import com.sz.core.util.JsonUtils;
+import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +18,8 @@ import org.springframework.stereotype.Component;
 public class CustomUserListener implements SaTokenListener {
 
     @Override
-    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel) {
-        log.info("user doLogin, userId:{}, token:{}", loginId, tokenValue);
+    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginParameter loginParameter) {
+        log.info("user doLogin, userId:{}, token:{}, loginParameter: {}", loginId, tokenValue, loginParameter.toString());
     }
 
     @Override
