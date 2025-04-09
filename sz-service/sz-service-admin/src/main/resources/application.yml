@@ -52,6 +52,10 @@ sz:
     global:
       author: sz-admin
       packages: com.sz.admin
+      ignore-table-prefix:
+        enabled: true
+        prefixes:
+          - t_
   # 微信生态
   wechat:
     # 小程序

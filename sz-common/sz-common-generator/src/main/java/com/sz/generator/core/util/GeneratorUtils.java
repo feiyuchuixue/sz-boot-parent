@@ -24,20 +24,35 @@ public class GeneratorUtils {
     }
 
     public static GeneratorTable initGeneratorTable(TableResult table) {
+        return initGeneratorTable(table, false, null);
+    }
+
+    public static GeneratorTable initGeneratorTable(TableResult table, boolean ignoreTablePrefix, String[] prefixes) {
 
         GeneratorProperties prop = SpringApplicationContextUtils.getInstance().getBean(GeneratorProperties.class);
         String author = prop.getGlobal().getAuthor();
         String packages = prop.getGlobal().getPackages();
 
+        String tableName = table.getTableName();
+        // 如果需要将表前缀去掉
+        if (ignoreTablePrefix && prefixes != null) {
+            for (String prefix : prefixes) {
+                if (tableName.startsWith(prefix)) {
+                    tableName = tableName.replaceFirst(prefix, "");
+                    break;
+                }
+            }
+        }
+
         GeneratorTable generatorTable = new GeneratorTable();
         generatorTable.setTableName(table.getTableName());
         generatorTable.setTableComment(table.getTableComment());
         generatorTable.setPackageName(packages);
-        generatorTable.setModuleName(table.getTableName().replace("_", ""));
-        generatorTable.setClassName(GeneratorUtils.toUpCase(table.getTableName()));
-        generatorTable.setCamelClassName(StringUtils.toCamelCase(table.getTableName()));
+        generatorTable.setModuleName(tableName.replace("_", ""));
+        generatorTable.setClassName(GeneratorUtils.toUpCase(tableName));
+        generatorTable.setCamelClassName(StringUtils.toCamelCase(tableName));
         generatorTable.setTplCategory(GeneratorConstants.TPL_CRUD);
-        generatorTable.setBusinessName(GeneratorUtils.toCamelCase(table.getTableName()));
+        generatorTable.setBusinessName(GeneratorUtils.toCamelCase(tableName));
         generatorTable.setFunctionName(table.getTableComment());
         generatorTable.setFunctionAuthor(author);
         generatorTable.setType("0");
