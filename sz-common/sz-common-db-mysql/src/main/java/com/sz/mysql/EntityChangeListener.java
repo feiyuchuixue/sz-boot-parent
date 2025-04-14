@@ -62,17 +62,28 @@ public class EntityChangeListener implements InsertListener, UpdateListener, Set
 
     private void setPropertyIfPresent(Object object, String propertyName, Object propertyValue) {
         try {
-            // 获取对象的 Class 对象
             Class<?> clazz = object.getClass();
-            // 获取属性名称对应的 setter 方法名称
             String setterName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-            // 获取 setter 方法
-            Method setterMethod = clazz.getMethod(setterName, propertyValue.getClass());
-            // 调用 setter 方法设置字段值
-            setterMethod.invoke(object, propertyValue);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            // 如果字段不存在或者 setter 方法不可访问，则忽略异常
-            log.warn(" Fill EntityChangeField failed; Property {} not found or inaccessible. ", propertyName);
+            Method setterMethod = null;
+
+            // 遍历所有方法，寻找匹配的 setter
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.getName().equals(setterName) && method.getParameterCount() == 1) {
+                    Class<?> parameterType = method.getParameterTypes()[0];
+                    if (parameterType.isAssignableFrom(propertyValue.getClass())) {
+                        setterMethod = method;
+                        break;
+                    }
+                }
+            }
+
+            if (setterMethod != null) {
+                setterMethod.invoke(object, propertyValue);
+            } else {
+                log.warn("Failed to set property '{}': Setter method not found or type mismatch.", propertyName);
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.warn(" Fill EntityChangeField failed; Error accessing property {}: {}", propertyName, e.getMessage());
         }
     }
 
