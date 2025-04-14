@@ -2,7 +2,6 @@ package com.sz.mysql;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.annotation.Table;
-import com.mybatisflex.core.constant.SqlConsts;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
@@ -17,7 +16,6 @@ import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -30,20 +28,15 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
     private static final String FIELD_DEPT_SCOPE = "dept_scope";
 
-    // 定义一个分隔符常量
-    private static final String SEPARATOR_STR = "$";
+    private static final String SEPARATOR_STR = "$"; // 分隔符常量
 
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
-        if (!SimpleDataScopeHelper.isDataScope() || !StpUtil.isLogin()) {
+        if (isAuthorizedToHandleDataScope(operateType)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
         try {
-            if (operateType != OperateType.SELECT) {
-                super.prepareAuth(queryWrapper, operateType);
-                return;
-            }
 
             if (!initializeContext(queryWrapper, operateType)) {
                 return;
@@ -52,12 +45,16 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             ControlPermissions permissions = ControlThreadLocal.get();
             LoginUser loginUser = LoginUtils.getLoginUser();
 
-            String rule = determineRuleScope(permissions, loginUser);
-            String alias = getAlias(SimpleDataScopeHelper.get());
+            assert loginUser != null;
+            String[] btnPermissions = permissions.getPermissions();
+            Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
+            Map<String, String> ruleMap = loginUser.getRuleMap();
+            String mode = permissions.getMode();
 
-            handleRule(queryWrapper, operateType, rule, alias, SimpleDataScopeHelper.get());
+            String rule = determineRuleScope(btnPermissions, permissionMap, ruleMap, mode);
+            String table = getTable(SimpleDataScopeHelper.get());
 
-            handleCustomLogic(queryWrapper, loginUser, permissions, alias, SimpleDataScopeHelper.get());
+            applyDataScopeRules(queryWrapper, operateType, rule, table, SimpleDataScopeHelper.get());
 
         } catch (Exception e) {
             log.error("PermissionDialect Exception: {}", e.getMessage());
@@ -66,109 +63,43 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
     }
 
+    /**
+     * 检查是否需要进行数据权限控制
+     */
+    private boolean isAuthorizedToHandleDataScope(OperateType operateType) {
+        return SimpleDataScopeHelper.isDataScope() && StpUtil.isLogin() && operateType == OperateType.SELECT;
+    }
+
+    /**
+     * 初始化上下文
+     *
+     * @param queryWrapper
+     *            wrapper
+     * @param operateType
+     *            操作类型
+     * @return 是否初始化成功
+     */
     private boolean initializeContext(QueryWrapper queryWrapper, OperateType operateType) {
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
         List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-
         if (queryTables == null || queryTables.isEmpty()) {
             return false;
         }
-
         LoginUser loginUser = LoginUtils.getLoginUser();
-        if (loginUser == null || !ControlThreadLocal.hasLocal()) {
+        if (loginUser == null || !ControlThreadLocal.hasLocal() || LoginUtils.isSuperAdmin()) {
             super.prepareAuth(queryWrapper, operateType);
             return false;
         }
-
-        if (LoginUtils.isSuperAdmin()) {
-            super.prepareAuth(queryWrapper, operateType);
-            return false;
-        }
-
-        processSubQueries(queryTables, operateType);
-
-        boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
-        Map<String, QueryTable> tableMap = buildTableMap(queryTables, isJoin, joinTables);
-        return tableMap != null && !tableMap.isEmpty();
-    }
-
-    private String determineRuleScope(ControlPermissions permissions, LoginUser loginUser) {
-        String[] btnPermissions = permissions.getPermissions();
-        Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
-        Map<String, String> ruleMap = loginUser.getRuleMap();
-        String mode = permissions.getMode();
-
-        return determineRuleScope(btnPermissions, permissionMap, ruleMap, mode);
-    }
-
-    private String getAlias(Class<?> tableClazz) {
-        Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
-        if (tableClazzAnnotation == null) {
-            String simpleName = tableClazz.getSimpleName();
-            return StringUtils.toSnakeCase(simpleName);
-        } else {
-            return tableClazzAnnotation.value();
-        }
-    }
-
-    private void handleRule(QueryWrapper queryWrapper, OperateType operateType, String rule, String alias, Class<?> tableClazz) {
-        LoginUser loginUser = LoginUtils.getLoginUser();
-        String logicMinUnit = SpringApplicationContextUtils.getInstance().getBean(DataScopeProperties.class).getLogicMinUnit();
-        switch (rule) {
-            case "1006001" :
-                super.prepareAuth(queryWrapper, operateType);
-                return;
-            case "1006002" :
-                handleDeptScope(queryWrapper, loginUser.getDeptAndChildren(), logicMinUnit, alias, tableClazz);
-                break;
-            case "1006003" :
-                handleDeptScope(queryWrapper, loginUser.getDepts(), logicMinUnit, alias, tableClazz);
-                break;
-            case "1006004" :
-            default :
-                handlePersonalScope(queryWrapper, loginUser, alias, tableClazz);
-                break;
-        }
-    }
-
-    private void handleCustomLogic(QueryWrapper queryWrapper, LoginUser loginUser, ControlPermissions permissions, String alias, Class<?> tableClazz) {
-        String key = "customRuleContext";
-        Object context = CPI.getContext(queryWrapper, key);
-
-        if (!Boolean.TRUE.equals(context)) {
-            Map<String, Set<Long>> userRuleMap = loginUser.getUserRuleMap();
-            Map<String, Set<Long>> deptRuleMap = loginUser.getDeptRuleMap();
-            Set<Long> customUserIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), userRuleMap,
-                    permissions.getMode());
-            Set<Long> customDeptIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), deptRuleMap,
-                    permissions.getMode());
-
-            Consumer<QueryWrapper> queryHandler = getQueryHandler(userRuleMap, deptRuleMap, customUserIds, customDeptIds, alias, tableClazz);
-            if (queryHandler != null) {
-                queryWrapper.and(queryHandler);
-                CPI.putContext(queryWrapper, key, true);
-            }
-        }
-    }
-
-    private Consumer<QueryWrapper> getQueryHandler(Map<String, Set<Long>> userRuleMap, Map<String, Set<Long>> deptRuleMap, Set<Long> customUserIds,
-            Set<Long> customDeptIds, String alias, Class<?> tableClazz) {
-        if (!userRuleMap.isEmpty() && !deptRuleMap.isEmpty()) {
-            return wrapper -> wrapper.and(handleCustomUserRelation(customUserIds)).or(handleCustomDeptRelation(customDeptIds, alias, tableClazz));
-        } else if (!userRuleMap.isEmpty()) {
-            return wrapper -> wrapper.and(handleCustomUserRelation(customUserIds));
-        } else if (!deptRuleMap.isEmpty()) {
-            return wrapper -> wrapper.and(handleCustomDeptRelation(customDeptIds, alias, tableClazz));
-        }
-        return null;
-    }
-
-    private void processSubQueries(List<QueryTable> queryTables, OperateType operateType) {
         for (QueryTable queryTable : queryTables) {
             if (queryTable instanceof SelectQueryTable) {
                 prepareAuth(((SelectQueryTable) queryTable).getQueryWrapper(), operateType);
             }
         }
+
+        boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
+        Map<String, QueryTable> tableMap = buildTableMap(queryTables, isJoin, joinTables);
+
+        return !tableMap.isEmpty();
     }
 
     private static Map<String, QueryTable> buildTableMap(List<QueryTable> queryTables, boolean isJoin, List<QueryTable> joinTables) {
@@ -189,25 +120,81 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         return tableMap;
     }
 
+    private String getTable(Class<?> tableClazz) {
+        Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
+        if (tableClazzAnnotation == null) {
+            String simpleName = tableClazz.getSimpleName();
+            return StringUtils.toSnakeCase(simpleName);
+        } else {
+            return tableClazzAnnotation.value();
+        }
+    }
+
+    /**
+     * 应用数据权限规则
+     *
+     * @param queryWrapper
+     *            wrapper
+     * @param operateType
+     *            类型
+     * @param rule
+     *            规则
+     * @param table
+     *            table表
+     * @param tableClazz
+     *            class
+     */
+    private void applyDataScopeRules(QueryWrapper queryWrapper, OperateType operateType, String rule, String table, Class<?> tableClazz) {
+        LoginUser loginUser = LoginUtils.getLoginUser();
+        assert loginUser != null;
+        ControlPermissions permissions = ControlThreadLocal.get();
+        Map<String, Set<Long>> userRuleMap = loginUser.getUserRuleMap();
+        Map<String, Set<Long>> deptRuleMap = loginUser.getDeptRuleMap();
+        Set<Long> customUserIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), userRuleMap,
+                permissions.getMode());
+        Set<Long> customDeptIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), deptRuleMap,
+                permissions.getMode());
+
+        // 如果有全部数据的查询权限，直接返回
+        if ("1006001".equals(rule)) {
+            super.prepareAuth(queryWrapper, operateType);
+            return;
+        }
+
+        // 初始化部门和用户集合
+        Set<Long> deptList = new HashSet<>();
+        Set<Long> userList = new HashSet<>();
+
+        // 根据规则添加部门
+        switch (rule) {
+            case "1006002" -> deptList.addAll(loginUser.getDeptAndChildren()); // 本部门及以下
+            case "1006003" -> deptList.addAll(loginUser.getDepts()); // 仅本部门
+        }
+
+        // 添加自定义部门和用户
+        deptList.addAll(customDeptIds);
+        userList.addAll(customUserIds);
+
+        // 添加当前操作用户
+        userList.add(loginUser.getUserInfo().getId());
+        buildSql(queryWrapper, table, deptList, userList, tableClazz);
+
+    }
+
     private String determineRuleScope(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, String> ruleScopeMap, String mode) {
         if (ruleScopeMap.isEmpty()) {
             return "";
         }
-
         Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
-
         if (menuIds.isEmpty()) {
             return "";
         }
-
         if (menuIds.size() == 1) {
             return ruleScopeMap.getOrDefault(menuIds.iterator().next(), "");
         }
-
         if (mode.isEmpty()) {
             return "";
         }
-
         return menuIds.stream().map(menuId -> ruleScopeMap.getOrDefault(menuId, ""))
                 .reduce((scope1, scope2) -> mode.equals("or") ? maxRuleScope(scope1, scope2) : minRuleScope(scope1, scope2)).orElse("");
     }
@@ -218,21 +205,16 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         if (ruleRelation.isEmpty()) {
             return relationId;
         }
-
         Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
-
         if (menuIds.isEmpty()) {
             return relationId;
         }
-
         if (menuIds.size() == 1) {
             return ruleRelation.getOrDefault(menuIds.iterator().next(), relationId);
         }
-
         if (mode.isEmpty()) {
             return relationId;
         }
-
         return menuIds.stream().map(menuId -> ruleRelation.getOrDefault(menuId, relationId))
                 .reduce((relation1, relation2) -> mode.equals("or") ? maxRelation(relation1, relation2) : minRelation(relation1, relation2)).orElse(relationId);
     }
@@ -245,66 +227,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             log.error(" [DataScope]: Entity `{}` Filed `{}` not found.", clazz.getSimpleName(), fieldName);
         }
         return false;
-    }
-
-    private void handleDeptScope(QueryWrapper queryWrapper, Collection<Long> depts, String logicMinUnit, String alias, Class<?> tableClazz) {
-        if (depts.isEmpty()) {
-            return;
-        }
-        if ("user".equals(logicMinUnit)) {
-            handleUserDeptScope(queryWrapper, depts, alias, tableClazz);
-        } else {
-            handleDeptScope(queryWrapper, depts, alias);
-        }
-    }
-
-    private void handleUserDeptScope(QueryWrapper queryWrapper, Collection<Long> depts, String alias, Class<?> tableClazz) {
-        String field = FIELD_CREATE_ID;
-        if (!isFieldExists(tableClazz, StringUtils.toCamelCase(field))) {
-            return;
-        }
-
-        String sqlParams = depts.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
-        String sql = " EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN " + sqlParams + " AND `" + alias + "`.`" + field
-                + "` = `sys_user_dept`.`user_id` )";
-        String sqlSuper = " OR  EXISTS ( SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `" + alias + "`.`" + field
-                + "` AND  `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F' )";
-        if (!Boolean.TRUE.equals(CPI.getContext(queryWrapper, field))) {
-            queryWrapper.and(sql + sqlSuper);
-            CPI.putContext(queryWrapper, field, true);
-        }
-    }
-
-    private void handleDeptScope(QueryWrapper queryWrapper, Collection<Long> depts, String alias) {
-        String field = FIELD_DEPT_SCOPE;
-        if (!Boolean.TRUE.equals(CPI.getContext(queryWrapper, field))) {
-            StringBuilder append = new StringBuilder();
-            boolean isFirst = true;
-            for (Long dept : depts) {
-                if (!isFirst) {
-                    append.append(" OR JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '").append(SEPARATOR_STR)
-                            .append("')");
-                } else {
-                    isFirst = false;
-                    append.append("JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '").append(SEPARATOR_STR)
-                            .append("')");
-                }
-            }
-            queryWrapper.and(append.toString());
-            CPI.putContext(queryWrapper, field, true);
-        }
-    }
-
-    private void handlePersonalScope(QueryWrapper queryWrapper, LoginUser loginUser, String alias, Class<?> tableClazz) {
-        String field = FIELD_CREATE_ID;
-        if (!isFieldExists(tableClazz, StringUtils.toCamelCase(field)) || !loginUser.getUserRuleMap().isEmpty()) {
-            return;
-        }
-        QueryCondition queryCondition = QueryCondition.create(new QueryColumn(null, null, field, alias), SqlConsts.EQUALS, loginUser.getUserInfo().getId());
-        if (!Boolean.TRUE.equals(CPI.getContext(queryWrapper, field))) {
-            queryWrapper.where(queryCondition);
-            CPI.putContext(queryWrapper, field, true);
-        }
     }
 
     private String maxRuleScope(String scope1, String scope2) {
@@ -327,31 +249,84 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         return intersection;
     }
 
-    private QueryCondition handleCustomUserRelation(Collection<Long> customUserIds) {
-        if (customUserIds.isEmpty()) {
-            return null;
-        }
-        return QueryCondition.create(new QueryColumn(null, null, FIELD_CREATE_ID, null), SqlConsts.IN, customUserIds);
-    }
+    /**
+     * 根据条件拼装sql
+     *
+     * @param queryWrapper
+     *            wrapper
+     * @param table
+     *            表名
+     * @param deptList
+     *            部门集合
+     * @param userList
+     *            用户集合
+     * @param tableClazz
+     *            class
+     */
+    private void buildSql(QueryWrapper queryWrapper, String table, Collection<Long> deptList, Collection<Long> userList, Class<?> tableClazz) {
+        DataScopeProperties properties = SpringApplicationContextUtils.getInstance().getBean(DataScopeProperties.class);
+        String unit = properties.getLogicMinUnit();
+        boolean allowAdminView = properties.isAllowAdminView();
 
-    private String handleCustomDeptRelation(Collection<Long> depts, String alias, Class<?> tableClazz) {
-        if (depts.isEmpty()) {
-            return "";
-        }
-        String field = FIELD_DEPT_SCOPE;
+        String field = "user".equals(unit) ? FIELD_CREATE_ID : FIELD_DEPT_SCOPE;
         if (!isFieldExists(tableClazz, StringUtils.toCamelCase(field))) {
-            return "";
+            return;
         }
-        StringBuilder append = new StringBuilder();
-        boolean isFirst = true;
-        for (Long dept : depts) {
-            if (!isFirst) {
-                append.append(" OR JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
-            } else {
-                isFirst = false;
-                append.append("JSON_CONTAINS(").append(alias).append(".").append(field).append(", '").append(dept).append("', '$')");
+
+        StringBuilder sb = new StringBuilder();
+        boolean isFirstAppend = true;
+
+        // 构建用户或部门为单元的SQL
+        if ("user".equals(unit) && !deptList.isEmpty()) { // 以用户为最小单元
+            String sqlParams = appendCollection(deptList);
+            sb.append(" EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN ").append(sqlParams).append(" AND `").append(table)
+                    .append("`.`").append(field).append("` = `sys_user_dept`.`user_id`)");
+            isFirstAppend = false;
+        } else { // 以部门为最小单元
+            if (!deptList.isEmpty()) {
+                for (Long dept : deptList) {
+                    if (!isFirstAppend) {
+                        sb.append(" OR ");
+                    }
+                    sb.append(" JSON_CONTAINS(").append("`").append(table).append("`").append(".").append("`").append(field).append("`").append(", '")
+                            .append(dept).append("', '").append(SEPARATOR_STR).append("')");
+                    isFirstAppend = false;
+                }
             }
         }
-        return append.toString();
+
+        // 允许其他用户查看超管产生的数据
+        if (allowAdminView) {
+            if (!isFirstAppend) {
+                sb.append(" OR ");
+            }
+            sb.append(" EXISTS (SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `").append(table).append("`.`").append(FIELD_CREATE_ID)
+                    .append("` AND `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F')");
+            isFirstAppend = false;
+
+        }
+
+        // 自定义用户条件
+        if (!userList.isEmpty()) {
+            if (!isFirstAppend)
+                sb.append(" OR ");
+            if (userList.size() == 1) {
+                sb.append(" `").append(table).append("`.`").append(FIELD_CREATE_ID).append("` = ").append(userList.iterator().next());
+            } else {
+                sb.append(" `").append(table).append("`.`").append(FIELD_CREATE_ID).append("` IN ").append(appendCollection(userList));
+            }
+        }
+
+        // 避免重复拼装
+        String fieldFlag = "customScopeContext";
+        Object context = CPI.getContext(queryWrapper, fieldFlag);
+        if (context == null || Boolean.FALSE.equals(context)) {
+            queryWrapper.where(sb.toString());
+            CPI.putContext(queryWrapper, fieldFlag, true);
+        }
+    }
+
+    private String appendCollection(Collection<Long> collection) {
+        return collection.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
     }
 }

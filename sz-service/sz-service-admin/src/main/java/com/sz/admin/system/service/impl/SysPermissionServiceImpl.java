@@ -116,13 +116,6 @@ public class SysPermissionServiceImpl implements SysPermissionService {
             return ruleMap;
         }
 
-        // 获取用户的部门信息
-        List<Long> depts = getDepts(sysUser);
-        if (depts.isEmpty()) {
-            buildCustomScope(sysUser, findMenuIds, ruleMap);
-            return ruleMap;
-        }
-
         // 获取用户数据角色的元信息
         List<SysUserDataMetaVO> metaVOList = QueryChain.of(SysUserDataRole.class)
                 .select(SYS_USER_DATA_ROLE.USER_ID, SYS_USER_DATA_ROLE.ROLE_ID, SYS_DATA_ROLE.DATA_SCOPE_CD, SYS_DATA_ROLE_MENU.MENU_ID)
