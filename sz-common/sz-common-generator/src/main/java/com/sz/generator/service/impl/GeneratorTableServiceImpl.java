@@ -96,8 +96,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             pathWeb = generatorProperties.getPath().getWeb();
         }
 
+        boolean enableIgnoreTablePrefix = generatorProperties.getGlobal().getIgnoreTablePrefix().getEnabled();
+        String[] prefixes = generatorProperties.getGlobal().getIgnoreTablePrefix().getPrefixes();
+
         for (TableResult table : tableResults) {
-            generatorTable = GeneratorUtils.initGeneratorTable(table);
+            generatorTable = GeneratorUtils.initGeneratorTable(table, enableIgnoreTablePrefix, prefixes);
             generatorTable.setPathApi(pathApi);
             generatorTable.setPathWeb(pathWeb);
             save(generatorTable);

@@ -33,6 +33,9 @@ public class GeneratorProperties {
 
         // 包名
         private String packages = "com.sz.admin";
+
+        // 是否需要去掉前缀配置
+        private IgnoreTablePrefix ignoreTablePrefix;
     }
 
     @Data
@@ -43,6 +46,17 @@ public class GeneratorProperties {
 
         // 后端项目初始路径
         private String api;
+    }
+
+    @Data
+    public static class IgnoreTablePrefix {
+
+        // 是否开启
+        private Boolean enabled = false;
+
+        // 需要去除的前缀
+        private String[] prefixes = new String[]{"t_"};
+
     }
 
 }
