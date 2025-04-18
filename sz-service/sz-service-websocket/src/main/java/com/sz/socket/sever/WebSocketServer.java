@@ -62,7 +62,7 @@ public class WebSocketServer extends TextWebSocketHandler {
                 log.warn(" 【websocket】 unknown message: {}, send to service ... ", message);
                 // SocketMessage sb = JsonUtils.parseObject(message.getPayload(),
                 // SocketMessage.class);
-                TransferMessage<?> tm = new TransferMessage<>();
+                TransferMessage tm = new TransferMessage();
                 tm.setMessage(msg);
                 String channelUsername = websocketRedisService.getUserBySessionId(sid);
                 if (channelUsername != null) {

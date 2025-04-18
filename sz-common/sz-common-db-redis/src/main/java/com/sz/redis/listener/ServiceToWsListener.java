@@ -25,7 +25,7 @@ public class ServiceToWsListener implements MessageListener {
 
     private final List<ServiceToWsMsgHandler> serviceToWsMsgHandlers;
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {

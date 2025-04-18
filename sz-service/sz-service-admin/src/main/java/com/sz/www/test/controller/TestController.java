@@ -36,11 +36,11 @@ public class TestController {
     @PostMapping("push/all")
     @Operation(summary = "全体推送-升级公告（socket）")
     public ApiResult<Void> sendUpgradeMsg() {
-        SocketMessage<String> bean = new SocketMessage<>();
+        SocketMessage bean = new SocketMessage();
         bean.setData("【全体推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
         bean.setChannel(SocketChannelEnum.UPGRADE_CHANNEL);
         bean.setScope(MessageTransferScopeEnum.SOCKET_CLIENT);
-        TransferMessage<String> msg = new TransferMessage<>();
+        TransferMessage msg = new TransferMessage();
         msg.setMessage(bean);
         msg.setFromUser("system");
         msg.setToPushAll(true);
@@ -51,12 +51,12 @@ public class TestController {
     @PostMapping("push/user")
     @Operation(summary = "定向推送-升级公告（socket）")
     public ApiResult<Void> sendMsg() {
-        SocketMessage<String> bean = new SocketMessage<>();
+        SocketMessage bean = new SocketMessage();
         bean.setData("【定向推送】 系统即将进行升级，预计需要几分钟时间。请您稍等片刻，感谢您的耐心等待");
         bean.setChannel(SocketChannelEnum.UPGRADE_CHANNEL);
         bean.setScope(MessageTransferScopeEnum.SOCKET_CLIENT);
 
-        TransferMessage<String> msg = new TransferMessage<>();
+        TransferMessage msg = new TransferMessage();
         msg.setMessage(bean);
         msg.setFromUser("system");
         msg.setToPushAll(false);
@@ -70,9 +70,9 @@ public class TestController {
     @Operation(summary = "测试socket踢下线")
     @PostMapping("kick")
     public ApiResult<Void> testKickOff() {
-        TransferMessage<Void> tm = new TransferMessage<>();
+        TransferMessage tm = new TransferMessage();
         tm.setToPushAll(true);
-        SocketMessage<Void> sb = new SocketMessage<>();
+        SocketMessage sb = new SocketMessage();
         sb.setChannel(SocketChannelEnum.KICK_OFF);
         tm.setMessage(sb);
         websocketRedisService.sendServiceToWs(tm);

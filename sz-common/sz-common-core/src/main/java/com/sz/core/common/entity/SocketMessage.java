@@ -10,10 +10,10 @@ import lombok.Data;
  * @since 2023/9/6 17:20
  */
 @Data
-public class SocketMessage<T> {
+public class SocketMessage {
 
     @Schema(description = "data")
-    protected T data;
+    protected String data;
 
     @Schema(description = "通道类型")
     protected SocketChannelEnum channel = SocketChannelEnum.DEFAULTS;

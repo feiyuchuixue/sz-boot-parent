@@ -1,10 +1,7 @@
 package com.sz.security.core.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
-import com.sz.core.util.JsonUtils;
-import com.sz.security.core.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

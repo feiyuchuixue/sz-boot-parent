@@ -49,9 +49,9 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public void kickOut(Long id) {
-        TransferMessage<Void> tm = new TransferMessage<>();
+        TransferMessage tm = new TransferMessage();
         tm.setToUsers(Collections.singletonList(id + ""));
-        SocketMessage<Void> sb = new SocketMessage<>();
+        SocketMessage sb = new SocketMessage();
         sb.setChannel(SocketChannelEnum.KICK_OFF);
         tm.setMessage(sb);
         websocketRedisService.sendServiceToWs(tm);
