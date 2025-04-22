@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysMessageMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysMessage">
+        <id column="id" property="id"/>
+        <result column="message_type_cd" property="messageTypeCd"/>
+        <result column="sender_id" property="senderId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="menu_router" property="menuRouter"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, message_type_cd, sender_id, title, content, del_flag, create_time, update_time, create_id, update_id, menu_router
+    </sql>
+
+</mapper>

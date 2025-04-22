@@ -15,7 +15,7 @@ public class SocketUtil {
         return JsonUtils.toJsonString(bean);
     }
 
-    public static TransferMessage pubTransferMessage(SocketMessage sb, List<String> usernames) {
+    public static TransferMessage pubTransferMessage(SocketMessage sb, List<?> usernames) {
         TransferMessage transferMessage = new TransferMessage();
         transferMessage.setMessage(sb);
         transferMessage.setToUsers(usernames);

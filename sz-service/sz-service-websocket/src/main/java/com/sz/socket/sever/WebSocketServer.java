@@ -6,6 +6,7 @@ import com.sz.core.common.entity.WsSession;
 import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.util.JsonUtils;
 import com.sz.core.util.SocketUtil;
+import com.sz.core.util.Utils;
 import com.sz.redis.WebsocketRedisService;
 import com.sz.socket.cache.SocketManagerCache;
 import lombok.RequiredArgsConstructor;
@@ -143,13 +144,13 @@ public class WebSocketServer extends TextWebSocketHandler {
      *            消息对象
      */
     @SneakyThrows
-    public void sendMessage(List<String> loginIds, SocketMessage socketMessage) {
+    public void sendMessage(List<?> loginIds, SocketMessage socketMessage) {
         log.info(" 定向推送。推送用户范围:{}, message: {}", loginIds, JsonUtils.toJsonString(socketMessage));
-        for (String loginId : loginIds) {
+        for (Object loginId : loginIds) {
             // 验证当前内存中【用户】是否存在
-            boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(loginId);
+            boolean existsUsername = SocketManagerCache.onlineUserSessionIdMap.containsKey(Utils.getStringVal(loginId));
             if (existsUsername) {
-                List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(loginId);
+                List<String> notifyUserSids = SocketManagerCache.onlineUserSessionIdMap.get(Utils.getStringVal(loginId));
                 for (String notifyUserSid : notifyUserSids) {
                     // 验证当前内存中【session】是否存在
                     boolean existsUserSession = SocketManagerCache.onlineSessionMap.containsKey(notifyUserSid);
