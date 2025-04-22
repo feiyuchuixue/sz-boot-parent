@@ -1,4 +1,27 @@
 # 更新日志
+
+## v1.2.0-beta （20250422）
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1-2-0-beta)
+- sz-boot-parent：
+  - 优化：[代码生成器] - 为生成代码增加是否忽略表前缀的功能。PR[#140](https://github.com/feiyuchuixue/sz-boot-parent/pull/140)（感谢[crash](https://github.com/processcrash)）。
+  - 优化：重构**数据权限**核心逻辑，修复部分问题。
+  - 修复：[数据填充]-deptScope属性失败问题
+  - 优化：Websocket相关：简化SocketMessage和TransferMessage类的泛型使用
+  - 新增：系统消息功能
+  - 新增：[演示] 消息发送接口
+  - 新增：[CICD] Docker Sz-Socket CI Prod.yml
+  - 优化：提高用户元数据变更性能
+- sz-admin：
+  - 修复：滑块验证码在某些浏览器无法滑动的问题
+  - 新增：分类筛选器组件
+  - 优化：滑块验证码的耗时计算逻辑
+  - 新增：系统消息功能（搭配Websocket可体验完整功能）
+  - 新增：功能演示
+  - 新增：关于项目
+  - 新增：全局菜单：[消息、功能演示菜、关于项目]
+
 ## v1.1.0-beta （20250406）
 
 > [!NOTE]
