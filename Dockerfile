@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:21
+FROM openjdk:21
 LABEL authors="sz"
 
 COPY *.jar app.jar
