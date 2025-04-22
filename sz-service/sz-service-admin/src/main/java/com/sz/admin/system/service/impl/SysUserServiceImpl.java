@@ -351,11 +351,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (tokens.isEmpty()) {
             return;
         }
+        // 1. 查询当前用户的最新用户权限信息
+        LoginUser loginUser = buildLoginUser(Long.valueOf(userId + ""));
+        // todo 如果用户使用了websocket，可以结合socket来判断需要更新的“在线用户”有哪些
         for (String token : tokens) {
             // // 根据token获取用户session
             SaSession saSession = StpUtil.getTokenSessionByToken(token);
-            // 1. 查询当前用户的最新用户权限信息
-            LoginUser loginUser = buildLoginUser(Long.valueOf(userId + ""));
             // 2. 更新redis信息
             saSession.set(LoginUtils.USER_KEY, loginUser);
             log.warn(" 用户元数据变更, 同步更新用户信息, userId:{}, token:{}", userId, token);
