@@ -1,5 +1,7 @@
 package com.sz.www.test.controller;
 
+import com.sz.admin.system.pojo.dto.sysmessage.Message;
+import com.sz.admin.system.service.SysMessageService;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SocketMessage;
 import com.sz.core.common.entity.TransferMessage;
@@ -13,7 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,8 @@ import java.util.List;
 public class TestController {
 
     private final WebsocketRedisService websocketRedisService;
+
+    private final SysMessageService sysMessageService;
 
     @PostMapping("push/all")
     @Operation(summary = "全体推送-升级公告（socket）")
@@ -78,6 +82,13 @@ public class TestController {
         sb.setChannel(SocketChannelEnum.KICK_OFF);
         tm.setMessage(sb);
         websocketRedisService.sendServiceToWs(tm);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "测试消息发送")
+    @PostMapping("message/send")
+    public ApiResult<Void> sendMessage(@RequestBody Message msg) {
+        sysMessageService.create(msg);
         return ApiResult.success();
     }
 
