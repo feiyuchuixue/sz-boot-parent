@@ -18,10 +18,13 @@ public class AdminApplication {
     @Value("${app.version}")
     private String appVersion;
 
+    @Deprecated(since = "v1.3.0-beta", forRemoval = true)
     private final FlywayProperties flywayProperties;
 
+    @Deprecated(since = "v1.3.0-beta", forRemoval = true)
     private final Flyway frameworkFlyway;
 
+    @Deprecated(since = "v1.3.0-beta", forRemoval = true)
     private final Flyway businessFlyway;
 
     @Getter
@@ -30,6 +33,11 @@ public class AdminApplication {
     @PostConstruct
     public void init() {
         setVersion(appVersion); // 通过辅助方法设置静态字段
+        initFlyway();
+    }
+
+    @Deprecated(since = "v1.3.0-beta", forRemoval = true)
+    private void initFlyway() {
         FlywayProperties.FlywayConfig business = flywayProperties.getBusiness();
         FlywayProperties.FlywayConfig framework = flywayProperties.getFramework();
         if (framework.isEnabled())

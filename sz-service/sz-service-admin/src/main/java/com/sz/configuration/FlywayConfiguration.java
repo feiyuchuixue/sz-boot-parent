@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 /**
- * FlywayConfiguration
+ * 已弃用：使用 liquibase 代替。 FlywayConfiguration
  * 
  * @author sz
  * @since 2024/7/29 13:30
  * @version 1.0
+ * @deprecated 自 v1.3.0-beta 起弃用，推荐使用 liquibase 进行数据库管理。
  */
+@Deprecated(since = "v1.3.0-beta", forRemoval = true)
 @Configuration
 public class FlywayConfiguration {
 

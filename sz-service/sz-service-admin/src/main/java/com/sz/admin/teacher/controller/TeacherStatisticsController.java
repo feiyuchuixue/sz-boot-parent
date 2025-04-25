@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("teacher-statistics")
 @RequiredArgsConstructor
+@Profile({"dev", "local", "preview"})
 public class TeacherStatisticsController {
 
     private final TeacherStatisticsService teacherStatisticsService;

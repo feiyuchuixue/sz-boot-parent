@@ -13,6 +13,7 @@
     <!-- 全局公用dependency版本管理 -->
     <properties>
         <flyway.version>10.12.0</flyway.version>
+        <liquibase.version>4.31.1</liquibase.version>
     </properties>
 
     <dependencies>
@@ -83,6 +84,11 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
         </dependency>
     </dependencies>
 </project>

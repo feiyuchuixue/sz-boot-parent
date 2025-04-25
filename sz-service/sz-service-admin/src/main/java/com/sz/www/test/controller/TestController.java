@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("www")
 @RequiredArgsConstructor
-@Profile({"dev","local","preview"})
+@Profile({"dev", "local", "preview"})
 public class TestController {
 
     private final WebsocketRedisService websocketRedisService;

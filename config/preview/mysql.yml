@@ -21,3 +21,6 @@ spring:
       connection-timeout: 30000
       # 连接测试query
       connection-test-query: SELECT 1
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
+    enabled: true
