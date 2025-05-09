@@ -6,6 +6,7 @@
 <a href='https://gitee.com/feiyuchuixue/sz-boot-parent/stargazers'><img src='https://gitee.com/feiyuchuixue/sz-boot-parent/badge/star.svg?theme=dark' alt='star'></img></a>
 <a href='https://gitee.com/feiyuchuixue/sz-boot-parent/members'><img src='https://gitee.com/feiyuchuixue/sz-boot-parent/badge/fork.svg?theme=dark' alt='fork'></img></a>
 <a href="https://github.com/feiyuchuixue/sz-boot-parent/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg"></a>
+<a href="https://deepwiki.com/feiyuchuixue/sz-boot-parent"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 </p>
 
 
