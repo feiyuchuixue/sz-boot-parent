@@ -1,5 +1,25 @@
 # 更新日志
 
+## v1.2.1-beta （20250509）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.2.1-beta)
+
+- sz-boot-parent：
+
+  - 新增：Liquibase数据库管理，弃用Flyway配置 (**Flyway 将于v1.3.0-beta 版本弃用**)。
+  - 修改：已支持Liquibase，默认配置关闭Flyway（将于v1.3.0-beta版本弃用）。
+  - 修复：部分菜单路由名称与组件名称不一致时导致的菜单keep-alive缓存失效问题。
+  - 修改：README.md 添加deepwiki。感谢[dongyu6/main](https://github.com/dongyu6)。
+
+- sz-admin：
+
+  - 优化：.env环境变量，无需指定`.env.development.local `文件即可使用。
+  - 升级：sass 1.79.6 -> 1.87.0, vite 5.4.17 -> 6.3.4，以及其他依赖的同步升级。
+  - 修复：部分菜单路由名称与组件名称不一致时导致的菜单keep-alive缓存失效问题。
+  - 修改：README.md 添加deepwiki。（感谢[dongyu6/main](https://github.com/dongyu6)）。
+
 ## v1.2.0-beta （20250422）
 > [!NOTE]
 >
