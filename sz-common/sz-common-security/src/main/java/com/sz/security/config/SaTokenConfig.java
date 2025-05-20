@@ -5,16 +5,15 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.strategy.SaAnnotationStrategy;
-import com.sz.core.common.configuration.WebMvcConfiguration;
 import com.sz.security.core.MySaCheckPermissionHandler;
 import com.sz.security.core.interceptor.MySaInterceptor;
 import com.sz.security.pojo.WhitelistProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
 
@@ -25,14 +24,10 @@ import java.util.ArrayList;
 
 @Slf4j
 @Configuration
-public class SaTokenConfig extends WebMvcConfiguration {
+@RequiredArgsConstructor
+public class SaTokenConfig implements WebMvcConfigurer {
 
     private final WhitelistProperties whitelistProperties;
-
-    public SaTokenConfig(ObjectProvider<HttpMessageConverters> messageConverters, WhitelistProperties whitelistProperties) {
-        super(messageConverters);
-        this.whitelistProperties = whitelistProperties;
-    }
 
     @Bean
     public StpLogic getStpLogicJwt() {

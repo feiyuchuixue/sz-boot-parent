@@ -52,28 +52,36 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
 
     @Bean
     public Converter<String, LocalDate> localDateConverter() {
-        return source -> {
-            if (source.trim().isEmpty()) {
-                return null;
-            }
-            try {
-                return LocalDate.parse(source);
-            } catch (Exception e) {
-                return LocalDate.parse(source, DateTimeFormatter.ofPattern(DATE_PATTERN));
+        return new Converter<String, LocalDate>() {
+
+            @Override
+            public LocalDate convert(String source) {
+                if (source.trim().isEmpty()) {
+                    return null;
+                }
+                try {
+                    return LocalDate.parse(source);
+                } catch (Exception e) {
+                    return LocalDate.parse(source, DateTimeFormatter.ofPattern(DATE_PATTERN));
+                }
             }
         };
     }
 
     @Bean
     public Converter<String, LocalDateTime> localDateTimeConverter() {
-        return source -> {
-            if (source.trim().isEmpty()) {
-                return null;
-            }
-            try {
-                return LocalDateTime.parse(source);
-            } catch (Exception e) {
-                return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+        return new Converter<String, LocalDateTime>() {
+
+            @Override
+            public LocalDateTime convert(String source) {
+                if (source.trim().isEmpty()) {
+                    return null;
+                }
+                try {
+                    return LocalDateTime.parse(source);
+                } catch (Exception e) {
+                    return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+                }
             }
         };
     }
