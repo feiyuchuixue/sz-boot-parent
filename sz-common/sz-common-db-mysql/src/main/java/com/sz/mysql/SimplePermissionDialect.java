@@ -32,7 +32,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
-        if (isAuthorizedToHandleDataScope(operateType)) {
+        if (isSkipDataScope(operateType)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
@@ -64,10 +64,10 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 检查是否需要进行数据权限控制
+     * 检查是否跳过数据权限控制
      */
-    private boolean isAuthorizedToHandleDataScope(OperateType operateType) {
-        return SimpleDataScopeHelper.isDataScope() && StpUtil.isLogin() && operateType == OperateType.SELECT;
+    private boolean isSkipDataScope(OperateType operateType) {
+        return !SimpleDataScopeHelper.isDataScope() || !StpUtil.isLogin() || operateType != OperateType.SELECT;
     }
 
     /**
