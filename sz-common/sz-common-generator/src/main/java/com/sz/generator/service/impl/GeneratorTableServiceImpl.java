@@ -40,9 +40,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -165,6 +163,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         detailVO.setBaseInfo(baseInfo);
         detailVO.setGeneratorInfo(generatorInfo);
         detailVO.setColumns(columns);
+        Set<String> dictTypes = new HashSet<>();
+        for (GeneratorDetailVO.Column column : columns) {
+            if (column.getDictType() != null && !column.getDictType().isEmpty()) {
+                dictTypes.add(column.getDictType());
+            }
+        }
+        detailVO.setDictTypes(dictTypes);
         return detailVO;
     }
 

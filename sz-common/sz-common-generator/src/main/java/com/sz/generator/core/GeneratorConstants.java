@@ -37,7 +37,13 @@ public class GeneratorConstants {
     /**
      * 页面不需要显示的列表字段
      */
-    public static final String[] NON_DISPLAYABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_DISPLAYABLE_COLUMNS = {"del_flag", "delete_id", "delete_time"};
+
+    /**
+     * 页面不需要导入的列表字段
+     */
+    public static final String[] NON_DISPLAYABLE_IMPORT_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id",
+            "delete_time"};
 
     /**
      * 页面不需要查询字段
@@ -54,6 +60,11 @@ public class GeneratorConstants {
      * 根据update事件自动填充的字段
      */
     public static final String[] AUTO_FILL_ON_UPDATE_COLUMNS = {"update_id", "update_time"};
+
+    /**
+     * 需要自动导入Options字典的字段
+     */
+    public static final String[] AUTO_FILL_OPTIONS_COLUMNS = {"create_id", "update_id"};
 
     /**
      * 文本框

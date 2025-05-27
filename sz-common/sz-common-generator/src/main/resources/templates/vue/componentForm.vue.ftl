@@ -18,22 +18,11 @@
         <#if field.isInsert == "1" || field.isEdit == "1" && field.isPk == "0">
       <el-form-item label="${field.columnComment}" prop="${field.javaField}">
           <#if field.htmlType == "input">
-        <el-input
-          v-model="paramsProps.row.${field.javaField}"
-          placeholder="请填写${field.columnComment}"
-          clearable
-        ></el-input>
+        <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" clearable></el-input>
           <#elseif field.htmlType == "textarea">
-        <el-input
-          v-model="paramsProps.row.${field.javaField}"
-          placeholder="请填写${field.columnComment}"
-          :rows="2"
-          type="textarea"
-          clearable
-        ></el-input>
+        <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" :rows="2" type="textarea" clearable></el-input>
           <#elseif field.htmlType == "input-number">
-        <el-input-number
-          v-model="paramsProps.row.${field.javaField}" :precision="0" :min="1" :max="999999" />
+        <el-input-number v-model="paramsProps.row.${field.javaField}" :precision="0" :min="1" :max="999999" />
           <#elseif field.htmlType == "select" || field.htmlType == "radio">
         <el-select v-model="paramsProps.row.${field.javaField}" clearable placeholder="请选择${field.columnComment}">
           <el-option
@@ -74,16 +63,9 @@
           placeholder="请选择${field.columnComment}">
         </el-date-picker>
           <#elseif field.htmlType == "time">
-        <el-time-picker clearable
-          v-model="paramsProps.row.${field.javaField}"
-          placeholder="请选择${field.columnComment}">
-        </el-time-picker>
+        <el-time-picker clearable v-model="paramsProps.row.${field.javaField}" placeholder="请选择${field.columnComment}"></el-time-picker>
           <#else>
-        <el-input
-          v-model="paramsProps.row.${field.javaField}"
-          placeholder="请填写${field.columnComment}"
-          clearable
-        ></el-input>
+        <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" clearable></el-input>
           </#if>
       </el-form-item>
         </#if>
@@ -97,18 +79,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { type ElForm, ElMessage } from 'element-plus'
+import { ref, reactive } from 'vue';
+import { type ElForm, ElMessage } from 'element-plus';
 <#if hasSelect == true>
-import { useOptionsStore } from '@/stores/modules/options'
+import { useOptionsStore } from '@/stores/modules/options';
 </#if>
 
 defineOptions({
     name: '${formClassName}'
-})
+});
 
 <#if hasSelect == true>
-const optionsStore = useOptionsStore()
+const optionsStore = useOptionsStore();
 </#if>
 const rules = reactive({
   <#list columns as field>
@@ -116,41 +98,41 @@ const rules = reactive({
   ${field.javaField}: [{ required: true, message: '请填写${field.columnComment}' }],
   </#if>
   </#list>
-})
+});
 
-const visible = ref(false)
+const visible = ref(false);
 const paramsProps = ref<View.DefaultParams>({
   title: '',
   row: {},
   api: undefined,
   getTableList: undefined
-})
+});
 
 // 接收父组件传过来的参数
 const acceptParams = (params: View.DefaultParams) => {
   paramsProps.value = params
   visible.value = true
-}
+};
 
 // 提交数据（新增/编辑）
-const ruleFormRef = ref<InstanceType<typeof ElForm>>()
+const ruleFormRef = ref<InstanceType<typeof ElForm>>();
 const handleSubmit = () => {
   ruleFormRef.value!.validate(async (valid) => {
     if (!valid) return
     try {
-      await paramsProps.value.api!(paramsProps.value.row)
-      ElMessage.success({ message: `<#noparse>${paramsProps.value.title}</#noparse>成功！` })
-      paramsProps.value.getTableList!()
-      visible.value = false
+      await paramsProps.value.api!(paramsProps.value.row);
+      ElMessage.success({ message: `<#noparse>${paramsProps.value.title}</#noparse>成功！` });
+      paramsProps.value.getTableList!();
+      visible.value = false;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  })
+  });
 }
 
 defineExpose({
   acceptParams
-})
+});
 </script>
 
 <style scoped lang="scss"></style>

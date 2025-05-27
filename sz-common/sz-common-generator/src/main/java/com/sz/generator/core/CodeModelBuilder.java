@@ -42,6 +42,7 @@ public class CodeModelBuilder {
         model.put("businessName", businessName);
         model.put("GeneratorInfo", detailVO.getGeneratorInfo());
         model.put("router", router);
+        model.put("dictTypes", detailVO.getDictTypes());
 
         return this;
     }

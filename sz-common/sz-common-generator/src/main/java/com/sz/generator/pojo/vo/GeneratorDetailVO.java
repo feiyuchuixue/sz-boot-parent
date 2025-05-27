@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author sz
@@ -21,6 +22,9 @@ public class GeneratorDetailVO {
 
     @Schema(description = "column字段信息")
     private List<Column> columns;
+
+    @Schema(description = "字典类型列表")
+    private Set<String> dictTypes;
 
     @Data
     public static class BaseInfo {

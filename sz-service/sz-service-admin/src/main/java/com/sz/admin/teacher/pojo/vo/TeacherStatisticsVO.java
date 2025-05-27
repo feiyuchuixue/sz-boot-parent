@@ -80,10 +80,25 @@ public class TeacherStatisticsVO {
     @Schema(description = "备注")
     private String remark;
 
-    @ExcelProperty(value = "创建人id")
+    @ExcelProperty(value = "创建人")
     @DictFormat(dictType = "dynamic_user_options")
-    @Schema(description = "创建人id")
+    @Schema(description = "创建人")
     private Long createId;
+
+    @ExcelProperty(value = "创建时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
+    @ExcelProperty(value = "更新人")
+    @DictFormat(dictType = "dynamic_user_options")
+    @Schema(description = "更新人")
+    private Long updateId;
+
+    @ExcelProperty(value = "更新时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "更新时间")
+    private LocalDateTime updateTime;
 
     @Data
     public static class TeacherTypeEnum {

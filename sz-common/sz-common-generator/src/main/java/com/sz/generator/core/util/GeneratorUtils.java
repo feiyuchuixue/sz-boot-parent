@@ -282,6 +282,7 @@ public class GeneratorUtils {
         setImportAttribute(notPk, columnName, tableColumn);
         setExportAttribute(notPk, columnName, tableColumn);
         setHtmlType(columnName, tableColumn);
+        setFillOptions(columnName, tableColumn);
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn tableColumn) {
@@ -320,7 +321,7 @@ public class GeneratorUtils {
     }
 
     private static void setImportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
-        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_COLUMNS, columnName) && notPk) {
+        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName) && notPk) {
             tableColumn.setIsImport(GeneratorConstants.REQUIRE);
         }
     }
@@ -364,6 +365,13 @@ public class GeneratorUtils {
         if (arraysContains(GeneratorConstants.AUTO_FILL_ON_UPDATE_COLUMNS, columnName)) {
             tableColumn.setIsAutofill(GeneratorConstants.REQUIRE);
             tableColumn.setAutofillType("FieldFill.UPDATE");
+        }
+    }
+
+    private static void setFillOptions(String columnName, GeneratorTableColumn tableColumn) {
+        if (arraysContains(GeneratorConstants.AUTO_FILL_OPTIONS_COLUMNS, columnName)) {
+            tableColumn.setDictType("dynamic_user_options"); // 设置[动态字典]用户信息
+            tableColumn.setDictShowWay("0"); // 设置字典显示方式：唯一标识
         }
     }
 

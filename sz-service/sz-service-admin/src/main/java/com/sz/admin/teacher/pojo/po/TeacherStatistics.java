@@ -65,21 +65,23 @@ public class TeacherStatistics implements Serializable {
     @Schema(description = "核对时间")
     private LocalDateTime checkTime;
 
-    @Schema(description = "生成时间")
-    private LocalDateTime createTime;
-
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
     @Schema(description = "最近一次同步时间")
     private LocalDateTime lastSyncTime;
 
     @Schema(description = "备注")
     private String remark;
 
+    @Schema(description = "创建人ID")
     private Long createId;
 
+    @Schema(description = "生成时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "更新人ID")
     private Long updateId;
+
+    @Schema(description = "更新时间")
+    private LocalDateTime updateTime;
 
     @Schema(description = "部门范围id")
     @Column(typeHandler = JacksonTypeHandler.class)
