@@ -279,8 +279,9 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         // 构建用户或部门为单元的SQL
         if ("user".equals(unit) && !deptList.isEmpty()) { // 以用户为最小单元
             String sqlParams = appendCollection(deptList);
-            sb.append(" EXISTS ( SELECT 1 FROM `sys_user_dept` WHERE `sys_user_dept`.`dept_id` IN ").append(sqlParams).append(" AND `").append(table)
-                    .append("`.`").append(field).append("` = `sys_user_dept`.`user_id`)");
+            sb.append(" EXISTS ( SELECT 1 FROM `sys_user_dept` ").append("JOIN `sys_dept` ON `sys_user_dept`.`dept_id` = `sys_dept`.`id` ")
+                    .append("WHERE `sys_user_dept`.`dept_id` IN ").append(sqlParams).append(" AND `sys_dept`.`del_flag` = 'F' ").append("AND `").append(table)
+                    .append("`.`").append(field).append("` = `sys_user_dept`.`user_id`) ");
             isFirstAppend = false;
         } else { // 以部门为最小单元
             if (!deptList.isEmpty()) {
@@ -321,7 +322,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         String fieldFlag = "customScopeContext";
         Object context = CPI.getContext(queryWrapper, fieldFlag);
         if (context == null || Boolean.FALSE.equals(context)) {
-            queryWrapper.where(sb.toString());
+            queryWrapper.where("(" + sb + ")");
             CPI.putContext(queryWrapper, fieldFlag, true);
         }
     }
