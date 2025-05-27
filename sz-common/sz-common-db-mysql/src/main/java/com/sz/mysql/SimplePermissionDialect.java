@@ -32,10 +32,18 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
+        // 需要跳过的情况
         if (isSkipDataScope(operateType)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
+        // 防止误触 && MybatisFlex Relation 多对多映射问题
+        String table = getTable(SimpleDataScopeHelper.get());
+        if (!isTargetTable(queryWrapper, table)) {
+            super.prepareAuth(queryWrapper, operateType);
+            return;
+        }
+
         try {
 
             if (!initializeContext(queryWrapper, operateType)) {
@@ -50,10 +58,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, String> ruleMap = loginUser.getRuleMap();
             String mode = permissions.getMode();
-
             String rule = determineRuleScope(btnPermissions, permissionMap, ruleMap, mode);
-            String table = getTable(SimpleDataScopeHelper.get());
-
             applyDataScopeRules(queryWrapper, operateType, rule, table, SimpleDataScopeHelper.get());
 
         } catch (Exception e) {
@@ -68,6 +73,30 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
      */
     private boolean isSkipDataScope(OperateType operateType) {
         return !SimpleDataScopeHelper.isDataScope() || !StpUtil.isLogin() || operateType != OperateType.SELECT;
+    }
+
+    /**
+     * 验证当前查询是否是目标表
+     * 
+     * @param queryWrapper
+     *            wrapper
+     * @param table
+     *            表名称
+     * @return boolean
+     */
+    private boolean isTargetTable(QueryWrapper queryWrapper, String table) {
+        // 验证当前table是否是目标table
+        boolean isTargetTable = false;
+        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
+        if (queryTables != null && !queryTables.isEmpty()) {
+            for (QueryTable queryTable : queryTables) {
+                if (table.equals(queryTable.getName())) {
+                    isTargetTable = true;
+                    break;
+                }
+            }
+        }
+        return isTargetTable;
     }
 
     /**
