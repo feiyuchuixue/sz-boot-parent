@@ -1,5 +1,9 @@
-# sz-common-wechat模块需要的配置
-#wechat:
-#  mini:
-#    app-id: your-app-id
-#    app-secret: your-app-secret
+# sz-common-wechat模块需要的配置，这是一个示例配置文件，不会起作用，实际使用时请使用sz-service-admin 下的 application*.yml 来配置声明。
+wechat:
+  mini:
+    app-id: your-app-id
+    app-secret: your-app-secret
+  work:
+    corp-id: your-corp-id
+    corp-secret: your-corp-secret
+    agent-id: your-agent-id
