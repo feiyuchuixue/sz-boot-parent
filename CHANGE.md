@@ -1,4 +1,26 @@
 # 更新日志
+## v1.2.2-beta （20250528）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.2.2-beta)
+
+- sz-boot-parent：
+
+  - 优化：将**继承** `WebMvcConfigurationSupport`改为**实现** `WebMvcConfigurer`，提升框架兼容性。
+  - 修复：[数据权限]-一些已知问题。
+  - 优化：[代码生成器]
+    - 导入数据表添加对createId/updateId/createTime/updateTime常用字段的支持。
+    - 前端模版添加对useDict生成的支持
+    - SQL Insert 支持IGNORE
+    - Teacher演示案例的同步改造
+    - 代码模版格式优化
+  - 新增: [sz-common-wechat]-新增企业微信消息发送的支持。
+- sz-admin：
+
+  - 修复：版本号读取异常问题。
+  - 优化：[演示案例] - 教师统计。
+  - 优化：UploadFiles多文件上传组件, 简化使用方式并修复一些问题。
 
 ## v1.2.1-beta （20250509）
 
