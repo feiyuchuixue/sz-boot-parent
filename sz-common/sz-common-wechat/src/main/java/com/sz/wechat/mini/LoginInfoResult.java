@@ -1,6 +1,7 @@
-package com.sz.wechat.pojo;
+package com.sz.wechat.mini;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sz.wechat.pojo.ErrorMessage;
 import lombok.Data;
 
 /**

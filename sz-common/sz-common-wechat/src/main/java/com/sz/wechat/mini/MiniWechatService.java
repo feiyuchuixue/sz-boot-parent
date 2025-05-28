@@ -1,10 +1,10 @@
-package com.sz.wechat;
+package com.sz.wechat.mini;
 
 import com.sz.core.util.JsonUtils;
 import com.sz.redis.RedisUtils;
+import com.sz.wechat.WechatProperties;
 import com.sz.wechat.pojo.AccessTokenResult;
 import com.sz.wechat.pojo.ErrorMessage;
-import com.sz.wechat.pojo.LoginInfoResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ import static com.sz.wechat.WechatApiConstant.WECHAT_TOKEN_URL;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WechatService {
+public class MiniWechatService {
 
     private final WechatProperties wechatProperties;
 

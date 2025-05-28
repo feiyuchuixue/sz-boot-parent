@@ -12,8 +12,8 @@ import com.sz.security.pojo.ClientVO;
 import com.sz.security.pojo.LoginInfo;
 import com.sz.security.pojo.LoginVO;
 import com.sz.security.service.IAuthStrategy;
-import com.sz.wechat.WechatService;
-import com.sz.wechat.pojo.LoginInfoResult;
+import com.sz.wechat.mini.MiniWechatService;
+import com.sz.wechat.mini.LoginInfoResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AppletStrategy implements IAuthStrategy {
 
-    private final WechatService wechatService;
+    private final MiniWechatService miniWechatService;
 
     private final MiniUserService miniUserService;
 
@@ -46,8 +46,8 @@ public class AppletStrategy implements IAuthStrategy {
         String code = info.getCode();
         CommonResponseEnum.INVALID.message("无效的小程序code").assertFalse(Utils.isNotNull(code));
 
-        String accessToken = wechatService.getAccessToken();
-        LoginInfoResult result = wechatService.miniLogin(code, accessToken);
+        String accessToken = miniWechatService.getAccessToken();
+        LoginInfoResult result = miniWechatService.miniLogin(code, accessToken);
         log.info(" 小程序登录返回信息：{}", JsonUtils.toJsonString(result));
         String openid = result.getOpenid();
         String unionid = result.getUnionId();

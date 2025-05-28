@@ -10,8 +10,8 @@ import com.sz.applet.miniuser.pojo.vo.MiniUserVO;
 import com.sz.applet.miniuser.service.MiniUserService;
 import com.sz.core.util.JsonUtils;
 import com.sz.core.util.Utils;
-import com.sz.wechat.WechatService;
-import com.sz.wechat.pojo.LoginInfoResult;
+import com.sz.wechat.mini.MiniWechatService;
+import com.sz.wechat.mini.LoginInfoResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,12 @@ import static com.sz.applet.miniuser.pojo.po.table.MiniUserTableDef.MINI_USER;
 @RequiredArgsConstructor
 public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> implements MiniUserService {
 
-    private final WechatService wechatService;
+    private final MiniWechatService miniWechatService;
 
     @Override
     public MiniUserVO doLogin(MiniLoginDTO dto) {
-        String accessToken = wechatService.getAccessToken();
-        LoginInfoResult loginInfoResult = wechatService.miniLogin(dto.getCode(), accessToken);
+        String accessToken = miniWechatService.getAccessToken();
+        LoginInfoResult loginInfoResult = miniWechatService.miniLogin(dto.getCode(), accessToken);
         log.info(" 小程序登录返回信息：{}", JsonUtils.toJsonString(loginInfoResult));
         // [do something ...] 结合实际业务进行处理
         return null;
