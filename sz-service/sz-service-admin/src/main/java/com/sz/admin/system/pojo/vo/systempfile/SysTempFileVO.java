@@ -3,6 +3,7 @@ package com.sz.admin.system.pojo.vo.systempfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -26,7 +27,7 @@ public class SysTempFileVO {
     private String tempName;
 
     @Schema(description = "地址")
-    private String url;
+    private List<String> url;
 
     @Schema(description = "备注")
     private String remark;
