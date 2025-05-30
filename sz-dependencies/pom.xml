@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sz</groupId>
@@ -16,6 +16,7 @@
         <spring-boot.version>3.4.4</spring-boot.version>
         <sa-token.version>1.41.0</sa-token.version>
         <mybatis-flex.version>1.10.9</mybatis-flex.version>
+        <org.projectlombok.version>1.18.36</org.projectlombok.version>
         <jackson.version>2.18.2</jackson.version>
         <aws.s3.version>2.29.50</aws.s3.version>
     </properties>
@@ -116,14 +117,15 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.36</version>
+                <version>${org.projectlombok.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>2.2.27</version>
             </dependency>
-            <!--为了修复sa-Token-Jwt V1.3.7版本漏洞，后续官方修复后移除此依赖-->
+            <!--为了修复sa-Token-Jwt
+            V1.3.7版本漏洞，后续官方修复后移除此依赖-->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-jwt</artifactId>
