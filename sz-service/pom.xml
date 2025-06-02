@@ -41,14 +41,57 @@
         </dependency>
     </dependencies>
 
-    <!--springboot maven打包，解决 “jar中没有主清单属性” 的问题-->
+    <!--
+    springboot maven打包相关配置说明：
+
+    1. spring-boot-maven-plugin 插件
+       作用：用于 Spring Boot 项目的打包、运行与部署。自动生成可执行 JAR 包，并解决 “jar中没有主清单属性” 的问题。
+       即使没有手动添加 mainClass 属性，Spring Boot 也会自动扫描主类并添加入口，确保 jar 包可直接运行。
+
+    2. maven-compiler-plugin 插件
+       作用：用于项目编译，指定编译参数。
+       <arg>-parameters</arg> 参数的作用：
+         - 让 Java 编译器在字节码中保留方法和构造方法的参数名。
+         - 这样 Spring/Spring Boot 等框架在进行依赖注入时，可以通过参数名精确匹配 Bean，避免多 Bean 注入冲突。
+         - 这是 Spring Boot 3.x/Spring Framework 6.x 推荐的最佳实践，提升依赖注入的准确性和安全性。
+
+    3. 插件顺序无强制要求，但建议 spring-boot-maven-plugin 在前，便于识别主入口和 packaging。
+
+    4. 通用建议：
+       - 如需指定 Java 版本，可在 maven-compiler-plugin 增加 <source> 和 <target>。
+       - 其他如资源过滤、测试覆盖率等插件可按需添加。
+-->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Java 编译插件，保留参数名，方便 Spring 精确依赖注入 -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
         </plugins>
+        <!--
+        resources 配置说明：
+        1. <resources> 标签用于指定项目资源文件的处理方式。
+        2. <resource> 表示一个资源目录的配置项。
+        3. <directory> 指定资源文件夹路径，这里是 src/main/resources，表示主资源目录。
+        4. <filtering>true</filtering> 表示启用资源过滤，Maven 会自动将其中的占位符（如 ${project.version}）替换为实际的属性值。
+        常用于在配置文件（如 application.yml、application.properties）中动态注入版本号、环境变量等。
+        注意：开启 filtering 后，若目录中有非文本文件（如图片、二进制文件），建议将这些文件单独放到不需要 filtering 的 resource 配置中，以免被错误处理。
+-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
 </project>
