@@ -1,4 +1,4 @@
-name: Docker Sz-Socket CI Prod
+name: Docker Sz Services CI
 
 on:
   push:
@@ -6,25 +6,30 @@ on:
   pull_request:
     branches: [ "preview" ]
   workflow_dispatch:
+
 jobs:
-  build:
+  build-and-deploy:
+    name: Build & Deploy ${{ matrix.app_name }}
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1 # 串行执行
+      matrix:
+        include:
+          - app_name: sz-service-admin
+            service_port: 9991
+            log_dir: /home/app/sz-service-admin/logs
+            config_dir: /home/conf/sz-service-admin
+            jar_dir: ./sz-service/sz-service-admin/target
+          - app_name: sz-service-websocket
+            service_port: 9993
+            log_dir: /home/app/sz-service-websocket/logs
+            config_dir: /home/conf/sz-service-websocket
+            jar_dir: ./sz-service/sz-service-websocket/target
     env:
-      # 服务名
-      APP_NAME: sz-service-websocket
-      # 端口
-      SERVICE_PORT: 9993
-      # 运行环境变量
-      RUNNING_ACTIVE: preview
-      # 日志路径
-      LOG_DIR: /home/app/sz-service-websocket/logs
-      # 配置文件路径 (与crm-api服务使用相同配置，因此可使用相同路径)
-      CONFIG_DIR: /home/conf/sz-service-websocket
-      # Docker 仓库域名
-      ACR_DOMAIN:  registry.cn-beijing.aliyuncs.com
-      # 命名空间
+      ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
       ACR_ZONE: sz-action
       VERSION: latest
+      RUNNING_ACTIVE: preview
       SHELL_RUN_DIR: /home/run
     steps:
       - name: Checkout code
@@ -37,13 +42,6 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-#      - name: Set up Maven
-#        uses: actions/setup-java@v4
-#        with:
-#          distribution: 'zulu'
-#          java-version: '21'
-#          cache: 'maven'
-
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
@@ -54,20 +52,20 @@ jobs:
 
       - name: Copy JAR file
         run: |
-          cd ./sz-service/sz-service-websocket/target
+          cd ${{ matrix.jar_dir }}
           cp ./*.jar ../../../app.jar
 
       - name: Build Docker image
-        run: docker build -t ${{ env.APP_NAME }}:${{ env.VERSION }} .
+        run: docker build -t ${{ matrix.app_name }}:${{ env.VERSION }} .
 
       - name: Log in to Docker ACR
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
 
       - name: Tag Docker image
-        run: docker tag ${{ env.APP_NAME }}:${{ env.VERSION }} ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+        run: docker tag ${{ matrix.app_name }}:${{ env.VERSION }} ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
 
       - name: Push Docker image
-        run: docker push ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+        run: docker push ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
 
       - name: Deploy to remote server
         uses: appleboy/ssh-action@v1.2.0
@@ -76,28 +74,27 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           script: |
-            echo "${{ env.ACR_PASSWORD }}" | docker login --username=${{ env.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
-            docker pull  ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
-        
+            docker pull ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
+
             echo "==================== 生成启动命令脚本 ===================="
             mkdir -p ${{ env.SHELL_RUN_DIR }}
-            START_SCRIPT="${{ env.SHELL_RUN_DIR }}/docker_run_${{ env.APP_NAME }}_${{ env.RUNNING_ACTIVE }}.sh"
+            START_SCRIPT="${{ env.SHELL_RUN_DIR }}/docker_run_${{ matrix.app_name }}_${{ env.RUNNING_ACTIVE }}.sh"
             cat > $START_SCRIPT <<EOL
             #!/bin/bash
               echo "==================== 停止旧应用容器 ===================="
-              docker stop ${{ env.APP_NAME }} || true
-              docker rm ${{ env.APP_NAME }} || true
+              docker stop ${{ matrix.app_name }} || true
+              docker rm ${{ matrix.app_name }} || true
               docker image prune -f
               docker builder prune -f
               echo "==================== 启动应用容器 ===================="
               docker run -itd \\
-              --name ${{ env.APP_NAME }} \\
+              --name ${{ matrix.app_name }} \\
               --restart always \\
-              -p ${{ env.SERVICE_PORT }}:${{ env.SERVICE_PORT }} \\
-              -v ${{ env.LOG_DIR }}:/logs \\
-              -v ${{ env.CONFIG_DIR }}:/config \\
+              -p ${{ matrix.service_port }}:${{ matrix.service_port }} \\
+              -v ${{ matrix.log_dir }}:/logs \\
+              -v ${{ matrix.config_dir }}:/config \\
               -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \\
-              ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ env.APP_NAME }}:${{ env.VERSION }}
+              ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
             EOL
             chmod +x $START_SCRIPT
             echo "启动脚本已生成：$START_SCRIPT"

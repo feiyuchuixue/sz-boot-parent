@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.5.0</version>
         <relativePath/>
     </parent>
 
@@ -18,7 +18,7 @@
 
     <properties>
         <!-- sz-boot-parent版本 -->
-        <revision>1.2.1-beta-SNAPSHOT</revision>
+        <revision>1.2.2-beta-SNAPSHOT</revision>
     </properties>
 
 </project>
