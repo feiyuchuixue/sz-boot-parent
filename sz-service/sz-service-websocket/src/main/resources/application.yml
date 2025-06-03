@@ -16,4 +16,4 @@ spring:
   application:
     name: websocket-service
 app:
-  version: ${project.version}
+  version: @project.version@
