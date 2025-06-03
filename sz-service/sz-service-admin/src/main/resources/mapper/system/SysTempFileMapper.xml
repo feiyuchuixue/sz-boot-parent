@@ -6,7 +6,7 @@
         <id column="id" property="id"/>
         <result column="sys_file_id" property="sysFileId"/>
         <result column="temp_name" property="tempName"/>
-        <result column="url" property="url"/>
+        <result column="url" property="url" typeHandler="com.mybatisflex.core.handler.JacksonTypeHandler"/>
         <result column="remark" property="remark"/>
         <result column="del_flag" property="delFlag"/>
         <result column="create_id" property="createId"/>
