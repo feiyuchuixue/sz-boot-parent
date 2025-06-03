@@ -1,4 +1,33 @@
 # 更新日志
+## v1.2.3-beta （20250603）
+
+- sz-boot-parent：
+
+  - 依赖升级：
+    - **spring-boot-starter-parent：3.4.4  -> 3.5.0。**
+    - software.amazon.awssdk.crt:aws-crt：0.33.7  -> 0.38.4。
+    - software.amazon.awssdk:s3：2.29.50 -> 2.31.54。
+    - hutool-jwt：5.8.34 -> 5.8.38。
+    - fastexcel：1.1.0 -> 1.2.0。
+    - mysql-mysql-connector-j: 9.2.0 -> 9.3.0
+    - HikariCP：6.2.1 -> 6.3.0
+    - commons-io-commons-io：2.18.0 -> 2.19.0
+    - jackson：2.18.2 -> 2.19.0
+    - springdoc-springdoc-openapi-starter-webmvc-ui：2.8.3 -> 2.8.8
+    - org.aspectj-aspectjweaver：1.9.23 -> 1.9.24
+    - modelmapper：3.2.2 -> 3.2.3
+    - io.swagger.core.v3-swagger-annotations：2.2.27 -> 2.2.32
+    - commons-collections4：4.4 -> 4.5.0
+  - 优化：适配解决maven编译时无法识别Lombok和Mybatis-Flex APT注解器导致的”找不到符号“报错问题。 （感谢[JoeyFrancisTribbiani](https://github.com/JoeyFrancisTribbiani)）
+  - 修复：FastExcel 依赖 Apache POI漏洞。
+  - 优化：logback.xml中`converterClass`已废弃，更换为新语法`class`。
+  - 更新：com.diffplug.spotless-spotless-maven-plugin-2.44.5。
+  - 优化：cicd 脚本，将admin和websocket合并成一个脚本。
+  - 修改：多文件上传不再支持单字符串，统一改为JSON数组形式。
+- sz-admin：
+
+  - 优化：多文件上传组件不再支持单字符串，统一改为数组形式。
+
 ## v1.2.2-beta （20250528）
 
 > [!NOTE]
