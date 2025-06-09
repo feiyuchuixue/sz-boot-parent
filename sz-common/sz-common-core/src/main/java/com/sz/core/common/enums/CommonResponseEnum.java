@@ -1,11 +1,9 @@
 package com.sz.core.common.enums;
 
-import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
-
 /**
  * 异常枚举类
  */
-public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
+public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnum> {
 
     // @formatter:off
     VALID_ERROR(100, "参数校验异常"),
@@ -43,43 +41,15 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     /**
      * 返回码
      */
-    private int code;
+    private final int code;
 
     /**
      * 返回消息
      */
-    private String message;
+    private final String message;
 
     CommonResponseEnum(int code, String message) {
         this.code = code;
-        this.message = message;
-    }
-
-    /**
-     * 自定义断言，支持提供错误码和消息
-     *
-     * @param code
-     *            自定义错误码
-     * @param message
-     *            自定义错误消息
-     * @return 当前枚举常量
-     */
-    public CommonResponseEnum message(int code, String message) {
-        this.setCode(code);
-        this.setMessage(message);
-        return this;
-    }
-
-    public CommonResponseEnum message(String message) {
-        this.setMessage(message);
-        return this;
-    }
-
-    private void setCode(int code) {
-        this.code = code;
-    }
-
-    private void setMessage(String message) {
         this.message = message;
     }
 
@@ -97,5 +67,4 @@ public enum CommonResponseEnum implements BusinessExceptionCustomAssert {
     public ErrorPrefixEnum getCodePrefixEnum() {
         return ErrorPrefixEnum.COMMON;
     }
-
 }

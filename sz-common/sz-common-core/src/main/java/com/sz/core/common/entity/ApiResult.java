@@ -2,6 +2,7 @@ package com.sz.core.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.common.exception.common.BusinessExceptionCustomAssert;
 import com.sz.core.util.Utils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -73,6 +74,18 @@ public class ApiResult<T> implements Serializable {
     }
 
     protected static String getResponseCode(CommonResponseEnum responseEnum) {
+        return responseEnum.getCodePrefixEnum().getPrefix() + responseEnum.getCode();
+    }
+
+    public static <T> ApiResult<T> error(BusinessExceptionCustomAssert responseEnum) {
+        ApiResult<T> apiResult = new ApiResult<>();
+        apiResult.code = getResponseCode(responseEnum);
+        apiResult.message = responseEnum.getMessage();
+        apiResult.data = null;
+        return apiResult;
+    }
+
+    protected static String getResponseCode(BusinessExceptionCustomAssert responseEnum) {
         return responseEnum.getCodePrefixEnum().getPrefix() + responseEnum.getCode();
     }
 
