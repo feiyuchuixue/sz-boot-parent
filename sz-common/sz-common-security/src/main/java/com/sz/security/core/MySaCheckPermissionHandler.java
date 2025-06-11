@@ -9,7 +9,8 @@ import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.util.SaFoxUtil;
 import com.sz.security.core.util.LoginUtils;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 
 /**
  * @author sz
@@ -24,13 +25,17 @@ public class MySaCheckPermissionHandler implements SaAnnotationHandlerInterface<
     }
 
     @Override
-    public void checkMethod(SaCheckPermission at, Method method) {
+    public void check(Annotation at, AnnotatedElement element) {
+        SaAnnotationHandlerInterface.super.check(at, element);
+    }
+
+    @Override
+    public void checkMethod(SaCheckPermission at, AnnotatedElement element) {
         doCheck(at.type(), at.value(), at.mode(), at.orRole());
     }
 
     public static void doCheck(String type, String[] value, SaMode mode, String[] orRole) {
         StpLogic stpLogic = SaManager.getStpLogic(type, false);
-
         try {
             if (mode == SaMode.AND) {
                 stpLogic.checkPermissionAnd(value);
