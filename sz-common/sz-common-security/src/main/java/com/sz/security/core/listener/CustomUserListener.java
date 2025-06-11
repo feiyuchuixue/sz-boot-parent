@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author sz
- * @since 2024/1/22 16:47
  * @version 1.0
+ * @since 2024/1/22 16:47
  */
 @Component
 @Slf4j
@@ -39,6 +39,7 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doDisable(String loginType, Object loginId, String service, int level, long disableTime) {
+        log.info("user doDisable, userId:{}, service:{}", loginId, service);
     }
 
     /**
@@ -46,6 +47,7 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doUntieDisable(String loginType, Object loginId, String service) {
+        log.info("user doUntieDisable, userId:{}, service:{}", loginId, service);
     }
 
     /**
@@ -53,6 +55,7 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doOpenSafe(String loginType, String tokenValue, String service, long safeTime) {
+        log.info("user doOpenSafe, token:{}, service:{}", tokenValue, service);
     }
 
     /**
@@ -60,6 +63,7 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doCloseSafe(String loginType, String tokenValue, String service) {
+        log.info("user doCloseSafe, token:{}, service:{}", tokenValue, service);
     }
 
     /**
@@ -67,6 +71,7 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doCreateSession(String id) {
+        log.info("user doCreateSession, id:{}", id);
     }
 
     /**
@@ -74,12 +79,15 @@ public class CustomUserListener implements SaTokenListener {
      */
     @Override
     public void doLogoutSession(String id) {
+        log.info("user doLogoutSession, id:{}", id);
     }
 
     /**
-     * 每次Token续期时触发
+     * 每次 Token 续期时触发
      */
     @Override
-    public void doRenewTimeout(String tokenValue, Object loginId, long timeout) {
+    public void doRenewTimeout(String loginType, Object loginId, String tokenValue, long timeout) {
+        log.info("user doRenewTimeout, loginId:{}, token:{}, timeout:{}", loginId, tokenValue, timeout);
     }
+
 }
