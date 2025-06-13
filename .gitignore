@@ -3,4 +3,4 @@
 /**/target/
 # 排除logs日志文件夹
 /logs/
-/config/local/
+/config/local/**
