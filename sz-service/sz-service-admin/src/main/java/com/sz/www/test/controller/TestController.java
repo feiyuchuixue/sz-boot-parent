@@ -36,7 +36,7 @@ import java.util.List;
 public class TestController {
 
     private final WebsocketRedisService websocketRedisService;
-
+    private  String UCenter;
     private final SysMessageService sysMessageService;
 
     @PostMapping("push/all")

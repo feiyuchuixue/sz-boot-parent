@@ -1,0 +1,55 @@
+# 端口
+server:
+  port: 5000
+
+# Sa-Token 配置
+sa-token:
+  # 打印操作日志
+  is-log: true
+
+    # SSO-模式一相关配置  (非模式一不需要配置)
+    # cookie:
+    # 配置 Cookie 作用域
+    # domain: stp.com
+  # token名称 (同时也是cookie名称)
+  token-name: Authorization
+
+  # SSO-Server 配置
+  sso-server:
+    # Ticket有效期 (单位: 秒)，默认五分钟
+    ticket-timeout: 300
+    home-route: /home
+    # 应用列表：配置接入的应用信息
+    # 允许匿名 client
+    # allow-anon-client: true
+    clients:
+      # 应用 sso-client2：采用模式二对接 (跨域、同Redis)
+#      sso-client2:
+#        client: sso-client2
+#        allow-url: "*"
+#        secret-key: SSO-C2-kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
+      # 应用 sso-client3：采用模式三对接 (跨域、跨Redis)
+      sso-client3:
+        # 应用名称
+        client: sso-client3
+        # 允许授权地址
+        allow-url: "*"
+        # 是否接收消息推送
+        is-push: true
+        # 消息推送地址
+        push-url: http://127.0.0.1:9991/api/admin/sso/pushC
+        # 接口调用秘钥 (如果不配置则使用全局默认秘钥)
+        secret-key: SSO-C3-kQwIOrYvnXmSDkwEiFngrKidMcdrgKor
+
+spring:
+  data:
+  # Redis配置 （SSO模式一和模式二使用Redis来同步会话）
+    redis:
+      # Redis数据库索引（默认为0）
+      database: 0
+      # Redis服务器地址
+      host: 127.0.0.1
+      # Redis服务器连接端口
+      port: 6379
+      # Redis服务器连接密码（默认为空）
+      password: 123456

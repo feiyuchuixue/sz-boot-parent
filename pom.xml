@@ -11,6 +11,7 @@
         <module>sz-common</module>
         <module>sz-service</module>
         <module>sz-dependencies</module>
+        <module>sz-service/sz-service-sso-server</module>
     </modules>
     <parent>
         <groupId>com.sz</groupId>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>com.sz</groupId>
+        <artifactId>sz-service</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>sz-service-sso-server</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合SSO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-sso</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合 RedisTemplate -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- 视图引擎（在前后端不分离模式下提供视图支持） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合 Forest 请求工具 (模式三需要通过 http 请求推送消息) -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-forest</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+    </dependencies>
+
+</project>

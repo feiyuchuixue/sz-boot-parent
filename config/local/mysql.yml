@@ -7,7 +7,7 @@ spring:
     hikari:
       #连接池名
       pool-name: HikariCP
-      #最小空闲连接数
+      #最小空闲连接数 1234
       minimum-idle: 5
       # 空闲连接存活最大时间，默认10分钟
       idle-timeout: 600000

@@ -90,5 +90,29 @@
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
         </dependency>
+        <!-- Sa-Token 插件：整合SSO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-sso</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+
+        <!-- Sa-Token 整合 RedisTemplate  -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合 Forest 请求工具 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-forest</artifactId>
+            <version>1.44.0</version>
+        </dependency>
     </dependencies>
 </project>

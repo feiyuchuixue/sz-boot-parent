@@ -1,5 +1,6 @@
 package com.sz;
 
+import cn.dev33.satoken.sso.SaSsoManager;
 import com.sz.mysql.FlywayProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -63,6 +64,16 @@ public class AdminApplication {
                 """;
         String result = String.format(template, "https://szadmin.cn", getVersion());
         System.out.println(result);
+
+        System.out.println();
+        System.out.println("---------------------- Sa-Token SSO 模式三 Client 端启动成功 ----------------------");
+        System.out.println("配置信息：" + SaSsoManager.getClientConfig());
+        System.out.println("测试访问应用端一: http://sa-sso-client1.com:9002");
+        System.out.println("测试访问应用端二: http://127.0.0.1:9991/api/admin/");
+        System.out.println("测试访问应用端三: http://sa-sso-client3.com:9002");
+        System.out.println("测试前需要根据官网文档修改hosts文件，测试账号密码：sa / 123456");
+        System.out.println();
+
     }
 
 }
