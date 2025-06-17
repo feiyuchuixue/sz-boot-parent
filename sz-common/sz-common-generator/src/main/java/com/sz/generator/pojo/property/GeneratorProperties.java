@@ -1,6 +1,7 @@
 package com.sz.generator.pojo.property;
 
 import lombok.Data;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "sz.generator")
+@MapperScan("com.sz.generator.mapper")
 public class GeneratorProperties {
 
     // 初始值配置

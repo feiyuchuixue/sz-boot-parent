@@ -1,0 +1,15 @@
+flyway:
+  framework: # 框架迁移脚本管理
+    enabled: false
+    locations: classpath:/db/framework
+    baseline-on-migrate: true
+    baseline-version: 1
+    table: t_db_version
+    validate-on-migrate: true
+  business: # 业务迁移脚本管理
+    enabled: false
+    locations: classpath:db/business
+    baseline-on-migrate: true
+    baseline-version: 1
+    table: t_db_version_business
+    validate-on-migrate: true

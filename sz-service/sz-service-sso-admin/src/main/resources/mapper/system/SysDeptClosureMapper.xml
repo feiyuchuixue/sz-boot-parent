@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.system.mapper.SysDeptClosureMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoadmin.system.pojo.po.SysDeptClosure">
+        <result column="ancestor_id" property="ancestorId"/>
+        <result column="descendant_id" property="descendantId"/>
+        <result column="depth" property="depth"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ancestor_id, descendant_id, depth
+    </sql>
+
+
+
+</mapper>

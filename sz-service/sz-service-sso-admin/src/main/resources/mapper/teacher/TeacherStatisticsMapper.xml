@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.teacher.mapper.TeacherStatisticsMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoadmin.teacher.pojo.po.TeacherStatistics">
+        <id column="id" property="id"/>
+        <result column="year" property="year"/>
+        <result column="month" property="month"/>
+        <result column="during_time" property="duringTime"/>
+        <result column="teacher_id" property="teacherId"/>
+        <result column="teacher_common_type" property="teacherCommonType"/>
+        <result column="total_teaching" property="totalTeaching"/>
+        <result column="total_class_count" property="totalClassCount"/>
+        <result column="total_hours" property="totalHours"/>
+        <result column="check_status" property="checkStatus"/>
+        <result column="check_time" property="checkTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="last_sync_time" property="lastSyncTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, year, month, during_time, teacher_id, teacher_common_type, total_teaching, total_class_count, total_hours, check_status, check_time, create_time, update_time, last_sync_time, remark
+    </sql>
+
+</mapper>

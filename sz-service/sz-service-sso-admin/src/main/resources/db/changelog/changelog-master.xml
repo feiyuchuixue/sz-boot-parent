@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <includeAll path="/db/changelog/framework" relativeToChangelogFile="false" context="框架脚本，为了方便后续同步官方版本，不建议改动"/>
+    <includeAll path="/db/changelog/business" relativeToChangelogFile="false" context="业务脚本" />
+</databaseChangeLog>

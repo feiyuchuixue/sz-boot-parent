@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.system.mapper.CommonFileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoadmin.system.pojo.po.SysFile">
+        <id column="id" property="id"/>
+        <result column="filename" property="filename"/>
+        <result column="dir_tag" property="dirTag"/>
+        <result column="size" property="size"/>
+        <result column="url" property="url"/>
+        <result column="create_time" property="createTime"/>
+        <result column="object_name" property="objectName"/>
+        <result column="context_type" property="contextType"/>
+        <result column="e_tag" property="eTag"/>
+        <result column="create_id" property="createId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, filename, dir_tag, size, url, create_time, object_name, context_type, e_tag, create_id
+    </sql>
+
+</mapper>

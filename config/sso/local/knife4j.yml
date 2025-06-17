@@ -1,0 +1,26 @@
+# swagger文档配置
+knife4j:
+  enable: false
+  setting:
+    language: zh_cn
+springdoc:
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha·
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'admin'
+      paths-to-match: '/**'
+      packages-to-scan: com.sz.admin
+    - group: 'generator工具'
+      paths-to-match: '/**'
+      packages-to-scan: com.sz.generator
+    - group: 'www网站'
+      paths-to-match: '/**'
+      packages-to-scan: com.sz.www
+    - group: '微信小程序'
+      paths-to-match: '/**'
+      packages-to-scan: com.sz.applet

@@ -1,0 +1,4 @@
+server:
+  servlet:
+    context-path: /api/sso/admin
+  port: 5001

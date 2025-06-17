@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.system.mapper.SysUserRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoadmin.system.pojo.po.SysUserRole">
+        <id column="id" property="id"/>
+        <result column="role_id" property="roleId"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, role_id, user_id
+    </sql>
+
+    <!-- 批量插入用户角色关联记录 -->
+    <insert id="insertBatchSysUserRole">
+        INSERT INTO sys_user_role (role_id, user_id)
+        VALUES
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{roleId}, #{userId})
+        </foreach>
+    </insert>
+    <!-- 根据user_id 查询menu_id -->
+    <select id="queryMenuIdByUserId" resultType="java.lang.String">
+        SELECT DISTINCT(srm.menu_id)
+        FROM sys_user_role sur
+                 LEFT JOIN sys_role_menu srm ON sur.role_id = srm.role_id
+        WHERE user_id = #{userId}
+    </select>
+    <select id="queryPermissionByUserId" resultType="java.lang.String">
+        SELECT DISTINCT(sm.permissions)
+        FROM sys_user_role sur
+                 LEFT JOIN sys_role_menu srm ON sur.role_id = srm.role_id
+                 LEFT JOIN sys_menu sm ON srm.menu_id = sm.id
+        WHERE sm.permissions IS NOT NULL
+          AND sm.permissions != ''
+            AND sur.user_id = #{userId};
+    </select>
+
+
+</mapper>

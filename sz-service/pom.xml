@@ -14,6 +14,8 @@
     <modules>
         <module>sz-service-admin</module>
         <module>sz-service-websocket</module>
+        <module>sz-service-sso-server</module>
+        <module>sz-service-sso-admin</module>
     </modules>
 
     <!--sz-service模块下的通用依赖-->

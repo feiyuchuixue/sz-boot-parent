@@ -4,7 +4,7 @@ import cn.dev33.satoken.util.SaResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+// @RestControllerAdvice
 public class GlobalExceptionHandler {
     // 全局异常拦截 
     @ExceptionHandler

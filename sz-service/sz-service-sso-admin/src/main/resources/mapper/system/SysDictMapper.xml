@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.system.mapper.SysDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoadmin.system.pojo.po.SysDict">
+        <id column="id" property="id"/>
+        <result column="sys_dict_type_id" property="sysDictTypeId"/>
+        <result column="code_name" property="codeName"/>
+        <result column="alias" property="alias"/>
+        <result column="sort" property="sort"/>
+        <result column="callback_show_style" property="callbackShowStyle"/>
+        <result column="remark" property="remark"/>
+        <result column="is_lock" property="isLock"/>
+        <result column="is_show" property="isShow"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+        <result column="delete_id" property="deleteId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sys_dict_type_id, code_name, alias, sort, callback_show_style, remark, is_lock, is_show, del_flag, create_time, update_time, delete_time, create_id, update_id, delete_id
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Custom_Column_Join_List">
+        sd.id
+        , sd.sys_dict_type_id, sd.code_name,
+             sd.sort, sd.callback_show_style,
+             sd.remark, sd.is_lock, sd.is_show,
+             sd.create_time, sd.update_time, sd.del_flag,
+             sdt.type_name as sys_dict_type_name ,
+             sdt.type_code as sys_dict_type_code,
+        sd.alias
+    </sql>
+
+    <select id="listDict" resultType="com.sz.core.common.entity.DictVO">
+        SELECT
+        <include refid="Custom_Column_Join_List"></include>
+        FROM sys_dict_type AS sdt
+        LEFT JOIN sys_dict AS sd
+        ON sdt.id = sd.sys_dict_type_id
+        where sdt.del_flag = 'F' and sd.del_flag = 'F'
+        <if test="typeCode != null and typeCode != ''">
+            and sdt.type_code = #{typeCode}
+        </if>
+        order by sys_dict_type_id asc,sort asc
+    </select>
+
+</mapper>
