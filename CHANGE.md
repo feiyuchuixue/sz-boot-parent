@@ -1,4 +1,19 @@
 # 更新日志
+## v1.2.4-beta （20250614）
+
+- sz-boot-parent：
+
+  - 修复: 菜单路径和组件路径拼写错误"menuManage"。（感谢[Kang-Yang](https://github.com/Kang-Yang)）
+  - 修复：异常枚举类message方法并发问题。
+  - 重构：将异常枚举类实现改为通用响应枚举模板。
+  - 升级：sa-token v1.41.0 -> v1.44.0  && 同步改造。
+- sz-admin：
+
+  - 修复: 菜单路径和组件路径拼写错误"menuManage"。（感谢[Kang-Yang](https://github.com/Kang-Yang)）
+  - 修复：账户管理批量设置部门后checkbox未重置的问题。
+  - 优化：Grid组件，重构字段查找逻辑，提升性能和可读性。
+  - 优化：ToolBarRight组件，修改展示项用户名为昵称。 
+
 ## v1.2.3-beta （20250603）
 
 - sz-boot-parent：
