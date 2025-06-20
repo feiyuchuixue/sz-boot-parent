@@ -12,13 +12,14 @@ sa-token:
     # 配置 Cookie 作用域
     # domain: stp.com
   # token名称 (同时也是cookie名称)
-  token-name: Authorization
-
+  token-prefix: Bearer
+  token-name: sso-server
+  token-style: tik
   # SSO-Server 配置
   sso-server:
     # Ticket有效期 (单位: 秒)，默认五分钟
     ticket-timeout: 300
-    home-route: /home
+    # home-route: /home
     # 应用列表：配置接入的应用信息
     # 允许匿名 client
     # allow-anon-client: true
@@ -46,44 +47,57 @@ spring:
     virtual:
       # 启用虚拟线程
       enabled: true
+  profiles:
+    active: local
+  config:
+    import:
+#      - file:config/sso/${spring.profiles.active}/knife4j.yml
+#      - file:config/sso/${spring.profiles.active}/oss.yml
+      - file:config/sso/${spring.profiles.active}/mybatis-flex.yml
+      - file:config/sso/${spring.profiles.active}/mysql.yml
+#      - file:config/${spring.profiles.active}/page-helper.yml
+      - file:config/${spring.profiles.active}/redis.yml
+#      - file:config/${spring.profiles.active}/sa-token.yml
   data:
   # Redis配置 （SSO模式一和模式二使用Redis来同步会话）
-    redis:
-      # Redis数据库索引（默认为0）
-      database: 0
-      # Redis服务器地址
-      host: 127.0.0.1
-      # Redis服务器连接端口
-      port: 6379
-      # Redis服务器连接密码（默认为空）
-      password: 123456
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/sz_admin_preview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: Yanfa2023@
-    hikari:
-      #连接池名
-      pool-name: HikariCP
-      #最小空闲连接数
-      minimum-idle: 5
-      # 空闲连接存活最大时间，默认10分钟
-      idle-timeout: 600000
-      # 连接池最大连接数，默认是10
-      maximum-pool-size: 10
-      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
-      auto-commit: true
-      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认30分钟
-      max-lifetime: 1800000
-      # 数据库连接超时时间,默认30秒
-      connection-timeout: 30000
-      # 连接测试query
-      connection-test-query: SELECT 1
-mybatis-flex:
-  configuration:
-    map-underscore-to-camel-case: true
-    jdbc-type-for-null: null
-    auto-mapping-behavior: full
-    auto-mapping-unknown-column-behavior: none
-    cache-enabled: false
-
+#    redis:
+#      # Redis数据库索引（默认为0）
+#      database: 0
+#      # Redis服务器地址
+#      host: 127.0.0.1
+#      # Redis服务器连接端口
+#      port: 6379
+#      # Redis服务器连接密码（默认为空）
+#      password: 123456
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/sz_admin_preview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
+#    username: root
+#    password: Yanfa2023@
+#    hikari:
+#      #连接池名
+#      pool-name: HikariCP
+#      #最小空闲连接数
+#      minimum-idle: 5
+#      # 空闲连接存活最大时间，默认10分钟
+#      idle-timeout: 600000
+#      # 连接池最大连接数，默认是10
+#      maximum-pool-size: 10
+#      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+#      auto-commit: true
+#      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认30分钟
+#      max-lifetime: 1800000
+#      # 数据库连接超时时间,默认30秒
+#      connection-timeout: 30000
+#      # 连接测试query
+#      connection-test-query: SELECT 1
+#mybatis-flex:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#    jdbc-type-for-null: null
+#    auto-mapping-behavior: full
+#    auto-mapping-unknown-column-behavior: none
+#    cache-enabled: false
+#  global-config:
+#    deleted-value-of-logic-delete: "T"
+#    normal-value-of-logic-delete: "F"

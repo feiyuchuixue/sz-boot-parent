@@ -35,6 +35,7 @@ public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnu
     BACKGROUND_NOT_EXISTS(1014, "背景图片不存在"),
 
     UNKNOWN(9999, "未知异常"),
+    SSO_UNKNOWN_LOGIN(2000, "统一认证未登录"),
     ;
     // @formatter:on
 

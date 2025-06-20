@@ -1,6 +1,5 @@
 package com.sz;
 
-import cn.dev33.satoken.sso.SaSsoManager;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

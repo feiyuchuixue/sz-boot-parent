@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.ssoadmin.ssouser.mapper.SsoUserMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.ssoserver.ssouser.pojo.po.SsoUser">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="sex" property="sex"/>
+        <result column="nickname" property="nickname"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="password_hash" property="passwordHash"/>
+        <result column="platform_user_status_cd" property="platformUserStatusCd"/>
+        <result column="logo" property="logo"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="need_change_password" property="needChangePassword"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="del_time" property="delTime"/>
+        <result column="del_id" property="delId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, username, sex, nickname, phone, email, password_hash, platform_user_status_cd, logo, last_login_time, last_login_ip, need_change_password, create_time, update_time, del_flag, del_time, del_id
+    </sql>
+
+</mapper>

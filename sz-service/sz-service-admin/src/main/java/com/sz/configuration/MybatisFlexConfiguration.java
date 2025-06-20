@@ -1,6 +1,5 @@
 package com.sz.configuration;
 
-
 import com.sz.mysql.BaseFlexConfiguration;
 import org.springframework.context.annotation.Configuration;
 

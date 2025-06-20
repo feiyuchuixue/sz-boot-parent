@@ -19,9 +19,9 @@ import static com.mybatisflex.core.constant.SqlConsts.EQUALS;
 @Slf4j
 public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
-    private static final String FIELD_DELETE_TIME = "delete_time";
+    private static final String FIELD_DELETE_TIME = "del_time";
 
-    private static final String FIELD_DELETE_ID = "delete_id";
+    private static final String FIELD_DELETE_ID = "del_id";
 
     @Override
     public String buildLogicDeletedSet(String logicColumn, TableInfo tableInfo, IDialect iDialect) {

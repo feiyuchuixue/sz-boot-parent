@@ -11,8 +11,8 @@ public class Knife4jConfiguration {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI().info(new Info().title("sz-admin后台管理系统API").version("1.0").description("Sz-Admin RESTful APIs")
-                .termsOfService("http://127.0.0.1:9991").license(new License().name("Apache 2.0").url("http://127.0.0.1:9991")));
+        return new OpenAPI().info(new Info().title("sz-service-sso-server后台管理系统API").version("1.0").description("sz-service-sso-server RESTful APIs")
+                .termsOfService("http://127.0.0.1:5001").license(new License().name("Apache 2.0").url("http://127.0.0.1:5001")));
     }
 
 }

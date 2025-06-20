@@ -14,13 +14,7 @@ springdoc:
   group-configs:
     - group: 'admin'
       paths-to-match: '/**'
-      packages-to-scan: com.sz.admin
+      packages-to-scan: com.sz.ssoadmin
     - group: 'generator工具'
       paths-to-match: '/**'
       packages-to-scan: com.sz.generator
-    - group: 'www网站'
-      paths-to-match: '/**'
-      packages-to-scan: com.sz.www
-    - group: '微信小程序'
-      paths-to-match: '/**'
-      packages-to-scan: com.sz.applet
