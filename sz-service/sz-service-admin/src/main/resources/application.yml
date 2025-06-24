@@ -78,7 +78,7 @@ sa-token:
     # sso-server 端主机地址
     server-url: http://192.168.124.7:5000
     # 认证中心 登录地址
-    auth-url: http://192.168.124.5:5173/login
+    auth-url: http://192.168.124.7:5173/login
     # 使用 Http 请求校验 ticket (模式三)
     is-http: true
     # API 接口调用秘钥

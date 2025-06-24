@@ -32,6 +32,9 @@ public class SysUser implements Serializable {
     @Schema(description = "id")
     private Long id;
 
+    @Schema(description = "用户中心ID")
+    private Long ucenterId;
+
     @Schema(description = "用户名")
     private String username;
 

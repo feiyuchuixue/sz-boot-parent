@@ -30,6 +30,7 @@ import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
 import com.sz.mysql.DataScopeProperties;
+import com.sz.platform.CenterUserConvertService;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.redis.CommonKeyConstants;
@@ -59,7 +60,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService, CenterUserConvertService {
 
     private final SysRoleMapper sysRoleMapper;
 
@@ -397,7 +398,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
-    private LoginUser getLoginUser(SysUserVO userVo) {
+
+    public LoginUser getLoginUser(SysUserVO userVo) {
         BaseUserInfo userInfo = BeanCopyUtils.copy(userVo, BaseUserInfo.class);
         SysUser sysUser = BeanCopyUtils.copy(userVo, SysUser.class);
         CommonResponseEnum.INVALID_USER.assertNull(sysUser);
@@ -460,4 +462,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return listAs(wrapper, UserOptionVO.class);
     }
 
+    @Override
+    public Object convertUserIdToCenterId(Object userId) {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.UCENTER_ID);
+        wrapper.where(SYS_USER.ID.eq(userId));
+        SysUser one = getOne(wrapper);
+        return one.getUcenterId() == null ? null : one.getUcenterId();
+    }
+
+    @Override
+    public Object convertCenterIdToUserId(Object centerId) {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.UCENTER_ID);
+        wrapper.where(SYS_USER.UCENTER_ID.eq(centerId));
+        SysUser one = getOne(wrapper);
+        return one.getId() == null ? null : one.getId();
+    }
 }

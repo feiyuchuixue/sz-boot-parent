@@ -3,6 +3,7 @@ package com.sz.security.core.util;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.util.ObjectUtil;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.LoginUser;
@@ -23,6 +24,18 @@ public class LoginUtils {
     }
 
     public static final String USER_KEY = "loginUser";
+
+    public static void performLogin(LoginUser loginUser, SaLoginParameter parameter, Map<String, Object> extraData) {
+        parameter = ObjectUtil.defaultIfNull(parameter, new SaLoginParameter());
+        parameter.setExtraData(extraData);
+        // 登录，生成token
+        StpUtil.login(loginUser.getUserInfo().getId(), parameter);
+        StpUtil.getTokenSession().set(USER_KEY, loginUser);
+        // 使用全局配置而不使用model独立配置时间的问题
+        StpUtil.getTokenSession().updateTimeout(parameter.getTimeout());
+        StpUtil.getSession().updateTimeout(parameter.getTimeout());
+    }
+
 
     public static void performLogin(LoginUser loginUser, SaLoginModel model, Map<String, Object> extraData) {
         model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
