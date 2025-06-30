@@ -33,7 +33,7 @@ public class AdminApplication {
     @PostConstruct
     public void init() {
         setVersion(appVersion); // 通过辅助方法设置静态字段
-        initFlyway();
+        // initFlyway();
     }
 
     @Deprecated(since = "v1.3.0-beta", forRemoval = true)

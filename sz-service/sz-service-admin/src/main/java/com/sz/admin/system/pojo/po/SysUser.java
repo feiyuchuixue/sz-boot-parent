@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  * @since 2023-08-24
  */
 @Data
-@Table(value = "sys_user", onInsert = TableSysUserListener.class, onUpdate = TableSysUserListener.class)
+@Table(value = "sys_user", onInsert = TableSysUserListener.class, onUpdate = TableSysUserListener.class, dataSource = "preview")
 @Schema(description = "系统用户表")
 public class SysUser implements Serializable {
 
