@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class DefaultColumnWidthStyleStrategy extends AbstractColumnWidthStyleStrategy {
 
-    private static final int MAX_COLUMN_WIDTH = 256;
+    private static final int MAX_COLUMN_WIDTH = 255;
 
     private final Map<Integer, Map<Integer, Integer>> cache = MapUtils.newHashMapWithExpectedSize(8);
 
