@@ -195,22 +195,24 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenuVO> findMenuListByUserId(Long userId) {
         List<SysMenuVO> treeList = new ArrayList<>();
-        // 查询用户具有的menu_id
-        List<String> menuIds = sysUserRoleMapper.queryMenuIdByUserId(userId);
-        if (Utils.isNotNull(menuIds)) {
-            // 菜单全部数据(当前用户下的)
-            QueryWrapper wrapper = QueryWrapper.create().in(SysMenu::getId, menuIds).eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, "1002003")
-                    .orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
-            List<SysMenu> list = list(wrapper);
-            // 构建树形
-            for (SysMenuVO rootNode : getRootNodes(list)) {
-                SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
-                SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
-                meta.setIsLink(("T").equals(meta.getIsLink()) ? menuVO.getRedirect() : "");
-                menuVO.setMeta(meta);
-                SysMenuVO childrenNode = getChildrenNode(menuVO, list);
-                treeList.add(childrenNode);
-            }
+        // 菜单全部数据(当前用户下的)
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(QueryMethods.distinct(SYS_MENU.ID, SYS_MENU.PID, SYS_MENU.PATH, SYS_MENU.NAME, SYS_MENU.TITLE, SYS_MENU.ICON, SYS_MENU.COMPONENT,
+                        SYS_MENU.REDIRECT, SYS_MENU.SORT, SYS_MENU.DEEP, SYS_MENU.MENU_TYPE_CD, SYS_MENU.PERMISSIONS, SYS_MENU.IS_HIDDEN, SYS_MENU.HAS_CHILDREN,
+                        SYS_MENU.IS_LINK, SYS_MENU.IS_FULL, SYS_MENU.IS_AFFIX, SYS_MENU.IS_KEEP_ALIVE, SYS_MENU.CREATE_TIME, SYS_MENU.UPDATE_TIME,
+                        SYS_MENU.CREATE_ID, SYS_MENU.UPDATE_ID, SYS_MENU.DEL_FLAG, SYS_MENU.USE_DATA_SCOPE, SYS_MENU.DELETE_ID, SYS_MENU.DELETE_TIME))
+                .from(SYS_USER_ROLE).leftJoin(SYS_ROLE_MENU).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE_MENU.ROLE_ID)).leftJoin(SYS_MENU)
+                .on(SYS_ROLE_MENU.MENU_ID.eq(SYS_MENU.ID)).where(SYS_MENU.MENU_TYPE_CD.ne("1002003")).where(SYS_USER_ROLE.USER_ID.eq(userId))
+                .orderBy(SYS_MENU.DEEP.asc()).orderBy(SYS_MENU.SORT.asc());
+        List<SysMenu> list = list(wrapper);
+        // 构建树形
+        for (SysMenuVO rootNode : getRootNodes(list)) {
+            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
+            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
+            meta.setIsLink(("T").equals(meta.getIsLink()) ? menuVO.getRedirect() : "");
+            menuVO.setMeta(meta);
+            SysMenuVO childrenNode = getChildrenNode(menuVO, list);
+            treeList.add(childrenNode);
         }
         return treeList;
     }
