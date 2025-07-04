@@ -1,5 +1,6 @@
 package com.sz.admin.system.service.impl;
 
+import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
@@ -352,14 +353,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return;
         }
         // 1. 查询当前用户的最新用户权限信息
-        LoginUser loginUser = buildLoginUser(Long.valueOf(userId + ""));
+        LoginUser loginUser = buildLoginUser(Long.parseLong(userId.toString()));
+        int successCount = 0;
         // todo 如果用户使用了websocket，可以结合socket来判断需要更新的“在线用户”有哪些
         for (String token : tokens) {
-            // // 根据token获取用户session
-            SaSession saSession = StpUtil.getTokenSessionByToken(token);
-            // 2. 更新redis信息
-            saSession.set(LoginUtils.USER_KEY, loginUser);
-            log.warn(" 用户元数据变更, 同步更新用户信息, userId:{}, token:{}", userId, token);
+            try {
+                // 根据token获取用户session
+                SaSession saSession = StpUtil.getTokenSessionByToken(token);
+                // 2. 更新redis信息
+                saSession.set(LoginUtils.USER_KEY, loginUser);
+                successCount++;
+            } catch (SaTokenException e) {
+                log.warn("token:{} 已失效, 无需同步用户信息", token);
+            }
+            log.info("用户元数据变更，同步更新用户信息 userId:{}, 成功:{} / {}", userId, successCount, tokens.size());
         }
     }
 
