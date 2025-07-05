@@ -85,18 +85,21 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
      * @return boolean
      */
     private boolean isTargetTable(QueryWrapper queryWrapper, String table) {
-        // 验证当前table是否是目标table
-        boolean isTargetTable = false;
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-        if (queryTables != null && !queryTables.isEmpty()) {
-            for (QueryTable queryTable : queryTables) {
-                if (table.equals(queryTable.getName())) {
-                    isTargetTable = true;
-                    break;
+        if (queryTables == null || queryTables.isEmpty()) {
+            return false;
+        }
+        for (QueryTable queryTable : queryTables) {
+            if (table.equals(queryTable.getName())) {
+                return true;
+            }
+            if (queryTable instanceof SelectQueryTable selectQueryTable) {
+                if (isTargetTable(selectQueryTable.getQueryWrapper(), table)) {
+                    return true;
                 }
             }
         }
-        return isTargetTable;
+        return false;
     }
 
     /**
