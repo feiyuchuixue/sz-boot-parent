@@ -5,7 +5,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
-import com.sz.admin.system.pojo.vo.sysdict.DictTypeVO;
+import com.sz.core.common.dict.DictTypeVO;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiPageResult;

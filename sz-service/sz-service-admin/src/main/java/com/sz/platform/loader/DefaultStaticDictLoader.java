@@ -1,8 +1,8 @@
 package com.sz.platform.loader;
 
 import com.sz.admin.system.mapper.SysDictMapper;
+import com.sz.core.common.dict.DictLoader;
 import com.sz.core.common.entity.DictVO;
-import com.sz.platform.enums.DynamicDictEnum;
 import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * 静态字典loader
  *
  * StaticDictLoader
- * 
+ *
  * @author sz
  * @since 2024/8/21 9:06
  * @version 1.0
@@ -30,11 +30,6 @@ public class DefaultStaticDictLoader implements DictLoader {
     private final SysDictMapper sysDictMapper;
 
     @Override
-    public DynamicDictEnum getDynamicTypeCode() {
-        return null;
-    }
-
-    @Override
     public Map<String, List<DictVO>> loadDict() {
         if (redisCache.hasKey()) {
             return redisCache.getAllDict();
@@ -46,7 +41,7 @@ public class DefaultStaticDictLoader implements DictLoader {
             return Map.of();
         }
         Map<String, List<DictVO>> result = dictVOS.stream().collect(Collectors.groupingBy(DictVO::getSysDictTypeCode, LinkedHashMap::new, // 使用 LinkedHashMap
-                                                                                                                                          // 作为分组的容器,有序解决乱序问题
+                // 作为分组的容器,有序解决乱序问题
                 Collectors.toList()));
         redisCache.putAllDict(result);
         return result;

@@ -6,7 +6,7 @@ import cn.idev.excel.util.ClassUtils;
 import cn.idev.excel.write.handler.SheetWriteHandler;
 import cn.idev.excel.write.metadata.holder.WriteSheetHolder;
 import cn.idev.excel.write.metadata.holder.WriteWorkbookHolder;
-import com.sz.core.common.service.DictService;
+import com.sz.core.common.dict.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.excel.annotation.DictFormat;

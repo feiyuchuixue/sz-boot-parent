@@ -1,4 +1,4 @@
-package com.sz.core.common.service;
+package com.sz.core.common.dict;
 
 import com.sz.core.common.entity.DictVO;
 

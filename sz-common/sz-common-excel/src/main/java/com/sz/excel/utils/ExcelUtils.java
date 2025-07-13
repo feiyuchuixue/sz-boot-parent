@@ -4,7 +4,7 @@ import cn.idev.excel.FastExcelFactory;
 import cn.idev.excel.write.builder.ExcelWriterSheetBuilder;
 import cn.idev.excel.write.metadata.style.WriteCellStyle;
 import com.sz.core.common.entity.DictVO;
-import com.sz.core.common.service.DictService;
+import com.sz.core.common.dict.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.excel.convert.CustomIntegerStringConvert;
 import com.sz.excel.convert.CustomLongStringConvert;

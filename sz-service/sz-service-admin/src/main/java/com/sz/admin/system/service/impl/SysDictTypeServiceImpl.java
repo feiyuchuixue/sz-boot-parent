@@ -11,7 +11,8 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
-import com.sz.admin.system.pojo.vo.sysdict.DictTypeVO;
+import com.sz.core.common.dict.DictTypeService;
+import com.sz.core.common.dict.DictTypeVO;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -20,7 +21,7 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
-import com.sz.platform.factory.DictLoaderFactory;
+import com.sz.core.common.dict.DictLoaderFactory;
 import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYP
  */
 @Service
 @RequiredArgsConstructor
-public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements SysDictTypeService {
+public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements SysDictTypeService, DictTypeService {
 
     private final DictLoaderFactory dictLoaderFactory;
 
