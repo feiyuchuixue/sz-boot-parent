@@ -3,11 +3,14 @@ package com.sz.core.common.configuration;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.sz.core.common.entity.MultipartFileSerializer;
+import com.sz.core.common.jackson.EmptySerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -106,14 +110,27 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
         objectMapper.setTimeZone(TimeZone.getTimeZone(TIME_ZONE)); // 指定时区为：中国时
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 针对实体映射时不匹配类型或序列化的处理配置：即找不到、不可用也不抛出异常。
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        // dui Null值进行处理,转换为空字符串
-        objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+        objectMapper.setSerializerFactory(objectMapper.getSerializerFactory().withSerializerModifier(new BeanSerializerModifier() {
 
             @Override
-            public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-                jsonGenerator.writeString("");
+            public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+                for (BeanPropertyWriter writer : beanProperties) {
+                    JavaType type = writer.getType();
+
+                    if (type.isTypeOrSubTypeOf(String.class)) {
+                        writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
+                    } else if (type.isCollectionLikeType()) {
+                        writer.assignNullSerializer(EmptySerializer.EmptyArraySerializer.INSTANCE);
+                    } else if (type.isMapLikeType()) {
+                        writer.assignNullSerializer(EmptySerializer.EmptyObjectSerializer.INSTANCE);
+                    } else {
+                        // default fallback
+                        writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
+                    }
+                }
+                return beanProperties;
             }
-        });
+        }));
         // 对MultipleFile序列化的支持
         SimpleModule module = new SimpleModule();
         module.addSerializer(MultipartFile.class, new MultipartFileSerializer());
