@@ -9,12 +9,14 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDeptLeaderMapper;
 import com.sz.admin.system.mapper.SysDeptMapper;
 import com.sz.admin.system.mapper.SysUserMapper;
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDept;
 import com.sz.admin.system.pojo.po.SysDeptLeader;
 import com.sz.admin.system.pojo.po.SysUser;
+import com.sz.admin.system.pojo.vo.common.DepartmentVO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
@@ -259,6 +261,15 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     private static QueryWrapper buildQueryWrapper(SysDeptListDTO dto) {
         return QueryWrapper.create().from(SysDept.class);
+    }
+
+    @Override
+    public List<DepartmentVO> listSelector(SelectorQueryDTO dto) {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ID, SYS_DEPT.PID, SYS_DEPT.NAME, SYS_DEPT.SORT, SYS_DEPT.DEEP)
+                .orderBy(SYS_DEPT.SORT.asc());
+        // 获取所有部门信息
+        List<DepartmentVO> list = listAs(wrapper, DepartmentVO.class);
+        return TreeUtils.buildTree(list, 0);
     }
 
 }

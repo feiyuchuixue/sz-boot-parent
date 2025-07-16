@@ -63,6 +63,30 @@ public class TreeUtils {
     }
 
     /**
+     * 构建树形结构（不需要自定义根节点）。 自动查找所有顶级节点（pid == null 或 pid == -1），并递归构建树。
+     *
+     * @param allDepts
+     *            所有部门列表
+     * @param <T>
+     *            树节点类型
+     * @return 树形结构列表
+     */
+    public static <T extends Treeable<T>> List<T> buildTree(List<T> allDepts, Object startNodeId) {
+        List<T> roots = new ArrayList<>();
+        if (allDepts == null || allDepts.isEmpty()) {
+            return roots;
+        }
+        for (T node : allDepts) {
+            Object pid = node.getPid();
+            if (pid == null || String.valueOf(startNodeId).equals(String.valueOf(pid))) {
+                constructTreeRecursive(node, allDepts);
+                roots.add(node);
+            }
+        }
+        return roots;
+    }
+
+    /**
      * 递归构建树形结构。
      *
      * @param parent
@@ -73,16 +97,15 @@ public class TreeUtils {
      *            树节点类型
      */
     private static <T extends Treeable<T>> void constructTreeRecursive(T parent, List<T> allDepts) {
-        // 遍历所有部门
         for (T dept : allDepts) {
             if (parent.getChildren() == null) {
                 parent.setChildren(new ArrayList<>());
             }
-            // 如果部门的父级ID等于当前父部门的ID
-            if (dept.getPid().equals(parent.getId())) {
+            // 类型兼容比较
+            if (parent.getId() != null && dept.getPid() != null && String.valueOf(dept.getPid()).equals(String.valueOf(parent.getId()))) {
                 // 递归构建子部门的子部门
                 constructTreeRecursive(dept, allDepts);
-                // 将子部门添加到父部门的子级列表中
+                // 将子部门添加��父部门的子级列表中
                 parent.getChildren().add(dept);
             }
         }
@@ -101,13 +124,13 @@ public class TreeUtils {
      *            树节点类型
      */
     private static <T extends Treeable<T>> void constructTreeRecursiveExcludeNode(T parent, List<T> allDepts, Object excludeNodeId) {
-        // 遍历所有节点
         for (T dept : allDepts) {
             if (parent.getChildren() == null) {
                 parent.setChildren(new ArrayList<>());
             }
-            // 如果部门的父级ID等于当前父部门的ID，并且部门的ID不等于排除节点的ID
-            if (dept.getPid().equals(parent.getId()) && !dept.getId().toString().equals(excludeNodeId.toString())) {
+            // 类型兼容比较
+            if (parent.getId() != null && dept.getPid() != null && String.valueOf(dept.getPid()).equals(String.valueOf(parent.getId()))
+                    && !String.valueOf(dept.getId()).equals(String.valueOf(excludeNodeId))) {
                 // 递归构建子部门的子部门
                 constructTreeRecursiveExcludeNode(dept, allDepts, excludeNodeId);
 

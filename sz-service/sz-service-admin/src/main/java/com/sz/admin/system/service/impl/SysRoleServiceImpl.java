@@ -1,15 +1,19 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMapper;
 import com.sz.admin.system.mapper.SysRoleMenuMapper;
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
+import com.sz.admin.system.pojo.vo.common.RoleVO;
 import com.sz.admin.system.service.SysRoleService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -19,6 +23,8 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static com.sz.admin.system.pojo.po.table.SysRoleTableDef.SYS_ROLE;
 
 /**
  * <p>
@@ -78,6 +84,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             wrapper.like(SysRole::getRoleName, dto.getRoleName());
         }
         return PageUtils.getPageResult(page(PageUtils.getPage(dto), wrapper));
+    }
+
+    @Override
+    public PageResult<RoleVO> pageSelector(SelectorQueryDTO dto) {
+        String keyword = dto.getKeyword();
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_ROLE.ID,SYS_ROLE.ROLE_NAME.as("name"),SYS_ROLE.PERMISSIONS).orderBy(SYS_ROLE.CREATE_TIME.asc());
+        if (keyword != null && !keyword.isEmpty()) {
+            QueryCondition condition = SYS_ROLE.ROLE_NAME.like(keyword).or(SYS_ROLE.PERMISSIONS.like(keyword));
+            wrapper.and(condition);
+        }
+        Page<RoleVO> page = pageAs(PageUtils.getPage(dto), wrapper, RoleVO.class);
+        return PageUtils.getPageResult(page);
     }
 
 }
