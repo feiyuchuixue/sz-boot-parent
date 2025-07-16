@@ -24,21 +24,6 @@
             <artifactId>sz-common-core</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!-- knife4j swagger文档 -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springdoc</groupId>
-                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        </dependency>
     </dependencies>
 
     <!--springboot maven打包，解决 “jar中没有主清单属性” 的问题-->
