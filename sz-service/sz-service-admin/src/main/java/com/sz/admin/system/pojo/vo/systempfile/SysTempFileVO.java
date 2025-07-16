@@ -1,5 +1,7 @@
 package com.sz.admin.system.pojo.vo.systempfile;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ public class SysTempFileVO {
     private String tempName;
 
     @Schema(description = "地址")
+    @Column(typeHandler = JacksonTypeHandler.class)
     private List<String> url;
 
     @Schema(description = "备注")
