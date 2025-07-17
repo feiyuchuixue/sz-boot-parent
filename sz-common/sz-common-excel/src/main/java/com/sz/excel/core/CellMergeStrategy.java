@@ -73,7 +73,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
         // 获取字段信息并初始化合并字段
         List<Field> mergeFields = new ArrayList<>();
         List<Integer> mergeFieldsIndex = new ArrayList<>();
-        int startRowIndex = initializeMergeFields(list.getFirst().getClass(), mergeFields, mergeFieldsIndex, hasTitle);
+        int startRowIndex = initializeMergeFields(list.get(0).getClass(), mergeFields, mergeFieldsIndex, hasTitle);
 
         // 处理合并逻辑
         Map<Field, Object> prevRowValues = new HashMap<>();

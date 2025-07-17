@@ -132,7 +132,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
         List<SysDeptVO> trees = TreeUtils.buildTree(deptVOS, root);
-        return trees.getFirst().getChildren();
+        return trees.get(0).getChildren();
     }
 
     @Override
@@ -207,10 +207,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         root.setName("根部门");
         List<DeptTreeVO> trees = TreeUtils.buildTree(deptTreeVOS, root, excludeNodeId);
         if (appendRoot != null && !appendRoot) {
-            if (trees.getFirst().getChildren() == null) {
+            if (trees.get(0).getChildren() == null) {
                 trees = new ArrayList<>();
             } else {
-                trees = trees.getFirst().getChildren();
+                trees = trees.get(0).getChildren();
             }
         }
         return trees;
