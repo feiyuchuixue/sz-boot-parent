@@ -32,58 +32,60 @@
 
     <!--查询（部门）用户列表-->
     <select id="querySysUserListByDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT * FROM  sys_user WHERE id IN (
-        SELECT su.id
+        SELECT su.*
         FROM sys_user su
-        JOIN
-        sys_user_dept sud ON su.id = sud.user_id
-        JOIN
-        sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
-        JOIN
-        sys_dept sd ON sud.dept_id = sd.id
-        <where>
-            su.del_flag = 'F'
-            AND sd.del_flag ='F'
-            AND sdc.descendant_id IS NOT NULL
-            <if test="deptId != null and deptId != -1 ">
-                <choose>
-                    <when test="isThisDeep">AND sud.dept_id = #{deptId}</when>
-                    <otherwise>
-                        AND sud.dept_id IN (SELECT descendant_id FROM sys_dept_closure WHERE ancestor_id = #{deptId})
-                    </otherwise>
-                </choose>
-            </if>
-            <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
-            <if test="username != null and username != ''">AND su.username = #{username}</if>
-            <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
-        </where>
+        JOIN sys_user_dept sud ON su.id = sud.user_id
+        JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
+        JOIN sys_dept sd ON sud.dept_id = sd.id
+        WHERE su.del_flag = 'F'
+        AND sd.del_flag = 'F'
+        AND sdc.descendant_id IS NOT NULL
+        <if test="deptId != null and deptId != -1 ">
+            <choose>
+                <when test="isThisDeep">
+                    AND sud.dept_id = #{deptId}
+                </when>
+                <otherwise>
+                    AND sud.dept_id IN (
+                    SELECT descendant_id
+                    FROM sys_dept_closure
+                    WHERE ancestor_id = #{deptId}
+                    )
+                </otherwise>
+            </choose>
+        </if>
+        <if test="nickname != null and nickname != ''">
+            AND su.nickname LIKE CONCAT('%', #{nickname}, '%')
+        </if>
+        <if test="username != null and username != ''">
+            AND su.username = #{username}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND su.phone = #{phone}
+        </if>
         GROUP BY su.id
-        ORDER BY  su.create_time ASC
-        )
+        ORDER BY su.create_time ASC
     </select>
     <!--查询（未分配部门）用户列表-->
     <select id="querySysUserListNotDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT * FROM  sys_user WHERE id IN (
-        SELECT
-        su.id
-        FROM
-        sys_user su
-        LEFT JOIN
-        sys_user_dept sud ON su.id = sud.user_id
-        LEFT JOIN
-        sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
-        LEFT JOIN
-        sys_dept sd ON sud.dept_id = sd.id
-        <where>
-            su.del_flag = 'F'
-            AND ( sdc.descendant_id IS NULL OR sd.del_flag ='T' )
-            <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
-            <if test="username != null and username != ''">AND su.username = #{username}</if>
-            <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
-        </where>
+        SELECT su.*
+        FROM sys_user su
+        LEFT JOIN sys_user_dept sud ON su.id = sud.user_id
+        LEFT JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
+        LEFT JOIN sys_dept sd ON sud.dept_id = sd.id
+        WHERE su.del_flag = 'F'
+        AND (sdc.descendant_id IS NULL OR sd.del_flag = 'T')
+        <if test="nickname != null and nickname != ''">
+            AND su.nickname LIKE CONCAT('%', #{nickname}, '%')
+        </if>
+        <if test="username != null and username != ''">
+            AND su.username = #{username}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND su.phone = #{phone}
+        </if>
         GROUP BY su.id
         ORDER BY su.create_time ASC
-        )
     </select>
     <select id="queryAllSysUserList" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
         SELECT * FROM sys_user su

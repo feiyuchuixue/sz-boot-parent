@@ -1,9 +1,11 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysUser;
+import com.sz.admin.system.pojo.vo.common.UserVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
@@ -100,4 +102,6 @@ public interface SysUserService extends IService<SysUser> {
     void bindUserDept(UserDeptDTO dto);
 
     List<UserOptionVO> getUserOptions();
+
+    PageResult<UserVO> pageSelector(SelectorQueryDTO dto);
 }

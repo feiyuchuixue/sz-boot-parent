@@ -6,18 +6,22 @@ import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.pagehelper.PageHelper;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryCondition;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMapper;
 import com.sz.admin.system.mapper.SysUserMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.po.SysUserRole;
+import com.sz.admin.system.pojo.vo.common.UserVO;
 import com.sz.admin.system.pojo.vo.sysuser.*;
 import com.sz.admin.system.service.SysMenuService;
 import com.sz.admin.system.service.SysPermissionService;
@@ -47,6 +51,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.sz.admin.system.pojo.po.table.SysDeptClosureTableDef.SYS_DEPT_CLOSURE;
+import static com.sz.admin.system.pojo.po.table.SysDeptTableDef.SYS_DEPT;
+import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 
 /**
@@ -465,6 +472,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<UserOptionVO> getUserOptions() {
         QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.USERNAME, SYS_USER.NICKNAME);
         return listAs(wrapper, UserOptionVO.class);
+    }
+
+    @Override
+    public PageResult<UserVO> pageSelector(SelectorQueryDTO dto) {
+        String keyword = dto.getKeyword();
+        Object parentId = dto.getParentId();
+
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.USERNAME, SYS_USER.NICKNAME.as("name"), SYS_USER.PHONE).from(SYS_USER);
+
+        if (parentId != null && !("-1").equals(parentId.toString())) {
+            wrapper.join(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID)).join(SYS_DEPT_CLOSURE)
+                    .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT_CLOSURE.DESCENDANT_ID)).join(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID))
+                    .where(SYS_DEPT_CLOSURE.DESCENDANT_ID.isNotNull()).and(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(parentId)).groupBy(SYS_USER.ID)
+                    .orderBy(SYS_USER.CREATE_TIME.asc());
+        }
+
+        // 关键词条件
+        if (keyword != null && !keyword.isEmpty()) {
+            QueryCondition condition = SYS_USER.USERNAME.like(keyword).or(SYS_USER.NICKNAME.like(keyword)).or(SYS_USER.PHONE.like(keyword));
+            wrapper.and(condition);
+        }
+
+        Page<UserVO> page = pageAs(PageUtils.getPage(dto), wrapper, UserVO.class);
+        return PageUtils.getPageResult(page);
     }
 
 }

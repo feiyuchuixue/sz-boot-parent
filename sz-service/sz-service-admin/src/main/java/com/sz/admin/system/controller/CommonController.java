@@ -1,6 +1,9 @@
 package com.sz.admin.system.controller;
 
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
+import com.sz.admin.system.pojo.vo.common.SelectorVO;
 import com.sz.admin.system.service.CommonService;
+import com.sz.core.common.entity.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +35,12 @@ public class CommonController {
         } catch (Exception e) {
             log.error("模板下载文件下载失败", e);
         }
+    }
+
+    @Operation(summary = "多维选择器查询")
+    @GetMapping("/selector")
+    public ApiResult<SelectorVO> querySelector(SelectorQueryDTO dto) {
+        return ApiResult.success(commonService.querySelector(dto));
     }
 
 }
