@@ -1,4 +1,47 @@
 # 更新日志
+## v1.2.5-beta （20250716）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.2.5-beta)
+
+
+- sz-boot-parent：
+  - 依赖升级：
+    - **spring-boot-starter-parent：3.5.0  -> 3.5.3。**
+    - **mybatis-flex：1.10.9  -> 1.11.0。**
+    - software.amazon.awssdk:s3：2.29.50 -> 2.31.78。
+    - hutool-jwt：5.8.38 -> 5.8.39。
+    - pagehelper：6.1.0 -> 6.1.1。
+    - io.swagger.core.v3-swagger-annotations：2.2.32 -> 2.2.34
+    - jackson：2.19.0 -> 2.19.1
+    - commons-lang3:  3.17.0 -> 3.18.0
+    - HikariCP：6.2.1 -> 6.3.0
+    - commons-io-commons-io：2.18.0 -> 2.19.0
+    - jackson：2.19.0 -> 2.19.1
+    - modelmapper：3.2.3 -> 3.2.4
+    - springdoc-springdoc-openapi-starter-webmvc-ui：2.8.8 -> 2.8.9
+  - 优化：适配解决maven编译时无法识别Lombok和Mybatis-Flex APT注解器导致的”找不到符
+  - 修复: 更正Excel最大columnWidth = 255 * 256。(Excel 中列宽（column width）最大值是 255 * 256 = 65280)
+  - 优化：[SQL] 查询用户具有的菜单。
+  - 修复: 特殊情况下因用户session失效而导致的用户元数据同步失败的问题。
+  - 修复：数据权限某些场景下导致page失效的问题。
+  - 重构：字典加载器相关类的包结构和接口定义，优化动态字典加载逻辑。
+  - 优化：JacksonConfiguration 全局配置文件；实现针对不同类型的 Jackson null 值序列化器。
+    - String 类型 null → ""
+    - List/Set 类型 null → []
+    - Map 类型 null → {}
+    - Other 类型 null → ""
+  - 优化：SysTempFileVO 添加 JacksonTypeHandler 以支持 url 字段的自定义序列化。
+  - 优化： pom 文件中按需引入 knife4j，避免因多余依赖导致 WebSocket 服务可访问 knife4j 接口。
+- sz-admin：
+
+  - 新增：[演示] 多维选择器组件。
+  - 优化：上传组件，增加目录参数dir，更换上传接口。
+  - 优化：downloadFile函数，将url类型由string改为string[]。
+- 文档：
+
+  - 新增：[方案] [多数据源的实现](https://szadmin.cn/md/Help/doc/solution/multi-datasource.html)。
 ## v1.2.4-beta （20250614）
 
 - sz-boot-parent：
