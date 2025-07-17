@@ -2,6 +2,7 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysDept;
+import com.sz.admin.system.pojo.vo.sysdept.DeptRoleInfoVO;
 import com.sz.admin.system.pojo.vo.sysdept.TotalDeptVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,12 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      */
     List<TotalDeptVO> countUsersPerDept();
 
+    /**
+     * 查询部门角色信息
+     *
+     * @param deptIds
+     *            用户id
+     * @return 用户部门信息
+     */
+    List<DeptRoleInfoVO> queryDeptRoleInfo(List<Long> deptIds);
 }

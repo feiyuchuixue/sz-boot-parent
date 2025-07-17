@@ -3,17 +3,21 @@ package com.sz.admin.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
+import com.sz.admin.system.pojo.dto.sysdept.SysDeptRoleDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
+import com.sz.admin.system.pojo.vo.sysdept.SysDeptRoleVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.core.common.valid.annotation.NotZero;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +88,21 @@ public class SysDeptController {
     @GetMapping("/leader")
     public ApiResult<SysDeptLeaderVO> leader() {
         return ApiResult.success(sysDeptService.findSysUserDeptLeader());
+    }
+
+    @Operation(summary = "部门角色信息查询-（穿梭框）")
+    @SaCheckPermission(value = "sys.dept.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("role")
+    public ApiResult<SysDeptRoleVO> findDeptRole(@NotZero @RequestParam Long deptId) {
+        return ApiResult.success(sysDeptService.findSysDeptRole(deptId));
+    }
+
+    @Operation(summary = "部门角色信息修改 -（穿梭框）")
+    @SaCheckPermission(value = "sys.dept.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping("role")
+    public ApiResult<Void> changeUserRole(@Valid @RequestBody SysDeptRoleDTO dto) {
+        sysDeptService.changeSysDeptRole(dto);
+        return ApiResult.success();
     }
 
 }

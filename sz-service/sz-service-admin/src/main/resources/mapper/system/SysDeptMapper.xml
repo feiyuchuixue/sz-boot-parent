@@ -58,6 +58,30 @@
             sd.id,
             sd.NAME
     </select>
+    
+    <select id="queryDeptRoleInfo" resultType="com.sz.admin.system.pojo.vo.sysdept.DeptRoleInfoVO">
+        SELECT
+        dept_id,
+        GROUP_CONCAT(role_id ORDER BY role_id) AS role_ids,
+        GROUP_CONCAT(CONCAT( role_id, ':', role_name )) AS role_infos
+        FROM
+        (
+        SELECT
+        sdr.dept_id,
+        sdr.role_id,
+        sr.role_name
+        FROM
+        sys_dept_role sdr
+        LEFT JOIN sys_role sr ON sdr.role_id = sr.id
+        WHERE sr.del_flag = "F"
+        ) AS subquery
+        WHERE dept_id IN
+        <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+        GROUP BY
+        dept_id;
+    </select>
 
 
 </mapper>
