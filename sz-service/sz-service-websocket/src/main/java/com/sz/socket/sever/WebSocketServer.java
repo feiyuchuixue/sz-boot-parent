@@ -53,23 +53,30 @@ public class WebSocketServer extends TextWebSocketHandler {
         }
 
         String sid = session.getId();
-        // SocketMessage<?> socketMessage =
-        // SocketUtil.formatSocketMessage(message.getPayload());
-        SocketMessage msg = JsonUtils.parseObject(message.getPayload(), SocketMessage.class);
-        assert msg != null;
+        SocketMessage msg;
+        try {
+            msg = JsonUtils.parseObject(message.getPayload(), SocketMessage.class);
+        } catch (Exception e) {
+            log.error("【websocket】消息解析失败，payload: {}, error: {}", message.getPayload(), e.getMessage());
+            session.sendMessage(new TextMessage("{\"error\":\"消息格式错误\"}"));
+            return;
+        }
+        if (msg == null) {
+            log.warn("【websocket】消息解析结果为null，payload: {}", message.getPayload());
+            session.sendMessage(new TextMessage("{\"error\":\"消息格式错误\"}"));
+            return;
+        }
         SocketChannelEnum channel = msg.getChannel();
         switch (channel) {
             default :
                 log.warn(" 【websocket】 unknown message: {}, send to service ... ", message);
-                // SocketMessage sb = JsonUtils.parseObject(message.getPayload(),
-                // SocketMessage.class);
                 TransferMessage tm = new TransferMessage();
                 tm.setMessage(msg);
                 String channelUsername = websocketRedisService.getUserBySessionId(sid);
                 if (channelUsername != null) {
                     tm.setFromUser(channelUsername);
                 }
-                // 将消息透传给服务端，服务端需要注意消息的幂等处理
+                // 将消息透传给服务端，���务端需要注意消息的幂等处理
                 websocketRedisService.sendWsToService(tm);
                 break;
         }
