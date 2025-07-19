@@ -33,6 +33,9 @@ public class TeacherStatisticsUpdateDTO {
     @Schema(description = "教师id")
     private String teacherId;
 
+    @Schema(description = "教师图片关联id")
+    private Long imageId;
+
     @Schema(description = "讲师区分类型")
     private Integer teacherCommonType;
 

@@ -158,7 +158,7 @@ public class OssClient {
      * 获取私有文件的访问链接。
      *
      * 该方法生成一个带有签名的私有文件访问链接，允许在指定的有效期内访问存储在 S3 兼容服务中的私有文件。 例如：
-     * 
+     *
      * <pre>
      * https://your_domain.com/test/user/20241125/6%E5%AD%97%E5%85%B8%E7%AE%A1%E7%90%86.png
      * ?X-Amz-Algorithm=AWS4-HMAC-SHA256
@@ -322,5 +322,56 @@ public class OssClient {
         // 替换掉前后的双引号
         return eTag.replaceAll("(^\")|(\"$)", "");
     }
+
+
+    /**
+     * 生成预签名上传URL
+     *
+     * @param objectName 对象名称
+     * @param expireMinutes 过期分钟数
+     * @return 预签名URL
+     */
+    public String generatePreSignedUploadUrl(String objectName, int expireMinutes) {
+        try {
+            Duration expiration = Duration.ofMinutes(expireMinutes);
+            URL url = s3Presigner.presignPutObject(builder -> builder
+                    .signatureDuration(expiration)
+                    .putObjectRequest(putBuilder -> putBuilder
+                            .bucket(properties.getBucketName())
+                            .key(objectName)
+                            .build())
+                    .build()).url();
+
+            return url.toString();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("生成预签名上传URL失败，Message:[" + e.getMessage() + "]", e);
+        }
+    }
+
+    /**
+     * 获取文件信息
+     *
+     * @param objectName 对象名称
+     * @return 文件信息
+     */
+    public OssFileInfo getFileInfo(String objectName) {
+        try {
+            var headObjectResponse = s3Client.headObject(builder -> builder
+                    .bucket(properties.getBucketName())
+                    .key(objectName)
+                    .build());
+
+            OssFileInfo fileInfo = new OssFileInfo();
+            fileInfo.setUrl(getUrl() + "/" + objectName);
+            fileInfo.setSize(headObjectResponse.contentLength());
+            fileInfo.setETag(normalizeETag(headObjectResponse.eTag()));
+            fileInfo.setContentType(headObjectResponse.contentType());
+
+            return fileInfo;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("获取文件信息失败，Message:[" + e.getMessage() + "]", e);
+        }
+    }
+
 
 }

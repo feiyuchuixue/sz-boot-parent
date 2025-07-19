@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
+import com.sz.admin.system.pojo.enums.FileUploadStatus;
 import com.sz.mysql.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -59,5 +60,11 @@ public class SysFile implements Serializable {
 
     @Schema(description = "创建人")
     private Long createId;
+
+    @Schema(description = "上传状态")
+    private FileUploadStatus status;
+
+    @Schema(description = "上传凭证过期时间")
+    private LocalDateTime uploadExpireTime;
 
 }

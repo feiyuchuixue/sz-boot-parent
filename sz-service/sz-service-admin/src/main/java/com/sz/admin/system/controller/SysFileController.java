@@ -1,5 +1,8 @@
 package com.sz.admin.system.controller;
 
+import com.sz.admin.system.pojo.dto.sysfile.ConfirmUploadRequestDTO;
+import com.sz.admin.system.pojo.dto.sysfile.PreSignedUploadRequestDTO;
+import com.sz.admin.system.pojo.dto.sysfile.PreSignedUploadResponseDTO;
 import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.service.SysFileService;
@@ -10,6 +13,7 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +45,18 @@ public class SysFileController {
     @PostMapping("/upload")
     public ApiResult<UploadResult> upload(@RequestParam MultipartFile file, @RequestParam(value = "dirTag") String dirTag) {
         return ApiResult.success(sysFileService.uploadFile(file, dirTag));
+    }
+
+    @Operation(summary = "获取预签名上传信息")
+    @PostMapping("/get-upload-info")
+    public ApiResult<PreSignedUploadResponseDTO> getPreSignedUploadInfo(@RequestBody @Valid PreSignedUploadRequestDTO dto) {
+        return ApiResult.success(sysFileService.getPreSignedUploadInfo(dto));
+    }
+
+    @Operation(summary = "确认上传完成")
+    @PostMapping("/confirm-upload")
+    public ApiResult<UploadResult> confirmUpload(@RequestBody @Valid ConfirmUploadRequestDTO dto) {
+        return ApiResult.success(sysFileService.confirmUploadComplete(dto.getFileId()));
     }
 
 }

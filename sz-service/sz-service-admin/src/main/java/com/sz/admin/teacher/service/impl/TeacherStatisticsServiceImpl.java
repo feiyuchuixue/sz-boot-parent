@@ -3,6 +3,7 @@ package com.sz.admin.teacher.service.impl;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.system.utils.SysFileUtils;
 import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
@@ -88,7 +89,10 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public TeacherStatisticsVO detail(Long id) {
         TeacherStatistics teacherStatistics = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
-        return BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+        TeacherStatisticsVO copy = BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+        // 根据ID去查询URL并回填
+        SysFileUtils.setUrl(copy::getImageId, copy::setImageUrl);
+        return copy;
     }
 
     @SneakyThrows

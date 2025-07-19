@@ -44,6 +44,12 @@ public class TeacherStatisticsVO {
     @Schema(description = "教师id")
     private String teacherId;
 
+    @Schema(description = "教师图片关联id")
+    private Long imageId;
+
+    @Schema(description = "教师图片")
+    private String imageUrl;
+
     @ExcelProperty(value = "讲师区分类型")
     @DictFormat(dictType = "account_status", isSelected = true, useAlias = true)
     @Schema(description = "讲师区分类型")
