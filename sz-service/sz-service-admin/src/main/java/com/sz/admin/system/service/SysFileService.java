@@ -1,6 +1,8 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.sysfile.PreSignedUploadRequestDTO;
+import com.sz.admin.system.pojo.dto.sysfile.PreSignedUploadResponseDTO;
 import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.core.common.entity.ApiResult;
@@ -39,4 +41,32 @@ public interface SysFileService extends IService<SysFile> {
     UploadResult uploadFile(MultipartFile file, String dirTag);
 
     Long fileLog(UploadResult uploadResult);
+
+    /**
+     * 获取预签名上传信息
+     *
+     * @param dto 预签名上传请求DTO
+     * @return 预签名上传响应DTO
+     */
+    PreSignedUploadResponseDTO getPreSignedUploadInfo(PreSignedUploadRequestDTO dto);
+
+    /**
+     * 确认上传完成
+     *
+     * @param fileId 文件ID
+     * @return 是否成功
+     */
+    UploadResult confirmUploadComplete(Long fileId);
+
+    /**
+     * 获取文件URL
+     * @param id 文件ID
+     * @return URL
+     */
+    String getFileUrl(Long id);
+
+    /**
+     * 清理过期的上传记录
+     */
+    void cleanExpiredUploads();
 }
