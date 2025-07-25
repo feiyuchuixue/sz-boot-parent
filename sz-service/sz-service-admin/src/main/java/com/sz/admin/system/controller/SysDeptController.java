@@ -80,7 +80,7 @@ public class SysDeptController {
     @Operation(summary = "树形列表")
     @GetMapping("/tree")
     public ApiResult<List<DeptTreeVO>> tree(@Parameter(description = "需要排除的节点ID") @RequestParam(required = false) Integer excludeNodeId,
-            @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
+                                            @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
         return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot, false));
     }
 
@@ -100,7 +100,7 @@ public class SysDeptController {
     @Operation(summary = "部门角色信息修改 -（穿梭框）")
     @SaCheckPermission(value = "sys.dept.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("role")
-    public ApiResult<Void> changeUserRole(@Valid @RequestBody SysDeptRoleDTO dto) {
+    public ApiResult<Void> changeDeptRole(@Valid @RequestBody SysDeptRoleDTO dto) {
         sysDeptService.changeSysDeptRole(dto);
         return ApiResult.success();
     }

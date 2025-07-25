@@ -16,6 +16,4 @@ import java.util.List;
  */
 public interface SysDeptRoleMapper extends BaseMapper<SysDeptRole> {
 
-    void insertBatchSysDeptRole(@Param("roleIds") List<Long> roleIds, @Param("deptId") Long deptId);
-
 }

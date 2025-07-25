@@ -34,12 +34,4 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      */
     List<TotalDeptVO> countUsersPerDept();
 
-    /**
-     * 查询部门角色信息
-     *
-     * @param deptIds
-     *            用户id
-     * @return 用户部门信息
-     */
-    List<DeptRoleInfoVO> queryDeptRoleInfo(List<Long> deptIds);
 }
