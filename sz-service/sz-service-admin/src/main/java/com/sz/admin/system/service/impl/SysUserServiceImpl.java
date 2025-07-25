@@ -445,8 +445,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void bindUserDept(UserDeptDTO dto) {
         userDeptService.bind(dto);
-        if (Utils.isNotNull(dto.getUserIds()) && Utils.isNotNull(dto.getDeptIds())){
-            bindUserRoleByDept(dto.getUserIds().getFirst(), dto.getDeptIds());
+        if (Utils.isNotNull(dto.getUserIds()) && Utils.isNotNull(dto.getDeptIds())) {
+            bindUserRoleByDept(dto.getUserIds(), dto.getDeptIds());
         }
         if (Utils.isNotNull(dto.getUserIds())) {
             eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(dto.getUserIds())));
@@ -456,17 +456,39 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 根据部门绑定角色
      */
-    private void bindUserRoleByDept(Long userId, List<Long> deptIds) {
+    private void bindUserRoleByDept(List<Long> userIds, List<Long> deptIds) {
+        if (!Utils.isNotNull(userIds) || !Utils.isNotNull(deptIds)) {
+            return;
+        }
+
         // 获取用户当前拥有的所有角色
-        List<SysUserRole> userRoles = QueryChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, userId).list();
+        List<SysUserRole> existingUserRoles = QueryChain.of(sysUserRoleMapper).in(SysUserRole::getUserId, userIds).list();
+        Map<Long, Set<Long>> userToRoleIdsMap = existingUserRoles.stream().collect(Collectors.groupingBy(
+                SysUserRole::getUserId,
+                Collectors.mapping(SysUserRole::getRoleId, Collectors.toSet())));
         // 获取部门关联的所有角色
         List<SysDeptRole> deptRoles = QueryChain.of(sysDeptRoleMapper).in(SysDeptRole::getDeptId, deptIds).list();
-        // 提取用户已有角色ID集合
-        Set<Long> existingRoleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toSet());
-        // 部门角色中用户尚未拥有的角色ID
-        List<Long> haveNotRole = deptRoles.stream().map(SysDeptRole::getRoleId).filter(roleId -> !existingRoleIds.contains(roleId)).toList();
-        if (Utils.isNotNull(haveNotRole)) {
-            sysUserRoleMapper.insertBatchSysUserRole(haveNotRole, userId);
+        Set<Long> deptRoleIds = deptRoles.stream().map(SysDeptRole::getRoleId).collect(Collectors.toSet());
+        if (deptRoleIds.isEmpty()) {
+            return;
+        }
+        // 为每个用户构造需要绑定的角色
+        List<SysUserRole> toInsert = new ArrayList<>();
+        for (Long userId : userIds) {
+            Set<Long> userRoleIds = userToRoleIdsMap.getOrDefault(userId, Collections.emptySet());
+            deptRoleIds.stream().filter(roleId -> !userRoleIds.contains(roleId))
+                    .forEach(roleId -> {
+                        SysUserRole sysUserRole = new SysUserRole();
+                        sysUserRole.setRoleId(roleId);
+                        sysUserRole.setUserId(userId);
+                        toInsert.add(sysUserRole);
+                    });
+        }
+        if (!toInsert.isEmpty()) {
+            sysUserRoleMapper.insertBatch(toInsert);
+            // 更新用户元数据
+            List<Long> changedUserIds = toInsert.stream().map(SysUserRole::getUserId).distinct().toList();
+            eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changedUserIds)));
         }
     }
 
