@@ -2,6 +2,7 @@ package ${dtoPkg};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import com.sz.core.common.entity.PageQuery;
 <#list importPackages as pkg>
 import ${pkg};
@@ -18,6 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
+@Accessors(chain = true)
 @Schema(description = "${poClassName}查询DTO")
 public class ${dtoListClassName} extends PageQuery {
 

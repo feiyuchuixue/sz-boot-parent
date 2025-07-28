@@ -2,6 +2,7 @@ package ${dtoPkg};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -18,6 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
+@Accessors(chain = true)
 @Schema(description = "${poClassName}修改DTO")
 public class ${dtoUpdateClassName} {
 

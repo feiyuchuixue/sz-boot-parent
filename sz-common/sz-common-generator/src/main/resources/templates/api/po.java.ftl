@@ -5,6 +5,7 @@ import com.mybatisflex.annotation.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.io.Serial;
@@ -24,6 +25,7 @@ import ${pkg};
 * @since ${datetime}
 */
 @Data
+@Accessors(chain = true)
 <#if GeneratorInfo.isAutofill == "1">
 @Table(value = "${tableName}", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 <#else>
