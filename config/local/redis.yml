@@ -20,7 +20,7 @@ spring:
           max-idle: 30
           # 连接池中的最小空闲连接
           min-idle: 10
-      password: 123456
+      password:
 
 # 开启redis监听
 redis:

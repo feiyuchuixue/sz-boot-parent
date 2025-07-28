@@ -166,6 +166,11 @@
                 <artifactId>fastexcel</artifactId>
                 <version>1.2.0</version>
             </dependency>
+            <dependency>
+                <groupId>nl.basjes.parse.useragent</groupId>
+                <artifactId>yauaa</artifactId>
+                <version>7.31.0</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
