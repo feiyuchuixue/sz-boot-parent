@@ -14,6 +14,7 @@ import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
 import com.sz.admin.system.pojo.vo.common.RoleVO;
+import com.sz.admin.system.pojo.vo.sysrole.RoleOptionsVO;
 import com.sz.admin.system.service.SysRoleService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -23,6 +24,8 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.sz.admin.system.pojo.po.table.SysRoleTableDef.SYS_ROLE;
 
@@ -97,6 +100,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
         Page<RoleVO> page = pageAs(PageUtils.getPage(dto), wrapper, RoleVO.class);
         return PageUtils.getPageResult(page);
+    }
+
+    @Override
+    public List<RoleOptionsVO> getRoleOptions() {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_ROLE.ID, SYS_ROLE.ROLE_NAME, SYS_ROLE.PERMISSIONS).from(SYS_ROLE)
+                .orderBy(SYS_ROLE.CREATE_TIME.asc());
+        return listAs(wrapper, RoleOptionsVO.class);
     }
 
 }

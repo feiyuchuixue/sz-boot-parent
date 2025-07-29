@@ -4,7 +4,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.platform.listener.TableSysRoleListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  */
 
 @Data
-@Table(value = "sys_role", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+@Table(value = "sys_role", onInsert = TableSysRoleListener.class, onUpdate = TableSysRoleListener.class)
 @Schema(description = "系统角色表")
 public class SysRole implements Serializable {
 

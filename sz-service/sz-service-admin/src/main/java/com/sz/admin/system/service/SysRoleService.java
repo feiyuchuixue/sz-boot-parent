@@ -7,8 +7,11 @@ import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.vo.common.RoleVO;
+import com.sz.admin.system.pojo.vo.sysrole.RoleOptionsVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -31,4 +34,6 @@ public interface SysRoleService extends IService<SysRole> {
     PageResult<SysRole> list(SysRoleListDTO dto);
 
     PageResult<RoleVO> pageSelector(SelectorQueryDTO dto);
+
+    List<RoleOptionsVO> getRoleOptions();
 }
