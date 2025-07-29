@@ -48,6 +48,8 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
 
     private final ThreadPoolTaskExecutor loginLogExecutor;
 
+    private static final UserAgentAnalyzer USER_AGENT_ANALYZER = UserAgentAnalyzer.newBuilder().dropTests().build();
+
 
     @Override
     public void create(SysLoginLogCreateDTO dto) {
@@ -110,8 +112,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
             HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
             String ipAddress = HttpReqResUtil.getIpAddress(request);
             String userAgentString = request.getHeader("User-Agent");
-            UserAgentAnalyzer uaa = UserAgentAnalyzer.newBuilder().dropTests().build();
-            UserAgent.ImmutableUserAgent agent = uaa.parse(userAgentString);
+            UserAgent.ImmutableUserAgent agent = USER_AGENT_ANALYZER.parse(userAgentString);
             // todo 获取IP归属地信息
 
             // 提交异步任务
