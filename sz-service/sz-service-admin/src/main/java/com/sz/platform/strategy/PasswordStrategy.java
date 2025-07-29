@@ -60,8 +60,8 @@ public class PasswordStrategy implements IAuthStrategy {
             throw e;
         } catch (Exception e) {
             sysLoginLogService.recordLoginLog(username, "1009002", "系统异常:" + e.getMessage());
+            throw e;
         }
-        // 构造返回对象
         return loginVO;
     }
 

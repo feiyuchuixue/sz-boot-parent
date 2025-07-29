@@ -21,25 +21,30 @@
         id, del_flag, user_name, login_status, login_time, ip_address, login_location, browser, os, msg, remark
     </sql>
 
-    <insert id="insertLoginLog" >
-        INSERT INTO `sys_login_log` (`user_name`,
-                                `login_status`,
-                                `login_time`,
-                                `ip_address`,
-                                `login_location`,
-                                `browser`,
-                                `os`,
-                                `msg`,
-                                `remark`)
-        VALUES (#{loginLog.userName},
-                #{loginLog.loginStatus},
-                #{loginLog.loginTime},
-                #{loginLog.ipAddress},
-                #{loginLog.loginLocation},
-                #{loginLog.browser},
-                #{loginLog.os},
-                #{loginLog.msg},
-                #{loginLog.remark})
+    <insert id="insertLoginLog">
+        INSERT INTO sys_login_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loginLog.userName != null and loginLog.userName != ''">user_name,</if>
+            <if test="loginLog.loginStatus != null">login_status,</if>
+            <if test="loginLog.loginTime != null">login_time,</if>
+            <if test="loginLog.ipAddress != null and loginLog.ipAddress != ''">ip_address,</if>
+            <if test="loginLog.loginLocation != null and loginLog.loginLocation != ''">login_location,</if>
+            <if test="loginLog.browser != null and loginLog.browser != ''">browser,</if>
+            <if test="loginLog.os != null and loginLog.os != ''">os,</if>
+            <if test="loginLog.msg != null and loginLog.msg != ''">msg,</if>
+            <if test="loginLog.remark != null and loginLog.remark != ''">remark,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="loginLog.userName != null and loginLog.userName != ''">#{loginLog.userName},</if>
+            <if test="loginLog.loginStatus != null">#{loginLog.loginStatus},</if>
+            <if test="loginLog.loginTime != null">#{loginLog.loginTime},</if>
+            <if test="loginLog.ipAddress != null and loginLog.ipAddress != ''">#{loginLog.ipAddress},</if>
+            <if test="loginLog.loginLocation != null and loginLog.loginLocation != ''">#{loginLog.loginLocation},</if>
+            <if test="loginLog.browser != null and loginLog.browser != ''">#{loginLog.browser},</if>
+            <if test="loginLog.os != null and loginLog.os != ''">#{loginLog.os},</if>
+            <if test="loginLog.msg != null and loginLog.msg != ''">#{loginLog.msg},</if>
+            <if test="loginLog.remark != null and loginLog.remark != ''">#{loginLog.remark},</if>
+        </trim>
     </insert>
 
 </mapper>

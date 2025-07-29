@@ -19,35 +19,35 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "SysLoginLog修改DTO")
 public class SysLoginLogUpdateDTO {
 
-    @Schema(description =  "登陆ID")
+    @Schema(description = "登陆ID")
     private Integer id;
 
-    @Schema(description =  "用户名")
+    @Schema(description = "用户名")
     private String userName;
 
-    @Schema(description =  "登陆状态")
+    @Schema(description = "登陆状态")
     private String loginStatus;
 
-    @Schema(description =  "登陆时间")
+    @Schema(description = "登陆时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTime;
 
-    @Schema(description =  "登陆ip地址")
+    @Schema(description = "登陆ip地址")
     private String ipAddress;
 
-    @Schema(description =  "登陆地点")
+    @Schema(description = "登陆地点")
     private String loginLocation;
 
-    @Schema(description =  "浏览器类型")
+    @Schema(description = "浏览器类型")
     private String browser;
 
-    @Schema(description =  "操作系统")
+    @Schema(description = "操作系统")
     private String os;
 
-    @Schema(description =  "提示消息")
+    @Schema(description = "提示消息")
     private String msg;
 
-    @Schema(description =  "备注")
+    @Schema(description = "备注")
     private String remark;
 
 }

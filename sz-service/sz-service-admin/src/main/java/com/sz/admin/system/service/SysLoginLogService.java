@@ -35,5 +35,5 @@ public interface SysLoginLogService extends IService<SysLoginLog> {
 
     void exportExcel(SysLoginLogListDTO dto, HttpServletResponse response);
 
-    void recordLoginLog(String userName,String status,String msg);
+    void recordLoginLog(String userName, String status, String msg);
 }

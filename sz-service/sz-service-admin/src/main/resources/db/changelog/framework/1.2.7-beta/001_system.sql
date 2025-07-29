@@ -4,7 +4,6 @@
 --comment: 新增登陆日志数据库表
 CREATE TABLE IF NOT EXISTS `sys_login_log`  (
                                   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '登陆ID',
-                                  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
                                   `del_flag` enum('T','F') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'F' COMMENT '删除标识',
                                   `user_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户名',
                                   `login_status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '登陆状态',

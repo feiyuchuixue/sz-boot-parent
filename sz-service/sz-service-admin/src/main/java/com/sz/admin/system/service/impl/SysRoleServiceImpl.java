@@ -89,7 +89,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public PageResult<RoleVO> pageSelector(SelectorQueryDTO dto) {
         String keyword = dto.getKeyword();
-        QueryWrapper wrapper = QueryWrapper.create().select(SYS_ROLE.ID,SYS_ROLE.ROLE_NAME.as("name"),SYS_ROLE.PERMISSIONS).orderBy(SYS_ROLE.CREATE_TIME.asc());
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_ROLE.ID, SYS_ROLE.ROLE_NAME.as("name"), SYS_ROLE.PERMISSIONS)
+                .orderBy(SYS_ROLE.CREATE_TIME.asc());
         if (keyword != null && !keyword.isEmpty()) {
             QueryCondition condition = SYS_ROLE.ROLE_NAME.like(keyword).or(SYS_ROLE.PERMISSIONS.like(keyword));
             wrapper.and(condition);

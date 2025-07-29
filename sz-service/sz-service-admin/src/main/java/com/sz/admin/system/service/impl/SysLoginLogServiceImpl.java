@@ -13,6 +13,7 @@ import com.sz.admin.system.service.SysLoginLogService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.ip.IpUtils;
 import com.sz.core.util.*;
 import com.sz.excel.utils.ExcelUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,7 +51,6 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
 
     private static final UserAgentAnalyzer USER_AGENT_ANALYZER = UserAgentAnalyzer.newBuilder().dropTests().build();
 
-
     @Override
     public void create(SysLoginLogCreateDTO dto) {
         SysLoginLog sysLoginLog = BeanCopyUtils.copy(dto, SysLoginLog.class);
@@ -62,8 +62,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         SysLoginLog sysLoginLog = BeanCopyUtils.copy(dto, SysLoginLog.class);
         QueryWrapper wrapper;
         // id有效性校验
-        wrapper = QueryWrapper.create()
-                .eq(SysLoginLog::getId, dto.getId());
+        wrapper = QueryWrapper.create().eq(SysLoginLog::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
 
         saveOrUpdate(sysLoginLog);
@@ -110,20 +109,20 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         try {
             // 在主线程中获取所有请求信息
             HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-            String ipAddress = HttpReqResUtil.getIpAddress(request);
-            String userAgentString = request.getHeader("User-Agent");
-            UserAgent.ImmutableUserAgent agent = USER_AGENT_ANALYZER.parse(userAgentString);
-            // todo 获取IP归属地信息
-
             // 提交异步任务
             loginLogExecutor.execute(() -> {
                 try {
+                    String ipAddress = HttpReqResUtil.getIpAddress(request);
+                    String userAgentString = request.getHeader("User-Agent");
+                    UserAgent.ImmutableUserAgent agent = USER_AGENT_ANALYZER.parse(userAgentString);
+                    String realAddressByIP = IpUtils.getRealAddressByIP(ipAddress);
                     SysLoginLog log = new SysLoginLog();
                     log.setUserName(username);
                     log.setLoginStatus(status);
                     log.setLoginTime(LocalDateTime.now());
                     log.setMsg(msg);
                     log.setIpAddress(ipAddress);
+                    log.setLoginLocation(realAddressByIP);
                     log.setBrowser(agent.getValue(UserAgent.AGENT_NAME));
                     log.setOs(agent.getValue(UserAgent.OPERATING_SYSTEM_NAME));
                     this.mapper.insertLoginLog(log);

@@ -19,17 +19,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Schema(description = "SysLoginLog查询DTO")
 public class SysLoginLogListDTO extends PageQuery {
 
-    @Schema(description =  "用户名")
+    @Schema(description = "用户名")
     private String userName;
 
-    @Schema(description =  "登陆状态")
+    @Schema(description = "登陆状态")
     private String loginStatus;
 
-    @Schema(description =  "登陆时间开始")
+    @Schema(description = "登陆时间开始")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTimeStart;
 
-    @Schema(description =  "登陆时间结束")
+    @Schema(description = "登陆时间结束")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTimeEnd;
 
