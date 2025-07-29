@@ -17,10 +17,7 @@ import com.sz.admin.system.pojo.po.SysDept;
 import com.sz.admin.system.pojo.po.SysDeptLeader;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.common.DepartmentVO;
-import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
-import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
-import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
-import com.sz.admin.system.pojo.vo.sysdept.TotalDeptVO;
+import com.sz.admin.system.pojo.vo.sysdept.*;
 import com.sz.admin.system.service.SysDeptClosureService;
 import com.sz.admin.system.service.SysDeptLeaderService;
 import com.sz.admin.system.service.SysDeptService;
@@ -270,6 +267,12 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 获取所有部门信息
         List<DepartmentVO> list = listAs(wrapper, DepartmentVO.class);
         return TreeUtils.buildTree(list, 0);
+    }
+
+    @Override
+    public List<DeptOptionsVO> getDeptOptions() {
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ID, SYS_DEPT.NAME).from(SYS_DEPT).orderBy(SYS_DEPT.SORT.asc());
+        return listAs(wrapper, DeptOptionsVO.class);
     }
 
 }

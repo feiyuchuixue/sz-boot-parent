@@ -4,7 +4,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.platform.listener.TableSysDeptListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  * @since 2024-03-20
  */
 @Data
-@Table(value = "sys_dept", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+@Table(value = "sys_dept", onInsert = TableSysDeptListener.class, onUpdate = TableSysDeptListener.class)
 @Schema(description = "部门表")
 public class SysDept implements Serializable {
 

@@ -35,4 +35,9 @@ public class GlobalConstant {
      */
     public static final String SUPER_ROLE = "admin";
 
+    /**
+     * 动态字典前缀
+     */
+    public static final String DYNAMIC_DICT_PREFIX = "dynamic_";
+
 }

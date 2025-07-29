@@ -7,6 +7,7 @@ import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDept;
 import com.sz.admin.system.pojo.vo.common.DepartmentVO;
+import com.sz.admin.system.pojo.vo.sysdept.DeptOptionsVO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptLeaderVO;
 import com.sz.admin.system.pojo.vo.sysdept.SysDeptVO;
@@ -44,4 +45,6 @@ public interface SysDeptService extends IService<SysDept> {
     SysDeptLeaderVO findSysUserDeptLeader();
 
     List<DepartmentVO> listSelector(SelectorQueryDTO dto);
+
+    List<DeptOptionsVO> getDeptOptions();
 }

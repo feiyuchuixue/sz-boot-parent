@@ -1,5 +1,7 @@
 package com.sz.core.common.dict;
 
+import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;
+
 /**
  * 动态字典loader
  */
@@ -19,7 +21,7 @@ public interface DynamicDictLoader extends DictLoader {
      * 返回动态前缀
      */
     default String getDynamicPrefix() {
-        return "dynamic_";
+        return DYNAMIC_DICT_PREFIX;
     }
 
     /**

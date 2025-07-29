@@ -5,18 +5,19 @@ import com.sz.mysql.EntityChangeListener;
 import com.sz.redis.RedisCache;
 
 import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;
-import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_USER_OPTIONS;
+import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_DEPT_OPTIONS;
 
 /**
- * sys_user表监听器
+ * sys_dept表的监听器
+ * <p>
+ * 详细描述类的功能或用途（可选）。
+ * </p>
  *
- * TableUserChangeListener
- * 
  * @author sz
- * @since 2024/8/22 10:00
  * @version 1.0
+ * @since 2025/7/29
  */
-public class TableSysUserListener extends EntityChangeListener {
+public class TableSysDeptListener extends EntityChangeListener {
 
     @Override
     public void onInsert(Object o) {
@@ -38,6 +39,7 @@ public class TableSysUserListener extends EntityChangeListener {
      */
     private void onChange(Object o) {
         RedisCache cache = SpringApplicationContextUtils.getInstance().getBean(RedisCache.class);
-        cache.clearDict(DYNAMIC_DICT_PREFIX + DYNAMIC_USER_OPTIONS.getTypeCode());
+        cache.clearDict(DYNAMIC_DICT_PREFIX + DYNAMIC_DEPT_OPTIONS.getTypeCode());
     }
+
 }
