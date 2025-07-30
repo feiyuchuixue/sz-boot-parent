@@ -4,8 +4,6 @@ import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.dto.sysuser.SysUserListDTO;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO;
-import com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -68,24 +66,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return 用户列表
      */
     List<SysUserVO> querySysUserListNotDept(SysUserListDTO dto);
-
-    /**
-     * 查询用户部门信息
-     * 
-     * @param userIds
-     *            用户id
-     * @return 用户部门信息
-     */
-    List<UserDeptInfoVO> queryUserDeptInfo(List<Long> userIds);
-
-    /**
-     * 查询用户部门信息
-     * 
-     * @param userIds
-     *            用户id
-     * @return 用户部门信息
-     */
-    List<UserRoleInfoVO> queryUserRoleInfo(List<Long> userIds);
 
     /**
      * 查询（未分配部门）用户数量

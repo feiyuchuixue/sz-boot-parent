@@ -59,14 +59,8 @@ public class SysUserVO {
 
     private String delFlag;
 
-    @Schema(description = "部门信息")
-    private String deptInfo;
-
     @Schema(description = "部门ID，多个逗号分隔")
     private String deptIds;
-
-    @Schema(description = "角色信息")
-    private String roleInfo;
 
     @Schema(description = "角色ID,多个逗号分隔")
     private String roleIds;

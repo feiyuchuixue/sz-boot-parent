@@ -108,52 +108,6 @@
         </where>
         ORDER BY su.create_time ASC
     </select>
-    <select id="queryUserDeptInfo" resultType="com.sz.admin.system.pojo.vo.sysuser.UserDeptInfoVO">
-        SELECT
-        user_id,
-        GROUP_CONCAT(dept_id ORDER BY dept_id) AS dept_ids,
-        GROUP_CONCAT(CONCAT(dept_id, ':', dept_name) ORDER BY dept_id) AS dept_infos
-        FROM
-            (SELECT
-            sud.user_id,
-            sd.id AS dept_id,
-            sd.name AS dept_name
-            FROM
-            sys_user_dept sud
-            JOIN
-            sys_dept sd ON sud.dept_id = sd.id
-            WHERE sd.del_flag = "F"
-            ) AS subquery
-            WHERE user_id IN
-            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
-                #{userId}
-            </foreach>
-        GROUP BY
-        user_id;
-    </select>
-    <select id="queryUserRoleInfo" resultType="com.sz.admin.system.pojo.vo.sysuser.UserRoleInfoVO">
-        SELECT
-            user_id,
-            GROUP_CONCAT(role_id ORDER BY role_id) AS role_ids,
-            GROUP_CONCAT(CONCAT( role_id, ':', role_name )) AS role_infos
-        FROM
-            (
-                SELECT
-                    sur.user_id,
-                    sur.role_id,
-                    sr.role_name
-                FROM
-                    sys_user_role sur
-                        LEFT JOIN sys_role sr ON sur.role_id = sr.id
-                    WHERE sr.del_flag = "F"
-            ) AS subquery
-        WHERE user_id IN
-        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
-            #{userId}
-        </foreach>
-        GROUP BY
-            user_id;
-    </select>
     <select id="countSysUserListNotDept" resultType="java.lang.Integer">
         SELECT
             COUNT(DISTINCT su.id  )

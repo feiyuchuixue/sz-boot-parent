@@ -9,6 +9,7 @@ import com.github.pagehelper.PageHelper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryCondition;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -53,7 +54,9 @@ import java.util.stream.Collectors;
 
 import static com.sz.admin.system.pojo.po.table.SysDeptClosureTableDef.SYS_DEPT_CLOSURE;
 import static com.sz.admin.system.pojo.po.table.SysDeptTableDef.SYS_DEPT;
+import static com.sz.admin.system.pojo.po.table.SysRoleTableDef.SYS_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
+import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 
 /**
@@ -226,19 +229,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 查询用户的部门信息并转换为 Map
         Map<Long, UserDeptInfoVO> userDeptMap = new HashMap<>();
-        List<UserDeptInfoVO> userDeptList = this.mapper.queryUserDeptInfo(userIds);
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_DEPT.USER_ID, QueryMethods.groupConcat(SYS_USER_DEPT.DEPT_ID).as("deptIds"))
+                .from(SYS_USER_DEPT).join(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID)).where(SYS_USER_DEPT.USER_ID.in(userIds))
+                .groupBy(SYS_USER_DEPT.USER_ID);
+        List<UserDeptInfoVO> userDeptList = listAs(wrapper, UserDeptInfoVO.class);
+
         if (userDeptList != null) {
             for (UserDeptInfoVO userDeptInfoVO : userDeptList) {
                 userDeptMap.put(userDeptInfoVO.getUserId(), userDeptInfoVO);
             }
         }
-
         // 遍历用户列表，设置用户的部门信息
         for (SysUserVO user : userList) {
             // 检查部门信息是否存在
             if (userDeptMap.containsKey(user.getId())) {
                 UserDeptInfoVO infoVO = userDeptMap.get(user.getId());
-                user.setDeptInfo(infoVO.getDeptInfos());
                 user.setDeptIds(infoVO.getDeptIds());
             }
         }
@@ -253,7 +258,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 查询用户的部门信息并转换为 Map
         Map<Long, UserRoleInfoVO> userRoleMap = new HashMap<>();
-        List<UserRoleInfoVO> userDeptList = this.mapper.queryUserRoleInfo(userIds);
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_ROLE.USER_ID, QueryMethods.groupConcat(SYS_USER_ROLE.ROLE_ID).as("role_ids"))
+                .from(SYS_USER_ROLE).innerJoin(SYS_ROLE).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE.ID)).where(SYS_USER_ROLE.USER_ID.in(userIds))
+                .groupBy(SYS_USER_ROLE.USER_ID);
+        List<UserRoleInfoVO> userDeptList = listAs(wrapper, UserRoleInfoVO.class);
         if (userDeptList != null) {
             for (UserRoleInfoVO infoVO : userDeptList) {
                 userRoleMap.put(infoVO.getUserId(), infoVO);
@@ -264,7 +272,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 检查部门信息是否存在
             if (userRoleMap.containsKey(user.getId())) {
                 UserRoleInfoVO infoVO = userRoleMap.get(user.getId());
-                user.setRoleInfo(infoVO.getRoleInfos());
                 user.setRoleIds(infoVO.getRoleIds());
             }
         }
