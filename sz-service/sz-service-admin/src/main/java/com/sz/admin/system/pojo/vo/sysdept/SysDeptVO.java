@@ -47,7 +47,7 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     private List<Long> leaders = new ArrayList<>();
 
     @Schema(description = "负责人信息")
-    private String leaderInfo;
+    private String leaderIds;
 
     @Schema(description = "数据权限")
     private String dataScopeCd;

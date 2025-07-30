@@ -121,10 +121,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDeptVO> list(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(
-                if_(SYS_USER.DEL_FLAG.eq("F"), QueryMethods.concatWs(QueryMethods.string(":"), SYS_DEPT_LEADER.LEADER_ID, SYS_USER.NICKNAME), null_())
-
-        ).as("leader_info")).from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(if_(SYS_USER.DEL_FLAG.eq("F"), SYS_DEPT_LEADER.LEADER_ID, null_())).as("leader_ids"))
+                .from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
                 .on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).groupBy(SYS_DEPT.ID);
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
