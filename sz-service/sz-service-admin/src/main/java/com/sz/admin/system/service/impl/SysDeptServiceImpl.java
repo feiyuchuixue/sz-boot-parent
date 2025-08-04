@@ -7,17 +7,13 @@ import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
-import com.sz.admin.system.mapper.SysDeptLeaderMapper;
-import com.sz.admin.system.mapper.SysDeptMapper;
-import com.sz.admin.system.mapper.SysUserMapper;
+import com.sz.admin.system.mapper.*;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptRoleDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
-import com.sz.admin.system.pojo.po.SysDept;
-import com.sz.admin.system.pojo.po.SysDeptLeader;
-import com.sz.admin.system.pojo.po.SysUser;
+import com.sz.admin.system.pojo.po.*;
 import com.sz.admin.system.pojo.vo.common.DepartmentVO;
 import com.sz.admin.system.pojo.vo.sysdept.*;
 import com.sz.admin.system.service.SysDeptClosureService;
@@ -80,7 +76,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     private final EventPublisher eventPublisher;
 
-
     @Transactional
     @Override
     public void create(SysDeptCreateDTO dto) {
@@ -140,11 +135,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDeptVO> list(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(
-                if_(SYS_USER.DEL_FLAG.eq("F"), QueryMethods.concatWs(QueryMethods.string(":"), SYS_DEPT_LEADER.LEADER_ID, SYS_USER.NICKNAME), null_())
-
-        ).as("leader_info")).from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
+        QueryWrapper wrapper = QueryWrapper.create()
+                .select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(if_(SYS_USER.DEL_FLAG.eq("F"), SYS_DEPT_LEADER.LEADER_ID, null_())).as("leader_ids"))
+                .from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
                 .on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).groupBy(SYS_DEPT.ID);
+
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
         setDeptRoleInfo(deptVOS);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
@@ -161,10 +156,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         }
         // 获取所有部门的 ID 列表，查询角色信息
         List<Long> deptIds = deptList.stream().map(SysDeptVO::getId).collect(Collectors.toList());
-        List<DeptRoleInfoVO> deptRoleInfoVOS = QueryChain.of(this.mapper).select(SYS_DEPT.ID.as("deptId"), SYS_ROLE.ID.as("roleId"), SYS_ROLE.ROLE_NAME.as("roleName"))
-                .from(SYS_DEPT)
-                .leftJoin(SYS_DEPT_ROLE).on(SYS_DEPT.ID.eq(SYS_DEPT_ROLE.DEPT_ID))
-                .leftJoin(SYS_ROLE).on(SYS_DEPT_ROLE.ROLE_ID.eq(SYS_ROLE.ID))
+        List<DeptRoleInfoVO> deptRoleInfoVOS = QueryChain.of(this.mapper).select(SYS_DEPT.ID.as("deptId"), SYS_ROLE.ID.as("roleId")).from(SYS_DEPT)
+                .leftJoin(SYS_DEPT_ROLE).on(SYS_DEPT.ID.eq(SYS_DEPT_ROLE.DEPT_ID)).leftJoin(SYS_ROLE).on(SYS_DEPT_ROLE.ROLE_ID.eq(SYS_ROLE.ID))
                 .and(SYS_DEPT.ID.in(deptIds)).and(SYS_ROLE.ID.isNotNull()).listAs(DeptRoleInfoVO.class);
         Map<Long, List<DeptRoleInfoVO>> roleInfoMap = deptRoleInfoVOS.stream().collect(Collectors.groupingBy(DeptRoleInfoVO::getDeptId));
 
@@ -173,11 +166,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
             if (roleInfoMap.containsKey(dept.getId())) {
                 List<DeptRoleInfoVO> deptRoleInfos = roleInfoMap.get(dept.getId());
                 dept.setRoleIds(deptRoleInfos.stream().map(DeptRoleInfoVO::getRoleId).collect(Collectors.joining(",")));
-                dept.setRoleInfo(deptRoleInfos.stream().map(item -> item.getRoleId() + ":" + item.getRoleName()).collect(Collectors.joining(",")));
             }
         }
     }
-
 
     @Override
     public void remove(SelectIdsDTO dto) {
@@ -306,7 +297,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     /**
      * 部门角色信息查询
      *
-     * @param deptId 部门id
+     * @param deptId
+     *            部门id
      */
     @Override
     public SysDeptRoleVO findSysDeptRole(Long deptId) {

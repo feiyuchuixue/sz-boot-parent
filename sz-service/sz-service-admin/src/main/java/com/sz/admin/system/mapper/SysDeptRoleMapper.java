@@ -2,9 +2,6 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysDeptRole;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>

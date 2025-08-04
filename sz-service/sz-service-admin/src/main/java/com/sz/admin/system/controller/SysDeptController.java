@@ -80,7 +80,7 @@ public class SysDeptController {
     @Operation(summary = "树形列表")
     @GetMapping("/tree")
     public ApiResult<List<DeptTreeVO>> tree(@Parameter(description = "需要排除的节点ID") @RequestParam(required = false) Integer excludeNodeId,
-                                            @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
+            @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
         return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot, false));
     }
 

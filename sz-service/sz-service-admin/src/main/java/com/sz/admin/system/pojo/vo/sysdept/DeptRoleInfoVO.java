@@ -19,7 +19,4 @@ public class DeptRoleInfoVO {
     @Schema(description = "角色信ID")
     private String roleId;
 
-    @Schema(description = "角色名")
-    private String roleName;
-
 }
