@@ -5,6 +5,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDeptLeaderMapper;
 import com.sz.admin.system.mapper.SysDeptMapper;
@@ -12,6 +13,7 @@ import com.sz.admin.system.mapper.SysUserMapper;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptListDTO;
+import com.sz.admin.system.pojo.dto.sysdept.SysDeptRoleDTO;
 import com.sz.admin.system.pojo.dto.sysdept.SysDeptUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDept;
 import com.sz.admin.system.pojo.po.SysDeptLeader;
@@ -24,9 +26,13 @@ import com.sz.admin.system.service.SysDeptService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.TreeUtils;
+import com.sz.core.util.Utils;
+import com.sz.platform.event.PermissionChangeEvent;
+import com.sz.platform.event.PermissionMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +44,9 @@ import java.util.stream.Collectors;
 
 import static com.mybatisflex.core.query.QueryMethods.*;
 import static com.sz.admin.system.pojo.po.table.SysDeptLeaderTableDef.SYS_DEPT_LEADER;
+import static com.sz.admin.system.pojo.po.table.SysDeptRoleTableDef.SYS_DEPT_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysDeptTableDef.SYS_DEPT;
+import static com.sz.admin.system.pojo.po.table.SysRoleTableDef.SYS_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
 
@@ -56,11 +64,22 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     private final SysUserMapper userMapper;
 
+    private final SysRoleMapper sysRoleMapper;
+
+    private final SysDeptRoleMapper sysDeptRoleMapper;
+
+    private final SysUserDeptMapper sysUserDeptMapper;
+
+    private final SysUserRoleMapper sysUserRoleMapper;
+
     private final SysDeptLeaderMapper leaderMapper;
 
     private final SysDeptLeaderService deptLeaderService;
 
     private final SysDeptClosureService deptClosureService;
+
+    private final EventPublisher eventPublisher;
+
 
     @Transactional
     @Override
@@ -121,15 +140,44 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDeptVO> list(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(if_(SYS_USER.DEL_FLAG.eq("F"), SYS_DEPT_LEADER.LEADER_ID, null_())).as("leader_ids"))
-                .from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(
+                if_(SYS_USER.DEL_FLAG.eq("F"), QueryMethods.concatWs(QueryMethods.string(":"), SYS_DEPT_LEADER.LEADER_ID, SYS_USER.NICKNAME), null_())
+
+        ).as("leader_info")).from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
                 .on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).groupBy(SYS_DEPT.ID);
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
+        setDeptRoleInfo(deptVOS);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
         List<SysDeptVO> trees = TreeUtils.buildTree(deptVOS, root);
         return trees.getFirst().getChildren();
     }
+
+    /**
+     * 添加部门关联角色信息
+     */
+    private void setDeptRoleInfo(List<SysDeptVO> deptList) {
+        if (deptList.isEmpty()) {
+            return;
+        }
+        // 获取所有部门的 ID 列表，查询角色信息
+        List<Long> deptIds = deptList.stream().map(SysDeptVO::getId).collect(Collectors.toList());
+        List<DeptRoleInfoVO> deptRoleInfoVOS = QueryChain.of(this.mapper).select(SYS_DEPT.ID.as("deptId"), SYS_ROLE.ID.as("roleId"), SYS_ROLE.ROLE_NAME.as("roleName"))
+                .from(SYS_DEPT)
+                .leftJoin(SYS_DEPT_ROLE).on(SYS_DEPT.ID.eq(SYS_DEPT_ROLE.DEPT_ID))
+                .leftJoin(SYS_ROLE).on(SYS_DEPT_ROLE.ROLE_ID.eq(SYS_ROLE.ID))
+                .and(SYS_DEPT.ID.in(deptIds)).and(SYS_ROLE.ID.isNotNull()).listAs(DeptRoleInfoVO.class);
+        Map<Long, List<DeptRoleInfoVO>> roleInfoMap = deptRoleInfoVOS.stream().collect(Collectors.groupingBy(DeptRoleInfoVO::getDeptId));
+
+        // 遍历部门列表，设置部门的角色信息
+        for (SysDeptVO dept : deptList) {
+            if (roleInfoMap.containsKey(dept.getId())) {
+                List<DeptRoleInfoVO> deptRoleInfos = roleInfoMap.get(dept.getId());
+                dept.setRoleIds(deptRoleInfos.stream().map(DeptRoleInfoVO::getRoleId).collect(Collectors.joining(",")));
+                dept.setRoleInfo(deptRoleInfos.stream().map(item -> item.getRoleId() + ":" + item.getRoleName()).collect(Collectors.joining(",")));
+            }
+        }
+    }
+
 
     @Override
     public void remove(SelectIdsDTO dto) {
@@ -253,6 +301,86 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         SysDeptLeaderVO leaderVO = new SysDeptLeaderVO();
         leaderVO.setLeaderInfoVOS(userInfos);
         return leaderVO;
+    }
+
+    /**
+     * 部门角色信息查询
+     *
+     * @param deptId 部门id
+     */
+    @Override
+    public SysDeptRoleVO findSysDeptRole(Long deptId) {
+        List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
+        List<SysDeptRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(sysRoleList, SysDeptRoleVO.RoleInfoVO.class);
+        List<SysDeptRole> deptRoles = QueryChain.of(sysDeptRoleMapper).eq(SysDeptRole::getDeptId, deptId).list();
+        List<Long> roleIds = new ArrayList<>();
+        if (Utils.isNotNull(deptRoles)) {
+            roleIds = deptRoles.stream().map(SysDeptRole::getRoleId).collect(Collectors.toList());
+        }
+        SysDeptRoleVO sysDeptRoleVO = new SysDeptRoleVO();
+        sysDeptRoleVO.setRoleInfoVOS(roleInfoVOS);
+        sysDeptRoleVO.setSelectIds(roleIds);
+        return sysDeptRoleVO;
+    }
+
+    @Override
+    public void changeSysDeptRole(SysDeptRoleDTO dto) {
+        Long deptId = dto.getDeptId();
+        List<Long> roleIds = dto.getRoleIds();
+        // 删除当前部门下的所有角色
+        UpdateChain.of(sysDeptRoleMapper).eq(SysDeptRole::getDeptId, deptId).remove();
+
+        if (Utils.isNotNull(roleIds)) {
+            List<SysDeptRole> deptRoles = dto.getRoleIds().stream().map(roleId -> {
+                SysDeptRole sysDataRole = new SysDeptRole();
+                sysDataRole.setRoleId(roleId);
+                sysDataRole.setDeptId(deptId);
+                return sysDataRole;
+            }).toList();
+            sysDeptRoleMapper.insertBatch(deptRoles);
+
+            // 查询当前部门下所有用户
+            List<SysUserDept> userDepts = QueryChain.of(sysUserDeptMapper).eq(SysUserDept::getDeptId, deptId).list();
+            List<Long> userIdList = userDepts.stream().map(SysUserDept::getUserId).distinct().toList();
+            if (userIdList.isEmpty()) {
+                return;
+            }
+
+            // 查询并插入用户需要绑定的新角色
+            List<SysUserRole> userRoleList = userRoleLinkData(userIdList, roleIds);
+            if (Utils.isNotNull(userRoleList)) {
+                sysUserRoleMapper.insertBatch(userRoleList);
+                List<Long> changeUserIds = userRoleList.stream().map(SysUserRole::getUserId).distinct().toList();
+                // 触发更新用户元数据事件
+                eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));
+            }
+        }
+    }
+
+    /**
+     * 构造用户角色关联数据
+     */
+    private List<SysUserRole> userRoleLinkData(List<Long> userIdList, List<Long> roleIds) {
+        // 查询当前用户已有的角色
+        List<SysUserRole> existingUserRoles = QueryChain.of(sysUserRoleMapper).in(SysUserRole::getUserId, userIdList).list();
+
+        // 将用户角色关联信息作为key
+        Set<String> existingBindings = existingUserRoles.stream().map(ur -> ur.getUserId() + "_" + ur.getRoleId()).collect(Collectors.toSet());
+        List<SysUserRole> newUserRoles = new ArrayList<>();
+        // 循环判断色插用户需要绑定的角色
+        for (Long userId : userIdList) {
+            for (Long roleId : roleIds) {
+                // 检查绑定是否已存在
+                String bindingKey = userId + "_" + roleId;
+                if (!existingBindings.contains(bindingKey)) {
+                    SysUserRole userRole = new SysUserRole();
+                    userRole.setUserId(userId);
+                    userRole.setRoleId(roleId);
+                    newUserRoles.add(userRole);
+                }
+            }
+        }
+        return newUserRoles;
     }
 
     private static QueryWrapper buildQueryWrapper(SysDeptListDTO dto) {

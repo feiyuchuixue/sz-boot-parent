@@ -2,6 +2,7 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysDept;
+import com.sz.admin.system.pojo.vo.sysdept.DeptRoleInfoVO;
 import com.sz.admin.system.pojo.vo.sysdept.TotalDeptVO;
 import org.apache.ibatis.annotations.Param;
 

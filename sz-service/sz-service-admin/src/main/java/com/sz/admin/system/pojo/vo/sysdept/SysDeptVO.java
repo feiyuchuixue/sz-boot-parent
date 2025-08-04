@@ -61,4 +61,10 @@ public class SysDeptVO implements Treeable<SysDeptVO> {
     @Schema(description = "数据权限-自定义: 用户项")
     private List<Long> userIds = new ArrayList<>();
 
+    @Schema(description = "角色信息")
+    private String roleInfo;
+
+    @Schema(description = "角色ID,多个逗号分隔")
+    private String roleIds;
+
 }

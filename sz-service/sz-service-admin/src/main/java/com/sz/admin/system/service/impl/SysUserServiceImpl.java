@@ -13,12 +13,14 @@ import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.system.mapper.SysDeptRoleMapper;
 import com.sz.admin.system.mapper.SysRoleMapper;
 import com.sz.admin.system.mapper.SysUserMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
+import com.sz.admin.system.pojo.po.SysDeptRole;
 import com.sz.admin.system.pojo.po.SysRole;
 import com.sz.admin.system.pojo.po.SysUser;
 import com.sz.admin.system.pojo.po.SysUserRole;
@@ -76,6 +78,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final SysUserRoleMapper sysUserRoleMapper;
 
+    private final SysDeptRoleMapper sysDeptRoleMapper;
+
     private final RedisCache redisCache;
 
     private final SysPermissionService sysPermissionService;
@@ -96,8 +100,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取认证账户信息接角色信息
      *
-     * @param username
-     *            用户名
+     * @param username 用户名
      * @return 用户信息
      */
     @Override
@@ -114,8 +117,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取认证账户信息接角色信息
      *
-     * @param userId
-     *            用户id
+     * @param userId 用户id
      * @return 用户信息
      */
     @Override
@@ -129,8 +131,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 后台创建用户
      *
-     * @param dto
-     *            用户信息
+     * @param dto 用户信息
      */
     @Transactional
     @Override
@@ -155,8 +156,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更新用户
      *
-     * @param dto
-     *            用户信息
+     * @param dto 用户信息
      */
     @Override
     public void update(SysUserUpdateDTO dto) {
@@ -172,8 +172,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 删除用户 (逻辑删除，保留数据关系。如部门、权限、角色等)
      *
-     * @param dto
-     *            用户id数组
+     * @param dto 用户id数组
      */
     @Override
     @Transactional
@@ -187,8 +186,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 详情
      *
-     * @param id
-     *            用户id
+     * @param id 用户id
      * @return {@link SysUser}
      */
     @Override
@@ -328,8 +326,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 更改（当前用户）密码
      *
-     * @param dto
-     *            dto
+     * @param dto dto
      */
     @Override
     public void changePassword(SysUserPasswordDTO dto) {
@@ -344,8 +341,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 重置密码
      *
-     * @param id
-     *            id
+     * @param id id
      */
     @Override
     public void resetPassword(Long id) {
@@ -470,8 +466,50 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void bindUserDept(UserDeptDTO dto) {
         userDeptService.bind(dto);
+        if (Utils.isNotNull(dto.getUserIds()) && Utils.isNotNull(dto.getDeptIds())) {
+            bindUserRoleByDept(dto.getUserIds(), dto.getDeptIds());
+        }
         if (Utils.isNotNull(dto.getUserIds())) {
             eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(dto.getUserIds())));
+        }
+    }
+
+    /**
+     * 根据部门绑定角色
+     */
+    private void bindUserRoleByDept(List<Long> userIds, List<Long> deptIds) {
+        if (!Utils.isNotNull(userIds) || !Utils.isNotNull(deptIds)) {
+            return;
+        }
+
+        // 获取用户当前拥有的所有角色
+        List<SysUserRole> existingUserRoles = QueryChain.of(sysUserRoleMapper).in(SysUserRole::getUserId, userIds).list();
+        Map<Long, Set<Long>> userToRoleIdsMap = existingUserRoles.stream().collect(Collectors.groupingBy(
+                SysUserRole::getUserId,
+                Collectors.mapping(SysUserRole::getRoleId, Collectors.toSet())));
+        // 获取部门关联的所有角色
+        List<SysDeptRole> deptRoles = QueryChain.of(sysDeptRoleMapper).in(SysDeptRole::getDeptId, deptIds).list();
+        Set<Long> deptRoleIds = deptRoles.stream().map(SysDeptRole::getRoleId).collect(Collectors.toSet());
+        if (deptRoleIds.isEmpty()) {
+            return;
+        }
+        // 为每个用户构造需要绑定的角色
+        List<SysUserRole> toInsert = new ArrayList<>();
+        for (Long userId : userIds) {
+            Set<Long> userRoleIds = userToRoleIdsMap.getOrDefault(userId, Collections.emptySet());
+            deptRoleIds.stream().filter(roleId -> !userRoleIds.contains(roleId))
+                    .forEach(roleId -> {
+                        SysUserRole sysUserRole = new SysUserRole();
+                        sysUserRole.setRoleId(roleId);
+                        sysUserRole.setUserId(userId);
+                        toInsert.add(sysUserRole);
+                    });
+        }
+        if (!toInsert.isEmpty()) {
+            sysUserRoleMapper.insertBatch(toInsert);
+            // 更新用户元数据
+            List<Long> changedUserIds = toInsert.stream().map(SysUserRole::getUserId).distinct().toList();
+            eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changedUserIds)));
         }
     }
 
