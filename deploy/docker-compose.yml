@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  sz-service-nginx:
+    image: registry.cn-beijing.aliyuncs.com/szo/nginx:1.25.4
+    container_name: sz-service-nginx
+    restart: always
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ${NGINX_CONF_DIR}:/etc/nginx/conf.d
+    depends_on:
+      - sz-service-admin-green
+      - sz-service-admin-blue
+    networks:
+      - ${NETWORK_NAME}
+
+  sz-service-admin-green:
+    image: ${IMAGE_NAME}
+    container_name: sz-service-admin-green
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_ACTIVE}
+    volumes:
+      - ./logs:/logs
+      - ./config:/config
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${HEALTH_PORT}${ACTUATOR_PATH} || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ${NETWORK_NAME}
+
+  sz-service-admin-blue:
+    image: ${IMAGE_NAME}
+    container_name: sz-service-admin-blue
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_ACTIVE}
+    volumes:
+      - ./logs:/logs
+      - ./config:/config
+    ports:
+      - "9992:${HEALTH_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${HEALTH_PORT}${ACTUATOR_PATH} || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ${NETWORK_NAME}
+
+networks:
+  ${NETWORK_NAME}:
+    external: true

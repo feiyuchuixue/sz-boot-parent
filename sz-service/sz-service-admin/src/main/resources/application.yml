@@ -66,3 +66,11 @@ sz:
     # 定义允许跨域请求的源（Origin）。可以设置为特定的域名、IP 地址或通配符。
     allowed-origins:
       - "*"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: "never"
