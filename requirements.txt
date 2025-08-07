@@ -1,0 +1,54 @@
+# CPU优化版车牌识别系统依赖
+# License Plate Recognition System Dependencies
+
+# 核心计算机视觉库
+opencv-python>=4.8.0
+numpy>=1.24.0
+pillow>=10.0.0
+
+# ONNX Runtime for CPU inference acceleration
+onnxruntime>=1.16.0
+
+# Intel OpenVINO (可选，用于进一步CPU优化)
+# openvino>=2023.0.0
+
+# HTTP客户端和API
+requests>=2.31.0
+
+# 系统监控和资源管理
+psutil>=5.9.0
+
+# 多进程和并发
+futures>=3.0.0;python_version<"3.2"
+
+# 配置文件处理
+pyyaml>=6.0
+
+# 日志和调试
+colorlog>=6.7.0
+
+# 数值计算优化
+scipy>=1.11.0
+
+# 可选：Intel Math Kernel Library for numerical optimization
+# intel-openmp>=2023.0.0
+# mkl>=2023.0.0
+
+# 可选：TensorRT for NVIDIA GPU acceleration (如果需要GPU后备)
+# tensorrt>=8.6.0
+
+# 开发和测试依赖
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+
+# 性能分析工具
+memory-profiler>=0.61.0
+line-profiler>=4.1.0
+
+# 图像处理增强
+scikit-image>=0.21.0
+
+# 文件监控
+watchdog>=3.0.0
