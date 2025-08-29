@@ -28,7 +28,7 @@ jobs:
     env:
       ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
       ACR_ZONE: sz-action
-      VERSION: latest
+      VERSION: test
       RUNNING_ACTIVE: preview
       SHELL_RUN_DIR: /home/run
     steps:
