@@ -37,45 +37,35 @@ public class HttpReqResUtil {
      * @return 客户端的IP地址
      */
     public static String getIpAddress(HttpServletRequest request) {
-        String ip = getHeaderIp(request, "X-Forwarded-For");
-        if (StringUtils.isNotEmpty(ip)) {
-            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
-            int index = ip.indexOf(",");
-            if (index != -1) {
-                return ip.substring(0, index);
-            } else {
-                return ip;
+        String[] headers = {
+                "X-Forwarded-For",
+                "X-Real-IP",
+                "Proxy-Client-IP",
+                "WL-Proxy-Client-IP",
+                "HTTP_CLIENT_IP",
+                "HTTP_X_FORWARDED_FOR"
+        };
+        String ip = null;
+        for (String header : headers) {
+            String value = request.getHeader(header);
+            if (StringUtils.isNotBlank(value) && !"unknown".equalsIgnoreCase(value)) {
+                // 多级代理，取第一个非 unknown 的 IP
+                value = value.split(",")[0].trim();
+                if (!"unknown".equalsIgnoreCase(value)) {
+                    ip = value;
+                    break;
+                }
             }
         }
-
-        ip = getHeaderIp(request, "X-Real-IP");
-        if (StringUtils.isNotEmpty(ip)) {
-            return ip;
+        if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
         }
-
-        ip = getHeaderIp(request, "Proxy-Client-IP");
-        if (StringUtils.isNotEmpty(ip)) {
-            return ip;
+        // IPv6 本地回环处理
+        if ("0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)) {
+            ip = "127.0.0.1";
         }
-
-        ip = getHeaderIp(request, "WL-Proxy-Client-IP");
-        if (StringUtils.isNotEmpty(ip)) {
-            return ip;
-        }
-
-        ip = getHeaderIp(request, "HTTP_CLIENT_IP");
-        if (StringUtils.isNotEmpty(ip)) {
-            return ip;
-        }
-
-        ip = getHeaderIp(request, "HTTP_X_FORWARDED_FOR");
-        if (StringUtils.isNotEmpty(ip)) {
-            return ip;
-        }
-
-        return request.getRemoteAddr();
+        return ip;
     }
-
     private static String getHeaderIp(HttpServletRequest request, String header) {
         String ip = request.getHeader(header);
         if (StringUtils.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {

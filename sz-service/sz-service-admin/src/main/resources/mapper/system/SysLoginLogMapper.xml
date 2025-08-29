@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.admin.system.mapper.SysLoginLogMapper">
+    <!-- 通用映射 -->
+    <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysLoginLog">
+        <id column="id" property="id"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="user_name" property="userName"/>
+        <result column="login_status" property="loginStatus"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="ip_address" property="ipAddress"/>
+        <result column="login_location" property="loginLocation"/>
+        <result column="browser" property="browser"/>
+        <result column="os" property="os"/>
+        <result column="msg" property="msg"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, del_flag, user_name, login_status, login_time, ip_address, login_location, browser, os, msg, remark
+    </sql>
+
+    <insert id="insertLoginLog">
+        INSERT INTO sys_login_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loginLog.userName != null and loginLog.userName != ''">user_name,</if>
+            <if test="loginLog.loginStatus != null">login_status,</if>
+            <if test="loginLog.loginTime != null">login_time,</if>
+            <if test="loginLog.ipAddress != null and loginLog.ipAddress != ''">ip_address,</if>
+            <if test="loginLog.loginLocation != null and loginLog.loginLocation != ''">login_location,</if>
+            <if test="loginLog.browser != null and loginLog.browser != ''">browser,</if>
+            <if test="loginLog.os != null and loginLog.os != ''">os,</if>
+            <if test="loginLog.msg != null and loginLog.msg != ''">msg,</if>
+            <if test="loginLog.remark != null and loginLog.remark != ''">remark,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="loginLog.userName != null and loginLog.userName != ''">#{loginLog.userName},</if>
+            <if test="loginLog.loginStatus != null">#{loginLog.loginStatus},</if>
+            <if test="loginLog.loginTime != null">#{loginLog.loginTime},</if>
+            <if test="loginLog.ipAddress != null and loginLog.ipAddress != ''">#{loginLog.ipAddress},</if>
+            <if test="loginLog.loginLocation != null and loginLog.loginLocation != ''">#{loginLog.loginLocation},</if>
+            <if test="loginLog.browser != null and loginLog.browser != ''">#{loginLog.browser},</if>
+            <if test="loginLog.os != null and loginLog.os != ''">#{loginLog.os},</if>
+            <if test="loginLog.msg != null and loginLog.msg != ''">#{loginLog.msg},</if>
+            <if test="loginLog.remark != null and loginLog.remark != ''">#{loginLog.remark},</if>
+        </trim>
+    </insert>
+
+</mapper>

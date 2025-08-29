@@ -18,6 +18,7 @@
         <mybatis-flex.version>1.11.0</mybatis-flex.version>
         <jackson.version>2.19.1</jackson.version>
         <aws.s3.version>2.31.78</aws.s3.version>
+        <ip2region.version>2.7.0</ip2region.version>
     </properties>
 
     <!--全局依赖版本管理-->
@@ -165,6 +166,20 @@
                 <groupId>cn.idev.excel</groupId>
                 <artifactId>fastexcel</artifactId>
                 <version>1.2.0</version>
+            </dependency>
+
+            <!--UserAgent解析-->
+            <dependency>
+                <groupId>nl.basjes.parse.useragent</groupId>
+                <artifactId>yauaa</artifactId>
+                <version>7.31.0</version>
+            </dependency>
+
+            <!-- 离线IP地址定位库 ip2region -->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
             </dependency>
         </dependencies>
 
