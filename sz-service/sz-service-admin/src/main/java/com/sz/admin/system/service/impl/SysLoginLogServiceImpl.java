@@ -107,13 +107,13 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         try {
             // 在主线程中获取所有请求信息
             HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            String ipAddress = HttpReqResUtil.getIpAddress(request);
+            String userAgentString = request.getHeader("User-Agent");
+            String realAddressByIP = IpUtils.getRealAddressByIP(ipAddress);
             // 使用虚拟线程进行异步提交
             Thread.startVirtualThread(() -> {
                 try {
-                    String ipAddress = HttpReqResUtil.getIpAddress(request);
-                    String userAgentString = request.getHeader("User-Agent");
                     UserAgent.ImmutableUserAgent agent = USER_AGENT_ANALYZER.parse(userAgentString);
-                    String realAddressByIP = IpUtils.getRealAddressByIP(ipAddress);
                     SysLoginLog log = new SysLoginLog();
                     log.setUserName(username);
                     log.setLoginStatus(status);
