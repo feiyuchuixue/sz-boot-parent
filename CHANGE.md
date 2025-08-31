@@ -1,4 +1,55 @@
 # 更新日志
+
+## v1.2.6-beta （20250831）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.2.6-beta)
+
+sz-boot-parent：
+
+- 依赖升级：
+  - **spring-boot-starter-parent：3.5.3 -> 3.5.5。**
+  - **mybatis-flex：1.11.0 -> 1.11.1。**
+  - software.amazon.awssdk:s3：2.31.78 -> 2.32.29。
+  - fastexcel：1.2.0 -> 1.3.0。
+  - io.swagger.core.v3-swagger-annotations：2.2.34 -> 2.2.36
+  - jackson：2.19.0 -> 2.19.1
+  - commons-lang3:  3.17.0 -> 3.18.0
+  - HikariCP：6.3.0 -> 7.0.2
+  - commons-io-commons-io：2.19.0 -> 2.20.0
+  - jackson：2.19.1 -> 2.19.2
+  - mysql-connector-j：9.3.0 -> 9.4.0
+- 新增: 新增部门角色设置功能，更新部门下所有用户的角色信息，实现用户在设置部门时自动继承部门角色权限 （感谢[liuce](https://github.com/nullPointer0123)）。
+- 修复：增强WebSocket消息解析，添加错误处理。
+- 优化: 部门设置角色使用mybatisFlex链式操纵替换sql。
+- 新增：[动态字典] - 系统部门。
+- 新增：[动态字典] - 系统角色。
+- 优化：账号管理-部门、角色列展示查询。
+- 优化：部门管理-负责人查询。
+- 优化：部门管理-角色查询。
+- 优化：[代码生成器]- 添加Lombok @Accessors 的支持（感谢[liuce](https://github.com/nullPointer0123)）。
+- 优化： [mysql.yml] - 指定 liquibase 版本表名，兼容不同环境表名大小写，避免版本控制失效。
+- 优化： [代码生成器] - 菜单管理SQL格式。
+- 新增：登录日志（感谢[liuce](https://github.com/nullPointer0123)）。
+
+sz-admin：
+
+- 新增: 新增部门角色设置功能，更新部门下所有用户的角色信息，实现用户在设置部门时自动继承部门角色权限（感谢[liuce](https://github.com/nullPointer0123)）。
+- 优化：[ProTable-TableColumn组件] 支持多标签展示。
+
+  - 支持 tag=false 且 enum 配置时，自动翻译多值并逗号拼接展示。
+  - 支持 tag=true 且 enum 配置时，多标签分组展示及收起。
+  - 支持 tag 未设置且 enum 配置时，正常翻译多值展示。
+  - 兼容多种数据格式（数组、逗号分隔字符串）。
+  - 空值统一展示为 "--"。
+  - 新增 tagLimit 属性说明：设置展示标签数量，超出部分通过 Popover 收起展示（tagLimit=-1 时展示全部标签，默认值tagLimit=3）。
+- 优化: 添加部门绑定角色提示，调整部门页面操作列宽（感谢[liuce](https://github.com/nullPointer0123)）。
+- 新增: 添加登陆日志（感谢[liuce](https://github.com/nullPointer0123)）。
+- 优化：账号管理-部门、角色列展示。
+- 优化：部门管理-负责人展示。
+- 优化：部门管理-角色展示。
+
 ## v1.2.5-beta （20250716）
 
 > [!NOTE]
