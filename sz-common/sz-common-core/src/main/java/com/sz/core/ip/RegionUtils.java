@@ -20,32 +20,37 @@ public class RegionUtils {
     private static final Searcher SEARCHER;
 
     static {
-        try {
-            InputStream inputStream = RegionUtils.class.getClassLoader().getResourceAsStream(IP_XDB_FILENAME);
+        Searcher searcher = null;
+        try (InputStream inputStream = RegionUtils.class.getClassLoader().getResourceAsStream(IP_XDB_FILENAME)) {
             if (inputStream == null) {
-                // 替换为项目自定义异常
-                throw new RuntimeException("IP地址库文件不存在");
+                throw new RuntimeException("IP地址库文件不存在: " + IP_XDB_FILENAME);
             }
-            byte[] data = new byte[inputStream.available()];
-            inputStream.read(data);
-            inputStream.close();
-            SEARCHER = Searcher.newWithBuffer(data);
+            byte[] data = inputStream.readAllBytes();
+            searcher = Searcher.newWithBuffer(data);
             log.info("RegionUtils初始化成功，加载IP地址库数据成功！");
         } catch (Exception e) {
-            throw new RuntimeException("RegionUtils初始化失败，原因：" + e.getMessage());
+            log.error("RegionUtils初始化失败", e);
         }
+        SEARCHER = searcher;
     }
 
     /**
      * 根据IP地址离线获取城市
      */
     public static String getCityInfo(String ip) {
+        if (SEARCHER == null) {
+            log.error("IP地址库未初始化，无法查询IP: {}", ip);
+            return "未知";
+        }
         try {
-            // 3、执行查询
             String region = SEARCHER.search(StringUtils.trim(ip));
+            if (region == null) {
+                log.warn("IP地址库未查询到结果: {}", ip);
+                return "未知";
+            }
             return region.replace("0|", "").replace("|0", "");
         } catch (Exception e) {
-            log.error("IP地址离线获取城市异常 {}", ip);
+            log.error("IP地址离线获取城市异常 {}", ip, e);
             return "未知";
         }
     }
