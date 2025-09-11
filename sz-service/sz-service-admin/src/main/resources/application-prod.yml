@@ -2,8 +2,8 @@ server:
   servlet:
     context-path: /api/admin
   port: 9991
-sz:
-  cors:
-    # 为了提高安全性，生产环境不建议使用*，需修改成指定的域名
-    allowed-origins:
-      - "https://your_domain.com"
+# 为了提高安全性，生产环境不建议使用*，需修改成指定的域名
+#sz:
+#  cors:
+#    allowed-origins:
+#      - "https://your_domain.com"
