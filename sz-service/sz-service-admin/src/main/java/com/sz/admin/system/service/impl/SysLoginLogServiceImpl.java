@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -151,6 +150,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         if (Utils.isNotNull(dto.getLoginTimeStart()) && Utils.isNotNull(dto.getLoginTimeEnd())) {
             wrapper.between(SysLoginLog::getLoginTime, dto.getLoginTimeStart(), dto.getLoginTimeEnd());
         }
+        wrapper.orderBy(SysLoginLog::getLoginTime).desc();
         return wrapper;
     }
 }
