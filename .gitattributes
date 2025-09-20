@@ -1,0 +1,6 @@
+# 默认所有文件作为文本处理，统一换行符为 LF
+* text eol=lf
+
+# 针对二进制文件禁止换行符转换
+*.png binary
+*.xdb binary
