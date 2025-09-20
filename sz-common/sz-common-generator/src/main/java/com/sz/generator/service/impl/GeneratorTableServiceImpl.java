@@ -402,22 +402,14 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String path = buildPath(detailVO);
         String component = buildComponent(detailVO);
         int count = this.mapper.selectMenuCount(parentMenuId);
-        String listPermission = model.get("listPermission").toString();
-        MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep, listPermission);
+
+        MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep);
         menus.add(menuDto);
         if (isInsertDB) {
             assertMenuDoesNotExist(routerName, path, component, parentMenuId);
             this.mapper.insertMenu(menuDto);
         }
-        if ("1".equals(detailVO.getGeneratorInfo().getBtnPermissionType())) {
-            menus.addAll(createButtonPermissions(menuId, model, menuDeep, isInsertDB));
-        }
-        if ("1".equals(detailVO.getGeneratorInfo().getHasImport())) {
-            menus.add(createImportPermission(menuId, model, menuDeep, isInsertDB));
-        }
-        if ("1".equals(detailVO.getGeneratorInfo().getHasExport())) {
-            menus.add(createExportPermission(menuId, model, menuDeep, isInsertDB));
-        }
+        menus.addAll(createButtonPermissions(menuId, model, menuDeep, isInsertDB, detailVO));
         this.mapper.syncTreeHasChildren();
         return menus;
     }
@@ -441,23 +433,33 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
     }
 
-    private List<MenuCreateDTO> createButtonPermissions(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
+    private List<MenuCreateDTO> createButtonPermissions(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB,
+            GeneratorDetailVO detailVO) {
         List<MenuCreateDTO> buttonMenus = new ArrayList<>();
-        int btnCount = this.mapper.selectMenuCount(menuId) * 100;
-        buttonMenus.add(buildAndInsertButton(menuId, "新增", model.get("createPermission").toString(), btnCount + 100, menuDeep, isInsertDB));
-        buttonMenus.add(buildAndInsertButton(menuId, "修改", model.get("updatePermission").toString(), btnCount + 200, menuDeep, isInsertDB));
-        buttonMenus.add(buildAndInsertButton(menuId, "删除", model.get("removePermission").toString(), btnCount + 300, menuDeep, isInsertDB));
+
+        int order = 1;
+
+        if ("1".equals(detailVO.getGeneratorInfo().getBtnPermissionType())) {
+            buttonMenus.add(buildAndInsertButton(menuId, "查询", model.get("listPermission").toString(), order * 100, menuDeep, isInsertDB));
+            order++;
+            buttonMenus.add(buildAndInsertButton(menuId, "新增", model.get("createPermission").toString(), order * 100, menuDeep, isInsertDB));
+            order++;
+            buttonMenus.add(buildAndInsertButton(menuId, "修改", model.get("updatePermission").toString(), order * 100, menuDeep, isInsertDB));
+            order++;
+            buttonMenus.add(buildAndInsertButton(menuId, "删除", model.get("removePermission").toString(), order * 100, menuDeep, isInsertDB));
+            order++;
+        }
+
+        if ("1".equals(detailVO.getGeneratorInfo().getHasImport())) {
+            buttonMenus.add(buildAndInsertButton(menuId, "导入", model.get("importPermission").toString(), order * 100, menuDeep, isInsertDB));
+            order++;
+        }
+
+        if ("1".equals(detailVO.getGeneratorInfo().getHasExport())) {
+            buttonMenus.add(buildAndInsertButton(menuId, "导出", model.get("exportPermission").toString(), order * 100, menuDeep, isInsertDB));
+        }
+
         return buttonMenus;
-    }
-
-    private MenuCreateDTO createImportPermission(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
-        return buildAndInsertButton(menuId, "导入", model.get("importPermission").toString(), this.mapper.selectMenuCount(menuId) * 100 + 400, menuDeep,
-                isInsertDB);
-    }
-
-    private MenuCreateDTO createExportPermission(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB) {
-        return buildAndInsertButton(menuId, "导出", model.get("exportPermission").toString(), this.mapper.selectMenuCount(menuId) * 100 + 500, menuDeep,
-                isInsertDB);
     }
 
     private MenuCreateDTO buildAndInsertButton(String menuId, String action, String permission, int order, int deep, boolean isInsertDB) {
@@ -469,7 +471,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, String btnParentId, String parentMenuId, String path, String routerName,
-            String component, int count, int parentDeep, String permission) {
+            String component, int count, int parentDeep) {
         MenuCreateDTO createDTO = new MenuCreateDTO();
         createDTO.setId(btnParentId);
         if (Utils.isNotNull(parentMenuId)) {
@@ -483,7 +485,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         createDTO.setSort(count * 100 + 100);
         createDTO.setDeep(parentDeep);
         createDTO.setMenuTypeCd("1002002"); // 菜单
-        createDTO.setPermissions(permission);
+        createDTO.setPermissions("");
         createDTO.setHasChildren("F");
         return createDTO;
     }
