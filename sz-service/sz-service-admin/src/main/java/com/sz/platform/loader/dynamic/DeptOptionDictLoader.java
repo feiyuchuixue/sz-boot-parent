@@ -58,8 +58,8 @@ public class DeptOptionDictLoader implements DynamicDictLoader {
             dictVO = DictVO.builder().id(option.getId().toString()).codeName(option.getName()).alias("").sort(i + 1).sysDictTypeCode(key).sysDictTypeName(name)
                     .callbackShowStyle("info").isDynamic(true).isLock("F").isShow("T").build();
             list.add(dictVO);
-            redisCache.setDict(key, list);
         }
+        redisCache.setDict(key, list);
         return Map.of(key, list);
     }
 

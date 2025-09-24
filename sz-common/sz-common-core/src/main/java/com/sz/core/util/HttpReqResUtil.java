@@ -37,14 +37,7 @@ public class HttpReqResUtil {
      * @return 客户端的IP地址
      */
     public static String getIpAddress(HttpServletRequest request) {
-        String[] headers = {
-                "X-Forwarded-For",
-                "X-Real-IP",
-                "Proxy-Client-IP",
-                "WL-Proxy-Client-IP",
-                "HTTP_CLIENT_IP",
-                "HTTP_X_FORWARDED_FOR"
-        };
+        String[] headers = {"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
         String ip = null;
         for (String header : headers) {
             String value = request.getHeader(header);
