@@ -12,7 +12,6 @@
 
     <!-- 全局公用dependency版本管理 -->
     <properties>
-        <flyway.version>10.12.0</flyway.version>
         <liquibase.version>4.31.1</liquibase.version>
     </properties>
 
@@ -68,17 +67,6 @@
             <groupId>com.sz.oss</groupId>
             <artifactId>sz-common-oss</artifactId>
             <version>${revision}</version>
-        </dependency>
-        <!-- flyway db ddl; https://documentation.red-gate.com/fd/mysql-184127601.html-->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
-            <version>${flyway.version}</version>
         </dependency>
         <!-- aspect aop 切面-->
         <dependency>
