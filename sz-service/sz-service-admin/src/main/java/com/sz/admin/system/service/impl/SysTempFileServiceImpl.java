@@ -1,5 +1,6 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileHistoryCreateDTO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
@@ -56,6 +57,12 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
     @Override
     public void create(SysTempFileCreateDTO dto) {
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
+        // 唯一性校验
+        long count = QueryChain.of(SysTempFile.class).eq(SysTempFile::getAlias, dto.getAlias()).count();
+        CommonResponseEnum.EXISTS.message("标识：" + dto.getAlias() + " 已存在").assertTrue(count > 0);
+        List<UploadResult> url = dto.getUrl();
+        Long fileId = url.getFirst().getFileId();
+        sysTempFile.setSysFileId(fileId);
         save(sysTempFile);
         SysTempFileHistoryCreateDTO history = BeanCopyUtils.copy(sysTempFile, SysTempFileHistoryCreateDTO.class);
         history.setSysTempFileId(sysTempFile.getId());
@@ -65,10 +72,17 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
     @Override
     public void update(SysTempFileUpdateDTO dto) {
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
+        List<UploadResult> url = dto.getUrl();
+        Long fileId = url.getFirst().getFileId();
+        sysTempFile.setSysFileId(fileId);
         QueryWrapper wrapper;
         // id有效性校验
         wrapper = QueryWrapper.create().eq(SysTempFile::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
+        // 唯一性校验
+        long count;
+        count = QueryChain.of(SysTempFile.class).eq(SysTempFile::getAlias, dto.getAlias()).ne(SysTempFile::getId, dto.getId()).count();
+        CommonResponseEnum.EXISTS.message("标识：" + dto.getAlias() + " 已存在").assertTrue(count > 0);
 
         saveOrUpdate(sysTempFile);
 
@@ -124,9 +138,9 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
     }
 
     @Override
-    public SysTempFileInfoVO detailByName(String tempName) {
+    public SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias) {
         QueryWrapper wrapper = QueryWrapper.create().from(SYS_TEMP_FILE).leftJoin(SYS_FILE).on(SYS_TEMP_FILE.SYS_FILE_ID.eq(SYS_FILE.ID))
-                .where(SYS_TEMP_FILE.TEMP_NAME.eq(tempName));
+                .where(SYS_TEMP_FILE.TEMP_NAME.eq(tempName).or(SYS_TEMP_FILE.ALIAS.eq(alias)));
         return getOneAs(wrapper, SysTempFileInfoVO.class);
     }
 

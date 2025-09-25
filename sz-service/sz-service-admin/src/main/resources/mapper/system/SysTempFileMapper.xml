@@ -13,11 +13,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_id" property="updateId"/>
         <result column="update_time" property="updateTime"/>
+        <result column="alias" property="alias"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, sys_file_id, temp_name, url, remark, del_flag, create_id, create_time, update_id, update_time
+        id, sys_file_id, temp_name, url, remark, del_flag, create_id, create_time, update_id, update_time, alias
     </sql>
 
 </mapper>

@@ -1,7 +1,12 @@
 package com.sz.admin.system.pojo.dto.systempfile;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,7 +30,8 @@ public class SysTempFileHistoryCreateDTO {
     private String tempName;
 
     @Schema(description = "地址")
-    private String url;
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<UploadResult> url;
 
     @Schema(description = "备注")
     private String remark;

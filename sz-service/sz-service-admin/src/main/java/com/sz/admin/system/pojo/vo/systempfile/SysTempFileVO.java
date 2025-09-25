@@ -2,6 +2,7 @@ package com.sz.admin.system.pojo.vo.systempfile;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class SysTempFileVO {
 
     @Schema(description = "地址")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<String> url;
+    private List<UploadResult> url;
 
     @Schema(description = "备注")
     private String remark;
@@ -49,5 +50,8 @@ public class SysTempFileVO {
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
+
+    @Schema(description = "标识")
+    private String alias;
 
 }

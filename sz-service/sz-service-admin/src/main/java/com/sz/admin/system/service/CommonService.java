@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public interface CommonService {
 
-    void tempDownload(String templateName, HttpServletResponse response) throws IOException;
+    void tempDownload(String templateName, String alias, HttpServletResponse response) throws IOException;
 
     SelectorVO querySelector(SelectorQueryDTO queryDTO);
 }

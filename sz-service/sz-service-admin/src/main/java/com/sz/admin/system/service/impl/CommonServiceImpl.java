@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
@@ -36,7 +36,7 @@ public class CommonServiceImpl implements CommonService {
     private final SysRoleService sysRoleService;
 
     @Override
-    public void tempDownload(String templateName, HttpServletResponse response) throws IOException {
+    public void tempDownload(String templateName, String alias, HttpServletResponse response) throws IOException {
         String templatePath = "classpath:/templates/" + templateName;
         Resource resource = resourceLoader.getResource(templatePath);
 
@@ -47,16 +47,16 @@ public class CommonServiceImpl implements CommonService {
         }
 
         // 从oss获取文件
-        SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByName(templateName);
+        SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByNameOrAlias(templateName, alias);
         // 异常情况处理。通过http status响应
         if (sysTempFileInfoVO == null) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             response.setStatus(FILE_NOT_EXISTS.getCode());
-            PrintWriter writer = response.getWriter();
-            writer.println(FILE_NOT_EXISTS.getMessage());
-            writer.flush();
+            OutputStream out = response.getOutputStream();
+            out.write(FILE_NOT_EXISTS.getMessage().getBytes(StandardCharsets.UTF_8));
+            out.flush();
             return;
         }
         FILE_NOT_EXISTS.assertNull(sysTempFileInfoVO);

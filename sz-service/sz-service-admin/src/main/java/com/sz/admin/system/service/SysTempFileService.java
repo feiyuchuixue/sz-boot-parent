@@ -37,5 +37,5 @@ public interface SysTempFileService extends IService<SysTempFile> {
 
     UploadResult uploadFile(MultipartFile file);
 
-    SysTempFileInfoVO detailByName(String tempName);
+    SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias);
 }

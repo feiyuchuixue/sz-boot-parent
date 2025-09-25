@@ -2,6 +2,7 @@ package com.sz.admin.system.pojo.dto.systempfile;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -27,9 +28,12 @@ public class SysTempFileCreateDTO {
 
     @Schema(description = "地址")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<String> url;
+    private List<UploadResult> url;
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "标识")
+    private String alias;
 
 }

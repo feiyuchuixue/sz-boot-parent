@@ -29,9 +29,10 @@ public class CommonController {
 
     @Operation(summary = "模板下载")
     @GetMapping("/download/templates")
-    public void fileDownload(@RequestParam("templateName") String templateName, HttpServletResponse response) {
+    public void fileDownload(@RequestParam(value = "templateName", required = false) String templateName,
+            @RequestParam(value = "alias", required = false) String alias, HttpServletResponse response) {
         try {
-            commonService.tempDownload(templateName, response);
+            commonService.tempDownload(templateName, alias, response);
         } catch (Exception e) {
             log.error("模板下载文件下载失败", e);
         }
