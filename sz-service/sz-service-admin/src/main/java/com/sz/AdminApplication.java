@@ -61,7 +61,7 @@ public class AdminApplication {
                 [\\__) )[_____]       \\'-;__/ '.__.;__][___||__||__][___][___||__]
                 ------------------%s  (v%s)-------------------
                 """;
-        String result = String.format(template, "https://szadmin.cn", getVersion());
+        String result = String.format(template, "Admin Boot", getVersion());
         System.out.println(result);
     }
 

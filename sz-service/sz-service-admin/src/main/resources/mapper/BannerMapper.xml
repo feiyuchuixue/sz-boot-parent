@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sz.applet.miniBusiness.mapper.BannerMapper">
+
+    <resultMap id="BaseResultMap" type="com.sz.applet.miniBusiness.pojo.po.Banner">
+        <id column="id" property="id"/>
+        <result column="link" property="link"/>
+        <result column="type" property="type"/>
+        <result column="names" property="names"/>
+        <result column="picture" property="picture"/>
+        <result column="status" property="status"/>
+        <result column="sort" property="sort"/>
+        <result column="content_type" property="contentType"/>
+        <result column="content" property="content"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_id" property="createId"/>
+        <result column="update_id" property="updateId"/>
+    </resultMap>
+
+</mapper>
