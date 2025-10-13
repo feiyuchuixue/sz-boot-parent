@@ -1,9 +1,14 @@
 package com.sz.admin.teacher.pojo.dto;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -55,5 +60,9 @@ public class TeacherStatisticsCreateDTO {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "文件地址(JSON)")
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<UploadResult> url;
 
 }

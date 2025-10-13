@@ -3,6 +3,7 @@ package com.sz.admin.teacher.pojo.po;
 import com.mybatisflex.annotation.*;
 
 import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -86,5 +87,9 @@ public class TeacherStatistics implements Serializable {
     @Schema(description = "部门范围id")
     @Column(typeHandler = JacksonTypeHandler.class)
     private List<Long> deptScope;
+
+    @Schema(description = "文件地址(JSON)")
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<UploadResult> url;
 
 }

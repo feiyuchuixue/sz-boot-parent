@@ -2,14 +2,18 @@ package com.sz.admin.teacher.pojo.vo;
 
 import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
+import com.sz.oss.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -99,6 +103,10 @@ public class TeacherStatisticsVO {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
+
+    @Schema(description = "文件地址(JSON)")
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<UploadResult> url;
 
     @Data
     public static class TeacherTypeEnum {
