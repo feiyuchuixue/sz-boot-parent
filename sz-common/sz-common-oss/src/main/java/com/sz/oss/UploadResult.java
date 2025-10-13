@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * @author sz
  * @since 2024/11/12 16:22
@@ -38,4 +40,7 @@ public class UploadResult {
 
     // 文件id
     private Long fileId;
+
+    // 元数据
+    private Map<String, String> metaData;
 }

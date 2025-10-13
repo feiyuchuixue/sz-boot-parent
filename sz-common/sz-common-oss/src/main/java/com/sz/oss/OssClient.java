@@ -24,6 +24,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -63,8 +65,11 @@ public class OssClient {
     public UploadResult upload(MultipartFile file, String dirTag) throws IOException {
         FileNamingEnum naming = properties.getNaming();
         String objectName;
+        String originalFilename = file.getOriginalFilename();
         if (naming.equals(FileNamingEnum.ORIGINAL)) {
-            objectName = dirTag + generateOriginalFileName(file.getOriginalFilename());
+            objectName = dirTag + generateOriginalFileName(originalFilename);
+            // 过滤掉#号
+            objectName = objectName.replaceAll("#", "");
             if (isFileExists(objectName)) {
                 String ext = org.springframework.util.StringUtils.getFilenameExtension(objectName);
                 assert ext != null;
@@ -73,9 +78,11 @@ public class OssClient {
                 objectName = objectName.split("." + ext)[0] + " (" + localTime + ")." + ext;
             }
         } else {
-            objectName = dirTag + generateFileName(file.getOriginalFilename());
+            objectName = dirTag + generateFileName(originalFilename);
+            // 也建议过滤一次#号，保证一致性
+            objectName = objectName.replaceAll("#", "");
         }
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType());
+        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), originalFilename);
     }
 
     /**
@@ -93,7 +100,7 @@ public class OssClient {
      */
     public UploadResult upload(MultipartFile file, String dirTag, String filename) throws IOException {
         String objectName = dirTag + "/" + filename;
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType());
+        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), file.getOriginalFilename());
     }
 
     /**
@@ -107,19 +114,25 @@ public class OssClient {
      *            文件大小
      * @param contextType
      *            文件类型
+     * @param originalFilename
+     *            原始文件名
      * @return 上传结果
      */
-    public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType) {
+    public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType, String originalFilename) {
         try {
             BlockingInputStreamAsyncRequestBody body = AsyncRequestBody.forBlockingInputStream(size);
+            // 构建meta元数据
+            Map<String, String> metaMap = new HashMap<>();
+            metaMap.put("original-filename", originalFilename);
+
             Upload upload = transferManager.upload(x -> x.requestBody(body)
-                    .putObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).contentType(contextType).build()).build());
+                    .putObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).contentType(contextType).metadata(metaMap).build()).build());
             body.writeInputStream(inputStream);
             CompletedUpload uploadResult = upload.completionFuture().join();
             String eTag = normalizeETag(uploadResult.response().eTag());
             String url = getUrl() + "/" + objectName;
             return UploadResult.builder().url(url).objectName(objectName).dirTag(getDirTag(objectName)).filename(getFileName(objectName))
-                    .contextType(contextType).size(size).eTag(eTag).build();
+                    .contextType(contextType).size(size).eTag(eTag).metaData(metaMap).build();
         } catch (Exception e) {
             throw new IllegalArgumentException("上传文件失败，Message:[" + e.getMessage() + "]");
         }
@@ -156,9 +169,9 @@ public class OssClient {
 
     /**
      * 获取私有文件的访问链接。
-     *
+     * <p>
      * 该方法生成一个带有签名的私有文件访问链接，允许在指定的有效期内访问存储在 S3 兼容服务中的私有文件。 例如：
-     * 
+     *
      * <pre>
      * https://your_domain.com/test/user/20241125/6%E5%AD%97%E5%85%B8%E7%AE%A1%E7%90%86.png
      * ?X-Amz-Algorithm=AWS4-HMAC-SHA256
