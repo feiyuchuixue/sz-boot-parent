@@ -19,8 +19,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
@@ -49,7 +48,7 @@ public class AccessLogAspect {
     @Before("methodArgs()")
     public void doBefore(JoinPoint joinPoint) {
         try {
-            HttpServletRequest request = getCurrentHttpRequest();
+            HttpServletRequest request = HttpReqResUtil.getRequest();
             AccessRequestLog requestLog = buildRequestLog(joinPoint, request);
             CopyOnWriteArraySet<String> whitelist = whitelistProperties.getWhitelist();
             if (isNotSaIgnoreInterface(joinPoint) && isNotWhitelist(request.getRequestURI(), request.getContextPath(), whitelist)) {
@@ -65,7 +64,7 @@ public class AccessLogAspect {
     @AfterReturning(returning = "returnValue", pointcut = "methodArgs()")
     public void doAfterReturning(JoinPoint joinPoint, Object returnValue) {
         try {
-            HttpServletRequest request = getCurrentHttpRequest();
+            HttpServletRequest request = HttpReqResUtil.getRequest();
             AccessResponseLog responseLog = buildResponseLog(joinPoint, returnValue, request);
             CopyOnWriteArraySet<String> whitelist = whitelistProperties.getWhitelist();
             whitelist.add("/auth/logout"); // 登出接口会清除 session，无法获取到用户id。加入白名单中
@@ -79,10 +78,6 @@ public class AccessLogAspect {
         } catch (Exception e) {
             log.error("Error in doAfterReturning method", e);
         }
-    }
-
-    private HttpServletRequest getCurrentHttpRequest() {
-        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
     }
 
     private AccessRequestLog buildRequestLog(JoinPoint joinPoint, HttpServletRequest request) {

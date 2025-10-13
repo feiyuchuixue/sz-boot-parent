@@ -24,14 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>
@@ -105,7 +102,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     public void recordLoginLog(String username, String status, String msg) {
         try {
             // 在主线程中获取所有请求信息
-            HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+            HttpServletRequest request = HttpReqResUtil.getRequest();
             String ipAddress = HttpReqResUtil.getIpAddress(request);
             String userAgentString = request.getHeader("User-Agent");
             String realAddressByIP = IpUtils.getRealAddressByIP(ipAddress);
