@@ -1,12 +1,11 @@
 package com.sz.applet.miniBusiness.service;
 
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
-import com.sz.applet.miniBusiness.pojo.dto.ArticleCreateDTO;
-import com.sz.applet.miniBusiness.pojo.dto.ArticleListDTO;
-import com.sz.applet.miniBusiness.pojo.dto.ArticleUpdateDTO;
+import com.sz.applet.miniBusiness.pojo.bo.ArticleBO;
+import com.sz.applet.miniBusiness.pojo.bo.ArticleListBO;
 import com.sz.applet.miniBusiness.pojo.po.Article;
 import com.sz.applet.miniBusiness.pojo.vo.ArticleVO;
-import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 
 import java.util.List;
@@ -23,15 +22,15 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 创建文章
-     * @param dto 文章创建信息
+     * @param bo 文章创建信息
      */
-    void create(ArticleCreateDTO dto);
+    void create(ArticleBO bo);
 
     /**
      * 更新文章
-     * @param dto 文章更新信息
+     * @param bo 文章更新信息
      */
-    void update(ArticleUpdateDTO dto);
+    void update(ArticleBO bo);
 
     /**
      * 删除文章
@@ -44,19 +43,19 @@ public interface ArticleService extends IService<Article> {
      * @param id 文章ID
      * @return 文章详情信息
      */
-    ArticleVO detail(Object id);
+    ArticleVO detail(Long id);
 
     /**
      * 分页查询文章列表
-     * @param dto 查询条件
+     * @param bo 查询条件
      * @return 文章分页列表
      */
-    PageResult<ArticleVO> page(ArticleListDTO dto);
+    Page<ArticleVO> page(ArticleListBO bo);
 
     /**
      * 查询文章列表(全部)
-     * @param dto 查询条件
+     * @param bo 查询条件
      * @return 文章列表
      */
-    List<ArticleVO> list(ArticleListDTO dto);
+    List<ArticleVO> list(ArticleListBO bo);
 }

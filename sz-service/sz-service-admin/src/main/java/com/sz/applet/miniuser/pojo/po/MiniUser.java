@@ -9,6 +9,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import com.sz.mysql.EntityChangeListener;
 import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
  * <p>
  * 小程序用户表

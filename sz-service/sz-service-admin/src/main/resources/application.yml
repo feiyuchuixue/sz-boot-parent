@@ -26,6 +26,7 @@ spring:
       max-request-size: 15MB
 app:
   version: @project.version@
+  upload-dir: D://Business/school-project/uploads/
 sz:
   # 是否启用数据权限拼接
   data-scope:
@@ -60,7 +61,7 @@ sz:
   wechat:
     # 小程序
     mini:
-      app-id: your_app_id
+      app-id: wxe89097f03e90abe1
       app-secret: your_app_secret
   cors:
     # 定义允许跨域请求的源（Origin）。可以设置为特定的域名、IP 地址或通配符。
@@ -74,3 +75,10 @@ management:
   endpoint:
     health:
       show-details: "never"
+
+# 本地文件上传配置
+file:
+  upload:
+    base-path: D://Business/school-project/uploads/
+    max-file-size: 10485760
+    allow-overwrite: false

@@ -61,4 +61,14 @@ public class MiniUserServiceImpl extends ServiceImpl<MiniUserMapper, MiniUser> i
         return null;
     }
 
+    @Override
+    public boolean isBoundToSchoolUser(Long miniUserId) {
+        return false;
+    }
+
+    @Override
+    public Object getBoundSchoolUser(Long miniUserId) {
+        return null;
+    }
+
 }

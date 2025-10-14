@@ -1,0 +1,5 @@
+file:
+  upload:
+    base-path: test-uploads/
+    max-file-size: 10485760
+    allow-overwrite: false

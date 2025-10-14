@@ -1,11 +1,11 @@
 oss:
   # 支持S3协议的厂商
-  provider: MINIO
-  endpoint: 192.168.56.101:9000
-  accessKey: a4jtJvgEmk4ead5dzac6
-  secretKey: UW6kxTGRetIAahV759rFkgoQ8ilXLRUMW0ULdIoo
-  bucketName: test
-  domain: http://192.168.56.101:9000
+  provider: Aliyun
+  endpoint: oss-cn-hangzhou.aliyuncs.com
+  accessKey: LTAI5tCLUzW5gfZmfvbADmFz
+  secretKey: AUvChblqdmEa8ytWoDBEl19LkGHAy8
+  bucketName: qg-school
+  domain: https://qg-school.oss-cn-hangzhou.aliyuncs.com
   # 命名方式: UUID、ORIGINAL原文件名偏好，冲突会补充时间
   naming: original
   scheme: http

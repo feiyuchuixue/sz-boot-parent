@@ -11,3 +11,4 @@ router:
     - "/common/**"
     - "/swagger-ui.html"
     - "/www/**"
+    - "/uploads/**/**"

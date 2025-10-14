@@ -23,6 +23,7 @@
         <module>sz-common-mq</module>
         <module>sz-common-security</module>
         <module>sz-common-wechat</module>
+        <module>sz-common-file</module>
     </modules>
 
 </project>

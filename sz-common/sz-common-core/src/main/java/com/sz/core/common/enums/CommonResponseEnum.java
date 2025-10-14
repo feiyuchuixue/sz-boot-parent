@@ -34,8 +34,9 @@ public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnu
     CAPTCHA_LIMIT(1013,"验证码请求已达到最大次数"),
     BACKGROUND_NOT_EXISTS(1014, "背景图片不存在"),
 
-    UNKNOWN(9999, "未知异常"),
-    ;
+    PARAM_EXCEPT(1015,"为选中数据"),
+    UNKNOWN(9999, "未知异常"),NOT_FOUND(1016,"未找到");
+
     // @formatter:on
 
     /**

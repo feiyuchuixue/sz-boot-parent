@@ -1,11 +1,11 @@
 package com.sz.applet.miniBusiness.controller;
 
-import com.sz.applet.miniBusiness.pojo.dto.BannerCreateDTO;
-import com.sz.applet.miniBusiness.pojo.dto.BannerListDTO;
-import com.sz.applet.miniBusiness.pojo.dto.BannerUpdateDTO;
+import com.mybatisflex.core.paginate.Page;
+import com.sz.applet.miniBusiness.pojo.bo.BannerBo;
+import com.sz.applet.miniBusiness.pojo.bo.BannerListBO;
+import com.sz.applet.miniBusiness.pojo.vo.BannerVO;
 import com.sz.applet.miniBusiness.service.BannerService;
 import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,43 +32,40 @@ public class BannerController {
 
     @Operation(summary = "创建Banner")
     @PostMapping
-    public ApiResult<Void> create(@RequestBody BannerCreateDTO dto) {
-        // TODO: 实现创建Banner接口
+    public ApiResult<Void> create(@RequestBody BannerBo bo) {
+        bannerService.create(bo);
         return ApiResult.success();
     }
 
     @Operation(summary = "更新Banner")
     @PutMapping
-    public ApiResult<Void> update(@RequestBody BannerUpdateDTO dto) {
-        // TODO: 实现更新Banner接口
+    public ApiResult<Void> update(@RequestBody BannerBo bo) {
+        bannerService.update(bo);
         return ApiResult.success();
     }
 
     @Operation(summary = "删除Banner")
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
-        // TODO: 实现删除Banner接口
+        bannerService.remove(dto);
         return ApiResult.success();
     }
 
     @Operation(summary = "Banner详情")
     @GetMapping("/{id}")
-    public ApiResult<Object> detail(@PathVariable Integer id) {
-        // TODO: 实现Banner详情接口
-        return ApiResult.success();
+    public ApiResult<BannerVO> detail(@PathVariable Long id) {
+        return ApiResult.success(bannerService.detail(id));
     }
 
     @Operation(summary = "Banner列表")
     @GetMapping
-    public ApiResult<PageResult<Object>> page(BannerListDTO dto) {
-        // TODO: 实现Banner列表接口
-        return ApiResult.success();
+    public ApiResult<Page<BannerVO>> page(BannerListBO bo) {
+        return ApiResult.success(bannerService.page(bo));
     }
 
     @Operation(summary = "Banner列表(全部)")
     @GetMapping("/list")
-    public ApiResult<List<Object>> list(BannerListDTO dto) {
-        // TODO: 实现Banner列表接口(全部)
-        return ApiResult.success();
+    public ApiResult<List<BannerVO>> list(BannerListBO bo) {
+        return ApiResult.success(bannerService.list(bo));
     }
 }

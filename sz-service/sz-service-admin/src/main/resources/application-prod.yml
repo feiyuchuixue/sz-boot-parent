@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /api/admin
+    context-path: /api
   port: 9991
 # 为了提高安全性，生产环境不建议使用*，需修改成指定的域名
 #sz:

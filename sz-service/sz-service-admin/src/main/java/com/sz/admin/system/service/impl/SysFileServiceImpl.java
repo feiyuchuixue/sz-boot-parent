@@ -17,6 +17,7 @@ import com.sz.oss.OssClient;
 import com.sz.oss.UploadResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
 
     private final OssClient ossClient;
+    
+    private final LocalFileUploadService localFileUploadService;
+    
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
 
     /**
      * 文件列表
@@ -66,11 +72,17 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
     public UploadResult uploadFile(MultipartFile file, String dirTag) {
         UploadResult uploadResult = null;
         try {
-            uploadResult = ossClient.upload(file, dirTag);
+            // 如果是local环境，使用本地文件上传服务
+           /* if ("local".equals(activeProfile)) {
+                uploadResult = localFileUploadService.upload(file, dirTag);
+            } else {*/
+                // 其他环境使用OSS上传
+                uploadResult = ossClient.upload(file, dirTag);
+            //}
             Long fileId = fileLog(uploadResult);
             uploadResult.setFileId(fileId);
         } catch (Exception e) {
-            log.error(" sysFile oss upload error", e);
+            log.error(" sysFile upload error", e);
             CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
         }
         return uploadResult;
