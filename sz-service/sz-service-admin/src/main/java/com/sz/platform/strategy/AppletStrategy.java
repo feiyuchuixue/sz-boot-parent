@@ -1,7 +1,7 @@
 package com.sz.platform.strategy;
 
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import com.sz.applet.miniuser.pojo.po.MiniLoginUser;
 import com.sz.applet.miniuser.service.MiniUserService;
 import com.sz.core.common.enums.CommonResponseEnum;
@@ -56,7 +56,7 @@ public class AppletStrategy implements IAuthStrategy {
         MiniLoginUser miniLoginUser = miniUserService.getUserByOpenId(openid, unionid);
 
         // 设置登录模型
-        SaLoginModel model = createLoginModel(client);
+        SaLoginParameter model = createLoginModel(client);
         Long userId = miniLoginUser.getUserId();
         // 设置jwt额外数据
         Map<String, Object> extraData = createExtraData(clientId, userId);
@@ -66,9 +66,9 @@ public class AppletStrategy implements IAuthStrategy {
         return createLoginVO(miniLoginUser);
     }
 
-    private SaLoginModel createLoginModel(ClientVO client) {
-        SaLoginModel model = new SaLoginModel();
-        model.setDevice(client.getDeviceTypeCd());
+    private SaLoginParameter createLoginModel(ClientVO client) {
+        SaLoginParameter model = new SaLoginParameter();
+        model.setDeviceType(client.getDeviceTypeCd());
         model.setTimeout(client.getTimeout());
         model.setActiveTimeout(client.getActiveTimeout());
         return model;

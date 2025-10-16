@@ -128,7 +128,7 @@ public class Utils {
      *            HttpServletRequest对象
      * @return 用户验证码用的RequestId
      */
-    public static String generateCaptchaRequestId(HttpServletRequest request) {
+    public static String generateAgentRequestId(HttpServletRequest request) {
         String ip = HttpReqResUtil.getIpAddress(request);
         String userAgent = request.getHeader("User-Agent");
         return ip + ":" + userAgent;

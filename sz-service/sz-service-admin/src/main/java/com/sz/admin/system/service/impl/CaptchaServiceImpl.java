@@ -44,7 +44,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     @SneakyThrows
     @Override
     public SliderPuzzle getImageCode(HttpServletRequest request) {
-        String requestId = Utils.generateSha256Id(Utils.generateCaptchaRequestId(request)); // 根据request标识生成Sha256Id
+        String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request)); // 根据request标识生成Sha256Id
         int limit = Utils.getIntVal(SysConfigUtils.getConfValue("sys.captcha.requestLimit"));
         String requestCycle = SysConfigUtils.getConfValue("sys.captcha.requestCycle");
         if (Utils.getIntVal(limit) != 0) {
@@ -84,8 +84,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         redisCache.clearCaptcha(requestId); // 用后即消
         String str = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey(), checkPuzzle.getIv()); // 解密，获取x位移距离
         int posX = 0;
-        if (Utils.isNotNull(str)) { // 我在使用 sonar检测代码， 这行报错 Avoid using boxed "Boolean" types directly in boolean
-            // expressions，我应该如何解决他
+        if (Utils.isNotNull(str)) {
             double posXDouble = Double.parseDouble(str); // 将解密结果转换为double类型
             posX = (int) Math.round(posXDouble); // 四舍五入取整
         }

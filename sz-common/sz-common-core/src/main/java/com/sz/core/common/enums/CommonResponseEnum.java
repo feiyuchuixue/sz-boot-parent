@@ -33,6 +33,7 @@ public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnu
     CAPTCHA_FAILED(1012, "验证失败"),
     CAPTCHA_LIMIT(1013,"验证码请求已达到最大次数"),
     BACKGROUND_NOT_EXISTS(1014, "背景图片不存在"),
+    LOGIN_LIMIT(1015,"登录请求已达到最大次数"),
 
     UNKNOWN(9999, "未知异常"),
     ;

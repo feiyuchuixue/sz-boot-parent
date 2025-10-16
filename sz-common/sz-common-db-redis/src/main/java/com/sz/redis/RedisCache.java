@@ -166,4 +166,58 @@ public class RedisCache {
         return redisTemplate.opsForValue().increment(key);
     }
 
+    /**
+     * 初始化登录次数请求限制
+     */
+    public void initializeLoginRequestLimit(String requestId, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        redisTemplate.opsForValue().setIfAbsent(key, 0, timeout, TimeUnit.MINUTES);
+    }
+
+    public Long countLoginRequestLimit(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        Object o = redisTemplate.opsForValue().get(key);
+        return Utils.getLongVal(o);
+    }
+
+    public Long limitLoginRequest(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    public void clearLoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().getOperations().delete(key);
+    }
+
+    public void putLoginSecret(String requestId, String secretKey, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().set(key, secretKey);
+        redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+    }
+
+    public String getLoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+
+        if (LoginSecret(requestId)) {
+            return (String) redisTemplate.opsForValue().get(key);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean LoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+
+        // 检查 redisTemplate 是否为 null
+        if (redisTemplate == null) {
+            log.error("RedisTemplate is null, cannot check key existence");
+            return false;
+        }
+
+        Boolean hasKey = redisTemplate.hasKey(key);
+        // 检查 hasKey 是否为 null
+        return Boolean.TRUE.equals(hasKey);
+    }
+
 }

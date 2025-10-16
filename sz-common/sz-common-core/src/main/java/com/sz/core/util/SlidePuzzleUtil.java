@@ -38,7 +38,7 @@ public class SlidePuzzleUtil {
     public static SliderPuzzle createImage(InputStream input, HttpServletRequest request) {
         SliderPuzzle sliderPuzzle = new SliderPuzzle();
         try {
-            String requestId = Utils.generateSha256Id(Utils.generateCaptchaRequestId(request));
+            String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request));
 
             BufferedImage originalImage = ImageIO.read(input);
             BufferedImage bigImage = resizeImage(originalImage, BIG_WIDTH, BIG_HEIGHT, true);

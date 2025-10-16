@@ -45,4 +45,11 @@ public class CommonKeyConstants {
      */
     public static final String CAPTCHA_REQUEST_LIMIT = "captcha:request-limit:${requestId}";
 
+    public static final String LOGIN_REQUEST_ID = "login:request:${requestId}";
+
+    /**
+     * 登录请求次数限制
+     */
+    public static final String LOGIN_REQUEST_LIMIT = "login:request-limit:${requestId}";
+
 }

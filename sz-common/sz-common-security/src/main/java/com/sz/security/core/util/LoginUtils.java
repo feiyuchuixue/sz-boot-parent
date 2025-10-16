@@ -1,8 +1,8 @@
 package com.sz.security.core.util;
 
 import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.util.ObjectUtil;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.LoginUser;
@@ -24,8 +24,8 @@ public class LoginUtils {
 
     public static final String USER_KEY = "loginUser";
 
-    public static void performLogin(LoginUser loginUser, SaLoginModel model, Map<String, Object> extraData) {
-        model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
+    public static void performLogin(LoginUser loginUser, SaLoginParameter model, Map<String, Object> extraData) {
+        model = ObjectUtil.defaultIfNull(model, new SaLoginParameter());
         model.setExtraData(extraData);
         // 登录，生成token
         StpUtil.login(loginUser.getUserInfo().getId(), model);
@@ -35,8 +35,8 @@ public class LoginUtils {
         StpUtil.getSession().updateTimeout(model.getTimeout());
     }
 
-    public static void performMiniLogin(Object userId, Object loginUser, SaLoginModel model, Map<String, Object> extraData) {
-        model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
+    public static void performMiniLogin(Object userId, Object loginUser, SaLoginParameter model, Map<String, Object> extraData) {
+        model = ObjectUtil.defaultIfNull(model, new SaLoginParameter());
         model.setExtraData(extraData);
         // 登录，生成token
         StpUtil.login(userId, model);

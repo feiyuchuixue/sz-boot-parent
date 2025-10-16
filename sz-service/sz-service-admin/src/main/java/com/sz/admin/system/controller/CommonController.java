@@ -1,8 +1,11 @@
 package com.sz.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
+import com.sz.admin.system.pojo.vo.common.ChallengeVO;
 import com.sz.admin.system.pojo.vo.common.SelectorVO;
 import com.sz.admin.system.service.CommonService;
+import com.sz.core.common.annotation.Debounce;
 import com.sz.core.common.entity.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,6 +45,14 @@ public class CommonController {
     @GetMapping("/selector")
     public ApiResult<SelectorVO> querySelector(SelectorQueryDTO dto) {
         return ApiResult.success(commonService.querySelector(dto));
+    }
+
+    @SaIgnore
+    @Debounce
+    @GetMapping("/auth/challenge")
+    @Operation(summary = "一次性认证参数，用于登录密码加密传输场景")
+    public ApiResult<ChallengeVO> challenge() {
+        return ApiResult.success(commonService.challenge());
     }
 
 }
