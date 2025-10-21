@@ -27,29 +27,36 @@ public class GeneratorConstants {
     /**
      * 不需要插入的字段
      */
-    public static final String[] NON_INSERTABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_INSERTABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time",
+            "dept_scope"};
 
     /**
      * 页面不需要编辑字段
      */
-    public static final String[] NON_EDITABLE_COLUMNS = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time"};
+    public static final String[] NON_EDITABLE_COLUMNS = {"id", "create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id", "delete_time",
+            "dept_scope"};
 
     /**
      * 页面不需要显示的列表字段
      */
-    public static final String[] NON_DISPLAYABLE_COLUMNS = {"del_flag", "delete_id", "delete_time"};
+    public static final String[] NON_DISPLAYABLE_COLUMNS = {"del_flag", "delete_id", "delete_time", "dept_scope"};
 
     /**
      * 页面不需要导入的列表字段
      */
     public static final String[] NON_DISPLAYABLE_IMPORT_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "delete_id",
-            "delete_time"};
+            "delete_time", "attachments", "url", "dept_scope"};
+
+    /**
+     * 页面不需要导出的列表字段
+     */
+    public static final String[] NON_EXPORTABLE_COLUMNS = {"del_flag", "delete_id", "delete_time", "attachments", "url", "dept_scope"};
 
     /**
      * 页面不需要查询字段
      */
     public static final String[] NON_QUERYABLE_COLUMNS = {"create_id", "create_time", "del_flag", "update_id", "update_time", "remark", "delete_id",
-            "delete_time"};
+            "delete_time", "attachments", "url", "dept_scope"};
 
     /**
      * 根据insert事件自动填充的字段
@@ -65,6 +72,11 @@ public class GeneratorConstants {
      * 需要自动导入Options字典的字段
      */
     public static final String[] AUTO_FILL_OPTIONS_COLUMNS = {"create_id", "update_id"};
+
+    /**
+     * 自动上传文件字段
+     */
+    public static final String[] AUTO_FILE_UPLOAD_COLUMNS = {"attachments", "url"};
 
     /**
      * 文本框
@@ -151,6 +163,11 @@ public class GeneratorConstants {
      * 长整型
      */
     public static final String TYPE_LONG = "Long";
+
+    /**
+     * List集合<UploadResult>, 文件附件
+     */
+    public static final String TYPE_LIST_UPLOADRESULT = "List<UploadResult>";
 
     /**
      * 浮点型

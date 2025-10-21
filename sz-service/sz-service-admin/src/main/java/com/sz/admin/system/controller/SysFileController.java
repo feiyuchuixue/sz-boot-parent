@@ -7,7 +7,7 @@ import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

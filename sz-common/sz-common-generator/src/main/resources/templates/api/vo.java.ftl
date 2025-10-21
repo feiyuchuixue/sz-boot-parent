@@ -26,7 +26,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
-@Accessors(chain = true)
 @Schema(description = "${poClassName}返回vo")
 public class ${voClassName} {
 
@@ -49,6 +48,9 @@ public class ${voClassName} {
   <#elseif hasExcel == true>
     @ExcelIgnore
   </#if>
+    <#if field.javaType?starts_with("List")>
+    @Column(typeHandler = JacksonTypeHandler.class)
+    </#if>
     @Schema(description =  "${field.columnComment}")
     private ${field.javaType} ${field.javaField};
 

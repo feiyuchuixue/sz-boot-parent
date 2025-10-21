@@ -32,6 +32,7 @@ import com.sz.generator.service.GeneratorTableService;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,7 @@ import static com.sz.generator.pojo.po.table.GeneratorTableTableDef.GENERATOR_TA
  * @author sz
  * @since 2023-11-27
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper, GeneratorTable> implements GeneratorTableService {
@@ -406,8 +408,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         MenuCreateDTO menuDto = buildMenu(detailVO, menuId, parentMenuId, path, routerName, component, count, menuDeep);
         menus.add(menuDto);
         if (isInsertDB) {
-            assertMenuDoesNotExist(routerName, path, component, parentMenuId);
-            this.mapper.insertMenu(menuDto);
+            if (!assertMenuDoesNotExist(routerName, path, component, parentMenuId)) {
+                this.mapper.insertMenu(menuDto);
+            }
         }
         menus.addAll(createButtonPermissions(menuId, model, menuDeep, isInsertDB, detailVO));
         this.mapper.syncTreeHasChildren();
@@ -427,10 +430,12 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return buildPath(detailVO) + SEPARATOR + "index";
     }
 
-    private void assertMenuDoesNotExist(String routerName, String path, String component, String parentMenuId) {
+    private boolean assertMenuDoesNotExist(String routerName, String path, String component, String parentMenuId) {
         int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
         String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
-        CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
+        // CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
+        log.warn(message);
+        return menuCount > 0;
     }
 
     private List<MenuCreateDTO> createButtonPermissions(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB,

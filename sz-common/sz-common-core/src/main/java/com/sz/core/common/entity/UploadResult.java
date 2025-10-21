@@ -1,4 +1,4 @@
-package com.sz.oss;
+package com.sz.core.common.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

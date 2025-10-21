@@ -1,6 +1,7 @@
 package com.sz.generator.core;
 
 import com.sz.core.util.DateUtils;
+import com.sz.core.util.JsonUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import lombok.Getter;
@@ -55,7 +56,9 @@ public class CodeModelBuilder {
         for (GeneratorDetailVO.Column column : columns) {
             String javaTypePackage = column.getJavaTypePackage();
             if (Utils.isNotNull(javaTypePackage)) {
-                importPackages.add(javaTypePackage);
+                String[] split = javaTypePackage.split(",");
+                Collections.addAll(importPackages, split);
+                // importPackages.add(javaTypePackage);
             }
             if (("LocalDateTime").equals(column.getJavaType())) {
                 hasDateFormat = true;
@@ -63,7 +66,11 @@ public class CodeModelBuilder {
             if (("1").equals(column.getIsUniqueValid())) {
                 hasUniqueValidField = true;
             }
+            if (column.getJavaType().startsWith("List")) {
+                importPackages.add("java.util.List");
+            }
         }
+        System.out.println("importPackages ==" + JsonUtils.toJsonString(importPackages));
         model.put("importPackages", importPackages);
         model.put("hasUniqueValidField", hasUniqueValidField);
         model.put("hasDateFormat", hasDateFormat);

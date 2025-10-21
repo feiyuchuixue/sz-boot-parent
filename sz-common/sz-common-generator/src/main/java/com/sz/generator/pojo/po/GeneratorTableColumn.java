@@ -1,14 +1,17 @@
 package com.sz.generator.pojo.po;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import com.sz.mysql.EntityChangeListener;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * <p>
@@ -67,7 +70,7 @@ public class GeneratorTableColumn implements Serializable {
     private String tsType;
 
     /**
-     * java类型包名(java)
+     * java类型包名(java), 多个使用逗号分割
      */
     private String javaTypePackage;
 
@@ -154,7 +157,8 @@ public class GeneratorTableColumn implements Serializable {
     /**
      * 其他设置
      */
-    private String options;
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private Map<String, Object> options;
 
     /**
      * 排序
@@ -183,4 +187,5 @@ public class GeneratorTableColumn implements Serializable {
      * 字典展示方式（0 唯一标识；1 别名）
      */
     private String dictShowWay;
+
 }

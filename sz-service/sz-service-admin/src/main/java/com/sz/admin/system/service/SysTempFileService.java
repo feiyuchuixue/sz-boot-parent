@@ -10,7 +10,7 @@ import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

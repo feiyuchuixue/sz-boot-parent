@@ -5,7 +5,7 @@ import com.sz.admin.system.pojo.dto.sysfile.SysFileListDTO;
 import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -9,7 +9,7 @@
         <id column="${field.columnName}" property="${field.javaField}"/>
         <#-- 普通字段 -->
         <#else>
-        <result column="${field.columnName}" property="${field.javaField}"/>
+        <result column="${field.columnName}" property="${field.javaField}" <#if field.javaType?starts_with("List")> typeHandler="com.mybatisflex.core.handler.JacksonTypeHandler"</#if>/>
         </#if>
     </#list>
     </resultMap>

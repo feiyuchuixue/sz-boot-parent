@@ -127,6 +127,9 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     public void importExcel(ImportExcelDTO dto) {
         ExcelResult<${dtoImportClassName}> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), ${dtoImportClassName}.class, true);
         List<${dtoImportClassName}> list = excelResult.getList();
+        // 入库
+        List<${poClassName}> importList = BeanCopyUtils.copyList(list, ${poClassName}.class);
+        saveBatch(importList);
         List<String> errorList = excelResult.getErrorList();
         String analysis = excelResult.getAnalysis();
         System.out.println(" analysis : " + analysis);

@@ -28,7 +28,7 @@
         <result column="create_time" property="createTime"/>
         <result column="update_id" property="updateId"/>
         <result column="update_time" property="updateTime"/>
-        <result column="options" property="options"/>
+        <result column="options" property="options" typeHandler="com.mybatisflex.core.handler.JacksonTypeHandler"/>
         <result column="is_logic_del" property="isLogicDel"/>
         <result column="dict_show_way" property="dictShowWay"/>
 

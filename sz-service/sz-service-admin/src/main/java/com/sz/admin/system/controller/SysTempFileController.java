@@ -1,7 +1,7 @@
 package com.sz.admin.system.controller;
 
 import com.sz.core.common.annotation.DebounceIgnore;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

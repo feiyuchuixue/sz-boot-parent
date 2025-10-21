@@ -2,7 +2,7 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;

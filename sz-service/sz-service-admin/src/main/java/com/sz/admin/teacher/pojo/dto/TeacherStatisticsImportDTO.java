@@ -1,10 +1,11 @@
 package com.sz.admin.teacher.pojo.dto;
 
-import com.sz.excel.annotation.DictFormat;
+import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import cn.idev.excel.annotation.ExcelProperty;
@@ -20,8 +21,8 @@ import cn.idev.excel.annotation.ExcelProperty;
 @Schema(description = "TeacherStatistics导入DTO")
 public class TeacherStatisticsImportDTO {
 
-    @ExcelProperty(value = "统计年限")
-    @Schema(description = "统计年限")
+    @ExcelProperty(value = "统计年份")
+    @Schema(description = "统计年份")
     private String year;
 
     @ExcelProperty(value = "统计月份")
@@ -37,7 +38,8 @@ public class TeacherStatisticsImportDTO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
-    @DictFormat(dictType = "account_status", useAlias = true)
+    // 如果字典使用的是别名 使用如下设置 useAlias = true
+    // @DictFormat(dictType = "account_status", useAlias = true)
     @Schema(description = "讲师区分类型")
     private String teacherCommonType;
 
@@ -58,6 +60,7 @@ public class TeacherStatisticsImportDTO {
     @Schema(description = "核对状态")
     private String checkStatus;
 
+    @ExcelProperty(value = "核对时间")
     @Schema(description = "核对时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkTime;
@@ -66,7 +69,8 @@ public class TeacherStatisticsImportDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastSyncTime;
 
-    @ExcelProperty(value = "备注")
+    @ExcelIgnore
+    // @ExcelProperty(value = "备注")
     @Schema(description = "备注")
     private String remark;
 

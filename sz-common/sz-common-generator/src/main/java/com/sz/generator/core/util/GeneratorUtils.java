@@ -10,6 +10,8 @@ import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
 import com.sz.core.util.StringUtils;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -98,6 +100,11 @@ public class GeneratorUtils {
         // 【约定】： 使用del_flag 作为逻辑删除标识字段
         if ("del_flag".equals(columnName)) {
             tableColumn.setIsLogicDel(GeneratorConstants.REQUIRE);
+        }
+
+        // 【约定】： 使用attachments 或 url 作为 附件字段，数据库类型json， java 类型使用List<UploadResult>
+        if ("attachments".equals(columnName) || "url".equals(columnName)) {
+            tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
         }
 
         if (tableColumn.getHtmlType() == null) {
@@ -283,6 +290,7 @@ public class GeneratorUtils {
         setExportAttribute(notPk, columnName, tableColumn);
         setHtmlType(columnName, tableColumn);
         setFillOptions(columnName, tableColumn);
+        setFileUploadOptions(columnName, tableColumn);
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn tableColumn) {
@@ -327,7 +335,7 @@ public class GeneratorUtils {
     }
 
     private static void setExportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
-        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_COLUMNS, columnName) && notPk) {
+        if (!arraysContains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName) && notPk) {
             tableColumn.setIsExport(GeneratorConstants.REQUIRE);
         }
     }
@@ -372,6 +380,25 @@ public class GeneratorUtils {
         if (arraysContains(GeneratorConstants.AUTO_FILL_OPTIONS_COLUMNS, columnName)) {
             tableColumn.setDictType("dynamic_user_options"); // 设置[动态字典]用户信息
             tableColumn.setDictShowWay("0"); // 设置字典显示方式：唯一标识
+        }
+    }
+
+    private static void setFileUploadOptions(String columnName, GeneratorTableColumn tableColumn) {
+        String javaType = tableColumn.getJavaType();
+        if (arraysContains(GeneratorConstants.AUTO_FILE_UPLOAD_COLUMNS, columnName) || GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(javaType)) {
+            tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
+            tableColumn.setJavaTypePackage(
+                    "com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.core.common.entity.UploadResult,java.util.List,com.mybatisflex.annotation.Column");
+            tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
+            Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
+            options.put("upload-files.dir", "tmp"); // 多文件上传组件：文件上传目录
+            options.put("upload-files.accept", ""); // 多文件上传组件：允许上传的文件类型, doc,pdf,jpg等,空表示不限制
+            options.put("upload-files.limit", 5); // 多文件上传组件：最多上传5个文件
+            options.put("upload-files.fileSize", 3); // 多文件上传组件：单个文件最大3MB
+
+            options.put("file-download-list.align", "left"); // 列表文件回显组件：对齐方式left/center/right
+            options.put("file-download-list.maxRows", 3); // 列表文件回显组件：表格内最大显示行数,超出则折叠显示
+            tableColumn.setOptions(options);
         }
     }
 

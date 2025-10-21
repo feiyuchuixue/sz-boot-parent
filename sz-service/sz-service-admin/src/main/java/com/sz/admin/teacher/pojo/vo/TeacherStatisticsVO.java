@@ -6,7 +6,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
 import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -49,7 +49,8 @@ public class TeacherStatisticsVO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
-    @DictFormat(dictType = "account_status", isSelected = true, useAlias = true)
+    // 如果字典使用的是别名 使用如下设置 useAlias = true
+    // @DictFormat(dictType = "account_status", isSelected = true, useAlias = true)
     @Schema(description = "讲师区分类型")
     private Integer teacherCommonType;
 
@@ -104,6 +105,7 @@ public class TeacherStatisticsVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
+    @ExcelIgnore
     @Schema(description = "文件地址(JSON)")
     @Column(typeHandler = JacksonTypeHandler.class)
     private List<UploadResult> url;

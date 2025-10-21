@@ -19,7 +19,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
-@Accessors(chain = true)
 @Schema(description = "${poClassName}查询DTO")
 public class ${dtoListClassName} extends PageQuery {
 

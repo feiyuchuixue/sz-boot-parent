@@ -1,9 +1,12 @@
 package com.sz.generator.pojo.vo;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -179,7 +182,8 @@ public class GeneratorDetailVO {
         private String dictType;
 
         @Schema(description = "其他设置")
-        private String options;
+        @com.mybatisflex.annotation.Column(typeHandler = JacksonTypeHandler.class)
+        private Map<String, String> options;
 
         @Schema(description = "是否逻辑删除(1 是)")
         private String isLogicDel;

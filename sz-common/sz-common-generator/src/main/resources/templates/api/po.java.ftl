@@ -25,7 +25,6 @@ import ${pkg};
 * @since ${datetime}
 */
 @Data
-@Accessors(chain = true)
 <#if GeneratorInfo.isAutofill == "1">
 @Table(value = "${tableName}", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 <#else>
@@ -50,6 +49,9 @@ public class ${poClassName} implements Serializable {
     <#-- 逻辑删除 -->
     <#if field.isLogicDel == "1">
     @Column(isLogicDelete = true)
+    </#if>
+    <#if field.javaType?starts_with("List")>
+    @Column(typeHandler = JacksonTypeHandler.class)
     </#if>
     @Schema(description ="${field.columnComment}")
     private ${field.javaType} ${field.javaField};

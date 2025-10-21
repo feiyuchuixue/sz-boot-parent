@@ -96,6 +96,8 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public void importExcel(ImportExcelDTO dto) {
         ExcelResult<TeacherStatisticsImportDTO> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), TeacherStatisticsImportDTO.class, true);
         List<TeacherStatisticsImportDTO> list = excelResult.getList();
+        List<TeacherStatistics> cpList = BeanCopyUtils.copyList(list, TeacherStatistics.class);
+        saveBatch(cpList);
         List<String> errorList = excelResult.getErrorList();
         String analysis = excelResult.getAnalysis();
         System.out.println(" analysis : " + analysis);

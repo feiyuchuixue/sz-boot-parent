@@ -64,6 +64,8 @@
         </el-date-picker>
           <#elseif field.htmlType == "time">
         <el-time-picker clearable v-model="paramsProps.row.${field.javaField}" placeholder="请选择${field.columnComment}"></el-time-picker>
+          <#elseif field.htmlType == "fileUpload">
+        <upload-files v-model:modelValue="${field.javaField}UploadResult" :limit="${field.options['upload-files.limit']!5}" :file-size="${field.options['upload-files.fileSize']!3}" :dir="'${field.options['upload-files.dir']!'tmp'}'" :accept="'${field.options['upload-files.accept']!''}'" />
           <#else>
         <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" clearable></el-input>
           </#if>
@@ -84,7 +86,10 @@ import { type ElForm, ElMessage } from 'element-plus';
 <#if hasSelect == true>
 import { useOptionsStore } from '@/stores/modules/options';
 </#if>
-
+<#if hasFileUpload?? && hasFileUpload>
+import UploadFiles from '@/components/Upload/file.vue';
+import type { IUploadResult } from "@/api/types/system/upload";
+</#if>
 defineOptions({
     name: '${formClassName}'
 });
@@ -108,9 +113,20 @@ const paramsProps = ref<View.DefaultParams>({
   getTableList: undefined
 });
 
+<#list columns as field>
+<#if field.htmlType == "fileUpload">
+const ${field.javaField}UploadResult = ref<IUploadResult[] | string[]>([]);
+</#if>
+</#list>
+
 // 接收父组件传过来的参数
 const acceptParams = (params: View.DefaultParams) => {
   paramsProps.value = params
+<#list columns as field>
+<#if field.htmlType == "fileUpload">
+  ${field.javaField}UploadResult.value = params.row.${field.javaField} || [];
+</#if>
+</#list>
   visible.value = true
 };
 
@@ -120,6 +136,11 @@ const handleSubmit = () => {
   ruleFormRef.value!.validate(async (valid) => {
     if (!valid) return
     try {
+<#list columns as field>
+  <#if field.htmlType == "fileUpload">
+      paramsProps.value.row.${field.javaField} = ${field.javaField}UploadResult.value; // 附件数据添加--从上传组件获取
+  </#if>
+</#list>
       await paramsProps.value.api!(paramsProps.value.row);
       ElMessage.success({ message: `<#noparse>${paramsProps.value.title}</#noparse>成功！` });
       paramsProps.value.getTableList!();

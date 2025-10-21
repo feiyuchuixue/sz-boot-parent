@@ -1,5 +1,6 @@
 package com.sz.oss;
 
+import com.sz.core.common.entity.UploadResult;
 import com.sz.core.util.FileUtils;
 import com.sz.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;

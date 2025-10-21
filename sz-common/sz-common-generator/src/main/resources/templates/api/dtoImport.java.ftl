@@ -23,7 +23,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
-@Accessors(chain = true)
 @Schema(description = "${poClassName}导入DTO")
 public class ${dtoImportClassName} {
 

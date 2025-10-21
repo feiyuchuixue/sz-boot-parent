@@ -7,7 +7,7 @@ import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.admin.system.service.SysTempFileHistoryService;
 import com.sz.oss.OssClient;
-import com.sz.oss.UploadResult;
+import com.sz.core.common.entity.UploadResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

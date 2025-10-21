@@ -19,7 +19,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since ${datetime}
  */
 @Data
-@Accessors(chain = true)
 @Schema(description = "${poClassName}修改DTO")
 public class ${dtoUpdateClassName} {
 
@@ -35,6 +34,9 @@ public class ${dtoUpdateClassName} {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private ${field.javaType} ${field.javaField};
     <#else>
+    <#if field.javaType?starts_with("List")>
+    @Column(typeHandler = JacksonTypeHandler.class)
+    </#if>
     @Schema(description =  "${field.columnComment}")
     private ${field.javaType} ${field.javaField};
     </#if>

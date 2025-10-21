@@ -59,6 +59,13 @@
         </el-button>
           </#if>
       </template>
+  <#list columns as field>
+    <#if field.htmlType == "fileUpload">
+      <template #url="{ row }">
+        <file-download-list :files="row?.${field.javaField}" :align="'${field.options['file-download-list.align']!''}'" :max-rows="${field.options['file-download-list.maxRows']!2}" />
+      </template>
+    </#if>
+  </#list>
       <template #operation="{ row }">
         <el-button
           <#if GeneratorInfo.btnPermissionType == "1">
@@ -135,6 +142,15 @@ import { useDownload } from "@/hooks/useDownload";
 <#if dictTypes?? && dictTypes?size gt 0>
 import { useDict } from '@/hooks/useDict';
 </#if>
+<#list columns as field>
+<#if field.htmlType == "fileUpload">
+<#assign hasFileUpload = true>
+</#if>
+</#list>
+<#if hasFileUpload?? && hasFileUpload>
+import FileDownloadList from '@/components/Upload/FileDownloadList.vue';
+</#if>
+
 defineOptions({
   name: '${indexDefineOptionsName}'
 });
@@ -255,10 +271,11 @@ const ImportExcelRef = ref<InstanceType<typeof ImportExcel>>();
 const importData = () => {
   const params = {
     title: '${functionName}',
-    templateName: '${functionName}',
     tempApi: downloadTemplate,
     importApi: ${funImport},
-    getTableList: proTableRef.value?.getTableList
+    getTableList: proTableRef.value?.getTableList,
+    alias: '【标识字符】：例 jstj, 对应 [系统管理-模版文件管理] 中的标识',
+    fileName: '【模板文件名称】：例 教师统计模板.xlsx, 对应 [系统管理-模版文件管理] 中的模版名'
   };
   ImportExcelRef.value?.acceptParams(params);
 };
