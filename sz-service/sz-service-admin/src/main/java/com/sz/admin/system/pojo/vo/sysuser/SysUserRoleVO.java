@@ -26,6 +26,9 @@ public class SysUserRoleVO {
 
         @Schema(description = "角色名称")
         private String roleName;
+
+        @Schema(description = "是否锁定")
+        private boolean disabled = false;
     }
 
 }

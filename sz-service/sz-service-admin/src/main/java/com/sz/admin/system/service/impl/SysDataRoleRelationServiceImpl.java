@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.sz.admin.system.pojo.po.table.SysDataRoleRelationTableDef.SYS_DATA_ROLE_RELATION;
@@ -28,7 +29,7 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
 
     @Transactional
     @Override
-    public void batchSave(Long roleId, String relationTypeCd, List<Long> relationIds) {
+    public void batchSave(Long roleId, String menuId, String relationTypeCd, List<Long> relationIds) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
                 .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq(relationTypeCd));
         long count = count(wrapper);
@@ -42,6 +43,7 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
             roleRelation.setRoleId(roleId);
             roleRelation.setRelationId(relationId);
             roleRelation.setRelationTypeCd(relationTypeCd);
+            roleRelation.setMenuId(menuId);
             roleRelations.add(roleRelation);
         }
         if (!roleRelations.isEmpty())
@@ -53,6 +55,23 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
         QueryWrapper wrapper = QueryWrapper.create().select(SYS_DATA_ROLE_RELATION.RELATION_ID).where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
                 .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq(relationTypeCd));
         return listAs(wrapper, Long.class);
+    }
+
+    @Override
+    public void deleteByRoleId(Long roleId) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId));
+        remove(wrapper);
+    }
+
+    @Override
+    public List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<String> menuIds) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
+        return list(wrapper);
+    }
+    @Override
+    public List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<String> menuIds) {
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.in(roleIds)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
+        return list(wrapper);
     }
 
 }

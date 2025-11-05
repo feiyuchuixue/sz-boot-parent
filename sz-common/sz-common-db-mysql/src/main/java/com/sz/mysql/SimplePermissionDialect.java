@@ -7,6 +7,7 @@ import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
 import com.sz.core.common.entity.ControlPermissions;
 import com.sz.core.common.entity.LoginUser;
+import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.core.datascope.ControlThreadLocal;
 import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.SpringApplicationContextUtils;
@@ -38,28 +39,53 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             return;
         }
         // 防止误触 && MybatisFlex Relation 多对多映射问题
-        String table = getTable(SimpleDataScopeHelper.get());
-        if (!isTargetTable(queryWrapper, table)) {
+        String tableName = getTableName(SimpleDataScopeHelper.get());
+        if (!isTargetTable(queryWrapper, tableName)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
 
         try {
-
             if (!initializeContext(queryWrapper, operateType)) {
                 return;
             }
 
             ControlPermissions permissions = ControlThreadLocal.get();
             LoginUser loginUser = LoginUtils.getLoginUser();
+            if (permissions == null || loginUser == null)
+                return;
 
-            assert loginUser != null;
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
-            Map<String, String> ruleMap = loginUser.getRuleMap();
-            String mode = permissions.getMode();
-            String rule = determineRuleScope(btnPermissions, permissionMap, ruleMap, mode);
-            applyDataScopeRules(queryWrapper, operateType, rule, table, SimpleDataScopeHelper.get());
+            Map<String, RoleMenuScopeVO> scopeMap = loginUser.getDataScope();
+            String firstPermission = (btnPermissions != null && btnPermissions.length > 0) ? btnPermissions[0] : "";
+
+            String menuId = permissionMap.get(firstPermission); // 根据 权限标识获取菜单ID
+            RoleMenuScopeVO scope = menuId == null ? null : scopeMap.get(menuId);
+            if (scope == null)
+                return;
+            String dataScopeCd = scope.getDataScopeCd();
+            switch (dataScopeCd) {
+                case "1006005" -> { // 自定义
+                    RoleMenuScopeVO.CustomScope customScope = scope.getCustomScope();
+                    Set<Long> deptIds = new HashSet<>();
+                    Set<Long> userIds = new HashSet<>();
+                    if (customScope != null) {
+                        if (Utils.isNotNull(customScope.getDeptIds())) {
+                            deptIds.addAll(customScope.getDeptIds());
+                        }
+                        if (Utils.isNotNull(customScope.getUserIds())) {
+                            userIds.addAll(customScope.getUserIds());
+                        }
+                    }
+                    // 添加当前操作用户
+                    userIds.add(loginUser.getUserInfo().getId());
+                    buildSql(queryWrapper, tableName, deptIds, userIds, SimpleDataScopeHelper.get());
+                }
+                case "1006001", "1006002", "1006003", "1006004" -> {
+                    applyDataScopeRules(queryWrapper, operateType, dataScopeCd, tableName, SimpleDataScopeHelper.get());
+                }
+            }
 
         } catch (Exception e) {
             log.error("PermissionDialect Exception: {}", e.getMessage());
@@ -152,14 +178,9 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         return tableMap;
     }
 
-    private String getTable(Class<?> tableClazz) {
-        Table tableClazzAnnotation = tableClazz.getAnnotation(Table.class);
-        if (tableClazzAnnotation == null) {
-            String simpleName = tableClazz.getSimpleName();
-            return StringUtils.toSnakeCase(simpleName);
-        } else {
-            return tableClazzAnnotation.value();
-        }
+    private String getTableName(Class<?> clazz) {
+        Table anno = clazz.getAnnotation(Table.class);
+        return (anno == null) ? StringUtils.toSnakeCase(clazz.getSimpleName()) : anno.value();
     }
 
     /**
@@ -179,76 +200,22 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     private void applyDataScopeRules(QueryWrapper queryWrapper, OperateType operateType, String rule, String table, Class<?> tableClazz) {
         LoginUser loginUser = LoginUtils.getLoginUser();
         assert loginUser != null;
-        ControlPermissions permissions = ControlThreadLocal.get();
-        Map<String, Set<Long>> userRuleMap = loginUser.getUserRuleMap();
-        Map<String, Set<Long>> deptRuleMap = loginUser.getDeptRuleMap();
-        Set<Long> customUserIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), userRuleMap,
-                permissions.getMode());
-        Set<Long> customDeptIds = determineCustomRuleRelationIds(permissions.getPermissions(), loginUser.getPermissionAndMenuIds(), deptRuleMap,
-                permissions.getMode());
-
         // 如果有全部数据的查询权限，直接返回
         if ("1006001".equals(rule)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
-
         // 初始化部门和用户集合
         Set<Long> deptList = new HashSet<>();
         Set<Long> userList = new HashSet<>();
-
         // 根据规则添加部门
         switch (rule) {
             case "1006002" -> deptList.addAll(loginUser.getDeptAndChildren()); // 本部门及以下
             case "1006003" -> deptList.addAll(loginUser.getDepts()); // 仅本部门
         }
-
-        // 添加自定义部门和用户
-        deptList.addAll(customDeptIds);
-        userList.addAll(customUserIds);
-
         // 添加当前操作用户
         userList.add(loginUser.getUserInfo().getId());
         buildSql(queryWrapper, table, deptList, userList, tableClazz);
-
-    }
-
-    private String determineRuleScope(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, String> ruleScopeMap, String mode) {
-        if (ruleScopeMap.isEmpty()) {
-            return "";
-        }
-        Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
-        if (menuIds.isEmpty()) {
-            return "";
-        }
-        if (menuIds.size() == 1) {
-            return ruleScopeMap.getOrDefault(menuIds.iterator().next(), "");
-        }
-        if (mode.isEmpty()) {
-            return "";
-        }
-        return menuIds.stream().map(menuId -> ruleScopeMap.getOrDefault(menuId, ""))
-                .reduce((scope1, scope2) -> mode.equals("or") ? maxRuleScope(scope1, scope2) : minRuleScope(scope1, scope2)).orElse("");
-    }
-
-    private Set<Long> determineCustomRuleRelationIds(String[] permissionKeys, Map<String, String> permissionAccessMap, Map<String, Set<Long>> ruleRelation,
-            String mode) {
-        Set<Long> relationId = new HashSet<>();
-        if (ruleRelation.isEmpty()) {
-            return relationId;
-        }
-        Set<String> menuIds = Arrays.stream(permissionKeys).filter(permissionAccessMap::containsKey).map(permissionAccessMap::get).collect(Collectors.toSet());
-        if (menuIds.isEmpty()) {
-            return relationId;
-        }
-        if (menuIds.size() == 1) {
-            return ruleRelation.getOrDefault(menuIds.iterator().next(), relationId);
-        }
-        if (mode.isEmpty()) {
-            return relationId;
-        }
-        return menuIds.stream().map(menuId -> ruleRelation.getOrDefault(menuId, relationId))
-                .reduce((relation1, relation2) -> mode.equals("or") ? maxRelation(relation1, relation2) : minRelation(relation1, relation2)).orElse(relationId);
     }
 
     private boolean isFieldExists(Class<?> clazz, String fieldName) {
@@ -259,26 +226,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             log.error(" [DataScope]: Entity `{}` Filed `{}` not found.", clazz.getSimpleName(), fieldName);
         }
         return false;
-    }
-
-    private String maxRuleScope(String scope1, String scope2) {
-        return Utils.getLongVal(scope1) >= Utils.getLongVal(scope2) ? scope1 : scope2;
-    }
-
-    private String minRuleScope(String scope1, String scope2) {
-        return Utils.getLongVal(scope1) <= Utils.getLongVal(scope2) ? scope1 : scope2;
-    }
-
-    private Set<Long> maxRelation(Set<Long> relation1, Set<Long> relation2) {
-        Set<Long> all = new HashSet<>(relation1);
-        all.addAll(relation2);
-        return all;
-    }
-
-    private Set<Long> minRelation(Set<Long> relation1, Set<Long> relation2) {
-        Set<Long> intersection = new HashSet<>(relation1);
-        intersection.retainAll(relation2);
-        return intersection;
     }
 
     /**

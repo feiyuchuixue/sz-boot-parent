@@ -162,4 +162,12 @@ public class SysUserController {
         return ApiResult.success();
     }
 
+    @Operation(summary = "用户类型设置")
+    @SaCheckPermission(value = "sys.user.admin_set_btn")
+    @PostMapping("changeset/usertag")
+    public ApiResult<Void> changeUserTag(@RequestBody SysUserTagDTO dto) {
+        sysUserService.changeUserTag(dto);
+        return ApiResult.success();
+    }
+
 }

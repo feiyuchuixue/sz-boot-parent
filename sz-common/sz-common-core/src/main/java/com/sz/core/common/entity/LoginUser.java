@@ -26,13 +26,7 @@ public class LoginUser {
     @Schema(description = "权限标识与菜单关系数组")
     private Map<String, String> permissionAndMenuIds = new HashMap<>();
 
-    @Schema(description = "菜单的查询规则")
-    private Map<String, String> ruleMap = new HashMap<>();
-
-    @Schema(description = "自定义userRule")
-    private Map<String, Set<Long>> userRuleMap = new HashMap<>();
-
-    @Schema(description = "自定义deptRule")
-    private Map<String, Set<Long>> deptRuleMap = new HashMap<>();
+    @Schema(description = "数据权限范围")
+    private Map<String, RoleMenuScopeVO> dataScope;
 
 }

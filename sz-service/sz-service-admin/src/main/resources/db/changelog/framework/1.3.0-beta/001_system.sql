@@ -64,3 +64,23 @@ INSERT INTO `sys_role_menu` (`menu_id`, `role_id`) VALUES ('765d139874424930b0a6
 INSERT INTO `sys_role_menu` (`menu_id`, `role_id`) VALUES ('ab1ac16c617d41979472ebe433c1f8e4', 1);
 INSERT INTO `sys_role_menu` (`menu_id`, `role_id`) VALUES ('ab1ac16c617d41979472ebe433c1f8e4', 3);
 
+--changeset 升职哦（sz）:20251030_1925
+--comment: 修改sys_role_menu表, 增加字段
+ALTER TABLE `sys_role_menu` ADD COLUMN `permission_type` enum('menu','scope') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'menu' COMMENT '权限类型（功能权限；数据权限）';
+ALTER TABLE `sys_role_menu` ADD COLUMN `data_scope_cd` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '数据权限范围，data_scope字典';
+UPDATE `sys_role_menu` SET `permission_type` = 'menu' WHERE `permission_type` IS NULL;
+
+--changeset 升职哦（sz）:20251031_1930
+ALTER TABLE `sys_data_role_relation` ADD COLUMN `menu_id` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '菜单id';
+
+--changeset 升职哦（sz）:20251103_2312
+UPDATE `sys_menu` SET `is_hidden` = 'T' WHERE `id` = '0444cd2c01584f0687264b6205536691';
+UPDATE `sys_menu` SET `use_data_scope` = 'T' WHERE `pid` IN ( SELECT `id` FROM (SELECT `id` FROM `sys_menu` WHERE `is_hidden` = 'T' AND `menu_type_cd` != '1002003') AS temp);
+ALTER TABLE `sys_data_role_menu` COMMENT='系统数据角色-菜单表【废弃, from 2025-v1.3.0】';
+ALTER TABLE `sys_data_role` COMMENT='系统数据角色表【废弃, from 2025-v1.3.0】';
+
+--changeset 升职哦（sz）:20251104_1933
+INSERT INTO `sys_config` (`config_name`, `config_key`, `config_value`, `is_lock`, `create_id`, `create_time`, `update_id`, `update_time`, `remark`) VALUES ('超级管理员角色权限配置', 'sys.admin.superAdminRoleId', '1', 'T', 1, '2025-11-04 13:06:45', 1, '2025-11-04 16:32:25', '超管权限，指定的生效角色 ID。');
+UPDATE `sys_dict` SET `sys_dict_type_id` = 1001, `code_name` = '测试用户', `alias` = '', `sort` = 3, `callback_show_style` = 'warning', `remark` = '', `is_lock` = 'T', `is_show` = 'T', `del_flag` = 'F', `create_time` = '2023-08-20 16:38:58', `update_time` = '2025-11-05 14:56:22', `delete_time` = NULL, `create_id` = NULL, `update_id` = 1, `delete_id` = NULL WHERE `id` = 1001001;
+UPDATE `sys_dict` SET `sys_dict_type_id` = 1001, `code_name` = '超级管理员', `alias` = '', `sort` = 2, `callback_show_style` = 'danger', `remark` = '', `is_lock` = 'T', `is_show` = 'T', `del_flag` = 'F', `create_time` = '2023-08-20 16:39:05', `update_time` = '2025-11-05 14:56:34', `delete_time` = NULL, `create_id` = NULL, `update_id` = 1, `delete_id` = NULL WHERE `id` = 1001002;
+UPDATE `sys_dict` SET `sys_dict_type_id` = 1001, `code_name` = '普通用户', `alias` = '', `sort` = 1, `callback_show_style` = 'primary', `remark` = '', `is_lock` = 't', `is_show` = 'T', `del_flag` = 'F', `create_time` = '2023-08-20 16:39:11', `update_time` = '2025-11-05 14:56:39', `delete_time` = NULL, `create_id` = NULL, `update_id` = 1, `delete_id` = NULL WHERE `id` = 1001003;

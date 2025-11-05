@@ -39,6 +39,9 @@ public class MenuTreeVO implements Treeable<MenuTreeVO> {
     @Schema(description = "路由名称")
     private String name;
 
+    @Schema(description = "是否使用数据权限")
+    private String useDataScope;
+
     @Schema(description = "子级")
     private List<MenuTreeVO> children;
 

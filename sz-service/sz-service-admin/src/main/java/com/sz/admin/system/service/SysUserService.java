@@ -104,4 +104,6 @@ public interface SysUserService extends IService<SysUser> {
     List<UserOptionVO> getUserOptions();
 
     PageResult<UserVO> pageSelector(SelectorQueryDTO dto);
+
+    void changeUserTag(SysUserTagDTO dto);
 }

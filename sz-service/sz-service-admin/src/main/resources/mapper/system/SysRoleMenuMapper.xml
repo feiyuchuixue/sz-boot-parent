@@ -7,19 +7,21 @@
         <id column="id" property="id"/>
         <result column="menu_id" property="menuId"/>
         <result column="role_id" property="roleId"/>
+        <result column="permission_type" property="permissionType"/>
+        <result column="data_scope_cd" property="dataScopeCd"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, menu_id, role_id
+        id, menu_id, role_id, permission_type, data_scope_cd
     </sql>
 
     <!-- 批量插入角色菜单关联记录 -->
     <insert id="insertBatchSysRoleMenu">
-        INSERT INTO sys_role_menu (role_id, menu_id)
+        INSERT INTO sys_role_menu (role_id, menu_id,permission_type,data_scope_cd)
         VALUES
         <foreach collection="menuIds" item="menuId" separator=",">
-            (#{roleId}, #{menuId})
+            (#{roleId}, #{menuId}, #{permissionType}, #{dataScopeCd})
         </foreach>
     </insert>
 

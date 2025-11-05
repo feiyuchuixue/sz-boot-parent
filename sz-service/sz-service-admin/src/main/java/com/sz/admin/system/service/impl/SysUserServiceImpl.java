@@ -4,7 +4,6 @@ import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.pagehelper.PageHelper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
@@ -20,16 +19,11 @@ import com.sz.admin.system.mapper.SysUserRoleMapper;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
 import com.sz.admin.system.pojo.dto.sysuser.*;
-import com.sz.admin.system.pojo.po.SysDeptRole;
-import com.sz.admin.system.pojo.po.SysRole;
-import com.sz.admin.system.pojo.po.SysUser;
-import com.sz.admin.system.pojo.po.SysUserRole;
+import com.sz.admin.system.pojo.po.*;
 import com.sz.admin.system.pojo.vo.common.UserVO;
+import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.admin.system.pojo.vo.sysuser.*;
-import com.sz.admin.system.service.SysMenuService;
-import com.sz.admin.system.service.SysPermissionService;
-import com.sz.admin.system.service.SysUserDeptService;
-import com.sz.admin.system.service.SysUserService;
+import com.sz.admin.system.service.*;
 import com.sz.core.common.entity.BaseUserInfo;
 import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.entity.PageResult;
@@ -96,6 +90,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private String activeProfile;
 
     private final AuthService authService;
+
+    private final SysRoleMenuService sysRoleMenuService;
 
     /**
      * 获取认证账户信息接角色信息
@@ -293,6 +289,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUserRoleVO findSysUserRole(Long userId) {
         List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
         List<SysUserRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(sysRoleList, SysUserRoleVO.RoleInfoVO.class);
+        String superAdminRoleId = SysConfigUtils.getConfValue("sys.admin.superAdminRoleId");
+        for (SysUserRoleVO.RoleInfoVO roleInfoVO : roleInfoVOS) {
+            if (superAdminRoleId.equals(Utils.getStringVal(roleInfoVO.getId()))) {
+                roleInfoVO.setDisabled(true);
+            }
+        }
+
         List<SysUserRole> userRoles = QueryChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, userId).list();
         List<Long> roleIds = new ArrayList<>();
         if (Utils.isNotNull(userRoles)) {
@@ -435,27 +438,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (!dataScopeProperties.isEnabled())
             return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
 
+        // 根据角色 获取用户数据权限范围
+        Set<String> roles = loginUser.getRoles();
+        Map<String, RoleMenuScopeVO> userScope = sysRoleMenuService.getUserScope(roles);
+        loginUser.setDataScope(userScope);
+
         Map<String, String> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
-        Set<String> findMenuIds = new HashSet<>(btmPermissionMap.values());
         loginUser.setPermissionAndMenuIds(btmPermissionMap);
-        Map<String, String> ruleMap = sysPermissionService.buildMenuRuleMap(sysUser, findMenuIds);
-        String customUserKey = "userRule";
-        if (ruleMap.containsKey(customUserKey)) {
-            String str = ruleMap.get(customUserKey);
-            Map<String, Set<Long>> map = JsonUtils.parseObject(str, new TypeReference<Map<String, Set<Long>>>() {
-            });
-            ruleMap.remove(customUserKey);
-            loginUser.setUserRuleMap(map);
-        }
-        String customDeptKey = "deptRule";
-        if (ruleMap.containsKey(customDeptKey)) {
-            String str = ruleMap.get(customDeptKey);
-            Map<String, Set<Long>> map = JsonUtils.parseObject(str, new TypeReference<Map<String, Set<Long>>>() {
-            });
-            ruleMap.remove(customDeptKey);
-            loginUser.setDeptRuleMap(map);
-        }
-        loginUser.setRuleMap(ruleMap); // 获取菜单的查询规则
+
         return loginUser;
     }
 
@@ -547,6 +537,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         Page<UserVO> page = pageAs(PageUtils.getPage(dto), wrapper, UserVO.class);
         return PageUtils.getPageResult(page);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void changeUserTag(SysUserTagDTO dto) {
+        String userTagCd = dto.getUserTagCd();
+        List<Long> userIds = dto.getUserIds();
+        String superAdminRoleId = SysConfigUtils.getConfValue("sys.admin.superAdminRoleId");
+        if (userIds.isEmpty()) {
+            return;
+        }
+        UpdateChain.of(SysUser.class).set(SYS_USER.USER_TAG_CD, userTagCd).where(SYS_USER.ID.in(userIds)).update(); // 更新用户标签
+        UpdateChain.of(SysUserRole.class).where(SYS_USER_ROLE.USER_ID.in(userIds)).where(SYS_USER_ROLE.ROLE_ID.eq(Utils.getLongVal(superAdminRoleId))).remove(); // 删除超管角色
+        List<SysUserRole> userRoles = new ArrayList<>();
+        SysUserRole userRole;
+        if ("1001002".equals(userTagCd)) { // 超管角色用户
+            for (Long userId : userIds) {
+                userRole = new SysUserRole();
+                userRole.setUserId(userId);
+                userRole.setRoleId(Utils.getLongVal(superAdminRoleId));
+                userRoles.add(userRole);
+            }
+        }
+        if (!userRoles.isEmpty()) {
+            sysUserRoleMapper.insertBatch(userRoles);
+        }
+        // 发布用户权限变更事件
+        eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(userIds)));
     }
 
 }

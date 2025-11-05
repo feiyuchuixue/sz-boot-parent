@@ -29,7 +29,7 @@ public class SysDataRoleRelation implements Serializable {
     @Schema(description = "ID")
     private Long id;
 
-    @Schema(description = "sys_data_role_id （数据角色表）")
+    @Schema(description = "sys_role id（数据角色表）")
     private Long roleId;
 
     @Schema(description = "关联类型，data_scope_relation_type")
@@ -37,5 +37,8 @@ public class SysDataRoleRelation implements Serializable {
 
     @Schema(description = "关联表id，联动relation_type_cd")
     private Long relationId;
+
+    @Schema(description = "sys_menu id")
+    private String menuId;
 
 }

@@ -33,4 +33,11 @@ public class SysRoleMenu implements Serializable {
 
     @Schema(description = "sys_role_id （角色表）")
     private Long roleId;
+
+    @Schema(description = "权限类型（功能权限；数据权限）")
+    private String permissionType;
+
+    @Schema(description = "数据权限范围")
+    private String dataScopeCd;
+
 }

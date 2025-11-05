@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysMenuMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
@@ -17,7 +18,6 @@ import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.service.SysMenuService;
-import com.sz.admin.system.service.SysRoleService;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.entity.UserPermissionChangeMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
@@ -65,8 +65,6 @@ import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROL
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
     private final SysUserRoleMapper sysUserRoleMapper;
-
-    private final SysRoleService sysRoleService;
 
     private final RedisService redisService;
 
@@ -413,7 +411,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return btnMenuMap;
         }
         try {
-            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(SYS_MENU.PERMISSIONS.in(permissions));
+            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(SYS_MENU.PERMISSIONS.in(permissions)).where(SYS_MENU.USE_DATA_SCOPE.eq("T"));
             List<SysMenu> list = list(wrapper);
             if (list.isEmpty()) {
                 return btnMenuMap;
@@ -446,17 +444,23 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return BeanCopyUtils.copyList(list, MenuTreeVO.class);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void changeMenuDataScope(String menuId) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.ID.eq(menuId));
         SysMenu menu = getOne(wrapper);
         CommonResponseEnum.INVALID_ID.assertNull(menu);
+        String useDataScope;
         if (("F").equals(menu.getUseDataScope())) {
-            menu.setUseDataScope("T");
+            useDataScope = "T";
+            menu.setUseDataScope(useDataScope);
         } else {
-            menu.setUseDataScope("F");
+            useDataScope = "F";
+            menu.setUseDataScope(useDataScope);
         }
         updateById(menu);
+        UpdateChain.of(SysMenu.class).set(SYS_MENU.USE_DATA_SCOPE, useDataScope).where(SYS_MENU.PID.eq(menu.getId())).update();
+
         List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class).select(SYS_USER_DATA_ROLE.USER_ID).from(SYS_USER_DATA_ROLE).leftJoin(SYS_DATA_ROLE_MENU)
                 .on(SYS_DATA_ROLE_MENU.ROLE_ID.eq(SYS_USER_DATA_ROLE.ROLE_ID)).where(SYS_DATA_ROLE_MENU.MENU_ID.eq(menuId)).listAs(Long.class);
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));

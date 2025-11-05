@@ -4,6 +4,7 @@ import com.mybatisflex.core.service.IService;
 import com.sz.admin.system.pojo.po.SysDataRoleRelation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -17,7 +18,13 @@ import java.util.List;
 public interface SysDataRoleRelationService extends IService<SysDataRoleRelation> {
 
     @Transactional
-    void batchSave(Long roleId, String relationTypeCd, List<Long> relationIds);
+    void batchSave(Long roleId, String menuId, String relationTypeCd, List<Long> relationIds);
 
     List<Long> getSelectRelationId(Long roleId, String relationTypeCd);
+
+    void deleteByRoleId(Long roleId);
+
+    List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<String> menuIds);
+
+    List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<String> menuIds);
 }

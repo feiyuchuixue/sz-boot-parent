@@ -16,6 +16,7 @@ import java.util.List;
  */
 public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
 
-    void insertBatchSysRoleMenu(@Param("menuIds") List<String> menuIds, @Param("roleId") Long roleId);
+    void insertBatchSysRoleMenu(@Param("menuIds") List<String> menuIds, @Param("roleId") Long roleId, @Param("permissionType") String permissionType,
+            @Param("dataScopeCd") String dataScopeCd);
 
 }

@@ -20,4 +20,7 @@ public class SysRoleCreateDTO {
     @Schema(description = "标识")
     private String permissions;
 
+    @Schema(description = "数据权限范围")
+    private String dataScopeCd;
+
 }
