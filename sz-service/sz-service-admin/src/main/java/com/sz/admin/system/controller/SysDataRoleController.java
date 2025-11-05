@@ -29,10 +29,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("sys-data-role")
 @RequiredArgsConstructor
+@Deprecated(since = "v1.4.0-beta")
 public class SysDataRoleController {
 
     private final SysDataRoleService sysDataRoleService;
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.data.role.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
@@ -41,6 +43,7 @@ public class SysDataRoleController {
         return ApiResult.success();
     }
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.data.role.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
@@ -49,6 +52,7 @@ public class SysDataRoleController {
         return ApiResult.success();
     }
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "删除")
     @SaCheckPermission(value = "sys.data.role.remove", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
@@ -57,6 +61,7 @@ public class SysDataRoleController {
         return ApiResult.success();
     }
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.data.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
@@ -64,6 +69,7 @@ public class SysDataRoleController {
         return ApiPageResult.success(sysDataRoleService.page(dto));
     }
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.data.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
@@ -71,6 +77,7 @@ public class SysDataRoleController {
         return ApiResult.success(sysDataRoleService.detail(id));
     }
 
+    @Deprecated(since = "v1.4.0-beta")
     @Operation(summary = "数据权限角色菜单信息查询")
     @SaCheckPermission(value = "sys.data.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")

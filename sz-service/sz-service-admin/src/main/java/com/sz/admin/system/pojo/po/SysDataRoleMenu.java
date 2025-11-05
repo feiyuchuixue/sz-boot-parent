@@ -18,6 +18,7 @@ import java.io.Serializable;
 @Data
 @Table(value = "sys_data_role_menu")
 @Schema(description = "系统数据角色-菜单表")
+@Deprecated(since = "v1.4.0-beta")
 public class SysDataRoleMenu implements Serializable {
 
     @Serial

@@ -43,6 +43,7 @@ import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER
  */
 @Service
 @RequiredArgsConstructor
+@Deprecated(since = "v1.4.0-beta")
 public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDataRole> implements SysDataRoleService {
 
     private final SysMenuService sysMenuService;
@@ -64,9 +65,9 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
         save(sysDataRole);
         sysDataRoleMenuService.batchSave(sysDataRole.getId(), dto.getSelectMenuIds());
         if (Utils.isNotNull(dto.getSelectDeptIds()))
-            sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007001", dto.getSelectDeptIds());
+            sysDataRoleRelationService.batchSave(sysDataRole.getId(), "", "1007001", dto.getSelectDeptIds());
         if (Utils.isNotNull(dto.getUserOptions()))
-            sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007002", dto.getUserOptions());
+            sysDataRoleRelationService.batchSave(sysDataRole.getId(), "", "1007002", dto.getUserOptions());
 
     }
 
@@ -79,8 +80,8 @@ public class SysDataRoleServiceImpl extends ServiceImpl<SysDataRoleMapper, SysDa
         wrapper = QueryWrapper.create().eq(SysDataRole::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
         sysDataRoleMenuService.batchSave(sysDataRole.getId(), dto.getSelectMenuIds());
-        sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007001", dto.getSelectDeptIds());
-        sysDataRoleRelationService.batchSave(sysDataRole.getId(), "1007002", dto.getUserOptions());
+        sysDataRoleRelationService.batchSave(sysDataRole.getId(), "", "1007001", dto.getSelectDeptIds());
+        sysDataRoleRelationService.batchSave(sysDataRole.getId(), "", "1007002", dto.getUserOptions());
         saveOrUpdate(sysDataRole);
 
         List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class) // 查询用户影响范围

@@ -13,6 +13,7 @@ import java.util.List;
  * @author sz-admin
  * @since 2024-07-11
  */
+@Deprecated(since = "v1.4.0-beta")
 public interface SysDataRoleMenuService extends IService<SysDataRoleMenu> {
 
     void batchSave(Long roleId, List<String> menuIds);

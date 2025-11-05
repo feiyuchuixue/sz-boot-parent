@@ -12,6 +12,7 @@ import com.sz.core.common.entity.PageQuery;
  * @author sz-admin
  * @since 2024-07-09
  */
+@Deprecated(since = "v1.4.0-beta")
 @Data
 @Schema(description = "SysDataRole查询DTO")
 public class SysDataRoleListDTO extends PageQuery {

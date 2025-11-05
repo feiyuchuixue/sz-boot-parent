@@ -20,6 +20,7 @@ import com.sz.admin.system.pojo.vo.sysdatarole.SysDataRoleVO;
  * @author sz-admin
  * @since 2024-07-09
  */
+@Deprecated(since = "v1.4.0-beta")
 public interface SysDataRoleService extends IService<SysDataRole> {
 
     void create(SysDataRoleCreateDTO dto);

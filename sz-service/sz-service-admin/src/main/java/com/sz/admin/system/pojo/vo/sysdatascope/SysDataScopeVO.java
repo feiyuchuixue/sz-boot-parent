@@ -15,6 +15,7 @@ import java.util.List;
  * @since 2024/6/27 13:26
  * @version 1.0
  */
+@Deprecated(since = "v1.4.0-beta")
 @Data
 @Schema(description = "SysDataScope返回vo")
 public class SysDataScopeVO {

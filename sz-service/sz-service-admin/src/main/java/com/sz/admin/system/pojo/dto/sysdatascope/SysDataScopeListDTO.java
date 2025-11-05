@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
  * @author sz-admin
  * @since 2024-07-01
  */
+@Deprecated(since = "v1.4.0-beta")
 @Data
 @Schema(description = "SysDataScope查询DTO")
 @RequiredArgsConstructor

@@ -21,6 +21,7 @@ import static com.sz.admin.system.pojo.po.table.SysDataRoleMenuTableDef.SYS_DATA
  * @author sz
  * @since 2024-07-11
  */
+@Deprecated(since = "v1.4.0-beta")
 @Service
 @RequiredArgsConstructor
 public class SysDataRoleMenuServiceImpl extends ServiceImpl<SysDataRoleMenuMapper, SysDataRoleMenu> implements SysDataRoleMenuService {

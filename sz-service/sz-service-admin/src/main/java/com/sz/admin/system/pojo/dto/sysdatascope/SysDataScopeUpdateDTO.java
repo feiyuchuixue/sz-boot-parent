@@ -15,6 +15,7 @@ import java.util.List;
  * @author sz-admin
  * @since 2024-07-01
  */
+@Deprecated(since = "v1.4.0-beta")
 @Data
 @Schema(description = "SysDataScope修改DTO")
 @RequiredArgsConstructor

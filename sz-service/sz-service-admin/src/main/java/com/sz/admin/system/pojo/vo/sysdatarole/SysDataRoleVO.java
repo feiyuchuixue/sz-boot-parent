@@ -14,6 +14,7 @@ import java.util.List;
  * @author sz-admin
  * @since 2024-07-09
  */
+@Deprecated(since = "v1.4.0-beta")
 @Data
 @Schema(description = "SysDataRole返回vo")
 public class SysDataRoleVO {

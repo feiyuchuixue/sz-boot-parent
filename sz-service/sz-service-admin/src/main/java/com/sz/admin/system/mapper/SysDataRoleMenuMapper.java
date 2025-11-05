@@ -11,6 +11,7 @@ import com.sz.admin.system.pojo.po.SysDataRoleMenu;
  * @author sz-admin
  * @since 2024-07-11
  */
+@Deprecated(since = "v1.4.0-beta")
 public interface SysDataRoleMenuMapper extends BaseMapper<SysDataRoleMenu> {
 
 }

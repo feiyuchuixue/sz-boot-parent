@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @Data
 @Table(value = "sys_data_role", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 @Schema(description = "数据权限管理")
+@Deprecated(since = "v1.4.0-beta")
 public class SysDataRole implements Serializable {
 
     @Serial
