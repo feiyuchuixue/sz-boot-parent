@@ -81,10 +81,18 @@ public class StringUtils {
         while (match.find()) {
             matchList.add(match.group(1));
         }
-        for (int i = 0; i < replaceArrValue.length; i++) {
-            str = str.replace(matchList.get(i), replaceArrValue[i]);
+        try {
+            for (int i = 0; i < replaceArrValue.length; i++) {
+                String replacement = replaceArrValue[i] == null ? "" : replaceArrValue[i];
+                str = str.replace(matchList.get(i), replacement);
+            }
+            return str;
+        } catch (Exception e) {
+            System.err.println("getRealKey error, str: " + str + ", pattern: " + pattern + ", matchList: " + matchList + ", replaceArrValue: "
+                    + Arrays.toString(replaceArrValue));
+            e.printStackTrace();
+            throw e;
         }
-        return str;
     }
 
     public static String getRealKey(String sourceKey, String... replaceArrValue) {
