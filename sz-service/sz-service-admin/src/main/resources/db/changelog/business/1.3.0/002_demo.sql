@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset 升职哦（sz）:20251105_1933
+--changeset 升职哦（sz）:20251105_1934
 DELETE FROM `sys_role` WHERE id = 3 and permissions = 'teacher_statics_menu';
 -- 创建新的演示角色
 INSERT IGNORE INTO `sys_role` (`id`, `role_name`, `remark`, `del_flag`, `create_time`, `update_time`, `create_id`, `update_id`, `is_lock`, `permissions`) VALUES (3, '教师统计-全部', '演示：数据权限-全部', 'F', '2024-05-10 21:53:15', '2025-11-05 13:39:50', NULL, 1, 'T', 'teacher_statics_menu_1006001');
@@ -38,7 +38,7 @@ INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `da
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('cb3500315dba4c2d83e4d92edf36dff7', 5, 'menu', NULL);
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('7391f12ad51049c2b86d231d39708c71', 5, 'menu', NULL);
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('73d312f4fa8949ddba3d9807c0c56f00', 5, 'menu', NULL);
-INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `dlocalhostata_scope_cd`) VALUES ('91ccb13b5c174583803a4c492a5dfdb6', 5, 'menu', NULL);
+INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('91ccb13b5c174583803a4c492a5dfdb6', 5, 'menu', NULL);
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('8061d8e79be744bf91b7b438f8e8e887', 5, 'menu', NULL);
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('85b54322630f43a39296488a5e76ba16', 5, 'scope', '1006003');
 INSERT IGNORE INTO `sys_role_menu` (`menu_id`, `role_id`, `permission_type`, `data_scope_cd`) VALUES ('ab1ac16c617d41979472ebe433c1f8e4', 7, 'menu', NULL);
