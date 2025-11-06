@@ -52,18 +52,26 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
             ControlPermissions permissions = ControlThreadLocal.get();
             LoginUser loginUser = LoginUtils.getLoginUser();
-            if (permissions == null || loginUser == null)
+            if (permissions == null || loginUser == null) {
+                log.error("PermissionDialect prepareAuth error: permissions or loginUser is null.");
                 return;
-
+            }
             String[] btnPermissions = permissions.getPermissions();
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, RoleMenuScopeVO> scopeMap = loginUser.getDataScope();
             String firstPermission = (btnPermissions != null && btnPermissions.length > 0) ? btnPermissions[0] : "";
-
             String menuId = permissionMap.get(firstPermission); // 根据 权限标识获取菜单ID
             RoleMenuScopeVO scope = menuId == null ? null : scopeMap.get(menuId);
-            if (scope == null)
+            // ！如果没有配置数据权限，默认只看自己的数据
+            if (scope == null || permissionMap.isEmpty()) {
+                Set<Long> userIds = new HashSet<>();
+                Set<Long> deptIds = new HashSet<>();
+                // 添加当前操作用户
+                userIds.add(loginUser.getUserInfo().getId());
+                buildSql(queryWrapper, tableName, deptIds, userIds, SimpleDataScopeHelper.get());
                 return;
+            }
+
             String dataScopeCd = scope.getDataScopeCd();
             switch (dataScopeCd) {
                 case "1006005" -> { // 自定义
@@ -103,7 +111,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
     /**
      * 验证当前查询是否是目标表
-     * 
+     *
      * @param queryWrapper
      *            wrapper
      * @param table

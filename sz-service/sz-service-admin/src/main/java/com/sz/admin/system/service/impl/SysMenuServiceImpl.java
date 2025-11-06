@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.mybatisflex.core.query.QueryMethods.select;
 import static com.sz.admin.system.pojo.po.table.SysDataRoleMenuTableDef.SYS_DATA_ROLE_MENU;
 import static com.sz.admin.system.pojo.po.table.SysMenuTableDef.SYS_MENU;
 import static com.sz.admin.system.pojo.po.table.SysRoleMenuTableDef.SYS_ROLE_MENU;
@@ -411,7 +412,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return btnMenuMap;
         }
         try {
-            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(SYS_MENU.PERMISSIONS.in(permissions)).where(SYS_MENU.USE_DATA_SCOPE.eq("T"));
+            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(
+                    SYS_MENU.PID.in(select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq("1002002"))));
             List<SysMenu> list = list(wrapper);
             if (list.isEmpty()) {
                 return btnMenuMap;
