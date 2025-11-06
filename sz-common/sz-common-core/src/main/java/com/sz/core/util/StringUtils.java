@@ -76,23 +76,17 @@ public class StringUtils {
      * @since 2021-11-25 14:19:50
      */
     public static String getRealKey(String str, String pattern, String[] replaceArrValue) {
+        System.out.println("sourceKey ==" + str);
         Matcher match = Pattern.compile(pattern).matcher(str);
         List<String> matchList = new ArrayList<>();
         while (match.find()) {
             matchList.add(match.group(1));
         }
-        try {
-            for (int i = 0; i < replaceArrValue.length; i++) {
-                String replacement = replaceArrValue[i] == null ? "" : replaceArrValue[i];
-                str = str.replace(matchList.get(i), replacement);
-            }
-            return str;
-        } catch (Exception e) {
-            System.err.println("getRealKey error, str: " + str + ", pattern: " + pattern + ", matchList: " + matchList + ", replaceArrValue: "
-                    + Arrays.toString(replaceArrValue));
-            e.printStackTrace();
-            throw e;
+        for (int i = 0; i < replaceArrValue.length; i++) {
+            String replacement = replaceArrValue[i] == null ? "" : replaceArrValue[i];
+            str = str.replace(matchList.get(i), replacement);
         }
+        return str;
     }
 
     public static String getRealKey(String sourceKey, String... replaceArrValue) {
