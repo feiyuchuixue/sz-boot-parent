@@ -1,10 +1,14 @@
 package com.sz.admin.system.pojo.vo.systempfile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class SysTempFileInfoVO {
@@ -33,8 +37,9 @@ public class SysTempFileInfoVO {
     @Schema(description = "文件大小")
     private Long size;
 
-    @Schema(description = "文件域名")
-    private String url;
+    @Schema(description = "文件地址")
+    @Column(typeHandler = JacksonTypeHandler.class)
+    private List<UploadResult> url;
 
     @Schema(description = "对象名（唯一）")
     private String objectName;

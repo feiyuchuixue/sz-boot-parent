@@ -5,6 +5,7 @@ import com.sz.admin.system.pojo.vo.common.ChallengeVO;
 import com.sz.admin.system.pojo.vo.common.SelectorVO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.service.*;
+import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
 import com.sz.oss.OssClient;
@@ -18,7 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
@@ -66,9 +69,17 @@ public class CommonServiceImpl implements CommonService {
             return;
         }
         FILE_NOT_EXISTS.assertNull(sysTempFileInfoVO);
-        String objectName = sysTempFileInfoVO.getObjectName();
-        String fileName = sysTempFileInfoVO.getTempName();
-        ossClient.download(objectName, response, fileName);
+
+        UploadResult result = sysTempFileInfoVO.getUrl().getFirst();
+        String fileUrl = result.getUrl();
+        String filename = result.getFilename();
+        long size = result.getSize();
+        if (size > 0)
+            response.setContentLengthLong(size);
+        try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+            in.transferTo(os);
+            os.flush();
+        }
 
     }
 
