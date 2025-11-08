@@ -1,5 +1,120 @@
 # 更新日志
 
+## v1.3.0-beta （20251109）| 大型更新
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.0-beta)
+>
+> <font color="red">！存在潜在破坏性变更，请务必仔细阅读升级文档！</font>
+>
+> **重要提示**：升级至本版本前，请先**清理 Redis 缓存**中的用户信息，否则可能因数据结构变更导致**登录异常**。
+
+### sz-boot-parent
+
+#### 新增
+
+- 支持 Spring Boot Actuator 监控。
+- login 相关密码传输支持 AES-GCM 加密，提升安全性。
+- 增加登录请求及验证码请求次数的限制配置。
+- [代码生成器] 支持多文件上传（fileUpload）。
+- [代码生成器] 支持数据权限创建。
+- 账户管理新增账户类型设置，支持超管账户指定。
+- 支持“超级管理员”角色参数配置。
+
+#### 重构
+
+- <font color="red">破坏性变更</font>：模板文件管理及下载等逻辑。
+- <font color="red">破坏性变更</font>：移除独立数据权限角色，合并至系统角色。
+- <font color="red">破坏性变更</font>：简化数据权限核心 SimplePermissionDialect，实现与处理流程更加清晰。
+- <font color="red">破坏性变更</font>：调整数据存储结构，login 相关方法引入 dataScope 缓存，移除 ruleMap、userRuleMap、deptRuleMap。因数据结构升级后可能需要清空redis缓存。
+
+#### 修复
+
+- 修复登录日志异步线程引发的记录异常。
+- 修复 IP 地址获取失败的问题。
+- 修复 Excel 导入时数据为空问题，移除代码模板中的 @Accessors(chain = true)。
+- 回退 FastExcel 版本至 1.2.0，解决部分 Excel 导出异常。
+
+#### 修改/移除
+
+- 移除生产环境配置中的 CORS 设置。
+- ImportExcel 方法支持数据库入库功能。
+- [演示案例] 教师统计，支持附件文件上传。
+- sys_data_role、sys_data_role_menu 相关业务标记为弃用，功能合并至 sys_role。
+- Dockerfile 镜像切换至 azul/zulu-openjdk（JDK 21）。
+- 移除 Flyway，数据库迁移已完全转至 liquibase。
+
+#### 优化
+
+- 登录列表倒序排序显示。
+- [代码生成器] 菜单按钮的查询与排序优化。
+- 修复[动态字典]部门、角色在 redisCache 中循环赋值导致的性能问题。
+- OSS 上传支持原始文件名元数据与特殊字符（如#）处理。
+- HttpReqResUtil 增加 getRequest 方法，支持全局 HttpServletRequest 获取。
+- StringUtils.getRealKey 方法增强字符串替换、null 处理与异常捕获。
+
+---
+
+### sz-admin
+
+#### 新增
+
+- 新增 FileDownloadList 组件，实现 ProTable 中文件资源展示、支持多文件下载与预览、文件列表回显优化。
+- login 相关密码传输支持 AES-GCM 加密，提升安全性。
+- 账户管理支持账户类型设置，可直接指定管理员身份。
+
+#### 重构
+
+- [UploadFiles 组件] 增加多项功能并修正若干问题。
+- 角色管理-权限分配组件重构，提升交互体验。
+
+#### 优化
+
+- useDownload 组件优先采用 response header 中 filename 作为下载文件名。
+- 优化菜单表单的操作逻辑，新增提示说明。
+- 优化模板文件管理列表的文件操作列。
+- [ImportExcel] 增加模板信息展示及必填参数校验。
+- [file 组件] 优化 accept 文件类型检查，可选开启，默认不限制类型。
+- 文件下载和模板功能进一步优化，提升用户体验：
+  - 优化 useDownload Hook 的实现
+  - 文件模板相关逻辑调整
+  - 菜单 Form 表单增加提示性 tooltip
+  - 修正 blob 流响应拦截器的错误处理
+  - 列表文件展示统一切换为 FileDownloadList 组件
+
+#### 修复
+
+- [ProTable] 因数据类型不匹配导致的列表字典项渲染样式异常。
+
+#### 修改
+
+- [演示案例] 教师统计，新增多文件上传及回显组件支持。
+
+### 数据库变更
+
+- 更新 `sys_menu` 表：优化菜单数据，采用更简洁的路由名称，并将原本在菜单上的查询权限提取为按钮级权限。
+
+- 调整 `sys_role_menu` 表：新增字段 `permission_type`（权限类型，如功能权限、数据权限），新增字段 `data_scope_cd`（数据权限范围）。
+
+- 更新 `sys_data_role_relation` 表：新增字段 `menu_id`，用于关联菜单。
+
+- 表 `sys_data_role_menu`、`sys_data_role` 标记为**废弃**，相关业务已合并至 `sys_role` 和 `sys_data_role_relation` 表。
+
+- 优化 `sys_temp_file`、`sys_temp_file_history` 表：将 `url` 字段类型调整为 JSON，并插入演示数据。
+
+  <font color="red"> ！！注意：此更改会导致原有数据不兼容。</font>
+
+- `sys_temp_file` 表新增 `alias` 字段，用于标识文件别名。
+
+- `sys_role`、`sys_role_menu`、`sys_data_role_relation`、`sys_user_role` 表补充及调整了演示数据。
+
+> **升级建议**：
+>
+> - 建议在升级前做好数据和数据库结构的完整备份，以保障您的数据安全。
+> - 本次数据库结构及功能调整，可能影响部分旧数据兼容性及现有业务，请结合自身情况提前评估，并根据实际需求做好适配与数据处理。
+> - 欢迎在升级过程中通过社区或交流群反馈遇到的问题，我们也会积极协助答疑与经验分享。
+
 ## v1.2.6-beta （20250831）
 
 > [!NOTE]
