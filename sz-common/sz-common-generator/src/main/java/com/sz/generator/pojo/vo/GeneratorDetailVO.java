@@ -1,6 +1,5 @@
 package com.sz.generator.pojo.vo;
 
-import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -104,6 +103,9 @@ public class GeneratorDetailVO {
 
         @Schema(description = "是否自动填充(1 是)")
         private String isAutofill;
+
+        @Schema(description = "是否自动创建数据权限(1 是)")
+        private String btnDataScopeType;
     }
 
     @Data

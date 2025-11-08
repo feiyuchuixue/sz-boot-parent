@@ -33,4 +33,6 @@ public class MenuCreateDTO {
 
     private String hasChildren;
 
+    private String useDataScope = "F";
+
 }

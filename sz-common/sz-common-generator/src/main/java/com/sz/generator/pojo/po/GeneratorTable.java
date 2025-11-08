@@ -129,6 +129,11 @@ public class GeneratorTable implements Serializable {
     private String btnPermissionType;
 
     /**
+     * 是否自动创建数据权限 (1 是)
+     */
+    private String btnDataScopeType;
+
+    /**
      * 是否支持导入(1 是)
      */
     private String hasImport;
