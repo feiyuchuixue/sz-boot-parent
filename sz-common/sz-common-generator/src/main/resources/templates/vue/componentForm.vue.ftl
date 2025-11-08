@@ -86,12 +86,17 @@ import { type ElForm, ElMessage } from 'element-plus';
 <#if hasSelect == true>
 import { useOptionsStore } from '@/stores/modules/options';
 </#if>
+<#list columns as field>
+<#if field.htmlType == "fileUpload">
+<#assign hasFileUpload = true>
+</#if>
+</#list>
 <#if hasFileUpload?? && hasFileUpload>
-import UploadFiles from '@/components/Upload/file.vue';
 import type { IUploadResult } from "@/api/types/system/upload";
+import UploadFiles from "@/components/Upload/UploadFiles.vue";
 </#if>
 defineOptions({
-    name: '${formClassName}'
+  name: '${formClassName}'
 });
 
 <#if hasSelect == true>
