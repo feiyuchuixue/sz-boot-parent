@@ -26,12 +26,13 @@
         <result column="has_import" property="hasImport"/>
         <result column="has_export" property="hasExport"/>
         <result column="is_autofill" property="isAutofill"/>
+        <result column="btn_data_scope_type" property="btnDataScopeType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         table_id
-        , table_name, table_comment, class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, type, path, path_api, path_web, create_id, create_time, update_id, update_time, options, has_import, has_export, is_autofill
+        , table_name, table_comment, class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, type, path, path_api, path_web, create_id, create_time, update_id, update_time, options, has_import, has_export, is_autofill, btn_data_scope_type
     </sql>
 
     <sql id="Sys_Menu_Column">
@@ -153,7 +154,8 @@
                                 `deep`,
                                 `menu_type_cd`,
                                 `permissions`,
-                                `has_children`)
+                                `has_children`,
+                                `use_data_scope`)
         VALUES (#{createDTO.id},
                 #{createDTO.pid},
                 #{createDTO.path},
@@ -165,7 +167,8 @@
                 #{createDTO.deep},
                 #{createDTO.menuTypeCd},
                 #{createDTO.permissions},
-                #{createDTO.hasChildren})
+                #{createDTO.hasChildren},
+                #{createDTO.useDataScope})
 
     </insert>
     <update id="syncTreeHasChildren">
