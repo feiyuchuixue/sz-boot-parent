@@ -492,6 +492,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         createDTO.setMenuTypeCd("1002002"); // 菜单
         createDTO.setPermissions("");
         createDTO.setHasChildren("F");
+        if (detailVO.getGeneratorInfo().getBtnDataScopeType().equals("1")) {
+            createDTO.setUseDataScope("T");
+        } else {
+            createDTO.setUseDataScope("F");
+        }
         return createDTO;
     }
 

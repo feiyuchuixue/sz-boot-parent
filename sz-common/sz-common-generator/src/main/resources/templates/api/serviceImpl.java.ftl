@@ -36,6 +36,9 @@ import com.sz.core.util.FileUtils;
 import com.sz.excel.utils.ExcelUtils;
 import lombok.SneakyThrows;
 </#if>
+<#if GeneratorInfo.btnDataScopeType == "1">
+import com.sz.core.datascope.SimpleDataScopeHelper;
+</#if>
 
 import ${voPkg}.${voClassName};
 </#if>
@@ -99,13 +102,32 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 
     @Override
     public PageResult<${voClassName}> page(${dtoListClassName} dto){
+<#if GeneratorInfo.btnDataScopeType == "1">
+        try {
+            SimpleDataScopeHelper.start(${poClassName}.class);
+            Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto),  ${voClassName}.class);
+            return PageUtils.getPageResult(page);
+        } finally {
+            SimpleDataScopeHelper.clearDataScope();
+        }
+<#else>
         Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
         return PageUtils.getPageResult(page);
+</#if>
     }
 
     @Override
     public List<${voClassName}> list(${dtoListClassName} dto){
+<#if GeneratorInfo.btnDataScopeType == "1">
+        try {
+            SimpleDataScopeHelper.start(${poClassName}.class);
+            return listAs(buildQueryWrapper(dto), ${voClassName}.class);
+        } finally {
+            SimpleDataScopeHelper.clearDataScope();
+        }
+<#else>
         return listAs(buildQueryWrapper(dto), ${voClassName}.class);
+</#if>
     }
 
     @Override
