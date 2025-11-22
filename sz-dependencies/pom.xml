@@ -150,7 +150,7 @@
             <dependency>
                 <groupId>software.amazon.awssdk.crt</groupId>
                 <artifactId>aws-crt</artifactId>
-                <version>0.38.11</version>
+                <version>0.39.4</version>
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
