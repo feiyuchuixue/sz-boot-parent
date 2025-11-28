@@ -12,7 +12,7 @@ jobs:
     name: Build & Deploy ${{ matrix.app_name }}
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1 # 串行执行
+      max-parallel: 1 # 串行处理多个服务，保证部署顺序
       matrix:
         include:
           - app_name: sz-service-admin
@@ -20,84 +20,111 @@ jobs:
             log_dir: /home/app/sz-service-admin/logs
             config_dir: /home/conf/sz-service-admin
             jar_dir: ./sz-service/sz-service-admin/target
+            docker_compose_path: /home/docker-compose/sz-service-admin
           - app_name: sz-service-websocket
             service_port: 9993
             log_dir: /home/app/sz-service-websocket/logs
             config_dir: /home/conf/sz-service-websocket
             jar_dir: ./sz-service/sz-service-websocket/target
+            docker_compose_path: /home/docker-compose/sz-service-websocket
+
     env:
+      # 镜像仓库相关配置
       ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
       ACR_ZONE: sz-action
       VERSION: latest
+      # 应用环境配置
       RUNNING_ACTIVE: preview
+      # 容器启动脚本目录（如果直接 docker 启动需要）
       SHELL_RUN_DIR: /home/run
+
     steps:
+      # 1. 拉取源码
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      # 2. 安装 JDK 21 环境
+      - name: Set up JDK 21 (Zulu)
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
           cache: 'maven'
 
-      - name: Set up Maven
+      # 3. 安装 Maven 工具
+      - name: Set up Maven 3.8.2
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.8.2
 
+      # 4. Maven 编译打包
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Copy JAR file
+      # 5. 复制打包产物 JAR 文件到工作目录（方便 Docker 构建）
+      - name: Copy JAR file to workspace
         run: |
           cd ${{ matrix.jar_dir }}
           cp ./*.jar ../../../app.jar
 
+      # 6. 构建 Docker 镜像
       - name: Build Docker image
         run: docker build -t ${{ matrix.app_name }}:${{ env.VERSION }} .
 
-      - name: Log in to Docker ACR
+      # 7. 登录阿里云 ACR 仓库
+      - name: Login to ACR
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
 
+      # 8. 镜像打标签（仓库命名规范）
       - name: Tag Docker image
         run: docker tag ${{ matrix.app_name }}:${{ env.VERSION }} ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
 
-      - name: Push Docker image
+      # 9. 推送镜像到远程仓库
+      - name: Push Docker image to ACR
         run: docker push ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
 
-      - name: Deploy to remote server
+      # 10. 使用 docker-compose 在远程服务器自动部署（推荐，结合 sz-deploy-v3 脚本）
+      - name: Deploy with docker-compose on remote server
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           script: |
-            docker pull ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
+            cd ${{ matrix.docker_compose_path }}
+            bash upgrade.sh        
 
-            echo "==================== 生成启动命令脚本 ===================="
-            mkdir -p ${{ env.SHELL_RUN_DIR }}
-            START_SCRIPT="${{ env.SHELL_RUN_DIR }}/docker_run_${{ matrix.app_name }}_${{ env.RUNNING_ACTIVE }}.sh"
-            cat > $START_SCRIPT <<EOL
-            #!/bin/bash
-              echo "==================== 停止旧应用容器 ===================="
-              docker stop ${{ matrix.app_name }} || true
-              docker rm ${{ matrix.app_name }} || true
-              docker image prune -f
-              docker builder prune -f
-              echo "==================== 启动应用容器 ===================="
-              docker run -itd \\
-              --name ${{ matrix.app_name }} \\
-              --restart always \\
-              -p ${{ matrix.service_port }}:${{ matrix.service_port }} \\
-              -v ${{ matrix.log_dir }}:/logs \\
-              -v ${{ matrix.config_dir }}:/config \\
-              -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \\
-              ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
-            EOL
-            chmod +x $START_SCRIPT
-            echo "启动脚本已生成：$START_SCRIPT"
-            echo "可以运行以下命令手动启动容器："
-            echo "bash $START_SCRIPT"
-            bash $START_SCRIPT
+      # ————— 以下流程为可选直接 docker 启动，建议使用上方 docker-compose 部署，如需手动容器管理可启用—————
+#      - name: Direct Docker deploy on remote server
+#        uses: appleboy/ssh-action@v1.2.0
+#        with:
+#          host: ${{ secrets.REMOTE_HOST }}
+#          username: ${{ secrets.REMOTE_USER }}
+#          password: ${{ secrets.REMOTE_PASSWORD }}
+#          script: |
+#            docker pull ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
+#            echo "=== 生成容器启动脚本 ==="
+#            mkdir -p ${{ env.SHELL_RUN_DIR }}
+#            START_SCRIPT="${{ env.SHELL_RUN_DIR }}/docker_run_${{ matrix.app_name }}_${{ env.RUNNING_ACTIVE }}.sh"
+#            cat > $START_SCRIPT <<EOL
+#            #!/bin/bash
+#              echo "=== 停止旧容器 ==="
+#              docker stop ${{ matrix.app_name }} || true
+#              docker rm ${{ matrix.app_name }} || true
+#              docker image prune -f
+#              docker builder prune -f
+#              echo "=== 启动新容器 ==="
+#              docker run -itd \\
+#                --name ${{ matrix.app_name }} \\
+#                --restart always \\
+#                -p ${{ matrix.service_port }}:${{ matrix.service_port }} \\
+#                -v ${{ matrix.log_dir }}:/logs \\
+#                -v ${{ matrix.config_dir }}:/config \\
+#                -e "SPRING_PROFILES_ACTIVE=${{ env.RUNNING_ACTIVE }}" \\
+#                ${{ env.ACR_DOMAIN }}/${{ env.ACR_ZONE }}/${{ matrix.app_name }}:${{ env.VERSION }}
+#            EOL
+#            chmod +x $START_SCRIPT
+#            echo "启动脚本已生成：$START_SCRIPT"
+#            echo "可执行该脚本手动启动容器："
+#            echo "bash $START_SCRIPT"
+#            bash $START_SCRIPT
