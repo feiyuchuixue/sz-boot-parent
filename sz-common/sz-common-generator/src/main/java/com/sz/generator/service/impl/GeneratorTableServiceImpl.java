@@ -423,7 +423,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private String buildPath(GeneratorDetailVO detailVO) {
-        return SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getBaseInfo().getCamelClassName();
+        return SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR + detailVO.getGeneratorInfo().getBusinessName();//获取前端设置的业务名称
     }
 
     private String buildComponent(GeneratorDetailVO detailVO) {
