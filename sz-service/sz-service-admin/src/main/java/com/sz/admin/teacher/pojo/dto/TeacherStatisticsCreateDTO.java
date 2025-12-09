@@ -65,4 +65,7 @@ public class TeacherStatisticsCreateDTO {
     @Column(typeHandler = JacksonTypeHandler.class)
     private List<UploadResult> url;
 
+    @Schema(description = "内容html")
+    private String contentHtml;
+
 }

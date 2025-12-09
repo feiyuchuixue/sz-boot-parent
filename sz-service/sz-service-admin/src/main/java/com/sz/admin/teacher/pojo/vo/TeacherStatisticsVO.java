@@ -110,6 +110,10 @@ public class TeacherStatisticsVO {
     @Column(typeHandler = JacksonTypeHandler.class)
     private List<UploadResult> url;
 
+    @ExcelIgnore
+    @Schema(description = "内容html")
+    private String contentHtml;
+
     @Data
     public static class TeacherTypeEnum {
 
