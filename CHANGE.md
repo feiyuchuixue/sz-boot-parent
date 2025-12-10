@@ -1,5 +1,78 @@
 # 更新日志
+## v1.3.1-beta （20251210）
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.1-beta)
 
+### sz-boot-parent
+
+#### 依赖升级
+
+- modelmapper：3.2.6
+- mybatis-flex：1.11.4
+- commons-lang3：3.20.0
+- swagger-annotations：2.2.41
+- lombok：1.18.42
+- org.lionsoul-ip2region：3.1.0
+- springdoc-openapi-starter-webmvc-ui：2.8.14
+
+#### 新增
+
+- 添加 .editorconfig 文件以统一编码和行结束符设置。
+
+#### 修复
+
+- 代码生成设置中的业务名称修改后路由路径不生效问题。（感谢[lxwcv](https://github.com/lxwcv)）
+- spring-doc 增加开关控制参数 `springdoc.api-docs.enabled` 和 `springdoc.swagger-ui.enabled`，生产环境建议关闭。
+- 更新ip2region 版本为3.1.0 RegionUtils 以支持 IPv4 地址库，改进 IP 地址库加载逻辑。
+
+#### 修改
+
+- 演示案例 - [教师统计]  增加富文本编辑器功能。
+
+#### 优化
+
+- 更新Dockerfile，安装curl支持容器内的健康检查。
+- [代码生成器] - 添加 jodit-editor 富文本编辑器的支持。
+- 代码模板 Dialog 弹窗组件添加动态宽度的支持。
+
+---
+
+### sz-admin
+
+### 依赖升级
+
+- 对package.json文件中的依赖进行了兼容性升级。
+
+#### 新增
+
+- 新增：添加.editorconfig文件。
+- 富文本编辑器组件-JoditEditor。
+- 新增： useDialogWidth Hook 组件，实现弹窗/对话框宽度的动态自适应。
+
+#### 重构
+
+- [UploadFiles 组件] 增加多项功能并修正若干问题。
+- 角色管理-权限分配组件重构，提升交互体验。
+
+#### 优化
+
+- 权限组件，暗黑模式下的样式不适配的问题。
+- 多维选择器组件，暗黑模式下的样式不适配的问题。
+- 更新表格组件的 rowKey 属性为可选，并修复 radio 组件的类型问题。
+
+#### 修复
+
+- 更新protable组件部分类型问题。
+
+#### 修改
+
+- 演示案例 - 【教师统计】 增加富文本编辑器功能。
+- 【代码生成器】- 添加 jodit-editor 富文本编辑器的支持。
+
+### 数据库变更
+
+- 更新 `teacher_statistics` 表：增加`content_html`字段及演示数据。
 ## v1.3.0-beta （20251109）| 大型更新
 
 > [!NOTE]
