@@ -9,6 +9,7 @@ import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
 import com.sz.core.util.StringUtils;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -286,11 +287,12 @@ public class GeneratorUtils {
         setQueryAttribute(notPk, columnName, tableColumn);
         setQueryType(columnName, tableColumn);
         setAutofillType(columnName, tableColumn);
-        setImportAttribute(notPk, columnName, tableColumn);
-        setExportAttribute(notPk, columnName, tableColumn);
         setHtmlType(columnName, tableColumn);
         setFillOptions(columnName, tableColumn);
         setFileUploadOptions(columnName, tableColumn);
+        setJoditEditorOptions(columnName, tableColumn);
+        setImportAttribute(notPk, columnName, tableColumn);
+        setExportAttribute(notPk, columnName, tableColumn);
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn tableColumn) {
@@ -329,13 +331,15 @@ public class GeneratorUtils {
     }
 
     private static void setImportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
-        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName) && notPk) {
+        String htmlType = tableColumn.getHtmlType();
+        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
             tableColumn.setIsImport(GeneratorConstants.REQUIRE);
         }
     }
 
     private static void setExportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
-        if (!arraysContains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName) && notPk) {
+        String htmlType = tableColumn.getHtmlType();
+        if (!arraysContains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
             tableColumn.setIsExport(GeneratorConstants.REQUIRE);
         }
     }
@@ -398,6 +402,16 @@ public class GeneratorUtils {
 
             options.put("file-download-list.align", "left"); // 列表文件回显组件：对齐方式left/center/right
             options.put("file-download-list.maxRows", 3); // 列表文件回显组件：表格内最大显示行数,超出则折叠显示
+            tableColumn.setOptions(options);
+        }
+    }
+
+    private static void setJoditEditorOptions(String columnName, GeneratorTableColumn tableColumn) {
+        String htmlType = tableColumn.getHtmlType();
+        if (GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
+            Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
+            options.put("uploader.dir", "editor"); // 富文本编辑器：文件上传目录
+            options.put("height", "400px"); // 富文本编辑器：编辑器高度
             tableColumn.setOptions(options);
         }
     }

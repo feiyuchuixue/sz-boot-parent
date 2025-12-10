@@ -1,11 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    :title="`<#noparse>${paramsProps.title}</#noparse>`"
-    :destroy-on-close="true"
-    width="580px"
-    draggable
-  >
+  <el-dialog v-model="visible" :title="`<#noparse>${paramsProps.title}</#noparse>`" :destroy-on-close="true" :width="dialogWidth" draggable>
     <el-form
       ref="ruleFormRef"
       label-width="140px"
@@ -66,6 +60,8 @@
         <el-time-picker clearable v-model="paramsProps.row.${field.javaField}" placeholder="请选择${field.columnComment}"></el-time-picker>
           <#elseif field.htmlType == "fileUpload">
         <upload-files v-model:modelValue="${field.javaField}UploadResult" :limit="${field.options['upload-files.limit']!5}" :file-size="${field.options['upload-files.fileSize']!3}" :dir="'${field.options['upload-files.dir']!'tmp'}'" :accept="'${field.options['upload-files.accept']!''}'" />
+          <#elseif field.htmlType == "jodit-editor">
+        <jodit-editor v-model="paramsProps.row.${field.javaField}" :upload-dir="'${field.options['upload.dir']!'editor'}'" :height="'${field.options['height']}'" />
           <#else>
         <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" clearable></el-input>
           </#if>
@@ -90,15 +86,22 @@ import { useOptionsStore } from '@/stores/modules/options';
 <#if field.htmlType == "fileUpload">
 <#assign hasFileUpload = true>
 </#if>
+<#if field.htmlType == "jodit-editor">
+<#assign hasJoditEditor = true>
+</#if>
 </#list>
 <#if hasFileUpload?? && hasFileUpload>
 import type { IUploadResult } from "@/api/types/system/upload";
 import UploadFiles from "@/components/Upload/UploadFiles.vue";
 </#if>
+<#if hasJoditEditor?? && hasJoditEditor>
+import JoditEditor from '@/components/JoditEditor/index.vue';
+</#if>
+import { useDialogWidth } from '@/hooks/useDialogWidth';
 defineOptions({
   name: '${formClassName}'
 });
-
+const dialogWidth = useDialogWidth('');
 <#if hasSelect == true>
 const optionsStore = useOptionsStore();
 </#if>

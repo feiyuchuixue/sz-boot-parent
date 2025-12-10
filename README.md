@@ -10,6 +10,7 @@
 </p>
 
 
+
 # 简介
 
 > 接触了很多优秀的开源和闭源项目，在使用过程中也发现一些问题，不甘满足的我遂产生了想法：于是利用休息时间编写了一套后台管理系统，它**灵活、简洁、高效**，拥抱最新的技术，因此**Sz-Admin**便诞生了，也意为升职Admin，升职加薪节节高。
@@ -20,19 +21,35 @@
 
 ## 在线体验
 
-- 官网地址：https://szadmin.cn
-- 文档地址：https://szadmin.cn/md/Help/doc/info/start.html
-- 预览地址：https://preview.szadmin.cn
-- 代码仓库：
-    - 前端：
-      - **Github**：**[sz-admin](https://github.com/feiyuchuixue/sz-admin.git)**
-      - **Gitee**：**[sz-admin](https://gitee.com/feiyuchuixue/sz-admin.git)**
-    - 后端：
-      - **Github**：**[sz-boot-parent](https://github.com/feiyuchuixue/sz-boot-parent.git)**
-      - **Gitee**：**[sz-boot-parent](https://gitee.com/feiyuchuixue/sz-boot-parent.git)**
-    - 部署：
-      - **Github**：**[sz-deploy](https://github.com/feiyuchuixue/sz-deploy.git)**
-      - **Gitee**：**[sz-deploy](https://gitee.com/feiyuchuixue/sz-deploy.git)**
+- **官网地址**：[szadmin.cn](https://szadmin.cn)
+- **文档地址**：[开始使用文档](https://szadmin.cn/md/Help/doc/info/start.html)
+- **预览地址**：[preview.szadmin.cn](https://preview.szadmin.cn)
+
+---
+
+### 代码仓库
+
+#### 前端
+
+- **Github**：[sz-admin](https://github.com/feiyuchuixue/sz-admin.git)
+- **Gitee**：[sz-admin](https://gitee.com/feiyuchuixue/sz-admin.git)
+
+#### 后端
+
+- **Github**：[sz-boot-parent](https://github.com/feiyuchuixue/sz-boot-parent.git)
+- **Gitee**：[sz-boot-parent](https://gitee.com/feiyuchuixue/sz-boot-parent.git)
+
+#### 部署脚本
+
+**方式一：Shell**
+
+- **Github**：[sz-deploy](https://github.com/feiyuchuixue/sz-deploy.git)
+- **Gitee**：[sz-deploy](https://gitee.com/feiyuchuixue/sz-deploy.git)
+
+**方式二：Docker + Docker Compose 一键部署**
+
+- **Github**：[sz-deploy-v3](https://github.com/feiyuchuixue/sz-deploy-v3.git)
+- **Gitee**：[sz-deploy-v3](https://gitee.com/feiyuchuixue/sz-deploy-v3.git)
 
 ## 系统要求
 
@@ -46,14 +63,15 @@
 - **SpringBoot 3.x：** 最新的Spring Boot版本，提供更优的性能和更丰富的特性。
 - **Sa-Token**：一个轻量级 Java 权限认证框架，简化权限认证，保障应用的安全性。
 - **Mybatis Flex**：一个优雅的 `MyBatis` 增强框架，它非常轻量、同时拥有极高的性能与灵活性。
-- **Flyway**：`数据库版本控制`工具，确保数据库迁移的可靠性。
+- ~~[**Flyway**](https://flywaydb.org/)：`数据库版本控制`工具，专注于数据库迁移的稳定性与安全性，长期以来为众多开发者所青睐，但其功能拓展性有限，难以很好地满足多人协作开发中的复杂需求。~~<font color=green>**【计划于v1.3.0-beta版本停用】**</font>
+- [**Liquibase**](https://www.liquibase.com/)：功能全面且灵活的`数据库版本控制`工具，支持多种数据格式（如 XML、YAML、JSON 等）定义变更集，具备更广泛的数据库兼容性、细致的回滚机制以及与 CI/CD 深度集成能力。**在多人同时开发时，Liquibase 通过变更日志文件的精细管理，可避免冲突并保障变更的一致性，使团队协作更加高效流畅**。
 - **Knife4j**：一个为 `Swagger` 接口文档增强的工具，提供了更直观的 API 文档展示和更便捷的接口测试体验。
 - ~~**Minio**：一个开源的对象存储服务，提供高性能、分布式存储解决方案，兼容 S3 API。~~
 - **AWS S3：** 一个广泛兼容的存储解决方案。通过采用 AWS S3 协议，我们的服务现在能够无缝集成并兼容多种对象存储服务，包括但不限于 MinIO、阿里云OSS和腾讯云OSS等。
 - **HikariCP**：选择 `HikariCP` 作为 JDBC 连接池，提供快速且高效的数据库连接管理。
 
 - **Vue 3.x**：采用 `Vue 3.x`，Vue.js 的最新稳定版本，提供更强的性能和更丰富的功能，构建响应式用户界面。
-- **Vite 5.x**：使用 `Vite 5`.x 作为前端开发和构建工具，它利用现代浏览器的原生 ES 模块导入特性，提供了快速的冷启动和即时模块热更新。
+- **Vite 6.x**：使用 `Vite 6.x` 作为前端开发和构建工具，它利用现代浏览器的原生 ES 模块导入特性，提供了快速的冷启动和即时模块热更新。
 - **TypeScript**：通过 `TypeScript` 的集成，引入静态类型检查，增强了代码的可维护性和可读性，提前避免潜在的错误。
 - **Pinia**：状态管理采用 `Pinia`，这是 Vue 3 的解构式状态管理库，它简单、灵活且易于使用，优化了应用的状态管理。
 - **Element-Plus**：一个基于 Vue 3 的组件库，提供了一系列高质量的 UI 组件，帮助开发者快速构建美观、功能完备的用户界面。
@@ -99,7 +117,17 @@
         <td><img alt="代码生成配置1" src="https://minioapi.szadmin.cn/public/img/gen-editor.webp"/></td>
         <td><img alt="代码生成配置2" src="https://minioapi.szadmin.cn/public/img/gen-editor2.webp"/></td>
     </tr>
+    <tr>
+        <td><img alt="角色权限控制" src="https://minioapi.szadmin.cn/public/img/role-detail.webp"/></td>
+        <td><img alt="多维选择器" src="https://minioapi.szadmin.cn/public/img/duowei-select.webp"/></td>
+    </tr>
+    <tr>
+        <td><img alt="用户登录日志" src="https://minioapi.szadmin.cn/public/img/user-login-log.webp"/></td>
+        <td><img alt="多维选择器" src="https://minioapi.szadmin.cn/public/img/system-msg.webp"/></td>
+    </tr>
 </table>
+
+
 
 ----
 
@@ -107,6 +135,24 @@
 
 <img alt="加入群聊" src="https://minioapi.szadmin.cn/public/img/wechat.webp"/>
 
-------
 
-**邮箱：feiyuchuixue@163.com**
+
+## 捐赠支持 🍵
+
+Sz-Admin是基于[Apache License Version 2.0](https://github.com/feiyuchuixue/sz-boot-parent/blob/main/LICENSE)的开源项目。我们深知，开源精神是社区共享知识和创新的基石。然而，维护这样一个项目需要投入大量的时间、精力和资源。
+
+我们相信，爱和热情是推动我们前进的动力，但为了确保Sz-Admin能够持续发展并为大家提供更优质的服务，我们需要您的支持。如果您觉得Sz-Admin为您的工作或项目带来了便利，我们非常欢迎您以任何形式表达您的支持。
+
+以下是一些您可以支持我们的方式：
+
+- **社区互动**：在 [GitHub](https://github.com/feiyuchuixue) | [Gitee](https://gitee.com/feiyuchuixue/sz-boot-parent) 上为我们的项目**Star**、**Fork**、或**Watch**，这不仅能帮助我们扩大影响力，也是对我们工作的认可。🚀
+- **捐赠**：如果您愿意，可以通过微信或支付宝进行一次性捐赠。每一笔捐赠都是对作者莫大的鼓励和支持。❤
+
+![请sz-admin作者喝咖啡](https://szadmin.cn/assets/pick.D4fNWjno.webp)
+
+----
+
+## 联系方式
+
+- 微信：`xxmmly010` **(非诚勿扰)**
+- 邮箱：`feiyuchuixue@163.com`

@@ -127,7 +127,7 @@ public class GeneratorConstants {
     /**
      * 富文本控件
      */
-    public static final String HTML_EDITOR = "editor";
+    public static final String HTML_EDITOR = "jodit-editor";
 
     /**
      * 日期范围控件
