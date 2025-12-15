@@ -153,4 +153,9 @@ public class GeneratorTable implements Serializable {
     // 是否自动填充(1 是)
     private String isAutofill;
 
+    /**
+     * 窗口展示类型（1 drawer 抽屉、0 dialog 对话框）
+     */
+    private String windowShowType;
+
 }

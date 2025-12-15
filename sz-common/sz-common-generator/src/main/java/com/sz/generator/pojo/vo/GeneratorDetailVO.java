@@ -106,6 +106,9 @@ public class GeneratorDetailVO {
 
         @Schema(description = "是否自动创建数据权限(1 是)")
         private String btnDataScopeType;
+
+        @Schema(description = "窗口展示类型(0 dialog、1 drawer)")
+        private String windowShowType;
     }
 
     @Data

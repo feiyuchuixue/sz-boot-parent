@@ -1,5 +1,9 @@
 <template>
+<#if GeneratorInfo.windowShowType == "0">
   <el-dialog v-model="visible" :title="`<#noparse>${paramsProps.title}</#noparse>`" :destroy-on-close="true" :width="dialogWidth" draggable>
+<#else>
+  <el-drawer v-model="visible" :title="`<#noparse>${paramsProps.title}</#noparse>`" :destroy-on-close="true" :size="dialogWidth">
+</#if>
     <el-form
       ref="ruleFormRef"
       label-width="140px"
@@ -73,7 +77,11 @@
       <el-button @click="visible = false"> 取消</el-button>
       <el-button type="primary" @click="handleSubmit"> 确定</el-button>
     </template>
+<#if GeneratorInfo.windowShowType == "0">
   </el-dialog>
+<#else>
+  </el-drawer>
+</#if>
 </template>
 
 <script setup lang="ts">
