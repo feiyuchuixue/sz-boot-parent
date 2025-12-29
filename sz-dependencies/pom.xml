@@ -17,7 +17,7 @@
         <sa-token.version>1.44.0</sa-token.version>
         <mybatis-flex.version>1.11.4</mybatis-flex.version>
         <jackson.version>2.19.2</jackson.version>
-        <aws.s3.version>2.32.29</aws.s3.version>
+        <aws.s3.version>2.40.16</aws.s3.version>
         <ip2region.version>3.1.0</ip2region.version>
     </properties>
 
