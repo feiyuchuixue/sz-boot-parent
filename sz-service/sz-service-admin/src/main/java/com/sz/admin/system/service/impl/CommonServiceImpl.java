@@ -130,6 +130,8 @@ public class CommonServiceImpl implements CommonService {
                              HttpServletRequest request,
                              HttpServletResponse response) {
         try {
+            System.out.println("=======================bucket =" + bucket);
+            System.out.println("=======================bucket =url =" + url);
             if (url == null || url.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
