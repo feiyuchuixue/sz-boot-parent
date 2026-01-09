@@ -1,5 +1,6 @@
 package com.sz.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.vo.common.ChallengeVO;
@@ -9,17 +10,20 @@ import com.sz.core.common.annotation.Debounce;
 import com.sz.core.common.entity.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 /**
  * 通用controller
  *
  * @author sz
- * @since 2023/12/25 10:07
  * @version 1.0
+ * @since 2023/12/25 10:07
  */
 @Tag(name = "通用API")
 @RestController
@@ -53,6 +57,13 @@ public class CommonController {
     @Operation(summary = "一次性认证参数，用于登录密码加密传输场景")
     public ApiResult<ChallengeVO> challenge() {
         return ApiResult.success(commonService.challenge());
+    }
+
+    @SaCheckLogin
+    @GetMapping("/oss/{bucket}")
+    @Operation(summary = "OSS文件代理访问")
+    public void ossProxy(@PathVariable("bucket") String bucket, @RequestParam("url") String url, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        commonService.proxyOssFile(bucket, url, request, response);
     }
 
 }

@@ -125,4 +125,37 @@ public class CommonServiceImpl implements CommonService {
         return new ChallengeVO().setRequestId(requestId).setSecretKey(secretKey);
     }
 
+    @Override
+    public void proxyOssFile(String bucket, String url,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        try {
+            if (url == null || url.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            // 1. 解析出 path 部分：/test/user/20260109/logo (142055.628).jpg
+            java.net.URI uri = java.net.URI.create(url);
+            String path = uri .getPath(); // 包含前导 /
+
+            // 2. 以 "/{bucket}/" 为分界截取对象名
+            //    bucket = test -> prefix = "/test/"
+            String prefix = "/" + bucket + "/";
+            if (!path.startsWith(prefix)) {
+                // 如果路径不以 /{bucket}/ 开头，说明 URL 与 bucket 不匹配
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            // 3. 截取对象名：user/20260109/logo (142055.628).jpg
+            String objectName = path.substring(prefix.length());
+
+            // 4. 调用你现有的下载方法中转
+            ossClient.download(objectName, response, "");
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
 }

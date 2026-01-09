@@ -3,6 +3,7 @@ package com.sz.admin.system.service;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.vo.common.ChallengeVO;
 import com.sz.admin.system.pojo.vo.common.SelectorVO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
@@ -14,4 +15,6 @@ public interface CommonService {
     SelectorVO querySelector(SelectorQueryDTO queryDTO);
 
     ChallengeVO challenge();
+
+    void proxyOssFile(String bucket, String url, HttpServletRequest request, HttpServletResponse response);
 }
