@@ -9,6 +9,7 @@ import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
 import com.sz.oss.OssClient;
+import com.sz.oss.OssProperties;
 import com.sz.redis.RedisCache;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +36,8 @@ public class CommonServiceImpl implements CommonService {
     private final SysTempFileService sysTempFileService;
 
     private final OssClient ossClient;
+
+    private final OssProperties ossProperties;
 
     private final SysUserService sysUserService;
 
@@ -123,6 +126,31 @@ public class CommonServiceImpl implements CommonService {
         redisCache.clearLoginSecret(requestId);
         redisCache.putLoginSecret(requestId, secretKey, 60);
         return new ChallengeVO().setRequestId(requestId).setSecretKey(secretKey);
+    }
+
+    @Override
+    public String ossPrivateUrl(String bucket, String url) {
+        if (bucket == null || bucket.isEmpty()) {
+            bucket = ossProperties.getBucketName();
+        }
+        try {
+            String objectName;
+            if (url.startsWith("http://") || url.startsWith("https://")) {
+                // 完整 URL，解析 objectName
+                java.net.URI uri = java.net.URI.create(url);
+                String path = uri.getPath();
+                String prefix = "/" + bucket + "/";
+                CommonResponseEnum.NOT_EXISTS.message("无效资源地址").assertFalse(path.startsWith(prefix));
+                objectName = path.substring(prefix.length());
+            } else {
+                // 直接传 objectName
+                objectName = url;
+            }
+            return ossClient.getPrivateUrl(objectName);
+        } catch (Exception e) {
+            CommonResponseEnum.UNKNOWN.message("生成私有访问地址失败").assertTrue(true);
+        }
+        return "";
     }
 
 }

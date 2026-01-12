@@ -14,4 +14,6 @@ public interface CommonService {
     SelectorVO querySelector(SelectorQueryDTO queryDTO);
 
     ChallengeVO challenge();
+
+    String ossPrivateUrl(String bucket, String url);
 }

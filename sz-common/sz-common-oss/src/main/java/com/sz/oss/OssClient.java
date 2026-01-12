@@ -125,6 +125,7 @@ public class OssClient {
             // 构建meta元数据
             Map<String, String> metaMap = new HashMap<>();
             metaMap.put("original-filename", originalFilename);
+            metaMap.put("bucket-name", properties.getBucketName());
 
             Upload upload = transferManager.upload(x -> x.requestBody(body)
                     .putObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).contentType(contextType).metadata(metaMap).build()).build());

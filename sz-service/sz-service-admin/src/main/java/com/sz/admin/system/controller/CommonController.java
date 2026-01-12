@@ -1,5 +1,6 @@
 package com.sz.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.vo.common.ChallengeVO;
@@ -18,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
  * 通用controller
  *
  * @author sz
- * @since 2023/12/25 10:07
  * @version 1.0
+ * @since 2023/12/25 10:07
  */
 @Tag(name = "通用API")
 @RestController
@@ -53,6 +54,13 @@ public class CommonController {
     @Operation(summary = "一次性认证参数，用于登录密码加密传输场景")
     public ApiResult<ChallengeVO> challenge() {
         return ApiResult.success(commonService.challenge());
+    }
+
+    @SaCheckLogin
+    @GetMapping("/oss/private-url/{bucket}")
+    @Operation(summary = "获取OSS私有文件访问URL")
+    public String getOssPrivateUrl(@PathVariable("bucket") String bucket, @RequestParam("url") String url) {
+        return commonService.ossPrivateUrl(bucket, url);
     }
 
 }
