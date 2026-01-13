@@ -8,6 +8,7 @@ import com.sz.admin.system.pojo.dto.sysconfig.SysConfigListDTO;
 import com.sz.admin.system.pojo.dto.sysconfig.SysConfigUpdateDTO;
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.admin.system.pojo.po.table.SysConfigTableDef;
+import com.sz.admin.system.pojo.vo.sysconfig.ConfigVO;
 import com.sz.admin.system.service.SysConfigService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -21,7 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -103,4 +106,23 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         }
         return "";
     }
+
+    @Override
+    public Map<String, String> getConfigVO() {
+        Map<String, String> result = new HashMap<>();
+        boolean hasFrontendKey = redisCache.hasFrontendKey();
+        if (hasFrontendKey) {
+            return redisCache.getFrontendConfig();
+        }
+        QueryWrapper wrapper = QueryWrapper.create().where(SysConfigTableDef.SYS_CONFIG.FRONTEND_VISIBLE.eq("T"));
+        List<ConfigVO> lists = listAs(wrapper, ConfigVO.class);
+        if (lists.isEmpty())
+            return result;
+        for (ConfigVO conf : lists) {
+            result.put(conf.getConfigKey(), conf.getConfigValue());
+        }
+        redisCache.putAllFrontendConfig(result);
+        return result;
+    }
+
 }

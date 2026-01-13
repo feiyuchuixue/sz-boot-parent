@@ -8,6 +8,8 @@ import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 
+import java.util.Map;
+
 /**
  * <p>
  * 参数配置表 服务类
@@ -27,4 +29,6 @@ public interface SysConfigService extends IService<SysConfig> {
     void remove(SelectIdsDTO dto);
 
     SysConfig detail(Object id);
+
+    Map<String, String> getConfigVO();
 }

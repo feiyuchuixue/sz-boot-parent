@@ -3,7 +3,7 @@ package com.sz.admin.system.pojo.po;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.platform.listener.TableSysConfigListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  */
 
 @Data
-@Table(value = "sys_config", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+@Table(value = "sys_config", onInsert = TableSysConfigListener.class, onUpdate = TableSysConfigListener.class)
 @Schema(description = "参数配置表")
 public class SysConfig implements Serializable {
 
@@ -46,6 +46,9 @@ public class SysConfig implements Serializable {
 
     @Schema(description = "是否锁定")
     private String isLock;
+
+    @Schema(description = "该参数是否需要前端加载、缓存及使用")
+    private String frontendVisible;
 
     private Long createId;
 

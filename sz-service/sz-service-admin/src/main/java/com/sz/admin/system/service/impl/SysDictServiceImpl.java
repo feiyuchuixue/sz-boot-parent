@@ -27,6 +27,7 @@ import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
 import com.sz.core.common.dict.DictLoaderFactory;
 import com.sz.redis.RedisCache;
+import com.sz.socket.SocketService;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -63,6 +64,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     private final DictLoaderFactory dictLoaderFactory;
 
+    private final SocketService socketService;
+
     private static Long generateCustomId(Long firstPart, int secondPart) {
         secondPart += 1;
         String paddedFirstPart = String.format("%04d", firstPart); // 格式化为四位数字，不足补零
@@ -91,6 +94,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         sysDict.setId(generateCustomId);
         save(sysDict);
         upCache(dto.getSysDictTypeId());
+        socketService.syncDict();
     }
 
     @Override
@@ -103,6 +107,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         sysDict.setId(dto.getId());
         saveOrUpdate(sysDict);
         upCache(dto.getSysDictTypeId());
+        socketService.syncDict();
     }
 
     private void upCache(Long dictTypeId) {
@@ -110,6 +115,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         String typeCode = sysDictType.getTypeCode();
         redisCache.clearDict(typeCode); // 清除redis缓存
         dictLoaderFactory.getDictByType(typeCode); // 更新缓存
+        socketService.syncDict();
     }
 
     @Override
@@ -121,6 +127,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
             redisCache.clearDict(sysDictType.getTypeCode()); // 清除redis缓存
         }
         removeByIds(dto.getIds());
+        socketService.syncDict();
     }
 
     @Override

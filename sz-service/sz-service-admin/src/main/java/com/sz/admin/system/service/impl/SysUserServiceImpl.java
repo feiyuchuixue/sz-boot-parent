@@ -39,6 +39,7 @@ import com.sz.redis.RedisCache;
 import com.sz.redis.RedisUtils;
 import com.sz.security.core.util.LoginUtils;
 import com.sz.security.service.AuthService;
+import com.sz.socket.SocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,6 +93,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final AuthService authService;
 
     private final SysRoleMenuService sysRoleMenuService;
+
+    private final SocketService socketService;
 
     /**
      * 获取认证账户信息接角色信息
@@ -389,6 +392,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             log.info("用户元数据变更，同步更新用户信息 userId:{}, 成功:{} / {}", userId, successCount, tokens.size());
         }
+        socketService.syncPermission(userId);
     }
 
     @Override

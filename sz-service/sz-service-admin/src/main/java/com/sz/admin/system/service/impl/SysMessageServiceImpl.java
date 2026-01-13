@@ -15,22 +15,18 @@ import com.sz.admin.system.pojo.vo.sysmessage.SysMessageVO;
 import com.sz.admin.system.service.SysMessageService;
 import com.sz.admin.system.service.SysMessageUserService;
 import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.entity.SocketMessage;
-import com.sz.core.common.entity.TransferMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.common.enums.MessageTransferScopeEnum;
-import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.JsonUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
-import com.sz.redis.WebsocketRedisService;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import com.sz.security.core.util.LoginUtils;
+import com.sz.socket.SocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +47,7 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
 
     private final SysMessageUserService sysMessageUserService;
 
-    private final WebsocketRedisService websocketRedisService;
+    private final SocketService socketService;
 
     @Override
     public void create(Message dto) {
@@ -64,11 +60,7 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         PayloadBody body = new PayloadBody();
         body.setTitle(dto.getTitle());
         body.setContent(dto.getContent());
-        SocketMessage message = SocketMessage.builder().data(JsonUtils.toJsonString(body)).channel(SocketChannelEnum.MESSAGE)
-                .scope(MessageTransferScopeEnum.SOCKET_CLIENT).build();
-        TransferMessage msg = TransferMessage.builder().message(message).fromUser(dto.getSenderId().toString()).toPushAll(false).toUsers(dto.getReceiverIds())
-                .build();
-        websocketRedisService.sendServiceToWs(msg);
+        socketService.sendMessage(body, dto.getSenderId().toString(), dto.getReceiverIds());
     }
 
     @Override
@@ -126,13 +118,7 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         Long userId = Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId();
         UpdateChain.of(SysMessageUser.class).set(SYS_MESSAGE_USER.IS_READ, "T").set(SYS_MESSAGE_USER.READ_TIME, LocalDateTime.now())
                 .where(SYS_MESSAGE_USER.MESSAGE_ID.eq(messageId)).where(SYS_MESSAGE_USER.RECEIVER_ID.eq(userId)).update();
-        SocketMessage message = SocketMessage.builder().data(null).channel(SocketChannelEnum.READ).scope(MessageTransferScopeEnum.SOCKET_CLIENT).build();
-        TransferMessage msg = new TransferMessage();
-        msg.setMessage(message);
-        msg.setFromUser(userId.toString());
-        msg.setToPushAll(false);
-        msg.setToUsers(List.of(userId.toString()));
-        websocketRedisService.sendServiceToWs(msg);
+        socketService.readMessage(userId.toString(), List.of(userId));
     }
 
 }

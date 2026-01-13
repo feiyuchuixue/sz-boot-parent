@@ -220,4 +220,27 @@ public class RedisCache {
         return Boolean.TRUE.equals(hasKey);
     }
 
+    // ---------------FRONTEND_CONFIG相关----------------
+
+    public Map<String, String> getFrontendConfig() {
+        return redisTemplate.<String, String>opsForHash().entries(CommonKeyConstants.FRONTEND_CONFIG);
+    }
+
+    public boolean hasFrontendKey() {
+        if (redisTemplate == null) {
+            return false;
+        }
+        return redisTemplate.hasKey(CommonKeyConstants.FRONTEND_CONFIG);
+    }
+
+    public void putFrontendConfig(String key, String value) {
+        redisTemplate.opsForHash().put(CommonKeyConstants.FRONTEND_CONFIG, key, value);
+        redisTemplate.expire(CommonKeyConstants.FRONTEND_CONFIG, 2, TimeUnit.HOURS);
+    }
+
+    public void putAllFrontendConfig(Map<String, String> configMap) {
+        redisTemplate.opsForHash().putAll(CommonKeyConstants.FRONTEND_CONFIG, configMap);
+        redisTemplate.expire(CommonKeyConstants.FRONTEND_CONFIG, 2, TimeUnit.HOURS);
+    }
+
 }

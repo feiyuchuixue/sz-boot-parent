@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * <p>
  * 参数配置表 前端控制器
@@ -68,6 +70,12 @@ public class SysConfigController {
     @GetMapping("/{id}")
     public ApiResult<SysConfig> detail(@PathVariable Object id) {
         return ApiResult.success(sysConfigService.detail(id));
+    }
+
+    @Operation(summary = "前端获取参数列表")
+    @GetMapping("/frontend-configs")
+    public ApiResult<Map<String, String>> listFrontendConfigs() {
+        return ApiResult.success(sysConfigService.getConfigVO());
     }
 
 }

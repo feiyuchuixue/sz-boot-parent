@@ -23,6 +23,7 @@ import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
 import com.sz.core.common.dict.DictLoaderFactory;
 import com.sz.redis.RedisCache;
+import com.sz.socket.SocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,8 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     private final DictLoaderFactory dictLoaderFactory;
 
     private final RedisCache redisCache;
+
+    private final SocketService socketService;
 
     @Override
     public void create(SysDictTypeAddDTO dto) {
@@ -89,6 +92,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         saveOrUpdate(sysDictType);
         redisCache.clearDict(oldDetail.getTypeCode()); // 清除redis缓存
         dictLoaderFactory.getDictByType(sysDictType.getTypeCode()); // 更新缓存
+        socketService.syncDict();
     }
 
     @Override
@@ -100,6 +104,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
             redisCache.clearDict(typeCode); // 清除redis缓存
         }
         removeByIds(dto.getIds());
+        socketService.syncDict();
     }
 
     @Override

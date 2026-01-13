@@ -16,6 +16,9 @@ public class SysConfigCreateDTO {
     @Schema(description = "value")
     private String configValue;
 
+    @Schema(description = "该参数是否需要前端加载、缓存及使用")
+    private String frontendVisible;
+
     @Schema(description = "备注")
     private String remark;
 

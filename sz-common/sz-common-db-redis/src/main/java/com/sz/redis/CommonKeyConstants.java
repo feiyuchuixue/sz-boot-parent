@@ -26,6 +26,11 @@ public class CommonKeyConstants {
     public static final String SYS_CONFIG = "sys_config";
 
     /**
+     * 前端配置信息
+     */
+    public static final String FRONTEND_CONFIG = "frontend_config";
+
+    /**
      * sa-token token信息
      */
     public static final String TOKEN_SESSION = "Authorization:login:token-session:${token}";
