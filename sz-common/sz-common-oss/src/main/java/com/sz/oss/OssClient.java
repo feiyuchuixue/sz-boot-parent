@@ -63,7 +63,7 @@ public class OssClient {
      * @throws IOException
      *             IO异常
      */
-    public UploadResult upload(MultipartFile file, String dirTag) throws IOException {
+    public UploadResult upload(MultipartFile file, String dirTag, String bucket) throws IOException {
         FileNamingEnum naming = properties.getNaming();
         String objectName;
         String originalFilename = file.getOriginalFilename();
@@ -83,7 +83,7 @@ public class OssClient {
             // 也建议过滤一次#号，保证一致性
             objectName = objectName.replaceAll("#", "");
         }
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), originalFilename);
+        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), originalFilename, bucket);
     }
 
     /**
@@ -99,9 +99,9 @@ public class OssClient {
      * @throws IOException
      *             IO异常
      */
-    public UploadResult upload(MultipartFile file, String dirTag, String filename) throws IOException {
+    public UploadResult upload(MultipartFile file, String dirTag, String filename, String bucket) throws IOException {
         String objectName = dirTag + "/" + filename;
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), file.getOriginalFilename());
+        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), file.getOriginalFilename(), bucket);
     }
 
     /**
@@ -119,20 +119,19 @@ public class OssClient {
      *            原始文件名
      * @return 上传结果
      */
-    public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType, String originalFilename) {
+    public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType, String originalFilename, String bucket) {
         try {
             BlockingInputStreamAsyncRequestBody body = AsyncRequestBody.forBlockingInputStream(size);
             // 构建meta元数据
             Map<String, String> metaMap = new HashMap<>();
             metaMap.put("original-filename", originalFilename);
-            metaMap.put("bucket-name", properties.getBucketName());
-
+            metaMap.put("bucket-name", bucket);
             Upload upload = transferManager.upload(x -> x.requestBody(body)
-                    .putObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).contentType(contextType).metadata(metaMap).build()).build());
+                    .putObjectRequest(y -> y.bucket(bucket).key(objectName).contentType(contextType).metadata(metaMap).build()).build());
             body.writeInputStream(inputStream);
             CompletedUpload uploadResult = upload.completionFuture().join();
             String eTag = normalizeETag(uploadResult.response().eTag());
-            String url = getUrl() + "/" + objectName;
+            String url = getUrl(bucket) + "/" + objectName;
             return UploadResult.builder().url(url).objectName(objectName).dirTag(getDirTag(objectName)).filename(getFileName(objectName))
                     .contextType(contextType).size(size).eTag(eTag).metaData(metaMap).build();
         } catch (Exception e) {
@@ -166,6 +165,24 @@ public class OssClient {
     public String getPrivateUrl(String objectName) {
         URL url = s3Presigner.presignGetObject(x -> x.signatureDuration(Duration.ofSeconds(DEFAULT_EXPIRE_TIME))
                 .getObjectRequest(y -> y.bucket(properties.getBucketName()).key(objectName).build()).build()).url();
+        return url.toString();
+    }
+
+    /**
+     * 获取私有文件链接
+     *
+     * @param objectName
+     *            对象名（唯一，可包含路径）
+     * @return 链接
+     */
+    public String getPrivateUrl(String bucket, String objectName) {
+        if (bucket.isEmpty()) {
+            bucket = properties.getBucketName();
+        }
+        String finalBucket = bucket;
+        URL url = s3Presigner.presignGetObject(
+                x -> x.signatureDuration(Duration.ofSeconds(DEFAULT_EXPIRE_TIME)).getObjectRequest(y -> y.bucket(finalBucket).key(objectName).build()).build())
+                .url();
         return url.toString();
     }
 
@@ -258,24 +275,23 @@ public class OssClient {
         }
     }
 
-    private String getUrl() {
+    private String getUrl(String bucketName) {
         String domain = properties.getDomain();
         String endpoint = properties.getEndpoint();
-        String scheme = properties.isHttps() ? "https" : "http";
+        // String scheme = properties.isHttps() ? "https" : "http";
+        String scheme = properties.getScheme().toString();
         // 非 MinIO 处理
         if (!properties.getProvider().equals(OssProviderEnum.MINIO)) {
             if (StringUtils.isNotEmpty(domain)) {
                 return (domain.startsWith("https://") || domain.startsWith("http://")) ? domain : scheme + domain;
             } else {
-                return scheme + properties.getBucketName() + "." + endpoint; // eg: https://your_bucket_name.oss-cn-beijing.aliyuncs.com
+                return scheme + bucketName + "." + endpoint; // eg: https://your_bucket_name.oss-cn-beijing.aliyuncs.com
             }
         }
         if (StringUtils.isNotEmpty(domain)) {
-            return (domain.startsWith("https://") || domain.startsWith("http://"))
-                    ? domain + "/" + properties.getBucketName()
-                    : scheme + domain + "/" + properties.getBucketName();
+            return (domain.startsWith("https://") || domain.startsWith("http://")) ? domain + "/" + bucketName : scheme + domain + "/" + bucketName;
         } else {
-            return scheme + endpoint + "/" + properties.getBucketName();
+            return scheme + endpoint + "/" + bucketName;
         }
     }
 

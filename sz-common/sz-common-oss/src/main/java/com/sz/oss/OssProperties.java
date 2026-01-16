@@ -28,13 +28,11 @@ public class OssProperties {
     // 存储空间
     private String bucketName;
 
+    // 富文本存储空间
+    private String richtextBucketName;
+
     // 域名
     private String domain;
-
-    // 是否使用https
-    // 此方法不符合规范已被弃用
-    @Deprecated(since = "v1.0.2-beta")
-    private boolean isHttps = true;
 
     // 文件名称方式
     private FileNamingEnum naming = FileNamingEnum.ORIGINAL;
