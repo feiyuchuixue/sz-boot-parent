@@ -52,12 +52,11 @@ public class SysFileController {
         return ApiResult.success(sysFileService.uploadFile(file, dirTag, ""));
     }
 
-
     @Operation(summary = "批量上传文件")
     @PostMapping("/batchUpload")
     public ApiResult<List<UploadResult>> batchUpload(HttpServletRequest request,
-                                                     @Parameter(description = "目录标识（用于区分业务目录/存储路径，例如用户头像、合同附件等）", required = true, example = "user-avatar") @RequestParam(value = "dirTag") String dirTag,
-                                                     @Parameter(description = "场景标识，可选参数，当参数为richtext时将使用富文本编辑器oss.richtextBucketName 作为bucket", required = false, example = "richtext") @RequestParam(value = "scene", required = false) String scene) {
+            @Parameter(description = "目录标识（用于区分业务目录/存储路径，例如用户头像、合同附件等）", required = true, example = "user-avatar") @RequestParam(value = "dirTag") String dirTag,
+            @Parameter(description = "场景标识，可选参数，当参数为richtext时将使用富文本编辑器oss.richtextBucketName 作为bucket", required = false, example = "richtext") @RequestParam(value = "scene", required = false) String scene) {
         List<UploadResult> urlList = new ArrayList<>();
         try {
             // 从 request 中获取 MultipartFile 数组

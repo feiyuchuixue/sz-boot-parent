@@ -37,7 +37,7 @@ public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
         if (isLogin() && columns.contains(FIELD_DELETE_ID)) {
             sqlBuilder.append(", ").append(iDialect.wrap(FIELD_DELETE_ID)).append(EQUALS)
-                .append(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
+                    .append(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         }
 
         return sqlBuilder.toString();

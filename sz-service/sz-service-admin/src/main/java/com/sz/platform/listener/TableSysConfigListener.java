@@ -22,9 +22,11 @@ public class TableSysConfigListener extends EntityChangeListener {
 
     private void onChange(Object o) {
         SysConfig sysConfig = (SysConfig) o;
+        RedisCache cache = SpringApplicationContextUtils.getInstance().getBean(RedisCache.class);
         if (("T").equals(sysConfig.getFrontendVisible())) {
-            RedisCache cache = SpringApplicationContextUtils.getInstance().getBean(RedisCache.class);
             cache.putFrontendConfig(sysConfig.getConfigKey(), sysConfig.getConfigValue());
+        } else {
+            cache.deleteFrontendConfig(sysConfig.getConfigKey());
         }
         // socket 推送，参数更新事件
         SocketService service = SpringApplicationContextUtils.getInstance().getBean(SocketService.class);
