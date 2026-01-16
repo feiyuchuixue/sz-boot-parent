@@ -15,6 +15,7 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 import com.sz.oss.OssClient;
 import com.sz.core.common.entity.UploadResult;
+import com.sz.oss.OssProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
 
     private final OssClient ossClient;
+
+    private final OssProperties properties;
 
     /**
      * 文件列表
@@ -63,10 +66,15 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      * @return {@link String}
      */
     @Override
-    public UploadResult uploadFile(MultipartFile file, String dirTag) {
+    public UploadResult uploadFile(MultipartFile file, String dirTag, String scene) {
         UploadResult uploadResult = null;
+        String bucketName = properties.getBucketName();
+        // 如果是富文本编辑器上传，选择富文本编辑器的bucket配置
+        if ("richtext".equals(scene)) {
+            bucketName = properties.getRichtextBucketName();
+        }
         try {
-            uploadResult = ossClient.upload(file, dirTag);
+            uploadResult = ossClient.upload(file, dirTag, bucketName);
             Long fileId = fileLog(uploadResult);
             uploadResult.setFileId(fileId);
         } catch (Exception e) {

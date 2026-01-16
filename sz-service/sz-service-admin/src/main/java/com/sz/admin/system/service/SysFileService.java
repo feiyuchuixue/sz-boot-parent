@@ -36,7 +36,7 @@ public interface SysFileService extends IService<SysFile> {
      *            文件
      * @return {@link ApiResult}
      */
-    UploadResult uploadFile(MultipartFile file, String dirTag);
+    UploadResult uploadFile(MultipartFile file, String dirTag, String scene) throws Exception;
 
     Long fileLog(UploadResult uploadResult);
 }

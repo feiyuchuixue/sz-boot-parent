@@ -119,7 +119,7 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
     public UploadResult uploadFile(MultipartFile file) {
         UploadResult uploadResult = null;
         try {
-            uploadResult = ossClient.upload(file, "tmp");
+            uploadResult = ossClient.upload(file, "tmp", "");
             Long fileId = sysFileService.fileLog(uploadResult);
             uploadResult.setFileId(fileId);
         } catch (Exception e) {
