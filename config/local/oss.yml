@@ -4,8 +4,11 @@ oss:
   endpoint: 192.168.56.101:9000
   accessKey: a4jtJvgEmk4ead5dzac6
   secretKey: UW6kxTGRetIAahV759rFkgoQ8ilXLRUMW0ULdIoo
+  # 全局存储桶，偏私有存储
   bucketName: test
   domain: http://192.168.56.101:9000
+  # 富文本专用存储桶，偏公用存储
+  richtextBucketName: static
   # 命名方式: UUID、ORIGINAL原文件名偏好，冲突会补充时间
   naming: original
   scheme: http

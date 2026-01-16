@@ -9,11 +9,11 @@ import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
 import com.sz.oss.OssClient;
-import com.sz.oss.OssProperties;
 import com.sz.redis.RedisCache;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -29,6 +29,7 @@ import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommonServiceImpl implements CommonService {
 
     private final ResourceLoader resourceLoader;
@@ -36,8 +37,6 @@ public class CommonServiceImpl implements CommonService {
     private final SysTempFileService sysTempFileService;
 
     private final OssClient ossClient;
-
-    private final OssProperties ossProperties;
 
     private final SysUserService sysUserService;
 
@@ -79,11 +78,17 @@ public class CommonServiceImpl implements CommonService {
         long size = result.getSize();
         if (size > 0)
             response.setContentLengthLong(size);
+        String confValue = SysConfigUtils.getConfValue("oss.accessMode");
+        // 私有文件需要生成带签名的临时访问URL
+        if ("private".equals(confValue)) {
+            String finalBucket = getBucketFromUrl(fileUrl, "");
+            String objectName = getObjectNameFromUrl(fileUrl);
+            fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
+        }
         try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
             in.transferTo(os);
             os.flush();
         }
-
     }
 
     @Override
@@ -130,27 +135,96 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public String ossPrivateUrl(String bucket, String url) {
-        if (bucket == null || bucket.isEmpty()) {
-            bucket = ossProperties.getBucketName();
+        CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
+        String finalBucket = getBucketFromUrl(url, bucket);
+        String objectName = getObjectNameFromUrl(url);
+        log.info("bucket = {}, objectName = {}", finalBucket, objectName);
+        return ossClient.getPrivateUrl(finalBucket, objectName);
+    }
+
+    @Override
+    public void urlDownload(String url, HttpServletResponse response) throws IOException {
+        CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
+        String finalBucket = getBucketFromUrl(url, "");
+        String objectName = getObjectNameFromUrl(url);
+        String filename = getFilenameFromObjectName(objectName);
+        String confValue = SysConfigUtils.getConfValue("oss.accessMode");
+        String fileUrl = url;
+        // 私有文件需要生成带签名的临时访问URL
+        if ("private".equals(confValue)) {
+            fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
         }
-        try {
-            String objectName;
-            if (url.startsWith("http://") || url.startsWith("https://")) {
-                // 完整 URL，解析 objectName
-                java.net.URI uri = java.net.URI.create(url);
-                String path = uri.getPath();
-                String prefix = "/" + bucket + "/";
-                CommonResponseEnum.NOT_EXISTS.message("无效资源地址").assertFalse(path.startsWith(prefix));
-                objectName = path.substring(prefix.length());
-            } else {
-                // 直接传 objectName
-                objectName = url;
+        try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+            in.transferTo(os);
+            os.flush();
+        }
+    }
+
+    /**
+     * 根据 URL 获取 bucket： 1. 若是 http(s) 开头且能解析出 bucket，则返回 URL 中的 bucket 2. 否则返回
+     * defaultBucket
+     */
+    public String getBucketFromUrl(String url, String defaultBucket) {
+        String finalBucket = defaultBucket;
+
+        if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+            int schemeEndIndex = url.indexOf("://");
+            String noScheme = url.substring(schemeEndIndex + 3); // 去掉 "http://"/"https://"
+
+            int firstSlashIndex = noScheme.indexOf('/');
+            // firstSlashIndex < 0 或者刚好在最后一个字符，说明没有 path，无法解析
+            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 bucket").assertTrue(firstSlashIndex < 0 || firstSlashIndex == noScheme.length() - 1);
+
+            // path 形如：test/user/20241216/xxx.jpg
+            String path = noScheme.substring(firstSlashIndex + 1);
+
+            int secondSlashIndex = path.indexOf('/');
+            // 没有第二个 /，说明没有 objectName 部分，也就无法切分出 bucket
+            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 bucket").assertTrue(secondSlashIndex < 0);
+            String bucketFromUrl = path.substring(0, secondSlashIndex);
+            if (finalBucket == null || finalBucket.isEmpty()) {
+                finalBucket = bucketFromUrl;
             }
-            return ossClient.getPrivateUrl(objectName);
-        } catch (Exception e) {
-            CommonResponseEnum.UNKNOWN.message("生成私有访问地址失败").assertTrue(true);
         }
-        return "";
+        return finalBucket;
+    }
+
+    /**
+     * 根据 URL 获取 objectName： 1. 若是 http(s) 开头，则解析出 path 中 bucket 后面的部分作为 objectName
+     * 2. 否则直接把 url 当成 objectName
+     */
+    public String getObjectNameFromUrl(String url) {
+        if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+            int schemeEndIndex = url.indexOf("://");
+            String noScheme = url.substring(schemeEndIndex + 3); // 去掉 "http://"/"https://"
+
+            int firstSlashIndex = noScheme.indexOf('/');
+            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 objectName").assertTrue(firstSlashIndex < 0 || firstSlashIndex == noScheme.length() - 1);
+
+            String path = noScheme.substring(firstSlashIndex + 1); // 去掉第一个 "/"
+
+            // path 形如：test/user/20241216/xxx.jpg
+            int secondSlashIndex = path.indexOf('/');
+            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 objectName").assertTrue(secondSlashIndex < 0);
+
+            // 去掉 bucket 后面的 "/"
+            return path.substring(secondSlashIndex + 1);
+        } else {
+            // 非 http(s) 开头，直接认为是 objectName
+            return url;
+        }
+    }
+
+    public String getFilenameFromObjectName(String objectName) {
+        if (objectName == null || objectName.isEmpty()) {
+            return objectName;
+        }
+        int lastSlashIndex = objectName.lastIndexOf('/');
+        if (lastSlashIndex < 0 || lastSlashIndex == objectName.length() - 1) {
+            // 没有 "/" 或 "/" 在最后（类似 "xxx/"），直接返回原字符串
+            return objectName;
+        }
+        return objectName.substring(lastSlashIndex + 1);
     }
 
 }

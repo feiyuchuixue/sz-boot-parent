@@ -16,4 +16,6 @@ public interface CommonService {
     ChallengeVO challenge();
 
     String ossPrivateUrl(String bucket, String url);
+
+    void urlDownload(String url, HttpServletResponse response) throws IOException;
 }
