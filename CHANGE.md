@@ -1,4 +1,65 @@
 # 更新日志
+
+## v1.3.2-beta （20260116）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.2-beta)
+
+### sz-boot-parent
+
+#### 新增
+
+- [代码生成器] 支持选择弹窗类型（抽屉、弹窗）。
+- 通用 API：新增获取 OSS 私有文件访问 URL 接口。
+- 通用 API：新增文件下载接口。
+- 参数管理新增「是否前端加载」字段。
+- websocket新增：支持同步字典、权限和前端参数。
+
+#### 修改
+
+- oss.yml 配置，新增 `oss.richtextBucketName` 配置项，用于为富文本编辑器**单独指定** bucket
+
+#### 优化
+
+- 优化逻辑删除监听器的登录状态检查，增加异常处理以支持非Web环境
+
+---
+
+### sz-admin
+
+#### 新增
+
+- [代码生成器] - 增加弹窗类型的支持（抽屉、弹窗）。
+- 参数 / 字典 / 权限的 websocket同步支持，并在参数管理中新增「是否前端加载」配置。
+- 新增： useDialogWidth Hook 组件，实现弹窗/对话框宽度的动态自适应。
+
+#### 重构
+
+- 重构 websocket实现，将消息解析与频道处理逻辑解耦，结构更清晰、扩展性更强。
+
+#### 修复
+
+- 修复 `MenuForm.vue` 中目录类型的可操作属性，恢复路由名称和路由地址属性。（[issue 25](https://github.com/feiyuchuixue/sz-admin/issues/25)）。
+
+- 修复 `SearchFormItem` 组件仅在搜索项配置 `enum` 时读取 `undefined` 导致的报错问题。现在在 `SearchProps` 或 `ColumnProps` 任一处配置 `enum` 即可正常使用。（[issue 26](https://github.com/feiyuchuixue/sz-admin/issues/26)）。
+
+#### 优化
+
+- `Avatar` 头像组件：增加对 OSS 私有访问地址的支持。
+- `FileDownloadList` 文件回显展示组件：增加对 OSS 私有访问地址的支持。
+- `Img` 图片组件：增加对 OSS 私有访问地址的支持。
+- `Imgs` 多图片组件：增加对 OSS 私有访问地址的支持。
+- 账户管理 - 添加/编辑用户：头像字段增加对 OSS 私有访问地址的支持。
+- `JoditEditor` 富文本组件：支持使用独立的 bucket 空间（通过 `oss.richtextBucketName` 配置）。
+- 文件管理列表：优化文件下载方式。
+- `useUrlDownload`：移除前端 Fetch 下载逻辑，改为调用通用 API 文件下载接口，解决文件跨域问题。
+
+### 数据库变更
+
+- 更新 `sys_config` 表：增加 `frontend_visible` 字段，用于标记参数是否需要前端加载、缓存及使用。
+- 更新 `generator_table` 表：增加 `window_show_type` 字段，用于配置窗口展示方式（0：dialog 弹窗；1：drawer 抽屉）。
+
 ## v1.3.1-beta （20251210）
 > [!NOTE]
 >
