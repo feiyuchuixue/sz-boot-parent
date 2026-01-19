@@ -172,7 +172,7 @@
             <dependency>
                 <groupId>nl.basjes.parse.useragent</groupId>
                 <artifactId>yauaa</artifactId>
-                <version>7.32.0</version>
+                <version>8.0.0</version>
             </dependency>
 
             <!-- 离线IP地址定位库 ip2region -->
