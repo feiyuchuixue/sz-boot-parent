@@ -1,6 +1,7 @@
 package com.sz.oss;
 
 import com.sz.core.common.entity.UploadResult;
+import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.FileUtils;
 import com.sz.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,9 +26,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author sz
@@ -120,6 +119,7 @@ public class OssClient {
      * @return 上传结果
      */
     public UploadResult upload(InputStream inputStream, String objectName, Long size, String contextType, String originalFilename, String bucket) {
+        CommonResponseEnum.FILE_UPLOAD_EXT_ERROR.assertFalse(isAllowedExt(originalFilename) && isAllowedMimeType(Objects.requireNonNull(contextType)));
         try {
             BlockingInputStreamAsyncRequestBody body = AsyncRequestBody.forBlockingInputStream(size);
             // 构建meta元数据
@@ -352,6 +352,31 @@ public class OssClient {
         }
         // 替换掉前后的双引号
         return eTag.replaceAll("(^\")|(\"$)", "");
+    }
+
+    /**
+     * 扩展名校验
+     *
+     * @param fileName
+     *            文件名
+     * @return 是否允许的扩展名
+     */
+    public boolean isAllowedExt(String fileName) {
+        Set<String> allowedExts = properties.getAllowedExts();
+        String ext = getFileExt(fileName);
+        return ext != null && allowedExts.contains(ext.toLowerCase());
+    }
+
+    public boolean isAllowedMimeType(String mimeType) {
+        Set<String> allowedMimeTypes = properties.getAllowedMimeTypes();
+        return allowedMimeTypes.contains(mimeType.toLowerCase());
+    }
+
+    public String getFileExt(String fileName) {
+        if (fileName == null)
+            return null;
+        int i = fileName.lastIndexOf('.');
+        return (i > 0 && i < fileName.length() - 1) ? fileName.substring(i + 1) : null;
     }
 
 }

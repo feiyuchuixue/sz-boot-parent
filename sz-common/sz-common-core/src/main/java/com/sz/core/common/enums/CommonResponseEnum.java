@@ -22,7 +22,7 @@ public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnu
     EXISTS(1001, "已存在"),
     NOT_EXISTS(1002, "不存在"),
     FILE_NOT_EXISTS(1003, "文件不存在"),
-    FILE_UPLOAD_EXT_ERROR(1004, "上传文件类型错误"),
+    FILE_UPLOAD_EXT_ERROR(1004, "文件类型不被允许，请检查文件扩展名和MIME类型"),
     FILE_UPLOAD_SIZE_ERROR(1005, "上传文件大小不能超过10MB"),
     FILE_UPLOAD_ERROR(1006, "上传文件失败"),
     USERNAME_EXISTS(1007, "用户名已存在"),
@@ -34,6 +34,7 @@ public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnu
     CAPTCHA_LIMIT(1013,"验证码请求已达到最大次数"),
     BACKGROUND_NOT_EXISTS(1014, "背景图片不存在"),
     LOGIN_LIMIT(1015,"登录请求已达到最大次数"),
+    FILE_TEMPLATE_INVALID(1016,"文件地址无效"),
 
     UNKNOWN(9999, "未知异常"),
     ;

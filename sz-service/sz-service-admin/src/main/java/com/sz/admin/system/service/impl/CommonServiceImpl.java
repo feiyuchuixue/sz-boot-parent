@@ -22,10 +22,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
+import static com.sz.core.common.enums.CommonResponseEnum.FILE_TEMPLATE_INVALID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +50,13 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void tempDownload(String templateName, String alias, HttpServletResponse response) throws IOException {
+        boolean hasIllegalPath = templateName.contains("..") || templateName.contains("/") || templateName.contains("\\") || templateName.startsWith(".");
+        if (hasIllegalPath) {
+            OutputStream out = response.getOutputStream();
+            out.write(FILE_TEMPLATE_INVALID.getMessage().getBytes(StandardCharsets.UTF_8));
+            out.flush();
+            return;
+        }
         String templatePath = "classpath:/templates/" + templateName;
         Resource resource = resourceLoader.getResource(templatePath);
 
@@ -154,7 +163,19 @@ public class CommonServiceImpl implements CommonService {
         if ("private".equals(confValue)) {
             fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
         }
-        try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+        URL parsedUrl;
+        try {
+            parsedUrl = new URL(fileUrl);
+        } catch (MalformedURLException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
+            return;
+        }
+        String protocol = parsedUrl.getProtocol();
+        if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "非法的URL协议");
+            return;
+        }
+        try (InputStream in = parsedUrl.openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
             in.transferTo(os);
             os.flush();
         }

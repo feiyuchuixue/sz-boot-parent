@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 /**
  * @author sz
  * @since 2024/11/12 14:39
@@ -38,5 +40,15 @@ public class OssProperties {
     private FileNamingEnum naming = FileNamingEnum.ORIGINAL;
 
     private SchemeEnum scheme = SchemeEnum.https;
+
+    /**
+     * 允许上传的文件扩展名（小写，无点），如：["jpg", "png", "pdf"]
+     */
+    private Set<String> allowedExts;
+
+    /**
+     * 允许上传的文件MineType
+     */
+    private Set<String> allowedMimeTypes;
 
 }

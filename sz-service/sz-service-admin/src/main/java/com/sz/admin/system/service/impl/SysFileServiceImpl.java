@@ -9,7 +9,6 @@ import com.sz.admin.system.pojo.po.SysFile;
 import com.sz.admin.system.pojo.po.table.SysFileTableDef;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
@@ -17,6 +16,7 @@ import com.sz.oss.OssClient;
 import com.sz.core.common.entity.UploadResult;
 import com.sz.oss.OssProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,6 +65,7 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
      *            文件夹标识
      * @return {@link String}
      */
+    @SneakyThrows
     @Override
     public UploadResult uploadFile(MultipartFile file, String dirTag, String scene) {
         UploadResult uploadResult = null;
@@ -73,14 +74,9 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
         if ("richtext".equals(scene)) {
             bucketName = properties.getRichtextBucketName();
         }
-        try {
-            uploadResult = ossClient.upload(file, dirTag, bucketName);
-            Long fileId = fileLog(uploadResult);
-            uploadResult.setFileId(fileId);
-        } catch (Exception e) {
-            log.error(" sysFile oss upload error", e);
-            CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
-        }
+        uploadResult = ossClient.upload(file, dirTag, bucketName);
+        Long fileId = fileLog(uploadResult);
+        uploadResult.setFileId(fileId);
         return uploadResult;
     }
 
