@@ -20,7 +20,6 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -78,13 +77,15 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
 
     @Override
     public SysMessageVO detail(Object id) {
-        SysMessage sysMessage = getById((Serializable) id);
+        Long messageId = Utils.parseNumericId(id);
+        QueryWrapper wrapper = buildBasicWrapper().where(SYS_MESSAGE.ID.eq(messageId));
+        SysMessage sysMessage = getOne(wrapper);
+        CommonResponseEnum.INVALID_ID.message("无效的消息ID").assertNull(sysMessage);
         Long userId = Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId();
-        CommonResponseEnum.INVALID_ID.assertNull(sysMessage);
         SysMessageVO messageVO = BeanCopyUtils.copy(sysMessage, SysMessageVO.class);
-        String isRead = sysMessageUserService.getIsRead(sysMessage.getId(), userId);
+        String isRead = sysMessageUserService.getIsRead(messageId, userId);
         messageVO.setIsRead(isRead);
-        read(Utils.getLongVal(id));
+        read(messageId);
         return messageVO;
     }
 
@@ -96,13 +97,16 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         return new MessageCountVO(all, todo, msg);
     }
 
-    private static QueryWrapper buildQueryWrapper(SysMessageListDTO dto) {
+    private static QueryWrapper buildBasicWrapper() {
         Long userId = Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId();
-        QueryWrapper wrapper = QueryWrapper.create()
+        return QueryWrapper.create()
                 .select(SYS_MESSAGE.ID, SYS_MESSAGE.MESSAGE_TYPE_CD, SYS_MESSAGE.SENDER_ID, SYS_MESSAGE.TITLE, SYS_MESSAGE.CONTENT, SYS_MESSAGE.CREATE_TIME,
                         SYS_MESSAGE_USER.IS_READ)
-                .from(SYS_MESSAGE).join(SYS_MESSAGE_USER).on(SYS_MESSAGE_USER.MESSAGE_ID.eq(SYS_MESSAGE.ID)).where(SYS_MESSAGE_USER.RECEIVER_ID.eq(userId))
-                .where(SYS_MESSAGE.MESSAGE_TYPE_CD.eq(dto.getMessageTypeCd()).when(Utils.isNotNull(dto.getMessageTypeCd())));
+                .from(SYS_MESSAGE).join(SYS_MESSAGE_USER).on(SYS_MESSAGE_USER.MESSAGE_ID.eq(SYS_MESSAGE.ID)).where(SYS_MESSAGE_USER.RECEIVER_ID.eq(userId));
+    }
+
+    private static QueryWrapper buildQueryWrapper(SysMessageListDTO dto) {
+        QueryWrapper wrapper = buildBasicWrapper().where(SYS_MESSAGE.MESSAGE_TYPE_CD.eq(dto.getMessageTypeCd()).when(Utils.isNotNull(dto.getMessageTypeCd())));
         if (Utils.isNotNull(dto.getReadType())) {
             if ("read".equals(dto.getReadType())) {
                 wrapper.where(SYS_MESSAGE_USER.IS_READ.eq("T"));
@@ -120,5 +124,4 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
                 .where(SYS_MESSAGE_USER.MESSAGE_ID.eq(messageId)).where(SYS_MESSAGE_USER.RECEIVER_ID.eq(userId)).update();
         socketService.readMessage(userId.toString(), List.of(userId));
     }
-
 }
