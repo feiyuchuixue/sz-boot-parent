@@ -1,4 +1,35 @@
 # 更新日志
+## v1.3.3-beta （20260224）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.3-beta)
+
+### sz-boot-parent
+
+#### 修改
+
+- oss.yml 配置，新增 `oss.allowedExts`,`oss.allowedMimeTypes` 配置项，用于执行允许上传的文件后缀和mime信息。
+
+#### 修复
+
+- 消息查询增加了消息归属验证，用户只能查询到自己相关的消息。
+- 重置账户密码接口增加权限标识验证，只有拥有对应权限的用户才可以进行重置。
+- 文件上传接口增加后缀和 MIME 类型白名单。
+- 模板下载接口校验路径合法性，非法路径仅返回错误提示，防止路径穿越。
+- 文件下载接口仅允许 http/https 协议，防止 SSRF 和任意文件读取。
+
+---
+
+### sz-admin
+
+#### 修复
+
+- 开启数据权限后菜单无可用权限时仍然提交空菜单的问题。(issue: https://github.com/feiyuchuixue/sz-admin/issues/27)。
+
+- 升级 axios 至 1.13.5，修复 CVE-2026-25639 漏洞。
+
+- 账号管理-更多菜单按钮的权限设置问题。
 
 ## v1.3.2-beta （20260116）
 
