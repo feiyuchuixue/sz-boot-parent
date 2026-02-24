@@ -39,8 +39,6 @@ public class SysUserController {
 
     private final SysUserService sysUserService;
 
-    private final WebsocketRedisService websocketRedisService;
-
     private final SysDeptService sysDeptService;
 
     private final SysUserDataRoleService sysUserDataRoleService;
@@ -112,6 +110,7 @@ public class SysUserController {
     }
 
     @Operation(summary = "重置账户密码")
+    @SaCheckPermission("sys.user_resetPwd")
     @PutMapping("/reset/password/{userId}")
     public ApiResult<Void> resetPassword(@PathVariable Long userId) {
         sysUserService.resetPassword(userId);
