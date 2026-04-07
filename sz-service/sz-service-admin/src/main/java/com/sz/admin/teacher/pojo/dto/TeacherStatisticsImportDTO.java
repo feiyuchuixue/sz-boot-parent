@@ -1,6 +1,7 @@
 package com.sz.admin.teacher.pojo.dto;
 
 import cn.idev.excel.annotation.ExcelIgnore;
+import com.sz.excel.annotation.DictFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -38,8 +39,7 @@ public class TeacherStatisticsImportDTO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
-    // 如果字典使用的是别名 使用如下设置 useAlias = true
-    // @DictFormat(dictType = "account_status", useAlias = true)
+    @DictFormat(dictType = "account_status", useAlias = true, isSelected = true)
     @Schema(description = "讲师区分类型")
     private String teacherCommonType;
 

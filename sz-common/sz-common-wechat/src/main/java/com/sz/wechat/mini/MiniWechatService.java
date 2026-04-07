@@ -46,7 +46,7 @@ public class MiniWechatService {
             assert result != null;
             if (validSuccess(result)) {
                 int expireTime = result.getExpiresIn() - 1200;
-                RedisUtils.getRestTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccessToken(), expireTime, TimeUnit.SECONDS);
+                RedisUtils.getRedisTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccessToken(), expireTime, TimeUnit.SECONDS);
                 return result.getAccessToken();
             } else {
                 log.error("【微信小程序】 获取accessToken失败，错误码：{}，错误信息：{}", result.getErrcode(), result.getErrmsg());
