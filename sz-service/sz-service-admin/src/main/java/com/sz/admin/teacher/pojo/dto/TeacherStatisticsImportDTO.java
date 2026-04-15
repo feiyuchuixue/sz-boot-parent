@@ -1,7 +1,12 @@
 package com.sz.admin.teacher.pojo.dto;
 
 import cn.idev.excel.annotation.ExcelIgnore;
+import com.sz.core.common.enums.YesNoEnum;
 import com.sz.excel.annotation.DictFormat;
+import com.sz.excel.annotation.ExcelEnumFormat;
+import com.sz.excel.annotation.ExcelTemplate;
+import com.sz.excel.annotation.ImportColumn;
+import com.sz.excel.enums.ExcelEnumPreset;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -20,16 +25,20 @@ import cn.idev.excel.annotation.ExcelProperty;
  */
 @Data
 @Schema(description = "TeacherStatistics导入DTO")
+@ExcelTemplate(alias = "教师统计导入模板.xlsx")
 public class TeacherStatisticsImportDTO {
 
+    @ImportColumn(required = true, columnWidth = 100)
     @ExcelProperty(value = "统计年份")
     @Schema(description = "统计年份")
     private String year;
 
+    @ImportColumn(required = true)
     @ExcelProperty(value = "统计月份")
     @Schema(description = "统计月份")
     private String month;
 
+    @ImportColumn(required = true)
     @ExcelProperty(value = "统计年月")
     @Schema(description = "统计年月")
     private String duringTime;
@@ -73,5 +82,10 @@ public class TeacherStatisticsImportDTO {
     // @ExcelProperty(value = "备注")
     @Schema(description = "备注")
     private String remark;
+
+    @ExcelEnumFormat(preset = ExcelEnumPreset.YES_NO)
+    @ExcelProperty(value = "是否无效")
+    @Schema(description = "是否无效（枚举情况演示字段，包含mf枚举使用，excel枚举处理）")
+    private YesNoEnum hasInvalid;
 
 }

@@ -8,12 +8,15 @@ import com.sz.admin.system.service.*;
 import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
+import com.sz.excel.core.ExcelTemplateScanRegistry;
+import com.sz.excel.utils.ExcelUtils;
 import com.sz.oss.OssClient;
 import com.sz.redis.RedisCache;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -48,6 +51,8 @@ public class CommonServiceImpl implements CommonService {
 
     private final RedisCache redisCache;
 
+    private final ObjectProvider<ExcelTemplateScanRegistry> excelTemplateScanRegistryProvider;
+
     @Override
     public void tempDownload(String templateName, String alias, HttpServletResponse response) throws IOException {
         boolean hasIllegalPath = templateName.contains("..") || templateName.contains("/") || templateName.contains("\\") || templateName.startsWith(".");
@@ -60,44 +65,57 @@ public class CommonServiceImpl implements CommonService {
         String templatePath = "classpath:/templates/" + templateName;
         Resource resource = resourceLoader.getResource(templatePath);
 
-        // 兼容临时目录文件。
+        // 第一优先级：classpath 静态模板文件
         if (resource.exists()) {
             FileUtils.downloadTemplateFile(resourceLoader, response, templateName);
             return;
         }
 
-        // 从oss获取文件
+        // 第二优先级：sys_temp_file 表（OSS 手动上传的模板）
         SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByNameOrAlias(templateName, alias);
-        // 异常情况处理。通过http status响应
-        if (sysTempFileInfoVO == null) {
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            response.setStatus(FILE_NOT_EXISTS.getCode());
-            OutputStream out = response.getOutputStream();
-            out.write(FILE_NOT_EXISTS.getMessage().getBytes(StandardCharsets.UTF_8));
-            out.flush();
+        if (sysTempFileInfoVO != null) {
+            UploadResult result = sysTempFileInfoVO.getUrl().getFirst();
+            String fileUrl = result.getUrl();
+            String filename = result.getFilename();
+            long size = result.getSize();
+            if (size > 0)
+                response.setContentLengthLong(size);
+            String confValue = SysConfigUtils.getConfValue("oss.accessMode");
+            // 私有文件需要生成带签名的临时访问URL
+            if ("private".equals(confValue)) {
+                String finalBucket = getBucketFromUrl(fileUrl, "");
+                String objectName = getObjectNameFromUrl(fileUrl);
+                fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
+            }
+            try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+                in.transferTo(os);
+                os.flush();
+            }
             return;
         }
-        FILE_NOT_EXISTS.assertNull(sysTempFileInfoVO);
 
-        UploadResult result = sysTempFileInfoVO.getUrl().getFirst();
-        String fileUrl = result.getUrl();
-        String filename = result.getFilename();
-        long size = result.getSize();
-        if (size > 0)
-            response.setContentLengthLong(size);
-        String confValue = SysConfigUtils.getConfValue("oss.accessMode");
-        // 私有文件需要生成带签名的临时访问URL
-        if ("private".equals(confValue)) {
-            String finalBucket = getBucketFromUrl(fileUrl, "");
-            String objectName = getObjectNameFromUrl(fileUrl);
-            fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
+        // 第三优先级：根据 @ExcelTemplate 注解动态生成空白模板
+        // 优先用 alias 查找，alias 为空时再用 templateName 查找
+        String lookupKey = (alias != null && !alias.isBlank()) ? alias : templateName;
+        ExcelTemplateScanRegistry registry = excelTemplateScanRegistryProvider.getIfAvailable();
+        Class<?> dtoClass = registry != null ? registry.getByAlias(lookupKey) : null;
+        if (dtoClass != null) {
+            String downloadFileName = lookupKey.endsWith(".xlsx") ? lookupKey : lookupKey + ".xlsx";
+            try (OutputStream os = FileUtils.getOutputStream(response, downloadFileName)) {
+                ExcelUtils.generateTemplate(dtoClass, os);
+                os.flush();
+            }
+            return;
         }
-        try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
-            in.transferTo(os);
-            os.flush();
-        }
+
+        // 全部找不到：返回错误
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setStatus(FILE_NOT_EXISTS.getCode());
+        OutputStream out = response.getOutputStream();
+        out.write(FILE_NOT_EXISTS.getMessage().getBytes(StandardCharsets.UTF_8));
+        out.flush();
     }
 
     @Override

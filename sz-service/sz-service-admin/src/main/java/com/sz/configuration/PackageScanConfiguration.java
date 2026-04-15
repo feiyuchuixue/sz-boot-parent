@@ -1,5 +1,6 @@
 package com.sz.configuration;
 
+import com.sz.excel.annotation.EnableExcelTemplateScan;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,5 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 @MapperScan(basePackages = {"com.sz.admin.*.mapper", "com.sz.generator.mapper", "com.sz.applet.*.mapper"})
-public class MapperConfiguration {
+@EnableExcelTemplateScan(basePackages = {"com.sz.admin"})
+public class PackageScanConfiguration {
 }

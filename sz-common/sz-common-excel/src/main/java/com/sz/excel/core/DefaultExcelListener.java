@@ -7,6 +7,7 @@ import cn.idev.excel.exception.ExcelAnalysisException;
 import cn.idev.excel.exception.ExcelDataConvertException;
 import cn.idev.excel.metadata.CellExtra;
 import com.sz.core.util.JsonUtils;
+import com.sz.excel.utils.ExcelUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.Data;
@@ -69,6 +70,7 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
             // 获取所有字段
             Field[] fields = clazz.getDeclaredFields();
             Map<Integer, String> expectedHeadMap = new TreeMap<>();
+            Map<Integer, String> normalizedActualHeadMap = new TreeMap<>();
             for (Field field : fields) {
                 // 检查字段是否有@ExcelProperty注解
                 if (field.isAnnotationPresent(ExcelProperty.class)) {
@@ -76,12 +78,12 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
                     expectedHeadMap.put(expectedHeadMap.size(), excelProperty.value()[0]);
                 }
             }
+            headMap.forEach((index, header) -> normalizedActualHeadMap.put(index, ExcelUtils.normalizeHeaderName(header)));
             if (headMap.isEmpty()) {
                 throw new ExcelAnalysisException("无效的表头");
-            } else if (!headMap.equals(expectedHeadMap)) {
-                String expectedHeaders = String.join(", ", expectedHeadMap.values());
-                String actualHeaders = String.join(", ", headMap.values());
-                String errMsg = String.format("表头校验失败:<br/><br/>期望:<br/> [%s];<br/><br/>实际:<br/> [%s];", expectedHeaders, actualHeaders);
+            } else if (!normalizedActualHeadMap.equals(expectedHeadMap)) {
+                int mismatchIndex = findFirstHeaderMismatchIndex(expectedHeadMap, normalizedActualHeadMap);
+                String errMsg = buildHeaderMismatchMessage(expectedHeadMap, headMap, normalizedActualHeadMap, mismatchIndex);
                 throw new ExcelAnalysisException(errMsg);
             } else {
                 log.debug("表头一致");
@@ -103,11 +105,15 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
     @Override
     public void onException(Exception exception, AnalysisContext context) {
         String errMsg;
+        Integer rowNo = context.readRowHolder() == null ? null : context.readRowHolder().getRowIndex() + 1;
+        boolean continueRead = false;
         if (exception instanceof ExcelDataConvertException excelDataConvertException) {
             // 如果是某一个单元格的转换异常 能获取到具体行号
             Integer rowIndex = excelDataConvertException.getRowIndex();
             Integer columnIndex = excelDataConvertException.getColumnIndex();
             errMsg = String.format("第%d行-第%d列-表头 [%s]: 解析异常<br/>", rowIndex + 1, columnIndex + 1, headMap.get(columnIndex));
+            rowNo = rowIndex + 1;
+            continueRead = true;
             log.error(errMsg);
         } else if (exception instanceof ConstraintViolationException constraintViolationException) {
             Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
@@ -117,12 +123,24 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
                         .collect(Collectors.joining(", "));
             }
             errMsg = String.format("第%d行数据校验异常: %s", context.readRowHolder().getRowIndex() + 1, constraintViolationsMsg);
+            continueRead = true;
             log.error(errMsg);
         } else {
             errMsg = exception.getMessage();
         }
         excelResult.getErrorList().add(errMsg);
-        throw new ExcelAnalysisException(errMsg);
+        T currentRowData = null;
+        if (context.readRowHolder() != null && context.readRowHolder().getCurrentRowAnalysisResult() != null) {
+            try {
+                currentRowData = (T) context.readRowHolder().getCurrentRowAnalysisResult();
+            } catch (ClassCastException e) {
+                log.debug("当前失败行数据类型转换失败，忽略 rowData 采集", e);
+            }
+        }
+        excelResult.getFailRowList().add(new ExcelFailRow<>(rowNo, errMsg, currentRowData));
+        if (!continueRead) {
+            throw new ExcelAnalysisException(errMsg);
+        }
     }
 
     @Override
@@ -144,6 +162,45 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
     @Override
     public boolean hasNext(AnalysisContext context) {
         return super.hasNext(context);
+    }
+
+    private int findFirstHeaderMismatchIndex(Map<Integer, String> expectedHeadMap, Map<Integer, String> actualHeadMap) {
+        int maxSize = Math.max(expectedHeadMap.size(), actualHeadMap.size());
+        for (int index = 0; index < maxSize; index++) {
+            if (!Objects.equals(expectedHeadMap.get(index), actualHeadMap.get(index))) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private String buildHeaderMismatchMessage(Map<Integer, String> expectedHeadMap, Map<Integer, String> actualHeadMap,
+            Map<Integer, String> normalizedActualHeadMap, int mismatchIndex) {
+        String expectedHeader = mismatchIndex >= 0 ? expectedHeadMap.get(mismatchIndex) : null;
+        String actualHeader = mismatchIndex >= 0 ? actualHeadMap.get(mismatchIndex) : null;
+        String normalizedActualHeader = mismatchIndex >= 0 ? normalizedActualHeadMap.get(mismatchIndex) : null;
+
+        StringBuilder message = new StringBuilder("表头校验失败");
+        if (mismatchIndex >= 0) {
+            message.append(String.format("：第%d列表头不匹配。", mismatchIndex + 1));
+        } else {
+            message.append("：表头与导入模板不一致。");
+        }
+
+        message.append("<br/><br/>").append("期望：").append(formatHeaderValue(expectedHeader)).append("<br/>").append("实际：")
+                .append(formatHeaderValue(actualHeader));
+
+        if (!Objects.equals(actualHeader, normalizedActualHeader)) {
+            message.append("<br/>").append("系统识别后：").append(formatHeaderValue(normalizedActualHeader));
+        }
+
+        message.append("<br/><br/>").append(String.format("期望列数：%d，实际列数：%d。", expectedHeadMap.size(), actualHeadMap.size())).append("<br/>")
+                .append("请使用系统下载的导入模板，避免使用导出文件或手动修改表头。").append("<br/>").append("若看起来一致，请重点检查空格、全角/半角字符，或是否使用了导出文件回导。");
+        return message.toString();
+    }
+
+    private String formatHeaderValue(String headerValue) {
+        return headerValue == null ? "[空]" : String.format("[%s]", headerValue);
     }
 
 }

@@ -4,6 +4,7 @@ import com.mybatisflex.annotation.*;
 
 import com.mybatisflex.core.handler.JacksonTypeHandler;
 import com.sz.core.common.entity.UploadResult;
+import com.sz.core.common.enums.YesNoEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -94,5 +95,8 @@ public class TeacherStatistics implements Serializable {
 
     @Schema(description = "内容html")
     private String contentHtml;
+
+    @Schema(description = "是否无效（枚举情况演示字段，包含mf枚举使用，excel枚举处理）")
+    private YesNoEnum hasInvalid;
 
 }

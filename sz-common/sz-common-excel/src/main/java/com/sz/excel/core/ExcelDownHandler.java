@@ -10,6 +10,7 @@ import com.sz.core.common.dict.DictService;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.excel.annotation.DictFormat;
+import com.sz.excel.annotation.ExcelTemplate;
 import com.sz.excel.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -50,8 +51,21 @@ public class ExcelDownHandler implements SheetWriteHandler {
      */
     private int currentOptionsColumnIndex;
 
+    /**
+     * 数据验证覆盖行数（第 2 行起），由 DTO 类上的 {@link ExcelTemplate#validRows()} 决定， 未标注时使用默认值
+     * 1000。 在 {@link #afterSheetCreate} 中初始化。
+     */
+    private int validRows = 1000;
+
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+        // 读取 DTO 类上的 @ExcelTemplate.validRows()，确定验证行数
+        Class<?> clazz = writeWorkbookHolder.getClazz();
+        ExcelTemplate excelTemplate = clazz.getAnnotation(ExcelTemplate.class);
+        if (excelTemplate != null && excelTemplate.validRows() > 0) {
+            validRows = excelTemplate.validRows();
+        }
+
         final Sheet sheet = writeSheetHolder.getSheet();
         final DataValidationHelper helper = sheet.getDataValidationHelper();
         final Workbook workbook = writeWorkbookHolder.getWorkbook();
@@ -65,7 +79,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
             if (field.isAnnotationPresent(DictFormat.class)) {
                 final DictFormat dictFormat = field.getDeclaredAnnotation(DictFormat.class);
                 if (dictFormat.isSelected()) {
-                    processDictFormat(helper, workbook, sheet, index, dictFormat);
+                    processDictFormat(helper, workbook, sheet, index, dictFormat, validRows);
                 }
             }
         }
@@ -73,11 +87,11 @@ public class ExcelDownHandler implements SheetWriteHandler {
         SheetWriteHandler.super.afterSheetCreate(writeWorkbookHolder, writeSheetHolder);
     }
 
-    private void processDictFormat(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer index, DictFormat dictFormat) {
+    private void processDictFormat(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer index, DictFormat dictFormat, int validRows) {
         try {
             final List<String> options = getOptions(dictFormat);
             if (!options.isEmpty()) {
-                dropDownWithSheet(helper, workbook, sheet, index, options);
+                dropDownWithSheet(helper, workbook, sheet, index, options, validRows);
             }
         } catch (Exception e) {
             log.error("处理 DictFormat 失败", e);
@@ -124,7 +138,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
         return options;
     }
 
-    private void dropDownWithSheet(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer celIndex, List<String> value) {
+    private void dropDownWithSheet(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer celIndex, List<String> value, int validRows) {
         // 创建下拉数据表
         Sheet simpleDataSheet = Optional.ofNullable(workbook.getSheet(WorkbookUtil.createSafeSheetName(OPTIONS_SHEET_NAME)))
                 .orElseGet(() -> workbook.createSheet(WorkbookUtil.createSafeSheetName(OPTIONS_SHEET_NAME)));
@@ -152,16 +166,16 @@ public class ExcelDownHandler implements SheetWriteHandler {
         // 设置名称管理器的引用位置
         name.setRefersToFormula(function);
         // 设置数据校验为序列模式，引用的是名称管理器中的别名
-        this.markOptionsToSheet(helper, sheet, celIndex, helper.createFormulaListConstraint(nameName));
+        this.markOptionsToSheet(helper, sheet, celIndex, helper.createFormulaListConstraint(nameName), validRows);
         currentOptionsColumnIndex++;
     }
 
     /**
      * 挂载下拉的列，仅限一级选项
      */
-    private void markOptionsToSheet(DataValidationHelper helper, Sheet sheet, Integer celIndex, DataValidationConstraint constraint) {
+    private void markOptionsToSheet(DataValidationHelper helper, Sheet sheet, Integer celIndex, DataValidationConstraint constraint, int validRows) {
         // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
-        CellRangeAddressList addressList = new CellRangeAddressList(1, 1000, celIndex, celIndex);
+        CellRangeAddressList addressList = new CellRangeAddressList(1, validRows, celIndex, celIndex);
         markDataValidationToSheet(helper, sheet, constraint, addressList);
     }
 
@@ -182,7 +196,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
             // 选定提示
             dataValidation.createPromptBox("填写说明：", "填写内容只能为下拉中数据，其他数据将导致导入失败");
             dataValidation.setShowPromptBox(true);
-            sheet.addValidationData(dataValidation);
         } else {
             dataValidation.setSuppressDropDownArrow(false);
         }
