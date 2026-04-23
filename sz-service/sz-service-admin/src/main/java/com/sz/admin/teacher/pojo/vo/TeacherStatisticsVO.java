@@ -4,12 +4,9 @@ import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.enums.YesNoEnum;
+import com.sz.core.common.entity.UploadResult;
 import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
-import com.sz.core.common.entity.UploadResult;
-import com.sz.excel.annotation.ExcelEnumFormat;
-import com.sz.excel.enums.ExcelEnumPreset;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -116,11 +113,6 @@ public class TeacherStatisticsVO {
     @ExcelIgnore
     @Schema(description = "内容html")
     private String contentHtml;
-
-    @ExcelEnumFormat(preset = ExcelEnumPreset.YES_NO)
-    @ExcelProperty(value = "是否无效")
-    @Schema(description = "是否无效（枚举情况演示字段，包含mf枚举使用，excel枚举处理）")
-    private YesNoEnum hasInvalid;
 
     @Data
     public static class TeacherTypeEnum {

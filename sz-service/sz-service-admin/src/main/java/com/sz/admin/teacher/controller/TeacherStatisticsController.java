@@ -8,6 +8,7 @@ import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
+import com.sz.excel.imports.model.ExcelImportResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -78,8 +79,8 @@ public class TeacherStatisticsController {
             @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true)})
     @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/import")
-    public void importExcel(@ModelAttribute ImportExcelDTO dto) {
-        teacherStatisticsService.importExcel(dto);
+    public ApiResult<ExcelImportResultVO> importExcel(@ModelAttribute ImportExcelDTO dto) {
+        return ApiResult.success(teacherStatisticsService.importExcel(dto));
     }
 
     @Operation(summary = "导出")

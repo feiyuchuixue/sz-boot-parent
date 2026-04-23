@@ -48,7 +48,7 @@ public class TeacherStatisticsImportDTO {
     private String teacherId;
 
     @ExcelProperty(value = "讲师区分类型")
-    @DictFormat(dictType = "account_status", useAlias = true, isSelected = true)
+    @DictFormat(dictType = "account_status", isSelected = true)
     @Schema(description = "讲师区分类型")
     private String teacherCommonType;
 
@@ -64,16 +64,16 @@ public class TeacherStatisticsImportDTO {
     @Schema(description = "课时总数")
     private BigDecimal totalHours;
 
-    @ExcelProperty(value = "核对状态")
-    /* @DictFormat(dictType = "account_status") */
+    @ExcelIgnore
     @Schema(description = "核对状态")
     private String checkStatus;
 
-    @ExcelProperty(value = "核对时间")
+    @ExcelIgnore
     @Schema(description = "核对时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkTime;
 
+    @ExcelIgnore
     @Schema(description = "最近一次同步时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastSyncTime;

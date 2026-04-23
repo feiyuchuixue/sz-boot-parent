@@ -5,19 +5,19 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.teacher.mapper.TeacherStatisticsMapper;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
-import com.sz.admin.teacher.pojo.dto.TeacherStatisticsImportDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
+import com.sz.admin.teacher.service.support.TeacherStatisticsExcelImporter;
 import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.*;
-import com.sz.excel.core.ExcelResult;
+import com.sz.excel.imports.model.ExcelImportResultVO;
 import com.sz.excel.utils.ExcelUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +38,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
+
+    private final TeacherStatisticsExcelImporter excelImporter;
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
@@ -93,16 +95,8 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @SneakyThrows
     @Override
-    public void importExcel(ImportExcelDTO dto) {
-        ExcelResult<TeacherStatisticsImportDTO> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), TeacherStatisticsImportDTO.class, true);
-        List<TeacherStatisticsImportDTO> list = excelResult.getList();
-        List<TeacherStatistics> cpList = BeanCopyUtils.copyList(list, TeacherStatistics.class);
-        saveBatch(cpList);
-        List<String> errorList = excelResult.getErrorList();
-        String analysis = excelResult.getAnalysis();
-        System.out.println(" analysis : " + analysis);
-        System.out.println(" isCover : " + dto.getIsCover());
-        System.out.println("list ==" + JsonUtils.toJsonString(list));
+    public ExcelImportResultVO importExcel(ImportExcelDTO dto) {
+        return excelImporter.importExcel(dto);
     }
 
     @SneakyThrows
