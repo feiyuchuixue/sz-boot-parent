@@ -1,11 +1,23 @@
-oss:
-  # 兼容S3协议的厂商 （理论上说所有兼容S3协议的OSS厂商都可以使用）
-  provider: minio
-  endpoint: http://192.168.56.101:9001/
-  accessKey: NhQlOFYcyXiQm40DpW56
-  secretKey: O1q6YRp79cTeNrtHT8yHXgcFWcOTDJNpKpRsYMzp
-  # bucket
-  bucketName: sz-boot-parent-local
-  # 自定义域名
-  domain: http://192.168.56.101:9001/
-  is-https: false
+sz:
+  oss:
+    # 兼容 S3 协议的厂商（minio / aliyun / tencent / qiniu）
+    provider: minio
+    endpoint: http://192.168.56.101:9001/
+    accessKey: NhQlOFYcyXiQm40DpW56
+    secretKey: O1q6YRp79cTeNrtHT8yHXgcFWcOTDJNpKpRsYMzp
+    # 默认存储桶
+    bucket-name: sz-boot-parent-local
+    # 自定义域名（CDN 或自定义源站）
+    domain: http://192.168.56.101:9001/
+    # 访问协议（http / https）；若 endpoint 已含协议前缀则此项仅影响公开 URL 拼接
+    scheme: http
+    # AWS S3 签名 Region
+    # - MinIO / 阿里云 OSS：填任意值均可，us-east-1 是通用默认
+    # - 腾讯云 COS：必须填写正确地域，如 ap-guangzhou，否则 Presigned URL 返回 403
+    # - 七牛云 Kodo：必须填写正确地域，如 cn-east-1，否则 Presigned URL 返回 403
+    region: us-east-1
+    # 强制路径风格（path-style）访问
+    # - 不配置（默认）：provider=minio 时自动启用路径风格，其余厂商使用虚拟主机风格
+    # - true：强制路径风格（适合 MinIO、Ceph 等自建服务）
+    # - false：强制虚拟主机风格（适合阿里云、腾讯云、七牛云）
+    # force-path-style: true

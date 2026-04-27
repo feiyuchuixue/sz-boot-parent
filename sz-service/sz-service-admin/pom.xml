@@ -68,6 +68,12 @@
             <artifactId>sz-common-oss</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- resource模块-->
+        <dependency>
+            <groupId>com.sz.resource</groupId>
+            <artifactId>sz-common-resource</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <!-- aspect aop 切面-->
         <dependency>
             <groupId>org.aspectj</groupId>

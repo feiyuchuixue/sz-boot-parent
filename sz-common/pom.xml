@@ -20,6 +20,7 @@
         <module>sz-common-generator</module>
         <module>sz-common-log</module>
         <module>sz-common-oss</module>
+        <module>sz-common-resource</module>
         <module>sz-common-mq</module>
         <module>sz-common-security</module>
         <module>sz-common-wechat</module>

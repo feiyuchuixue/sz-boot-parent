@@ -6,18 +6,24 @@ import java.lang.annotation.*;
  * 标记该类为 Excel 导入模板 DTO。
  *
  * <h3>使用示例</h3>
- * <pre>{@code
- * @ExcelTemplate(alias = "sso用户导入模板.xlsx", validRows = 500)
- * public class SsoUserImportDTO {
- *     @ImportColumn
- *     @ExcelProperty("用户名")
- *     private String username;
+ * 
+ * <pre>
+ * 
+ * {
+ *     &#64;code
+ *     &#64;ExcelTemplate(alias = "sso用户导入模板.xlsx", validRows = 500)
+ *     public class SsoUserImportDTO {
+ * 
+ *         &#64;ImportColumn
+ *         &#64;ExcelProperty("用户名")
+ *         private String username;
  *
- *     @ExcelProperty("用户状态")
- *     @DictFormat(dictType = "platform_user_status", isSelected = true)
- *     private String platformUserStatusCd;
+ *         &#64;ExcelProperty("用户状态")
+ *         @DictFormat(dictType = "platform_user_status", isSelected = true)
+ *         private String platformUserStatusCd;
+ *     }
  * }
- * }</pre>
+ * </pre>
  *
  * @author sz
  * @since 2026/03/25

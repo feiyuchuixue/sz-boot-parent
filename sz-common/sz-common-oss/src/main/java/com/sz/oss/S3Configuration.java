@@ -3,6 +3,7 @@ package com.sz.oss;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -14,8 +15,12 @@ import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import java.net.URI;
 
 /**
- * S3AsyncConfiguration
- * 
+ * S3 客户端配置
+ * <p>
+ * 统一初始化 S3AsyncClient、S3Client、S3Presigner、S3TransferManager。 region、pathStyle
+ * 等参数均从 {@link OssProperties} 读取， 支持 MinIO、阿里云 OSS、腾讯云 COS、七牛云 Kodo 等 S3 兼容存储。
+ * </p>
+ *
  * @author sz
  * @since 2024/11/12 15:16
  */
@@ -25,17 +30,27 @@ public class S3Configuration {
 
     private final OssProperties ossProperties;
 
+    /**
+     * 异步 S3 客户端（基于 AWS CRT）。
+     * <p>
+     * CRT 客户端没有独立的 chunkedEncodingEnabled() 入口， 但
+     * {@code checksumValidationEnabled(false)} 可关闭本地 checksum 计算， 避免与阿里云 /
+     * 腾讯云的签名冲突。 若遇阿里云 OSS 上传 403，请确保 oss.endpoint 使用 Bucket 所在地域 endpoint， 并将
+     * oss.provider 设置为 aliyun。
+     * </p>
+     */
     @Bean
     public S3AsyncClient s3AsyncClient() {
         StaticCredentialsProvider credentialsProvider = credentialsProvider();
-        return S3AsyncClient.crtBuilder().region(getRegion()).forcePathStyle(isPathStyle()).credentialsProvider(credentialsProvider).endpointOverride(getUri())
-                .targetThroughputInGbps(20.0).checksumValidationEnabled(false).build();
+        return S3AsyncClient.crtBuilder().region(getRegion()).forcePathStyle(ossProperties.resolvePathStyle()).credentialsProvider(credentialsProvider)
+                .endpointOverride(getUri()).targetThroughputInGbps(20.0).checksumValidationEnabled(false).build();
     }
 
     @Bean
     public S3Client s3Client() {
         StaticCredentialsProvider credentialsProvider = credentialsProvider();
-        return S3Client.builder().region(getRegion()).forcePathStyle(isPathStyle()).credentialsProvider(credentialsProvider).endpointOverride(getUri()).build();
+        return S3Client.builder().region(getRegion()).forcePathStyle(ossProperties.resolvePathStyle()).credentialsProvider(credentialsProvider)
+                .endpointOverride(getUri()).build();
     }
 
     @Bean
@@ -43,58 +58,63 @@ public class S3Configuration {
         return S3TransferManager.builder().s3Client(s3AsyncClient).build();
     }
 
+    /**
+     * Presigned URL 生成器。
+     * <p>
+     * {@code chunkedEncodingEnabled(false)} 对阿里云 OSS、腾讯云 COS 生成正确签名必不可少。 region
+     * 必须与存储桶实际所在地域一致（腾讯云、七牛云会校验）。
+     * </p>
+     */
     @Bean
     public S3Presigner s3Presigner() {
         software.amazon.awssdk.services.s3.S3Configuration config = software.amazon.awssdk.services.s3.S3Configuration.builder()
-                .pathStyleAccessEnabled(isPathStyle()).chunkedEncodingEnabled(false).build();
+                .pathStyleAccessEnabled(ossProperties.resolvePathStyle()).chunkedEncodingEnabled(false).build();
         return S3Presigner.builder().region(getRegion()).credentialsProvider(credentialsProvider()).endpointOverride(getUri()).serviceConfiguration(config)
                 .build();
     }
 
+    /**
+     * 从配置中读取 Region。
+     * <p>
+     * - MinIO / 阿里云 OSS：填任意值均可，us-east-1 是常用默认值<br>
+     * - 腾讯云 COS / 七牛云 Kodo：必须填写正确的地域，否则 Presigned URL 返回 403
+     * </p>
+     */
     private Region getRegion() {
-        return Region.US_EAST_1;
+        String region = ossProperties.getRegion();
+        if (!StringUtils.hasText(region)) {
+            return Region.US_EAST_1;
+        }
+        return Region.of(region);
     }
 
     private StaticCredentialsProvider credentialsProvider() {
         return StaticCredentialsProvider.create(AwsBasicCredentials.create(ossProperties.getAccessKey(), ossProperties.getSecretKey()));
     }
-    /**
-     * 强制使用路径风格访问存储桶和对象的参数 `forcePathStyle` 在 MinIO 中的作用。
-     *
-     * 在 S3 兼容 API 中，访问存储桶和对象有两种方式：
-     *
-     * <ul>
-     * <li><b>虚拟主机风格</b>：存储桶名称作为 URL 的一部分，例如：
-     * <code>http://bucket-name.s3.amazonaws.com/object-name</code>。 此方式要求存储桶名称符合
-     * DNS 规则。</li>
-     * <li><b>路径风格</b>：存储桶名称作为 URL 路径的一部分，例如：
-     * <code>http://s3.amazonaws.com/bucket-name/object-name</code>。 此方式不要求存储桶名称符合
-     * DNS 规则。</li>
-     * </ul>
-     *
-     * 使用 MinIO 作为 S3 兼容服务时，如果存储桶名称不符合 DNS 规则， 或希望强制使用路径风格的 URL，可以将 `forcePathStyle`
-     * 参数设置为 `true`。 这样，即使存储桶名称不符合 DNS 规则，也可以通过路径风格访问存储桶和对象。
-     *
-     * <p>
-     * 例如，当 `forcePathStyle` 设置为 `true` 时，访问对象的 URL 格式应为：
-     * </p>
-     * <ul>
-     * <li><code>http://minio-server:9000/bucket-name/object-name</code></li>
-     * <li>而非：<code>http://bucket-name.minio-server:9000/object-name</code></li>
-     * </ul>
-     *
-     * 在某些客户端库或工具中，明确设置 `forcePathStyle` 参数对于确保与 MinIO 的兼容性非常重要， 特别是在存储桶名称不符合 DNS
-     * 命名规则时。
-     */
-    private boolean isPathStyle() {
-        return ossProperties.getProvider().equals(OssProviderEnum.MINIO);
-    }
 
+    /**
+     * 构造 endpoint URI。
+     * <p>
+     * 若 endpoint 已包含协议前缀（http:// / https://），直接使用； 否则拼接 scheme 配置。
+     * </p>
+     *
+     * @throws IllegalStateException
+     *             endpoint 未配置时抛出，提示用户检查 application.yml
+     */
     private URI getUri() {
-        if (ossProperties.getEndpoint().startsWith("https://") || ossProperties.getEndpoint().startsWith("http://")) {
-            return URI.create(ossProperties.getEndpoint());
+        String endpoint = ossProperties.getEndpoint();
+        if (!StringUtils.hasText(endpoint)) {
+            throw new IllegalStateException("oss.endpoint 未配置，请在 application.yml 中设置 oss.endpoint（如 http://127.0.0.1:9000）");
+        }
+        // 去掉末尾多余的斜杠，避免 URI 解析异常
+        endpoint = endpoint.stripTrailing();
+        if (endpoint.endsWith("/")) {
+            endpoint = endpoint.substring(0, endpoint.length() - 1);
+        }
+        if (endpoint.startsWith("https://") || endpoint.startsWith("http://")) {
+            return URI.create(endpoint);
         }
         String scheme = ossProperties.getScheme().toString();
-        return URI.create(scheme + "://" + ossProperties.getEndpoint());
+        return URI.create(scheme + "://" + endpoint);
     }
 }

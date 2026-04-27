@@ -71,9 +71,10 @@ public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> i
         UploadResult uploadResult = null;
         String bucketName = properties.getBucketName();
         // 如果是富文本编辑器上传，选择富文本编辑器的bucket配置
-        if ("richtext".equals(scene)) {
-            bucketName = properties.getRichtextBucketName();
-        }
+        /*
+         * if ("richtext".equals(scene)) { bucketName =
+         * properties.getRichtextBucketName(); }
+         */
         uploadResult = ossClient.upload(file, dirTag, bucketName);
         Long fileId = fileLog(uploadResult);
         uploadResult.setFileId(fileId);
