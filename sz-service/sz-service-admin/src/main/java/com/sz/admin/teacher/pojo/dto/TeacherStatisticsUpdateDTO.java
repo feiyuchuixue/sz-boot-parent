@@ -1,8 +1,6 @@
 package com.sz.admin.teacher.pojo.dto;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.entity.UploadResult;
+import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -65,8 +63,7 @@ public class TeacherStatisticsUpdateDTO {
     private String remark;
 
     @Schema(description = "文件地址(JSON)")
-    @Column(typeHandler = JacksonTypeHandler.class)
-    private List<UploadResult> url;
+    private List<ResourceRef> url;
 
     @Schema(description = "内容html")
     private String contentHtml;

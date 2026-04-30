@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -172,18 +174,9 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void urlDownload(String url, HttpServletResponse response) throws IOException {
         CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
-        String finalBucket = getBucketFromUrl(url, "");
-        String objectName = getObjectNameFromUrl(url);
-        String filename = getFilenameFromObjectName(objectName);
-        String confValue = SysConfigUtils.getConfValue("oss.accessMode");
-        String fileUrl = url;
-        // 私有文件需要生成带签名的临时访问URL
-        if ("private".equals(confValue)) {
-            fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
-        }
         URL parsedUrl;
         try {
-            parsedUrl = new URL(fileUrl);
+            parsedUrl = new URL(url);
         } catch (MalformedURLException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
             return;
@@ -193,7 +186,17 @@ public class CommonServiceImpl implements CommonService {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "非法的URL协议");
             return;
         }
-        try (InputStream in = parsedUrl.openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+        String filename = getFilenameFromObjectName(parsedUrl.getPath());
+        String accessUrl;
+        try {
+            URI uri = new URI(parsedUrl.getProtocol(), parsedUrl.getUserInfo(), parsedUrl.getHost(), parsedUrl.getPort(), parsedUrl.getPath(),
+                    parsedUrl.getQuery(), null);
+            accessUrl = uri.toASCIIString();
+        } catch (URISyntaxException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
+            return;
+        }
+        try (InputStream in = URI.create(accessUrl).toURL().openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
             in.transferTo(os);
             os.flush();
         }

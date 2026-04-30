@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Tag(name = "统一资源管理")
 @Slf4j
@@ -79,6 +83,38 @@ public class SysResourceController {
      *            原始请求（用于提取完整路径中的 subPath）
      * @return 流式文件响应
      */
+    /**
+     * 批量上传资源文件（富文本编辑器专用）
+     *
+     * @param sceneCode
+     *            场景编码，如 teacher.richtext
+     * @param pathSegments
+     *            路径分段，逗号分割，BIZ/BIZ_DATE 策略时生效
+     * @param request
+     *            原始请求（从 multipart 中提取所有文件）
+     * @return 上传结果列表，每项包含 objectKey、accessUrl 和 resourceId
+     */
+    @DebounceIgnore
+    @Operation(summary = "批量上传资源文件", description = "支持同时上传多个文件，用于富文本编辑器等场景。每个文件独立处理，返回结果列表。")
+    @PostMapping(value = "/batchUpload", consumes = "multipart/form-data")
+    public ApiResult<List<ResourceUploadResult>> batchUpload(
+            @Parameter(description = "场景编码，如 teacher.richtext") @RequestParam("sceneCode") String sceneCode,
+            @Parameter(description = "路径分段，逗号分割，BIZ/BIZ_DATE 策略时生效") @RequestParam(value = "pathSegments", required = false) String pathSegments,
+            HttpServletRequest request) throws IOException {
+        String[] segments = (pathSegments != null && !pathSegments.isBlank()) ? pathSegments.split(",") : new String[0];
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        List<MultipartFile> files = new ArrayList<>();
+        Iterator<String> fileNames = multipartRequest.getFileNames();
+        while (fileNames.hasNext()) {
+            files.addAll(multipartRequest.getFiles(fileNames.next()));
+        }
+        List<ResourceUploadResult> results = new ArrayList<>();
+        for (MultipartFile file : files) {
+            results.add(sysResourceService.upload(sceneCode, null, file, segments));
+        }
+        return ApiResult.success(results);
+    }
+
     @Profile({"dev", "local", "preview"}) // 生产环境尽量使用nginx或oss
     @SaIgnore
     @Operation(summary = "访问资源文件", description = "无需登录。支持子目录，流式响应，URL 格式：/resource/file/{sceneDir}/**")

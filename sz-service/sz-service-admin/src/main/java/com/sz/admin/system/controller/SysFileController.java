@@ -52,6 +52,7 @@ public class SysFileController {
         return ApiResult.success(sysFileService.uploadFile(file, dirTag, ""));
     }
 
+    @Deprecated(since = "1.4.0-beta", forRemoval = true)
     @Operation(summary = "批量上传文件")
     @PostMapping("/batchUpload")
     public ApiResult<List<UploadResult>> batchUpload(HttpServletRequest request,

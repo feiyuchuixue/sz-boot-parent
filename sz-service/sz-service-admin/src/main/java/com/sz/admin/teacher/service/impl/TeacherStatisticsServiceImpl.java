@@ -19,6 +19,7 @@ import com.sz.core.datascope.SimpleDataScopeHelper;
 import com.sz.core.util.*;
 import com.sz.excel.imports.model.ExcelImportResultVO;
 import com.sz.excel.utils.ExcelUtils;
+import com.sz.resource.service.ResourceService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -40,6 +41,8 @@ import java.util.List;
 public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsMapper, TeacherStatistics> implements TeacherStatisticsService {
 
     private final TeacherStatisticsExcelImporter excelImporter;
+
+    private final ResourceService resourceService;
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
@@ -64,6 +67,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         try {
             SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
             Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 调试sql
+            page.getRecords().forEach(this::fillAccessUrl);
             return PageUtils.getPageResult(page);
         } finally {
             SimpleDataScopeHelper.clearDataScope();
@@ -74,7 +78,9 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public List<TeacherStatisticsVO> list(TeacherStatisticsListDTO dto) {
         try {
             SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
-            return listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
+            List<TeacherStatisticsVO> list = listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
+            list.forEach(this::fillAccessUrl);
+            return list;
         } finally {
             SimpleDataScopeHelper.clearDataScope();
         }
@@ -90,7 +96,9 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public TeacherStatisticsVO detail(Long id) {
         TeacherStatistics teacherStatistics = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
-        return BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+        TeacherStatisticsVO vo = BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+        fillAccessUrl(vo);
+        return vo;
     }
 
     @SneakyThrows
@@ -144,6 +152,11 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
             wrapper.eq(TeacherStatistics::getId, dto.getRemoteTeacherId());
         }
         return wrapper;
+    }
+
+    /** 将 url 列表中每个 ResourceRef 的 accessUrl 填充为当前环境可访问 URL */
+    private void fillAccessUrl(TeacherStatisticsVO vo) {
+        resourceService.fillAccessUrl(vo.getUrl());
     }
 
     @SneakyThrows

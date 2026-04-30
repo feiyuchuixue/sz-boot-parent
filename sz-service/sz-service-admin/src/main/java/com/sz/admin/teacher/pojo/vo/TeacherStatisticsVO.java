@@ -4,9 +4,9 @@ import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.entity.UploadResult;
 import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
+import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -108,7 +108,7 @@ public class TeacherStatisticsVO {
     @ExcelIgnore
     @Schema(description = "文件地址(JSON)")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<UploadResult> url;
+    private List<ResourceRef> url;
 
     @ExcelIgnore
     @Schema(description = "内容html")
