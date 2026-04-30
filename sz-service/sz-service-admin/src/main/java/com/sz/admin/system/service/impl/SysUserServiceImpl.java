@@ -582,4 +582,48 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return profileVO;
     }
 
+    @Override
+    public void updateProfile(UserProfileUpdateDTO dto) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
+        user.setId(userId);
+        user.setLogo(dto.getAvatar());
+        updateById(user);
+    }
+
+    @Override
+    public void updateContact(SysUserContactUpdateDTO dto) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = getById(userId);
+        // 验证当前密码
+        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
+        // 唯一性校验：不能与其他用户的手机号/邮箱重复
+        QueryWrapper uniqueWrapper;
+        if ("phone".equals(dto.getField())) {
+            uniqueWrapper = QueryWrapper.create().eq(SysUser::getPhone, dto.getValue()).ne(SysUser::getId, userId);
+            CommonResponseEnum.EXISTS.message("该手机号已被其他账户使用").assertTrue(count(uniqueWrapper) > 0);
+            sysUser.setPhone(dto.getValue());
+        } else {
+            uniqueWrapper = QueryWrapper.create().eq(SysUser::getEmail, dto.getValue()).ne(SysUser::getId, userId);
+            CommonResponseEnum.EXISTS.message("该邮箱已被其他账户使用").assertTrue(count(uniqueWrapper) > 0);
+            sysUser.setEmail(dto.getValue());
+        }
+        updateById(sysUser);
+    }
+
+    @Override
+    public void unbindContact(SysUserContactUnbindDTO dto) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = getById(userId);
+        // 验证当前密码
+        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
+        // 将对应字段置空
+        if ("phone".equals(dto.getField())) {
+            sysUser.setPhone("");
+        } else {
+            sysUser.setEmail("");
+        }
+        updateById(sysUser);
+    }
+
 }

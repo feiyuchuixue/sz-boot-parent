@@ -110,4 +110,10 @@ public interface SysUserService extends IService<SysUser> {
     void changeUserTag(SysUserTagDTO dto);
 
     UserProfileVO getProfile();
+
+    void updateProfile(UserProfileUpdateDTO dto);
+
+    void updateContact(SysUserContactUpdateDTO dto);
+
+    void unbindContact(SysUserContactUnbindDTO dto);
 }

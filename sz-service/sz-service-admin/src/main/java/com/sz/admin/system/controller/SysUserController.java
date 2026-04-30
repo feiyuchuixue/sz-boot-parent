@@ -176,4 +176,25 @@ public class SysUserController {
         return ApiResult.success(sysUserService.getProfile());
     }
 
+    @Operation(summary = "（个人）更新基本资料")
+    @PutMapping("profile")
+    public ApiResult<Void> updateProfile(@Valid @RequestBody UserProfileUpdateDTO dto) {
+        sysUserService.updateProfile(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "（个人）更新联系方式（手机号/邮箱）")
+    @PutMapping("profile/contact")
+    public ApiResult<Void> updateContact(@Valid @RequestBody SysUserContactUpdateDTO dto) {
+        sysUserService.updateContact(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "（个人）解绑联系方式（手机号/邮箱）")
+    @DeleteMapping("profile/contact")
+    public ApiResult<Void> unbindContact(@Valid @RequestBody SysUserContactUnbindDTO dto) {
+        sysUserService.unbindContact(dto);
+        return ApiResult.success();
+    }
+
 }
