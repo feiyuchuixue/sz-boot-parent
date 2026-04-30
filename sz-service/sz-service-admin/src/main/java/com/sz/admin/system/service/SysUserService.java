@@ -9,6 +9,7 @@ import com.sz.admin.system.pojo.vo.common.UserVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserProfileVO;
 import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -73,6 +74,7 @@ public interface SysUserService extends IService<SysUser> {
      *
      * @return {@link SysUserVO}
      */
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     SysUserVO getUserInfo();
 
     /**
@@ -106,4 +108,6 @@ public interface SysUserService extends IService<SysUser> {
     PageResult<UserVO> pageSelector(SelectorQueryDTO dto);
 
     void changeUserTag(SysUserTagDTO dto);
+
+    UserProfileVO getProfile();
 }

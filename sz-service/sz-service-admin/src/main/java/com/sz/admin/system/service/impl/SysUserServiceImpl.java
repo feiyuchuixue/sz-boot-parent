@@ -325,10 +325,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 获取用户信息
+     * 获取用户信息;
      *
      * @return {@link SysUserVO}
+     * @deprecated 请使用 {@link SysUserService#getProfile}
      */
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     @Override
     public SysUserVO getUserInfo() {
         SysUser sysUser = getById(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
@@ -569,6 +571,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 发布用户权限变更事件
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(userIds)));
+    }
+
+    @Override
+    public UserProfileVO getProfile() {
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = getById(userId);
+        UserProfileVO profileVO = BeanCopyUtils.copy(sysUser, UserProfileVO.class);
+        profileVO.setAvatar(sysUser.getLogo());
+        return profileVO;
     }
 
 }

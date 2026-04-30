@@ -8,6 +8,7 @@ import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserProfileVO;
 import com.sz.admin.system.service.SysDeptService;
 import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
@@ -95,6 +96,7 @@ public class SysUserController {
         return ApiResult.success();
     }
 
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     @Operation(summary = "登录信息查询")
     @GetMapping("/userinfo")
     public ApiResult<SysUserVO> getUserInfo() {
@@ -166,6 +168,12 @@ public class SysUserController {
     public ApiResult<Void> changeUserTag(@RequestBody SysUserTagDTO dto) {
         sysUserService.changeUserTag(dto);
         return ApiResult.success();
+    }
+
+    @Operation(summary = "获取用户基本资料")
+    @GetMapping("profile")
+    public ApiResult<UserProfileVO> getProfile() {
+        return ApiResult.success(sysUserService.getProfile());
     }
 
 }

@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Service
@@ -120,13 +122,19 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
     }
 
     /**
-     * 从请求路径中提取 sceneDir 之后的 subPath
+     * 从请求路径中提取 sceneDir 之后的 subPath，并做 URL decode
      *
      * <pre>
-     *   requestURI = /api/admin/resource/file/avatars/1/20260403/abc.png
-     *   sceneDir   = avatars
-     *   → subPath  = 1/20260403/abc.png
+     *   requestURI = /api/admin/resource/file/logo/user/logo/20260430/%E5%BE%AE%E4%BF%A1.png
+     *   sceneDir   = logo
+     *   → subPath  = 微信.png  （decode 后与磁盘实际文件名一致）
      * </pre>
+     *
+     * <p>
+     * 浏览器访问含非 ASCII 字符（如汉字）的文件时，URL 中的文件名段会被自动 percent-encode（如 "微信.png" →
+     * "%E5%BE%AE%E4%BF%A1.png"）。{@link HttpServletRequest#getRequestURI()} 返回的是
+     * encode 后的值，若不做 decode 直接拼 objectKey，将找不到磁盘上以原始汉字命名的文件。
+     * </p>
      */
     private String extractSubPath(HttpServletRequest request, String sceneDir) {
         String uri = request.getRequestURI();
@@ -137,7 +145,15 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
             // 没有子路径，说明请求的就是 sceneDir 本身（不合法，必须包含文件名）
             return null;
         }
-        return uri.substring(idx + marker.length());
+        String rawSubPath = uri.substring(idx + marker.length());
+        // URL decode：还原 percent-encoded 字符（含汉字等非 ASCII），使其与磁盘实际文件名一致
+        try {
+            return URLDecoder.decode(rawSubPath, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            // decode 失败（如含非法 % 序列），视为不合法路径，返回 null 由上层返回 400
+            log.warn("[Resource] subPath URL decode 失败，rawSubPath={}", rawSubPath);
+            return null;
+        }
     }
 
     /**
