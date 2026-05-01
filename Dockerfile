@@ -12,6 +12,6 @@ RUN set -eux; \
 ARG SPRING_PROFILES_ACTIVE
 
 # 声明挂载点（配置/日志）
-VOLUME ["/config", "/logs"]
+VOLUME ["/config", "/logs", "/data"]
 
 ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai","-Dfile.encoding=UTF-8", "app.jar", "--spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
