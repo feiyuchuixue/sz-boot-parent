@@ -63,9 +63,22 @@
           <#elseif field.htmlType == "time">
         <el-time-picker clearable v-model="paramsProps.row.${field.javaField}" placeholder="请选择${field.columnComment}"></el-time-picker>
           <#elseif field.htmlType == "fileUpload">
-        <upload-files v-model:modelValue="${field.javaField}UploadResult" :limit="${field.options['upload-files.limit']!5}" :file-size="${field.options['upload-files.fileSize']!3}" :dir="'${field.options['upload-files.dir']!'tmp'}'" :accept="'${field.options['upload-files.accept']!''}'" />
+        <upload-files
+          v-model:modelValue="${field.javaField}UploadResult"
+          :limit="${field.options['upload-files.limit']!5}"
+          :file-size="${field.options['upload-files.fileSize']!3}"
+          scene-code="'${field.options['upload-files.sceneCode']!'system.temp'}'"
+          path-segments="'${field.options['upload-files.pathSegments']!'your_biz_path'}'"
+          :accept="'${field.options['upload-files.accept']!''}'"
+        />
           <#elseif field.htmlType == "jodit-editor">
-        <jodit-editor v-model="paramsProps.row.${field.javaField}" :upload-dir="'${field.options['upload.dir']!'editor'}'" :height="'${field.options['height']}'" />
+        <jodit-editor
+          v-model="paramsProps.row.${field.javaField}"
+          :upload-dir="'${field.options['upload.dir']!'editor'}'"
+          scene-code="'${field.options['upload.sceneCode']!'system.temp'}'"
+          path-segments="'${field.options['upload.pathSegments']!'your_editor_biz_path'}'"
+          :height="'${field.options['height']}'"
+        />
           <#else>
         <el-input v-model="paramsProps.row.${field.javaField}" placeholder="请填写${field.columnComment}" clearable></el-input>
           </#if>

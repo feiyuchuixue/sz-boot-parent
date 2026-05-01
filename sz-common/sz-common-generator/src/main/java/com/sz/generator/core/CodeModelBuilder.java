@@ -83,6 +83,7 @@ public class CodeModelBuilder {
         boolean hasDict = false;
         boolean hasSelect = false;
         boolean hasExcel = false;
+        boolean hasResourceRef = false;
         List<GeneratorDetailVO.Column> pkColumns = new ArrayList<>();
         List<GeneratorDetailVO.Column> columns = detailVO.getColumns();
 
@@ -106,6 +107,10 @@ public class CodeModelBuilder {
             if (column.getIsPk().equals("1")) {
                 pkColumns.add(column);
             }
+            // 检测是否存在 List<ResourceRef> 类型字段
+            if (GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(column.getJavaType())) {
+                hasResourceRef = true;
+            }
         }
         model.put("pkName", pkName);
         model.put("hasDict", hasDict);
@@ -113,6 +118,7 @@ public class CodeModelBuilder {
         model.put("hasExcel", hasExcel);
         model.put("idType", idType);
         model.put("pkColumns", pkColumns);
+        model.put("hasResourceRef", hasResourceRef);
         return this;
     }
 
@@ -146,6 +152,11 @@ public class CodeModelBuilder {
         model.put("dtoListClassName", detailVO.getBaseInfo().getClassName() + "ListDTO");
         model.put("dtoImportClassName", detailVO.getBaseInfo().getClassName() + "ImportDTO");
         model.put("voClassName", detailVO.getBaseInfo().getClassName() + "VO");
+
+        // ExcelImporter 相关
+        model.put("excelImporterClassName", detailVO.getBaseInfo().getClassName() + "ExcelImporter");
+        String excelImporterPkg = buildPackagePath(detailVO, packageGroup, "service" + File.separator + "support");
+        model.put("excelImporterPkg", excelImporterPkg);
 
         return this;
     }

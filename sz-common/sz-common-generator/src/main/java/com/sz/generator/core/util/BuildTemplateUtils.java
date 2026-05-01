@@ -44,6 +44,8 @@ public class BuildTemplateUtils {
                 new DtoUpdateCodeBuilder(configurer, rootPath, detailVO, model)));
         if (hasImport)
             list.add(new DtoImportCodeBuilder(configurer, rootPath, detailVO, model));
+        if (hasImport)
+            list.add(new ExcelImporterCodeBuilder(configurer, rootPath, detailVO, model));
         list.add(new PoCodeBuilder(configurer, rootPath, detailVO, model));
         list.add(new VoCodeBuilder(configurer, rootPath, detailVO, model));
 

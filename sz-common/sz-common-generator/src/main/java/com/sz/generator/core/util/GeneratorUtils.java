@@ -103,7 +103,7 @@ public class GeneratorUtils {
             tableColumn.setIsLogicDel(GeneratorConstants.REQUIRE);
         }
 
-        // 【约定】： 使用attachments 或 url 作为 附件字段，数据库类型json， java 类型使用List<UploadResult>
+        // 【约定】： 使用attachments 或 url 作为 附件字段，数据库类型json， java 类型使用List<ResourceRef>
         if ("attachments".equals(columnName) || "url".equals(columnName)) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
         }
@@ -392,10 +392,11 @@ public class GeneratorUtils {
         if (arraysContains(GeneratorConstants.AUTO_FILE_UPLOAD_COLUMNS, columnName) || GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(javaType)) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
             tableColumn.setJavaTypePackage(
-                    "com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.core.common.entity.UploadResult,java.util.List,com.mybatisflex.annotation.Column");
+                    "com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
             tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
             Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
-            options.put("upload-files.dir", "tmp"); // 多文件上传组件：文件上传目录
+            options.put("upload-files.sceneCode", "system.temp"); // 多文件上传组件：文件上传目录
+            options.put("upload-file.pathSegments", "your_biz_path");
             options.put("upload-files.accept", ""); // 多文件上传组件：允许上传的文件类型, doc,pdf,jpg等,空表示不限制
             options.put("upload-files.limit", 5); // 多文件上传组件：最多上传5个文件
             options.put("upload-files.fileSize", 3); // 多文件上传组件：单个文件最大3MB
@@ -410,7 +411,8 @@ public class GeneratorUtils {
         String htmlType = tableColumn.getHtmlType();
         if (GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
             Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
-            options.put("uploader.dir", "editor"); // 富文本编辑器：文件上传目录
+            options.put("uploader.sceneCode", "system.temp"); // 富文本编辑器：文件上传目录
+            options.put("upload-file.pathSegments", "your_editor_biz_path");
             options.put("height", "400px"); // 富文本编辑器：编辑器高度
             tableColumn.setOptions(options);
         }

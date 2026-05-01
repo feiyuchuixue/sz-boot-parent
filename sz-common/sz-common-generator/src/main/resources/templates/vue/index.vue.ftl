@@ -274,8 +274,9 @@ const importData = () => {
     tempApi: downloadTemplate,
     importApi: ${funImport},
     getTableList: proTableRef.value?.getTableList,
-    alias: '【标识字符】：例 jstj, 对应 [系统管理-模版文件管理] 中的标识',
-    fileName: '【模板文件名称】：例 教师统计模板.xlsx, 对应 [系统管理-模版文件管理] 中的模版名'
+    alias: '${functionName}导入模板.xlsx',
+    fileName: '${functionName}导入模板.xlsx',
+    resultTip: '失败结果可到【Excel失败记录 - ${functionName}导入】页面查看'
   };
   ImportExcelRef.value?.acceptParams(params);
 };

@@ -14,6 +14,7 @@ import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
 <#if GeneratorInfo.hasImport == "1">
 import com.sz.core.common.entity.ImportExcelDTO;
+import com.sz.excel.imports.model.ExcelImportResultVO;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,7 +47,7 @@ public interface ${serviceClassName} extends IService<${poClassName}> {
     ${voClassName} detail(Object id);
     <#if GeneratorInfo.hasImport == "1">
 
-    void importExcel(ImportExcelDTO dto);
+    ExcelImportResultVO importExcel(ImportExcelDTO dto);
     </#if>
     <#if GeneratorInfo.hasExport == "1">
 

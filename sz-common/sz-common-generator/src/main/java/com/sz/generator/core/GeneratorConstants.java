@@ -165,9 +165,9 @@ public class GeneratorConstants {
     public static final String TYPE_LONG = "Long";
 
     /**
-     * List集合<UploadResult>, 文件附件
+     * List集合<ResourceRef>, 文件附件
      */
-    public static final String TYPE_LIST_UPLOADRESULT = "List<UploadResult>";
+    public static final String TYPE_LIST_UPLOADRESULT = "List<ResourceRef>";
 
     /**
      * 浮点型

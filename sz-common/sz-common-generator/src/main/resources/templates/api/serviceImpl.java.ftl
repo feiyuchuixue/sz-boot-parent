@@ -23,21 +23,25 @@ import ${dtoPkg}.${dtoCreateClassName};
 import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 <#if GeneratorInfo.hasImport == "1">
-import ${dtoPkg}.${dtoImportClassName};
+import ${excelImporterPkg}.${excelImporterClassName};
 import com.sz.core.common.entity.ImportExcelDTO;
-import com.sz.excel.core.ExcelResult;
+import com.sz.excel.imports.model.ExcelImportResultVO;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 import java.io.OutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import com.sz.core.util.FileUtils;
-</#if>
-<#if GeneratorInfo.hasImport == "1" || GeneratorInfo.hasExport == "1">
 import com.sz.excel.utils.ExcelUtils;
+import lombok.SneakyThrows;
+</#if>
+<#if GeneratorInfo.hasImport == "1">
 import lombok.SneakyThrows;
 </#if>
 <#if GeneratorInfo.btnDataScopeType == "1">
 import com.sz.core.datascope.SimpleDataScopeHelper;
+</#if>
+<#if hasResourceRef == true>
+import com.sz.resource.service.ResourceService;
 </#if>
 
 import ${voPkg}.${voClassName};
@@ -57,6 +61,15 @@ import ${voPkg}.${voClassName};
 @RequiredArgsConstructor
 public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${poClassName}> implements ${serviceClassName} {
 <#if GeneratorInfo.generateType != "service">
+<#if GeneratorInfo.hasImport == "1">
+
+    private final ${excelImporterClassName} excelImporter;
+</#if>
+<#if hasResourceRef == true>
+
+    private final ResourceService resourceService;
+</#if>
+
     @Override
     public void create(${dtoCreateClassName} dto){
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
@@ -106,12 +119,18 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
         try {
             SimpleDataScopeHelper.start(${poClassName}.class);
             Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto),  ${voClassName}.class);
+<#if hasResourceRef == true>
+            page.getRecords().forEach(this::fillAccessUrl);
+</#if>
             return PageUtils.getPageResult(page);
         } finally {
             SimpleDataScopeHelper.clearDataScope();
         }
 <#else>
         Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
+<#if hasResourceRef == true>
+        page.getRecords().forEach(this::fillAccessUrl);
+</#if>
         return PageUtils.getPageResult(page);
 </#if>
     }
@@ -121,12 +140,20 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 <#if GeneratorInfo.btnDataScopeType == "1">
         try {
             SimpleDataScopeHelper.start(${poClassName}.class);
-            return listAs(buildQueryWrapper(dto), ${voClassName}.class);
+            List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
+<#if hasResourceRef == true>
+            list.forEach(this::fillAccessUrl);
+</#if>
+            return list;
         } finally {
             SimpleDataScopeHelper.clearDataScope();
         }
 <#else>
-        return listAs(buildQueryWrapper(dto), ${voClassName}.class);
+        List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
+<#if hasResourceRef == true>
+        list.forEach(this::fillAccessUrl);
+</#if>
+        return list;
 </#if>
     }
 
@@ -140,22 +167,18 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     public ${voClassName} detail(Object id){
         ${poClassName} ${camelClassName} = getById((Serializable) id);
         CommonResponseEnum.INVALID_ID.assertNull(${camelClassName});
-        return BeanCopyUtils.copy(${camelClassName}, ${voClassName}.class);
+        ${voClassName} vo = BeanCopyUtils.copy(${camelClassName}, ${voClassName}.class);
+<#if hasResourceRef == true>
+        fillAccessUrl(vo);
+</#if>
+        return vo;
     }
 <#if GeneratorInfo.hasImport == "1">
 
     @SneakyThrows
     @Override
-    public void importExcel(ImportExcelDTO dto) {
-        ExcelResult<${dtoImportClassName}> excelResult = ExcelUtils.importExcel(dto.getFile().getInputStream(), ${dtoImportClassName}.class, true);
-        List<${dtoImportClassName}> list = excelResult.getList();
-        // 入库
-        List<${poClassName}> importList = BeanCopyUtils.copyList(list, ${poClassName}.class);
-        saveBatch(importList);
-        List<String> errorList = excelResult.getErrorList();
-        String analysis = excelResult.getAnalysis();
-        System.out.println(" analysis : " + analysis);
-        System.out.println(" isCover : " + dto.getIsCover());
+    public ExcelImportResultVO importExcel(ImportExcelDTO dto) {
+        return excelImporter.importExcel(dto);
     }
 </#if>
 <#if GeneratorInfo.hasExport == "1">
@@ -166,7 +189,18 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
         List<${voClassName}> list = list(dto);
         String fileName = "${functionName}模板";
         OutputStream os = FileUtils.getOutputStream(response, fileName + ".xlsx");
-        ExcelUtils.exportExcel(list, "${functionName}", ${voClassName}.class, os);
+        ExcelUtils.exportExcel(list, "${functionName}", ${voClassName}.class, os, true);
+    }
+</#if>
+<#if hasResourceRef == true>
+
+    /** 将 VO 中 List<ResourceRef> 类型字段的 accessUrl 填充为当前环境可访问 URL */
+    private void fillAccessUrl(${voClassName} vo) {
+<#list columns as field>
+<#if field.javaType == "List<ResourceRef>">
+        resourceService.fillAccessUrl(vo.get${field.upCamelField}());
+</#if>
+</#list>
     }
 </#if>
 
