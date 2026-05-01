@@ -18,6 +18,7 @@ import java.util.List;
  * @author sz
  * @since 2023-08-31
  */
+@Deprecated(since = "v1.4.0-beta", forRemoval = true)
 public interface SysFileService extends IService<SysFile> {
 
     /**

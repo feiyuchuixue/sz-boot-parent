@@ -61,3 +61,18 @@ CREATE TABLE `sys_resource` (
                                 KEY `idx_scene_code` (`scene_code`),
                                 KEY `idx_biz_key` (`scene_code`,`biz_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='资源实体主表';
+
+--changeset 升职哦（sz）:20260501_1316
+--comment: 清理菜单无效记录
+DELETE FROM `sys_menu` WHERE `id` in ('0444cd2c01584f0687264b6205536691', '2ae05bd0afaa4c6dbc173bf1dd0da2cf', '8d92cf6f2f3248569d5dd6cb6b958d7c', 'f42b249ccfd44fdcbc2dba48a308c1f6', '3f555e4a01174a1d9b29be439668e32f', '2868079355ce4b6c985b1b746dbb0952', '49c75878b4d445f8be5f69e21e18b70d', 'c55de3135b864579bda79c279f4129a9', '52fb3db605334671bb0dfe4f50cb1147');
+
+--changeset 升职哦（sz）:20260501_1317
+--comment: 清理清理模板文件jstj测试记录
+DELETE h FROM sys_temp_file_history h JOIN sys_temp_file t ON t.id = h.sys_temp_file_id WHERE t.alias = 'jstj';
+DELETE FROM `sys_temp_file` WHERE `alias` = 'jstj';
+
+--changeset 升职哦（sz）:20260501_1334
+--comment: 新增演示记录
+INSERT IGNORE INTO `sys_temp_file` (`id`, `sys_file_id`, `temp_name`, `remark`, `del_flag`, `create_id`, `create_time`, `update_id`, `update_time`, `url`, `alias`) VALUES (2, 407693840624005120, '教师统计导入模板新.xlsx', '', 'F', 1, '2026-05-01 13:06:33', 1, '2026-05-01 13:06:33', '[{\"accessUrl\": null, \"objectKey\": \"template/20260501/教师统计导入模板新.xlsx\", \"sceneCode\": \"template.excel\", \"originName\": \"教师统计导入模板新.xlsx\", \"resourceId\": 407687721621008384, \"contentType\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"}]', 'jstj');
+INSERT IGNORE INTO `sys_temp_file_history` (`id`, `sys_temp_file_id`, `sys_file_id`, `temp_name`, `url`, `remark`, `create_id`, `create_time`, `update_id`, `update_time`) VALUES (3, 2, 407693840624005120, '教师统计导入模板新.xlsx', '[{\"accessUrl\": null, \"objectKey\": \"template/20260501/教师统计导入模板新.xlsx\", \"sceneCode\": \"template.excel\", \"originName\": \"教师统计导入模板新.xlsx\", \"resourceId\": 407687721621008384, \"contentType\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"}]', '', 1, '2026-05-01 13:06:33', 1, '2026-05-01 13:06:33');
+INSERT IGNORE INTO `sys_resource` (`id`, `scene_code`, `object_key`, `e_tag`, `origin_name`, `size`, `content_type`, `storage_type`, `biz_key`, `del_flag`, `create_time`, `create_id`, `update_time`, `update_id`) VALUES (407693840624005120, 'template.excel', 'template/20260501/教师统计导入模板新.xlsx', NULL, '教师统计导入模板新.xlsx', 11656, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'LOCAL', NULL, 'F', '2026-05-01 13:30:46', 1, '2026-05-01 13:30:46', 1);

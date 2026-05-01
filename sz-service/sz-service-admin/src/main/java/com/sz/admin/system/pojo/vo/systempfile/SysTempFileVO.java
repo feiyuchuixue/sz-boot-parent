@@ -2,7 +2,7 @@ package com.sz.admin.system.pojo.vo.systempfile;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.entity.UploadResult;
+import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -24,14 +24,14 @@ public class SysTempFileVO {
     private Long id;
 
     @Schema(description = "文件ID")
-    private Integer sysFileId;
+    private Long sysFileId;
 
     @Schema(description = "模版名")
     private String tempName;
 
     @Schema(description = "地址")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<UploadResult> url;
+    private List<ResourceRef> url;
 
     @Schema(description = "备注")
     private String remark;

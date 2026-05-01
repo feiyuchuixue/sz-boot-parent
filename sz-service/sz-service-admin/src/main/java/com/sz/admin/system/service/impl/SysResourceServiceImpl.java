@@ -1,9 +1,16 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysResourceMapper;
+import com.sz.admin.system.pojo.dto.sysresource.SysResourceListDTO;
 import com.sz.admin.system.pojo.po.SysResource;
+import com.sz.admin.system.pojo.vo.sysresource.SysResourceVO;
 import com.sz.admin.system.service.SysResourceService;
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.util.PageUtils;
+import com.sz.core.util.Utils;
 import com.sz.resource.config.ResourceProperties;
 import com.sz.resource.config.ResourceSceneConfig;
 import com.sz.resource.enums.ServeModeEnum;
@@ -119,6 +126,34 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         };
 
         return ResponseEntity.ok().contentType(mediaType).body(body);
+    }
+
+    @Override
+    public PageResult<SysResourceVO> page(SysResourceListDTO dto) {
+        Page<SysResourceVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysResourceVO.class);
+        PageResult<SysResourceVO> pageResult = PageUtils.getPageResult(page);
+        for (SysResourceVO vo : pageResult.getRows()) {
+            if (vo.getSceneCode() == null || vo.getObjectKey() == null)
+                continue;
+            try {
+                vo.setAccessUrl(resourceService.resolveUrl(vo.getSceneCode(), vo.getObjectKey()));
+            } catch (Exception e) {
+                log.warn("[ResourceManage] 场景配置不存在，跳过 accessUrl 填充，sceneCode={} objectKey={}", vo.getSceneCode(), vo.getObjectKey());
+            }
+        }
+        return pageResult;
+    }
+
+    private static QueryWrapper buildQueryWrapper(SysResourceListDTO dto) {
+        QueryWrapper wrapper = QueryWrapper.create().from(SysResource.class);
+        if (Utils.isNotNull(dto.getOriginName())) {
+            wrapper.like(SysResource::getOriginName, dto.getOriginName());
+        }
+        if (Utils.isNotNull(dto.getSceneCode())) {
+            wrapper.eq(SysResource::getSceneCode, dto.getSceneCode());
+        }
+        wrapper.orderBy(SysResource::getCreateTime, false);
+        return wrapper;
     }
 
     /**

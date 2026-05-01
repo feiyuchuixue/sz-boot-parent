@@ -1,102 +1,81 @@
-oss:
-  # 支持S3协议的厂商
-  provider: MINIO
-  endpoint: 192.168.56.101:9000
-  accessKey: a4jtJvgEmk4ead5dzac6
-  secretKey: UW6kxTGRetIAahV759rFkgoQ8ilXLRUMW0ULdIoo
-  # 全局存储桶，偏私有存储
-  bucketName: test
-  domain: http://192.168.56.101:9000
-  # 富文本专用存储桶，偏公用存储
-  richtextBucketName: static
-  # 命名方式: UUID、ORIGINAL原文件名偏好，冲突会补充时间
-  naming: original
-  scheme: http
-  allowedExts:
-    # 图片
-    - jpg
-    - jpeg
-    - png
-    - gif
-    - bmp
-    - webp
-    - svg
-    - ico
-    # 文档
-    - pdf
-    - doc
-    - docx
-    - xls
-    - xlsx
-    - ppt
-    - pptx
-    - rtf
-    - txt
-    - csv
-    - odt
-    - ods
-    - odp
-    - pages
-    - numbers
-    - keynote
-    # 压缩包
-    - zip
-    - rar
-    - 7z
-    - tar
-    - gz
-    # 音频格式
-    - mp3
-    - wav
-    - ogg
-    # 视频格式
-    - mp4
-    - mov
-    - avi
-    - wmv
-  allowedMimeTypes:
-    # 图片
-    - image/jpeg
-    - image/pjpeg
-    - image/png
-    - image/gif
-    - image/bmp
-    - image/webp
-    - image/svg+xml
-    - image/vnd.microsoft.icon
-    # 文档
-    - application/pdf
-    - application/msword
-    - application/vnd.openxmlformats-officedocument.wordprocessingml.document
-    - application/vnd.ms-excel
-    - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-    - application/vnd.ms-powerpoint
-    - application/vnd.openxmlformats-officedocument.presentationml.presentation
-    - application/rtf
-    - text/plain
-    - text/csv
-    - application/vnd.oasis.opendocument.text
-    - application/vnd.oasis.opendocument.spreadsheet
-    - application/vnd.oasis.opendocument.presentation
-    - application/vnd.apple.pages
-    - application/vnd.apple.numbers
-    - application/vnd.apple.keynote
-    # 压缩包
-    - application/zip
-    - application/x-zip-compressed
-    - application/x-rar-compressed
-    - application/x-7z-compressed
-    - application/x-tar
-    - application/gzip
-    - application/x-gzip
-    # 音频
-    - audio/mpeg
-    - audio/wav
-    - audio/ogg
-    # 视频
-    - video/mp4
-    - video/quicktime
-    - video/x-msvideo
-    - video/x-ms-wmv
-    # 二进制
-    - application/octet-stream
+sz:
+  # oss存储配置
+  oss:
+    # 支持S3协议的厂商
+    provider: MINIO
+    endpoint: 192.168.100.176:9000
+    accessKey: 05balQ9A7aJYUwH8NOt1
+    secretKey: YMhKoRbfHEgl3eDM2gDlu3hFSmBnB0cKZY2AzCrc
+    # 全局存储桶
+    bucketName: test
+    domain: http://192.168.100.176:9000
+    scheme: http
+  # 场景资源配置
+  resource:
+    root: ./data
+    default-storage-type: LOCAL
+    security:
+      allowed-exts: [jpg, jpeg, png, gif, bmp, webp, svg, ico, pdf, doc, docx, xls, xlsx, ppt, pptx, rtf, txt, csv, zip, rar, 7z, tar, gz, mp3, wav, ogg, mp4, mov, avi, wmv]
+    max-size: 50MB
+    scenes:
+      # ========= 账户头像 - 本地模式 =========
+      - code: admin.user.logo # 账户头像
+        type: LOCAL
+        serve-mode: DIRECT
+        # base-url: http://127.0.0.1:7980/providers # nginx 代理
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/logo # java 服务代理
+        path: logo
+        naming: ORIGINAL
+        path-strategy: BIZ_DATE
+        exts: [svg, png, jpg, jpeg, webp, gif]
+        max-size: 3
+      # ========= 账户头像 - oss模式_private私有访问 =========
+#      - code: admin.user.logo # 账户头像
+#        type: OSS
+#        serve-mode: PRESIGNED
+#        bucket: client-logos
+#        base-url: http://192.168.100.176:9000/client-logos # oss（minio）服务地址
+#        naming: ORIGINAL
+#        path-strategy: BIZ_DATE
+#        exts: [svg, png, jpg, jpeg, webp, gif]
+#        max-size: 3
+      # ========= 账户头像 - oss模式_public公有访问 =========
+#      - code: admin.user.logo # 账户头像
+#        type: OSS
+#        serve-mode: DIRECT
+#        bucket: client-logos-public
+#        base-url: http://192.168.100.176:9000/client-logos-public # oss（minio）服务地址
+#        naming: UUID
+#        path-strategy: BIZ_DATE
+#        exts: [ svg, png, jpg, jpeg, webp, gif ]
+#        max-size: 3
+      # ========= 模版文件 - 本地模式 =========
+      - code: template.excel
+        type: LOCAL
+        serve-mode: DIRECT
+        path: template
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/template
+        naming: ORIGINAL
+        path-strategy: DATE
+        exts: [ xls, xlsx ]
+        max-size: 10
+      # ========= 教师统计 - 附件 - 本地模式 =========
+      - code: teacher.attachment
+        type: LOCAL
+        serve-mode: DIRECT
+        path: teacher-attachments
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/teacher-attachments
+        naming: ORIGINAL
+        path-strategy: BIZ_DATE
+        exts: [png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx]
+        max-size: 10
+        # ========= 教师统计 - 富文本编辑器 - 本地模式 =========
+      - code: teacher.richtext
+        type: LOCAL
+        serve-mode: DIRECT
+        path: teacher-richtext
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/teacher-richtext
+        naming: UUID
+        path-strategy: DATE
+        exts: [png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx]
+        max-size: 5

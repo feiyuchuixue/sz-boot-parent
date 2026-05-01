@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Deprecated(since = "v1.4.0-beta", forRemoval = true)
 public class SysFileServiceImpl extends ServiceImpl<CommonFileMapper, SysFile> implements SysFileService {
 
     private final OssClient ossClient;

@@ -58,4 +58,7 @@ public class ResourceUploadResult {
      */
     @Schema(description = "sys_resource 记录 ID")
     private Long resourceId;
+
+    @Schema(description = "场景编码")
+    private String sceneCode;
 }

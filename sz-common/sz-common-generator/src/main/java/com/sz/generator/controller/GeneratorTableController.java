@@ -56,7 +56,7 @@ public class GeneratorTableController {
         return ApiPageResult.success(generatorTableService.selectDbTableNotInImport(dto));
     }
 
-    @SaCheckPermission(value = "generator.import", orRole = GlobalConstant.SUPER_ROLE)
+    @SaCheckPermission(value = "generator.list", orRole = GlobalConstant.SUPER_ROLE)
     @Operation(summary = "查询已经导入的表列表")
     @GetMapping("list")
     public ApiResult<PageResult<GeneratorTable>> list(DbTableQueryDTO dto) {

@@ -35,6 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/sys-file")
 @Slf4j
+@Deprecated(since = "v1.4.0-beta", forRemoval = true)
 public class SysFileController {
 
     private final SysFileService sysFileService;

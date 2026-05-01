@@ -134,7 +134,7 @@ public class ResourceService {
         String accessUrl = resolveUrl(sceneCode, objectKey);
 
         return ResourceUploadResult.builder().objectKey(objectKey).originName(file.getOriginalFilename()).size(file.getSize())
-                .contentType(file.getContentType()).accessUrl(accessUrl).eTag(eTag).build();
+                .contentType(file.getContentType()).accessUrl(accessUrl).eTag(eTag).sceneCode(sceneCode).build();
     }
 
     /**

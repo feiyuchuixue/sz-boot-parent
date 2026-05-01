@@ -72,6 +72,7 @@ public class SysTempFileController {
         return ApiResult.success(sysTempFileService.detail(id));
     }
 
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     @DebounceIgnore
     @Operation(summary = "上传模板文件")
     @PostMapping("/upload")

@@ -1,9 +1,13 @@
 package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.sz.admin.system.pojo.dto.sysresource.SysResourceListDTO;
+import com.sz.admin.system.pojo.vo.sysresource.SysResourceVO;
 import com.sz.admin.system.service.SysResourceService;
 import com.sz.core.common.annotation.DebounceIgnore;
+import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
+import com.sz.core.common.entity.PageResult;
 import com.sz.resource.model.ResourceUploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +35,12 @@ import java.util.List;
 public class SysResourceController {
 
     private final SysResourceService sysResourceService;
+
+    @Operation(summary = "资源分页查询")
+    @GetMapping
+    public ApiPageResult<PageResult<SysResourceVO>> page(SysResourceListDTO dto) {
+        return ApiPageResult.success(sysResourceService.page(dto));
+    }
 
     /**
      * 上传资源文件

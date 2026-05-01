@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
  * @author sz-admin
  * @since 2024-11-25
  */
+@Deprecated(since = "v1.4.0-beta", forRemoval = true)
 @Data
 @Table(value = "sys_file", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 @Schema(description = "文件表")

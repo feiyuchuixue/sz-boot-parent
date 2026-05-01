@@ -2,7 +2,7 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.entity.UploadResult;
+import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
@@ -31,18 +31,18 @@ public class SysTempFileHistory implements Serializable {
     @Schema(description = "ID")
     private Long id;
 
-    @Schema(description = "模版文件ID")
-    private Integer sysTempFileId;
+    @Schema(description = "模版文件ID, 关联sys_resource表")
+    private Long sysTempFileId;
 
     @Schema(description = "文件ID")
-    private Integer sysFileId;
+    private Long sysFileId;
 
     @Schema(description = "模版名")
     private String tempName;
 
     @Schema(description = "地址")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<UploadResult> url;
+    private List<ResourceRef> url;
 
     @Schema(description = "备注")
     private String remark;

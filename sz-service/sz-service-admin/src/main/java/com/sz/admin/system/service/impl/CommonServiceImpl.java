@@ -5,13 +5,14 @@ import com.sz.admin.system.pojo.vo.common.ChallengeVO;
 import com.sz.admin.system.pojo.vo.common.SelectorVO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.service.*;
-import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
 import com.sz.excel.core.ExcelTemplateScanRegistry;
 import com.sz.excel.utils.ExcelUtils;
 import com.sz.oss.OssClient;
 import com.sz.redis.RedisCache;
+import com.sz.resource.model.ResourceRef;
+import com.sz.resource.service.ResourceService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,8 @@ public class CommonServiceImpl implements CommonService {
 
     private final ObjectProvider<ExcelTemplateScanRegistry> excelTemplateScanRegistryProvider;
 
+    private final ResourceService resourceService;
+
     @Override
     public void tempDownload(String templateName, String alias, HttpServletResponse response) throws IOException {
         boolean hasIllegalPath = templateName.contains("..") || templateName.contains("/") || templateName.contains("\\") || templateName.startsWith(".");
@@ -76,19 +79,9 @@ public class CommonServiceImpl implements CommonService {
         // 第二优先级：sys_temp_file 表（OSS 手动上传的模板）
         SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByNameOrAlias(templateName, alias);
         if (sysTempFileInfoVO != null) {
-            UploadResult result = sysTempFileInfoVO.getUrl().getFirst();
-            String fileUrl = result.getUrl();
-            String filename = result.getFilename();
-            long size = result.getSize();
-            if (size > 0)
-                response.setContentLengthLong(size);
-            String confValue = SysConfigUtils.getConfValue("oss.accessMode");
-            // 私有文件需要生成带签名的临时访问URL
-            if ("private".equals(confValue)) {
-                String finalBucket = getBucketFromUrl(fileUrl, "");
-                String objectName = getObjectNameFromUrl(fileUrl);
-                fileUrl = ossClient.getPrivateUrl(finalBucket, objectName);
-            }
+            ResourceRef result = sysTempFileInfoVO.getUrl().getFirst();
+            String fileUrl = resourceService.resolveUrl(result.getSceneCode(), result.getObjectKey());
+            String filename = result.getOriginName();
             try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
                 in.transferTo(os);
                 os.flush();

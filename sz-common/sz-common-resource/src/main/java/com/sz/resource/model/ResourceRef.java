@@ -25,6 +25,9 @@ public class ResourceRef {
     @Schema(description = "场景编码，入库，查询时 fillAccessUrl 依赖此字段调 resolveUrl")
     private String sceneCode;
 
+    @Schema(description = "资源id")
+    private Long resourceId;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "可访问 URL，由查询时 resolveUrl 动态填充，不入库")
     private String accessUrl;

@@ -35,6 +35,7 @@ public interface SysTempFileService extends IService<SysTempFile> {
 
     SysTempFileVO detail(Object id);
 
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     UploadResult uploadFile(MultipartFile file);
 
     SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias);

@@ -2,7 +2,7 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.core.common.entity.UploadResult;
+import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
@@ -39,7 +39,7 @@ public class SysTempFile implements Serializable {
 
     @Schema(description = "地址")
     @Column(typeHandler = JacksonTypeHandler.class)
-    private List<UploadResult> url;
+    private List<ResourceRef> url;
 
     @Schema(description = "备注")
     private String remark;
