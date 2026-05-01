@@ -64,8 +64,9 @@ public class TeacherStatisticsImportDTO {
     @Schema(description = "课时总数")
     private BigDecimal totalHours;
 
-    @ExcelIgnore
+    @ExcelProperty(value = "核对状态")
     @Schema(description = "核对状态")
+    @DictFormat(dictType = "account_status", isSelected = true)
     private String checkStatus;
 
     @ExcelIgnore

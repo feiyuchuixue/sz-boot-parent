@@ -79,7 +79,7 @@ public class ResourceService {
     private final ResourceSecurityPolicyProvider securityProvider;
 
     public ResourceService(ResourceProperties resourceProperties, LocalResourceStorageDriver localDriver,
-                           ObjectProvider<OssResourceStorageDriver> ossDriverProvider, ResourceSceneProvider sceneProvider, ResourceSecurityPolicyProvider securityProvider) {
+            ObjectProvider<OssResourceStorageDriver> ossDriverProvider, ResourceSceneProvider sceneProvider, ResourceSecurityPolicyProvider securityProvider) {
         this.resourceProperties = resourceProperties;
         this.localDriver = localDriver;
         this.ossDriver = ossDriverProvider.getIfAvailable();
@@ -99,12 +99,17 @@ public class ResourceService {
      * 当场景配置 pathStrategy 为 {@code BIZ} 或 {@code BIZ_DATE} 时， pathSegments
      * 中的每个元素对应一级子目录。
      *
-     * @param sceneCode    场景编码，如 "user.avatar"
-     * @param namingKey    命名用业务标识，仅 naming=BIZ_KEY 时用作文件名，其他规则传 null
-     * @param file         上传的文件
-     * @param pathSegments 路径分段（可选），每个元素对应一级子目录
+     * @param sceneCode
+     *            场景编码，如 "user.avatar"
+     * @param namingKey
+     *            命名用业务标识，仅 naming=BIZ_KEY 时用作文件名，其他规则传 null
+     * @param file
+     *            上传的文件
+     * @param pathSegments
+     *            路径分段（可选），每个元素对应一级子目录
      * @return 上传结果，包含 objectKey 和 accessUrl
-     * @throws IOException 文件存储失败
+     * @throws IOException
+     *             文件存储失败
      */
     public ResourceUploadResult upload(String sceneCode, String namingKey, MultipartFile file, String... pathSegments) throws IOException {
         ResourceSceneConfig scene = getScene(sceneCode);
@@ -129,7 +134,7 @@ public class ResourceService {
         String accessUrl = resolveUrl(sceneCode, objectKey);
 
         return ResourceUploadResult.builder().objectKey(objectKey).originName(file.getOriginalFilename()).size(file.getSize())
-            .contentType(file.getContentType()).accessUrl(accessUrl).eTag(eTag).build();
+                .contentType(file.getContentType()).accessUrl(accessUrl).eTag(eTag).build();
     }
 
     /**
@@ -142,8 +147,10 @@ public class ResourceService {
      * TOKEN：           返回 null，由上层 ResourceAccessService.generateTempAccessUrl 按需生成
      * </pre>
      *
-     * @param sceneCode 场景编码
-     * @param objectKey 存储键，如 "avatars/1/20260403/abc.png"
+     * @param sceneCode
+     *            场景编码
+     * @param objectKey
+     *            存储键，如 "avatars/1/20260403/abc.png"
      * @return 完整可访问 URL，TOKEN 场景返回 null
      */
     public String resolveUrl(String sceneCode, String objectKey) {
@@ -161,8 +168,10 @@ public class ResourceService {
     /**
      * 将 objectKey 或完整 URL 规范化为纯 objectKey（防御入库污染）
      *
-     * @param sceneCode 场景编码
-     * @param rawValue  前端提交的原始值
+     * @param sceneCode
+     *            场景编码
+     * @param rawValue
+     *            前端提交的原始值
      * @return 规范化后的 objectKey
      */
     public String normalizeObjectKey(String sceneCode, String rawValue) {
@@ -202,13 +211,14 @@ public class ResourceService {
      * <p>
      * 典型用法：查询 VO 返回前调用此方法，自动将 objectKey 转换为可访问 URL。
      *
-     * @param refs 文件引用列表，元素的 sceneCode 和 objectKey 均不为空时才填充
+     * @param refs
+     *            文件引用列表，元素的 sceneCode 和 objectKey 均不为空时才填充
      */
     public void fillAccessUrl(List<ResourceRef> refs) {
         if (refs == null)
             return;
         refs.stream().filter(r -> r.getObjectKey() != null && r.getSceneCode() != null)
-            .forEach(r -> r.setAccessUrl(resolveUrl(r.getSceneCode(), r.getObjectKey())));
+                .forEach(r -> r.setAccessUrl(resolveUrl(r.getSceneCode(), r.getObjectKey())));
     }
 
     /**
@@ -248,7 +258,7 @@ public class ResourceService {
 
         // 2. 硬编码黑名单
         ResourceResponseEnum.BLOCKED_EXT.message("文件类型 ." + ext + " 在黑名单中，禁止上传（场景：" + scene.getCode() + "）")
-            .assertTrue(ResourceSecurityDefaults.BLOCKED_EXTS.contains(ext));
+                .assertTrue(ResourceSecurityDefaults.BLOCKED_EXTS.contains(ext));
 
         // 3. 双重扩展名检测
         checkDoubleExtension(originalFilename);
@@ -300,7 +310,7 @@ public class ResourceService {
         for (int i = 1; i < parts.length; i++) {
             String part = parts[i].toLowerCase();
             ResourceResponseEnum.DOUBLE_EXT_ATTACK.message("检测到双重扩展名攻击，文件名中包含危险扩展名 ." + part + "：" + filename)
-                .assertTrue(ResourceSecurityDefaults.BLOCKED_EXTS.contains(part));
+                    .assertTrue(ResourceSecurityDefaults.BLOCKED_EXTS.contains(part));
         }
     }
 
@@ -353,7 +363,7 @@ public class ResourceService {
         boolean overSizeCheck = fileSize > effectiveMax;
         long maxMb = effectiveMax / (1024 * 1024);
         ResourceResponseEnum.FILE_SIZE_EXCEEDED.message("文件大小超限：" + fileSize + " bytes，最大允许 " + maxMb + " MB（场景：" + scene.getCode() + "）")
-            .assertTrue(overSizeCheck);
+                .assertTrue(overSizeCheck);
 
     }
 
@@ -458,8 +468,10 @@ public class ResourceService {
      * 若 objectKey 以场景前缀开头，截掉后返回相对部分； 否则容错返回 objectKey 原值，不抛异常。
      * </p>
      *
-     * @param objectKey 完整 objectKey，如 "avatars/20260416/xxx.jpg"
-     * @param basePath  场景前缀，如 "avatars"（来自 path 或 prefix）
+     * @param objectKey
+     *            完整 objectKey，如 "avatars/20260416/xxx.jpg"
+     * @param basePath
+     *            场景前缀，如 "avatars"（来自 path 或 prefix）
      * @return 截掉前缀后的相对路径，如 "20260416/xxx.jpg"
      */
     private String stripScenePrefix(String objectKey, String basePath) {

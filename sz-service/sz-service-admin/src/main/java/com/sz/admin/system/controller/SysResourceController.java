@@ -97,8 +97,7 @@ public class SysResourceController {
     @DebounceIgnore
     @Operation(summary = "批量上传资源文件", description = "支持同时上传多个文件，用于富文本编辑器等场景。每个文件独立处理，返回结果列表。")
     @PostMapping(value = "/batchUpload", consumes = "multipart/form-data")
-    public ApiResult<List<ResourceUploadResult>> batchUpload(
-            @Parameter(description = "场景编码，如 teacher.richtext") @RequestParam("sceneCode") String sceneCode,
+    public ApiResult<List<ResourceUploadResult>> batchUpload(@Parameter(description = "场景编码，如 teacher.richtext") @RequestParam("sceneCode") String sceneCode,
             @Parameter(description = "路径分段，逗号分割，BIZ/BIZ_DATE 策略时生效") @RequestParam(value = "pathSegments", required = false) String pathSegments,
             HttpServletRequest request) throws IOException {
         String[] segments = (pathSegments != null && !pathSegments.isBlank()) ? pathSegments.split(",") : new String[0];

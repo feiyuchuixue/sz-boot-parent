@@ -280,10 +280,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    /**
+     * 该方将被删除，v1.4.0-beta版本后请使用 {@link BcryptUtils#hashPwd(String) 替代}
+     * 注意：此变更可能会导致导致历史数据的密码无法匹配，建议在升级前先行执行一次全量的密码加密更新（update sys_user set pwd =
+     * #{getEncoderPwd(pwd)}）
+     *
+     * @param pwd
+     * @return
+     */
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     private String getEncoderPwd(String pwd) {
         return BCrypt.hashpw(pwd, BCrypt.gensalt(10));
     }
 
+    /**
+     * 该方将被删除，v1.4.0-beta版本后请使用 {@link BcryptUtils#matchEncoderPwd(String, String)
+     * 替代} 注意：此变更可能会导致导致历史数据的密码无法匹配，建议在升级前先行执行一次全量的密码加密更新（update sys_user set pwd =
+     * #{getEncoderPwd(pwd)}）
+     *
+     * @param pwd
+     * @return
+     */
+    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
     private boolean matchEncoderPwd(String pwd, String pwdEncoder) {
         return BCrypt.checkpw(pwd, pwdEncoder);
     }
@@ -461,6 +479,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private void validatePassword(String password, String hashedPassword, String username) {
         String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
+        @Deprecated(since = "v1.4.0-beta", forRemoval = true)
         boolean checkpwd = BCrypt.checkpw(password, hashedPassword);
         if (!checkpwd)
             redisCache.countPwdErr(username, Utils.getLongVal(timeout));
