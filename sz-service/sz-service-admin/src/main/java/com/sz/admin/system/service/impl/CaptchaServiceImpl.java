@@ -81,14 +81,21 @@ public class CaptchaServiceImpl implements CaptchaService {
         CommonResponseEnum.CAPTCHA_LACK.assertNull(checkPuzzle.getMoveEncrypted());
         CommonResponseEnum.CAPTCHA_EXPIRED.assertFalse(redisCache.existCaptcha(requestId));
         PointVO pointVO = redisCache.getCaptcha(checkPuzzle.getRequestId());
-        redisCache.clearCaptcha(requestId); // 用后即消
-        String str = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey(), checkPuzzle.getIv()); // 解密，获取x位移距离
-        int posX = 0;
-        if (Utils.isNotNull(str)) {
-            double posXDouble = Double.parseDouble(str); // 将解密结果转换为double类型
-            posX = (int) Math.round(posXDouble); // 四舍五入取整
+        redisCache.clearCaptcha(requestId);
+
+        // 校验滑动时长，防止机器人极速提交（最短 300ms）
+        if (checkPuzzle.getStartTime() != null) {
+            long elapsed = System.currentTimeMillis() - checkPuzzle.getStartTime();
+            CommonResponseEnum.CAPTCHA_FAILED.message("验证过快").assertTrue(elapsed < 300);
         }
-        CommonResponseEnum.CAPTCHA_FAILED.assertTrue(Math.abs(posX - pointVO.getX()) > 3);
+
+        // 解密并校验 x 轴位移，容差 ±6px
+        String strX = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey(), checkPuzzle.getIv());
+        int posX = 0;
+        if (Utils.isNotNull(strX)) {
+            posX = (int) Math.round(Double.parseDouble(strX));
+        }
+        CommonResponseEnum.CAPTCHA_FAILED.assertTrue(Math.abs(posX - pointVO.getX()) > 6);
     }
 
 }
