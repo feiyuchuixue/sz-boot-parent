@@ -67,16 +67,15 @@
           v-model:modelValue="${field.javaField}UploadResult"
           :limit="${field.options['upload-files.limit']!5}"
           :file-size="${field.options['upload-files.fileSize']!3}"
-          scene-code="'${field.options['upload-files.sceneCode']!'system.temp'}'"
-          path-segments="'${field.options['upload-files.pathSegments']!'your_biz_path'}'"
+          scene-code="${field.options['upload-files.sceneCode']!'system.temp'}"
+          path-segments="${field.options['upload-files.pathSegments']!'your_biz_path'}"
           :accept="'${field.options['upload-files.accept']!''}'"
         />
           <#elseif field.htmlType == "jodit-editor">
         <jodit-editor
           v-model="paramsProps.row.${field.javaField}"
-          :upload-dir="'${field.options['upload.dir']!'editor'}'"
-          scene-code="'${field.options['upload.sceneCode']!'system.temp'}'"
-          path-segments="'${field.options['upload.pathSegments']!'your_editor_biz_path'}'"
+          scene-code="${field.options['upload.sceneCode']!'system.temp'}"
+          path-segments="${field.options['upload.pathSegments']!'your_editor_biz_path'}"
           :height="'${field.options['height']}'"
         />
           <#else>
@@ -112,7 +111,7 @@ import { useOptionsStore } from '@/stores/modules/options';
 </#if>
 </#list>
 <#if hasFileUpload?? && hasFileUpload>
-import type { IUploadResult } from "@/api/types/system/upload";
+import type { IResourceUploadResult } from "@/api/types/system/upload";
 import UploadFiles from "@/components/Upload/UploadFiles.vue";
 </#if>
 <#if hasJoditEditor?? && hasJoditEditor>
@@ -144,7 +143,7 @@ const paramsProps = ref<View.DefaultParams>({
 
 <#list columns as field>
 <#if field.htmlType == "fileUpload">
-const ${field.javaField}UploadResult = ref<IUploadResult[] | string[]>([]);
+const ${field.javaField}UploadResult = ref<IResourceUploadResult[] | string[]>([]);
 </#if>
 </#list>
 
