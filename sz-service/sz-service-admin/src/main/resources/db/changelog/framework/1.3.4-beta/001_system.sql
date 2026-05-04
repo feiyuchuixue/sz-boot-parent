@@ -76,3 +76,9 @@ DELETE FROM `sys_temp_file` WHERE `alias` = 'jstj';
 INSERT IGNORE INTO `sys_temp_file` (`id`, `sys_file_id`, `temp_name`, `remark`, `del_flag`, `create_id`, `create_time`, `update_id`, `update_time`, `url`, `alias`) VALUES (2, 407693840624005120, '教师统计导入模板新.xlsx', '', 'F', 1, '2026-05-01 13:06:33', 1, '2026-05-01 13:06:33', '[{\"accessUrl\": null, \"objectKey\": \"template/20260501/教师统计导入模板新.xlsx\", \"sceneCode\": \"template.excel\", \"originName\": \"教师统计导入模板新.xlsx\", \"resourceId\": 407687721621008384, \"contentType\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"}]', 'jstj');
 INSERT IGNORE INTO `sys_temp_file_history` (`id`, `sys_temp_file_id`, `sys_file_id`, `temp_name`, `url`, `remark`, `create_id`, `create_time`, `update_id`, `update_time`) VALUES (3, 2, 407693840624005120, '教师统计导入模板新.xlsx', '[{\"accessUrl\": null, \"objectKey\": \"template/20260501/教师统计导入模板新.xlsx\", \"sceneCode\": \"template.excel\", \"originName\": \"教师统计导入模板新.xlsx\", \"resourceId\": 407687721621008384, \"contentType\": \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"}]', '', 1, '2026-05-01 13:06:33', 1, '2026-05-01 13:06:33');
 INSERT IGNORE INTO `sys_resource` (`id`, `scene_code`, `object_key`, `e_tag`, `origin_name`, `size`, `content_type`, `storage_type`, `biz_key`, `del_flag`, `create_time`, `create_id`, `update_time`, `update_id`) VALUES (407693840624005120, 'template.excel', 'template/20260501/教师统计导入模板新.xlsx', NULL, '教师统计导入模板新.xlsx', 11656, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'LOCAL', NULL, 'F', '2026-05-01 13:30:46', 1, '2026-05-01 13:30:46', 1);
+
+--changeset 升职哦（sz）:20260504_0920
+--comment: 更新用户头像
+UPDATE `sys_user` SET `logo` = 'logo/user/20260501/微信图片_20240420160033.jpg' WHERE `username` = 'admin';
+UPDATE `sys_user` SET `logo` = 'logo/user/20260501/bg6.png' WHERE `username` = 'user';
+UPDATE `sys_user` SET `logo` = 'logo/user/20260501/bg8.png' WHERE `username` = 'test1';
