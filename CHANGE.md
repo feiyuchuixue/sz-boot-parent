@@ -1,4 +1,84 @@
 # 更新日志
+## v1.3.4-beta （20260503）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.4-beta)
+
+### sz-boot-parent
+
+#### 新增
+
+- 资源模块（sz-common-resource）：全新引入多场景存储模块，支持本地磁盘 / OSS 公有 / OSS 私有三种存储类型，以「场景（sceneCode）」为核心进行独立配置，提供统一上传接口 `POST /resource/upload`。
+- `@OssUrlFill` 注解：标注在 VO 字段上，接口返回时自动将 `objectKey` 转换为可访问的 `accessUrl`，无需手动转换。
+- Excel 注解增强：
+    - `@ExcelTemplate(alias)`：标注导入 DTO 类，支持动态生成空白导入模板，无需手动维护模板文件。
+    - `@ImportColumn(required, columnWidth)`：配置必填校验（表头自动加红色 `*` 前缀）与自定义列宽。
+    - `@ExcelEnumFormat(preset, writeField, readField)`：支持枚举属性的导入/导出映射转换。
+    - `@EnableExcelTemplateScan(basePackages)`：启用导入 DTO 类的 classpath 扫描，配合 `@ExcelTemplate` 使用。
+- `AbstractExcelImportTemplate` 导入框架：新增统一导入抽象基类，框架自动处理批次创建、分片执行、失败记录落库；失败数据持久化至 `sys_import_batch` / `sys_import_fail_record`，可结合业务自行实现失败记录查询功能。
+- 用户基本资料接口：新增 `GET /sys-user/profile` 接口，提供当前登录用户的基本信息获取能力。
+- 用户资料更新及联系方式管理接口：
+    - `PUT /sys-user/profile`：更新用户基本资料（昵称、性别、生日、头像）。
+    - `PUT /sys-user/profile/contact`：更新/绑定手机号或邮箱。
+    - `DELETE /sys-user/profile/contact`：解绑手机号或邮箱。
+- 批量上传资源文件接口：新增 `POST /resource/batchUpload`，支持批量上传并返回 `ResourceRef` 文件引用列表。
+- `@LogicDeleteFill` 注解：新增逻辑删除附加字段自动填充注解。只有标注该注解的实体类，才会在逻辑删除时自动填充 `delete_time`、`delete_id` 字段；逻辑删除本身（`@Column(isLogicDelete = true)`）不受影响。支持通过注解属性自定义字段名，详见升级指南。
+- 数据脱敏工具类 MaskUtils：支持用户名、邮箱、手机号、身份证号和银行卡号的脱敏处理
+
+#### 修复
+
+- 修复 `RedisUtils` 中的模板获取方法名错误（`getTemplate` → 正确方法名）。
+
+#### 修改
+
+- [代码生成器] - 适配升级：支持资源上传模块联动生成；支持本次新增的 Excel 注解与导入模板/导入框架相关代码生成。
+- 废弃 `sysFile` 体系：统一替换为 `sysResource`，并同步完成模板文件管理模块适配；补充初始化 `data` 目录的本地（local）演示数据。
+
+#### 优化
+
+- 优化滑块验证码样式，优化边界问题。
+
+#### Dockerfile
+- 增加对 `/data` 资源目录的挂载支持。
+
+
+---
+
+### sz-admin
+
+#### 新增
+
+- 个人中心 - 头像裁剪：上传头像时支持圆形裁剪预览，裁剪后再上传，提升头像设置体验。
+- 个人中心 - 基本资料编辑：新增昵称、性别、生日的编辑功能，左侧头像卡片 + 右侧表单布局，支持变更检测与重置。
+- 个人中心 - 联系方式管理：新增手机号和邮箱的修改/绑定/解绑功能，操作时需验证当前密码。
+- Excel 导入结果展示：导入完成后展示成功/失败条数及批次 ID，有失败时提示引导至失败记录页查看明细。
+
+#### 优化
+
+- 账户列表：增加头像回显效果。
+- 为字典、参数管理组件添加（补全）权限控制。
+- 优化滑块验证码组件，调整样式和逻辑。
+
+#### 重构
+
+- 上传逻辑统一重构：所有上传组件（`UploadFiles`、`SimplifyUpload`、`Img`、`Imgs`、`JoditEditor`）改用统一资源上传接口 `POST /resource/upload`，组件 `dir` 属性变更为 `sceneCode`。（Breaking Change，详见[升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#_2-%E5%89%8D%E7%AB%AF%E4%B8%8A%E4%BC%A0%E7%BB%84%E4%BB%B6-props-%E5%8F%98%E6%9B%B4-breaking-change)）
+- `FileDownloadList` 组件适配：统一适配 resource 体系的 `ResourceRef` 结构，读取 `accessUrl` / `originName` / `contentType` 字段，优化图片预览。
+- 用户状态管理重构：`userStore.userInfo` 重命名为 `userStore.profile`（类型 `UserProfileVO`），取消用户信息持久化，仅持久化 `token`，用户信息在路由初始化时由接口重新拉取。（Breaking Change，详见升级指南）
+- 废弃 `sysFile` 体系：统一替换为 `sysResource`。
+
+#### 修复
+- `eslint-config-typescript` 和 `eslint-config-prettier` 两个依赖之间的冲突。([issue28](https://github.com/feiyuchuixue/sz-admin/issues/28))（感谢[processcrash](https://github.com/processcrash)）。
+
+
+### 数据库变更
+
+- 新增 `sys_resource` 表：资源实体主表，含 `scene_code`、`object_key`、`e_tag`、`storage_type`、`access_url`、`origin_name`、`content_type`、`size` 等字段。
+- 新增 Excel 导入相关表：
+    - `sys_import_batch`：导入批次记录表。
+    - `sys_import_fail_record`：导入失败记录表。
+
+---
 ## v1.3.3-beta （20260224）
 
 > [!NOTE]
