@@ -1,40 +1,38 @@
 package com.sz.admin.system.service.impl;
 
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.admin.system.mapper.SysTempFileMapper;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileHistoryCreateDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
+import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
+import com.sz.admin.system.pojo.po.SysTempFile;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
+import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
 import com.sz.admin.system.service.SysFileService;
 import com.sz.admin.system.service.SysTempFileHistoryService;
-import com.sz.oss.OssClient;
+import com.sz.admin.system.service.SysTempFileService;
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.entity.UploadResult;
+import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.util.BeanCopyUtils;
+import com.sz.core.util.PageUtils;
+import com.sz.core.util.Utils;
+import com.sz.oss.OssClient;
 import com.sz.resource.model.ResourceRef;
 import com.sz.resource.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.sz.admin.system.service.SysTempFileService;
-import com.sz.admin.system.pojo.po.SysTempFile;
-import com.sz.admin.system.mapper.SysTempFileMapper;
-import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
-import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.util.PageUtils;
-import com.sz.core.util.BeanCopyUtils;
-import com.sz.core.util.Utils;
-import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.entity.SelectIdsDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
-
-import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
-import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
-import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
-import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
-import org.springframework.web.multipart.MultipartFile;
-
-import static com.sz.admin.system.pojo.po.table.SysFileTableDef.SYS_FILE;
+import static com.sz.admin.system.pojo.po.table.SysResourceTableDef.SYS_RESOURCE;
 import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FILE;
 
 /**
@@ -148,8 +146,8 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
 
     @Override
     public SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias) {
-        QueryWrapper wrapper = QueryWrapper.create().from(SYS_TEMP_FILE).leftJoin(SYS_FILE).on(SYS_TEMP_FILE.SYS_FILE_ID.eq(SYS_FILE.ID))
-                .where(SYS_TEMP_FILE.TEMP_NAME.eq(tempName).or(SYS_TEMP_FILE.ALIAS.eq(alias)));
+        QueryWrapper wrapper = QueryWrapper.create().from(SYS_TEMP_FILE).leftJoin(SYS_RESOURCE).on(SYS_TEMP_FILE.SYS_FILE_ID.eq(SYS_RESOURCE.ID))
+            .where(SYS_TEMP_FILE.TEMP_NAME.eq(tempName).or(SYS_TEMP_FILE.ALIAS.eq(alias)));
         return getOneAs(wrapper, SysTempFileInfoVO.class);
     }
 
