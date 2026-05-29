@@ -10,7 +10,6 @@ import com.sz.core.common.entity.ControlPermissions;
 import com.sz.core.datascope.ControlThreadLocal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.lang.NonNull;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -63,7 +62,7 @@ public class MySaInterceptor extends SaInterceptor {
     }
 
     @Override
-    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex)
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         ControlThreadLocal.clearDataScope();
         super.afterCompletion(request, response, handler, ex);

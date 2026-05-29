@@ -132,9 +132,14 @@ public class DefaultExcelListener<T> extends AnalysisEventListener<T> implements
         T currentRowData = null;
         if (context.readRowHolder() != null && context.readRowHolder().getCurrentRowAnalysisResult() != null) {
             try {
-                currentRowData = (T) context.readRowHolder().getCurrentRowAnalysisResult();
-            } catch (ClassCastException e) {
-                log.debug("当前失败行数据类型转换失败，忽略 rowData 采集", e);
+                Object rowData = context.readRowHolder().getCurrentRowAnalysisResult();
+                if (clazz.isInstance(rowData)) {
+                    currentRowData = clazz.cast(rowData);
+                } else {
+                    log.debug("当前失败行数据类型不匹配，忽略 rowData 采集: {}", rowData.getClass().getName());
+                }
+            } catch (RuntimeException e) {
+                log.debug("当前失败行数据采集失败，忽略 rowData 采集", e);
             }
         }
         excelResult.getFailRowList().add(new ExcelFailRow<>(rowNo, errMsg, currentRowData));

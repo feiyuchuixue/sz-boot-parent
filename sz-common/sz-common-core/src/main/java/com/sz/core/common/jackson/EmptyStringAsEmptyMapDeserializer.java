@@ -34,7 +34,7 @@ public class EmptyStringAsEmptyMapDeserializer extends ValueDeserializer<Map<?, 
 
     @Override
     public Map<?, ?> deserialize(JsonParser parser, DeserializationContext ctx) {
-        if (parser.currentToken().isScalarValue() && "".equals(parser.getText())) {
+        if (parser.currentToken().isScalarValue() && "".equals(parser.getString())) {
             return new HashMap<>();
         }
         // 其他情况下走默认处理

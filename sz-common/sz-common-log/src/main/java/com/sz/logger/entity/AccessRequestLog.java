@@ -1,6 +1,7 @@
 package com.sz.logger.entity;
 
 import lombok.Data;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -11,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class AccessRequestLog {
 
+    @Builder.Default
     private String type = "request";
 
     /**

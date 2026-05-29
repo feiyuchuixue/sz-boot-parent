@@ -27,10 +27,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
@@ -83,7 +81,7 @@ public class CommonServiceImpl implements CommonService {
             ResourceRef result = sysTempFileInfoVO.getUrl().getFirst();
             String fileUrl = resourceService.resolveUrl(result.getSceneCode(), result.getObjectKey());
             String filename = result.getOriginName();
-            try (InputStream in = new URL(fileUrl).openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+            try (InputStream in = URI.create(fileUrl).toURL().openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
                 in.transferTo(os);
                 os.flush();
             }
@@ -161,23 +159,23 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void urlDownload(String url, HttpServletResponse response) throws IOException {
         CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
-        URL parsedUrl;
+        URI parsedUri;
         try {
-            parsedUrl = new URL(url);
-        } catch (MalformedURLException e) {
+            parsedUri = new URI(url);
+        } catch (URISyntaxException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
             return;
         }
-        String protocol = parsedUrl.getProtocol();
+        String protocol = parsedUri.getScheme();
         if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "非法的URL协议");
             return;
         }
-        String filename = getFilenameFromObjectName(parsedUrl.getPath());
+        String filename = getFilenameFromObjectName(parsedUri.getPath());
         String accessUrl;
         try {
-            URI uri = new URI(parsedUrl.getProtocol(), parsedUrl.getUserInfo(), parsedUrl.getHost(), parsedUrl.getPort(), parsedUrl.getPath(),
-                    parsedUrl.getQuery(), null);
+            URI uri = new URI(parsedUri.getScheme(), parsedUri.getUserInfo(), parsedUri.getHost(), parsedUri.getPort(), parsedUri.getPath(),
+                    parsedUri.getQuery(), null);
             accessUrl = uri.toASCIIString();
         } catch (URISyntaxException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");

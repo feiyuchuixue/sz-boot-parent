@@ -296,19 +296,20 @@ public class DesensitizationUtil {
         if (patternVale instanceof String) {
             // 如果规则是String类型，直接转换为String类型返回
             return (String) patternVale;
-        } else if (patternVale instanceof Map) {
+        } else if (patternVale instanceof Map<?, ?> map) {
             // 获取规则 - Map类型（不推荐，有风险）
-            return this.getPatternByMap((Map<String, Object>) patternVale, newValue);
+            return this.getPatternByMap(map, newValue);
         } else { // 获取规则 - List<Map>类型,一个Key可能有多种匹配规则
-            if (patternVale instanceof List) {
-                List<Map<String, Object>> list = (List<Map<String, Object>>) patternVale;
+            if (patternVale instanceof List<?> list) {
                 if (!CollectionUtils.isEmpty(list)) {
                     // 遍历每一种规则
-                    for (Map<String, Object> map : list) {
-                        String patternValue = this.getPatternByMap(map, newValue);
-                        // 如果是空的，表示没匹配上该规则，去匹配下一个规则
-                        if (!"".equals(patternValue)) {
-                            return patternValue;
+                    for (Object item : list) {
+                        if (item instanceof Map<?, ?> map) {
+                            String patternValue = this.getPatternByMap(map, newValue);
+                            // 如果是空的，表示没匹配上该规则，去匹配下一个规则
+                            if (!"".equals(patternValue)) {
+                                return patternValue;
+                            }
                         }
                     }
                 }
@@ -326,7 +327,7 @@ public class DesensitizationUtil {
      *            key对应的值 - 如 name:liuchengyin 这个参数就是liuchengyn
      * @return 规则
      */
-    private String getPatternByMap(Map<String, Object> map, String value) {
+    private String getPatternByMap(Map<?, ?> map, String value) {
         if (CollectionUtils.isEmpty(map)) {
             // 为空就是无规则
             return "";

@@ -9,6 +9,7 @@ import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.TableColumResult;
 import com.sz.generator.pojo.result.TableResult;
 import com.sz.core.util.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -135,7 +136,7 @@ public class GeneratorUtils {
      * @return 截取后的列类型
      */
     public static String getDbType(String columnType) {
-        if (indexOf(columnType, "(") > 0) {
+        if (Strings.CS.indexOf(columnType, "(") > 0) {
             return substringBefore(columnType, "(");
         } else {
             return columnType;
@@ -150,7 +151,7 @@ public class GeneratorUtils {
      * @return 截取后的列类型
      */
     public static Integer getColumnLength(String columnType) {
-        if (indexOf(columnType, "(") > 0) {
+        if (Strings.CS.indexOf(columnType, "(") > 0) {
             String length = substringBetween(columnType, "(", ")");
             return Integer.valueOf(length);
         } else {
@@ -305,7 +306,7 @@ public class GeneratorUtils {
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn tableColumn) {
-        if (endsWithIgnoreCase(columnName, "name")) {
+        if (Strings.CI.endsWith(columnName, "name")) {
             tableColumn.setQueryType(GeneratorConstants.QUERY_LIKE);
         }
     }

@@ -30,7 +30,7 @@ public final class AppVersionUtils {
     }
 
     private static boolean isResolved(String version) {
-        return StringUtils.isNotBlank(version) && !StringUtils.contains(version, PROJECT_VERSION_TOKEN);
+        return StringUtils.isNotBlank(version) && !version.contains(PROJECT_VERSION_TOKEN);
     }
 
     private static Optional<String> implementationVersion(Class<?> applicationClass) {

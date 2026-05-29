@@ -147,7 +147,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResult<Object>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error(e.getMessage(), e);
         ApiResult<Object> body = ApiResult.error(CommonResponseEnum.FILE_UPLOAD_SIZE_ERROR);
-        return new ResponseEntity<>(body, HttpStatus.PAYLOAD_TOO_LARGE);
+        return new ResponseEntity<>(body, HttpStatus.CONTENT_TOO_LARGE);
     }
 
     /**

@@ -37,6 +37,7 @@ public class TextMessageBody {
      */
 
     @Schema(description = "消息类型，此时固定为：text")
+    @Builder.Default
     private String msgtype = "text";
 
     @Schema(description = "企业应用的id，整型。企业内部开发，可在应用的设置页面查看；第三方服务商，可通过接口 获取企业授权信息 获取该参数值")
@@ -45,6 +46,7 @@ public class TextMessageBody {
     private Text text;
 
     @Schema(description = "表示是否是保密消息，0表示可对外分享，1表示不能分享且内容显示水印，默认为0")
+    @Builder.Default
     private Integer safe = 0;
 
     /*

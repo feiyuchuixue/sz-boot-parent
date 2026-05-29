@@ -31,6 +31,6 @@ public class DictTypeVO {
 
     @Schema(description = "是否是动态字典")
     @JsonProperty("isDynamic")
-    private boolean isDynamic = false;
+    private boolean isDynamic;
 
 }

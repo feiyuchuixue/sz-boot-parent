@@ -6,7 +6,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import org.apache.commons.lang3.Strings;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -455,7 +456,7 @@ public class StringUtils {
             return false;
         }
         for (CharSequence testStr : searchCharSequences) {
-            if (containsIgnoreCase(cs, testStr)) {
+            if (Strings.CI.contains(cs, testStr)) {
                 return true;
             }
         }
