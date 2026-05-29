@@ -6,7 +6,6 @@ import cn.dev33.satoken.exception.NotRoleException;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,21 +41,24 @@ public class SaExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        String code = CommonResponseEnum.INVALID_TOKEN.getCodePrefixEnum().getPrefix() + CommonResponseEnum.INVALID_TOKEN.getCode();
-        ApiResult<Void> body = new ApiResult<>(code, message);
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+        ApiResult<Void> body = new ApiResult<>(responseCode(CommonResponseEnum.INVALID_TOKEN), message);
+        return new ResponseEntity<>(body, CommonResponseEnum.INVALID_TOKEN.httpStatus());
     }
 
     @ExceptionHandler(NotPermissionException.class)
     public ResponseEntity<ApiResult<Void>> handlerNotPermissionException(NotPermissionException e) {
         ApiResult<Void> body = ApiResult.error(CommonResponseEnum.INVALID_PERMISSION);
-        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(body, CommonResponseEnum.INVALID_PERMISSION.httpStatus());
     }
 
     @ExceptionHandler(NotRoleException.class)
     public ResponseEntity<ApiResult<Void>> handlerNotRoleException(NotRoleException e) {
         ApiResult<Void> body = ApiResult.error(CommonResponseEnum.INVALID_PERMISSION);
-        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(body, CommonResponseEnum.INVALID_PERMISSION.httpStatus());
+    }
+
+    private static String responseCode(CommonResponseEnum responseEnum) {
+        return responseEnum.getCodePrefixEnum().getPrefix() + responseEnum.getCode();
     }
 
 }
