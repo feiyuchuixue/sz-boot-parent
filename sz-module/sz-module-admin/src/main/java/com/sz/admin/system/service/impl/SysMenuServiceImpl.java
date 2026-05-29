@@ -8,15 +8,18 @@ import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysMenuMapper;
 import com.sz.admin.system.mapper.SysUserRoleMapper;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
 import com.sz.admin.system.pojo.po.SysUserRole;
 import com.sz.admin.system.pojo.po.table.SysMenuTableDef;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
+import com.sz.admin.system.script.AdminScriptExportService;
 import com.sz.admin.system.service.SysMenuService;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.entity.UserPermissionChangeMessage;
@@ -25,9 +28,6 @@ import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
-import com.sz.generator.core.script.ScriptExportService;
-import com.sz.generator.pojo.dto.ScriptExportDTO;
-import com.sz.generator.pojo.vo.ScriptExportVO;
 import com.sz.platform.constant.dict.MenuTypeConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -66,7 +66,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private final RedisService redisService;
 
-    private final ScriptExportService scriptExportService;
+    private final AdminScriptExportService scriptExportService;
 
     private final EventPublisher eventPublisher;
 

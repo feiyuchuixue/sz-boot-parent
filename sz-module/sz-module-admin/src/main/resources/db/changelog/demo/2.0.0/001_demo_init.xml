@@ -5,8 +5,8 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <!-- 演示/测试数据：不需要时，可注释 changelog-master.xml 中 demo 入口。 -->
-    <include file="tables/001_generator_table.xml" relativeToChangelogFile="true"/>
-    <include file="tables/002_generator_table_column.xml" relativeToChangelogFile="true"/>
+    <include file="tables/001_sys_user_dept.xml" relativeToChangelogFile="true"/>
+    <include file="tables/002_sys_user_role.xml" relativeToChangelogFile="true"/>
     <include file="tables/003_sys_data_role_relation.xml" relativeToChangelogFile="true"/>
     <include file="tables/004_sys_dept.xml" relativeToChangelogFile="true"/>
     <include file="tables/005_sys_dept_closure.xml" relativeToChangelogFile="true"/>
@@ -19,7 +19,5 @@
     <include file="tables/012_sys_temp_file.xml" relativeToChangelogFile="true"/>
     <include file="tables/013_sys_temp_file_history.xml" relativeToChangelogFile="true"/>
     <include file="tables/014_sys_user.xml" relativeToChangelogFile="true"/>
-    <include file="tables/015_sys_user_dept.xml" relativeToChangelogFile="true"/>
-    <include file="tables/016_sys_user_role.xml" relativeToChangelogFile="true"/>
-    <include file="tables/017_teacher_statistics.xml" relativeToChangelogFile="true"/>
+    <include file="tables/015_teacher_statistics.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

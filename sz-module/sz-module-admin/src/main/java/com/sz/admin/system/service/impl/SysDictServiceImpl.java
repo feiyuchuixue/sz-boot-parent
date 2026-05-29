@@ -8,12 +8,15 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictMapper;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
+import com.sz.admin.system.script.AdminScriptExportService;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.dict.DictLoaderFactory;
@@ -26,9 +29,6 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.StreamUtils;
 import com.sz.core.util.Utils;
-import com.sz.generator.core.script.ScriptExportService;
-import com.sz.generator.pojo.dto.ScriptExportDTO;
-import com.sz.generator.pojo.vo.ScriptExportVO;
 import com.sz.platform.socket.SocketService;
 import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     private final RedisCache redisCache;
 
-    private final ScriptExportService scriptExportService;
+    private final AdminScriptExportService scriptExportService;
 
     private final DictLoaderFactory dictLoaderFactory;
 

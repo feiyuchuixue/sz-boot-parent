@@ -35,9 +35,8 @@
         </dependency>
         <!--代码生成模块-->
         <dependency>
-            <groupId>com.sz.generator</groupId>
-            <artifactId>sz-common-generator</artifactId>
-            <version>${revision}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
         <!--微信模块-->
         <dependency>

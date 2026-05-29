@@ -1,16 +1,16 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.generator.pojo.dto.ScriptExportDTO;
-import com.sz.generator.pojo.vo.ScriptExportVO;
 
 import java.util.Collection;
 import java.util.List;

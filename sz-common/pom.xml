@@ -19,7 +19,6 @@
         <module>sz-common-db-postgresql</module>
         <module>sz-common-db-redis</module>
         <module>sz-common-excel</module>
-        <module>sz-common-generator</module>
         <module>sz-common-log</module>
         <module>sz-common-oss</module>
         <module>sz-common-resource</module>

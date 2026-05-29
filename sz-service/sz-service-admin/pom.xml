@@ -29,6 +29,11 @@
             <artifactId>sz-module-admin</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-generator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Mysql 数据库-->
         <dependency>
             <groupId>com.sz</groupId>

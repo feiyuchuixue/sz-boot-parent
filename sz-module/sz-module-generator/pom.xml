@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sz</groupId>
-        <artifactId>sz-common</artifactId>
+        <artifactId>sz-module</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <groupId>com.sz.generator</groupId>
-    <artifactId>sz-common-generator</artifactId>
+    <artifactId>sz-module-generator</artifactId>
 
     <dependencies>
         <dependency>
@@ -24,24 +23,18 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-common-core</artifactId>
             <version>${revision}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-core</artifactId>
             <version>${revision}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-security</artifactId>
             <version>${revision}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
 
         <!-- 模版引擎 -->

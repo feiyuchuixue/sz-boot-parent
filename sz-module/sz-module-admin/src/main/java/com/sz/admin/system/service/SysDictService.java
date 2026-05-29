@@ -1,15 +1,15 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictCreateDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictUpdateDTO;
 import com.sz.admin.system.pojo.po.SysDict;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.generator.pojo.dto.ScriptExportDTO;
-import com.sz.generator.pojo.vo.ScriptExportVO;
 
 import java.util.List;
 import java.util.Map;
