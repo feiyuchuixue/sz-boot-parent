@@ -1,12 +1,12 @@
 router:
   whitelist:
     - "/v3/api-docs/**"
-    - "/auth/login"
-    - "/register"
-    - "/sys-dict/dict"
+    - "/admin/auth/login"
+    - "/admin/register"
+    - "/admin/sys-dict/dict"
     - "/webjars/**"
     - "/swagger-resources"
     - "/favicon.ico"
-    - "/common/**"
+    - "/admin/common/**"
     - "/swagger-ui.html"
-    - "/www/**"
+    - "/admin/www/**"

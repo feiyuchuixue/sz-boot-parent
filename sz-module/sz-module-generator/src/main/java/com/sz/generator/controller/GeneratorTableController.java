@@ -36,7 +36,7 @@ import java.util.List;
  */
 @Tag(name = "代码生成")
 @RestController
-@RequestMapping("/generator")
+@RequestMapping
 @RequiredArgsConstructor
 public class GeneratorTableController {
 

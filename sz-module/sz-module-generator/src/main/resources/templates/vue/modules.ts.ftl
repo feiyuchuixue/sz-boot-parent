@@ -1,5 +1,4 @@
-import http from '@/api';
-import { ADMIN_MODULE } from '@/api/helper/prefix';
+import { adminHttp } from '@/api/client';
 import type { IPage } from '@/api/types';
 import type {
   ${interfaceNamespace}Query,
@@ -17,7 +16,7 @@ import type { AxiosRequestConfig } from 'axios';
 * @returns {*}
 */
 export const ${funGetList} = (params: ${interfaceNamespace}Query) => {
-  return http.get<IPage<${interfaceNamespace}Row>>(ADMIN_MODULE + `/${router}`, params);
+  return adminHttp.get<IPage<${interfaceNamespace}Row>>(`/${router}`, params);
 };
 
 /**
@@ -26,7 +25,7 @@ export const ${funGetList} = (params: ${interfaceNamespace}Query) => {
 * @returns {*}
 */
 export const ${funCreate} = (params: ${interfaceNamespace}Form) => {
-  return http.post(ADMIN_MODULE + `/${router}`, params);
+  return adminHttp.post(`/${router}`, params);
 };
 
 /**
@@ -35,7 +34,7 @@ export const ${funCreate} = (params: ${interfaceNamespace}Form) => {
 * @returns {*}
 */
 export const ${funUpdate} = (params: ${interfaceNamespace}Form) => {
-  return http.put(ADMIN_MODULE + `/${router}`, params);
+  return adminHttp.put(`/${router}`, params);
 };
 
 /**
@@ -44,7 +43,7 @@ export const ${funUpdate} = (params: ${interfaceNamespace}Form) => {
 * @returns {*}
 */
 export const ${funRemove} = (params: { ids: (string | number)[] }) => {
- return http.delete(ADMIN_MODULE + `/${router}`, params);
+ return adminHttp.delete(`/${router}`, params);
 };
 
 /**
@@ -54,7 +53,7 @@ export const ${funRemove} = (params: { ids: (string | number)[] }) => {
 */
 export const ${funDetail} = (params: { id: ${idType} }) => {
   const { id } = params;
-  return http.get<${interfaceNamespace}Row>(ADMIN_MODULE + `/${router}/<#noparse>${id}</#noparse>`);
+  return adminHttp.get<${interfaceNamespace}Row>(`/${router}/<#noparse>${id}</#noparse>`);
 };
 <#if GeneratorInfo.hasImport == "1">
 
@@ -63,7 +62,7 @@ export const ${funDetail} = (params: { id: ${idType} }) => {
 * @param params
 */
 export const ${funImport} = (params : UploadRawFile, config?: AxiosRequestConfig<any> | undefined) => {
-  return http.upload(ADMIN_MODULE + `/${router}/import`, params, config);
+  return adminHttp.upload(`/${router}/import`, params, config);
 };
 </#if>
 
@@ -74,7 +73,7 @@ export const ${funImport} = (params : UploadRawFile, config?: AxiosRequestConfig
 * @returns {*}
 */
 export const ${funExport}  = (params: ${interfaceNamespace}Query) => {
-  return http.download(ADMIN_MODULE + `/${router}/export`, params);
+  return adminHttp.download(`/${router}/export`, params);
 <#compress>
 };
 </#compress>

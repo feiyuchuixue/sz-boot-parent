@@ -28,6 +28,9 @@ spring:
 app:
   version: @project.version@
 sz:
+  api-prefix:
+    admin: /admin
+    generator: /generator
   # 是否启用数据权限拼接
   data-scope:
     enabled: true
