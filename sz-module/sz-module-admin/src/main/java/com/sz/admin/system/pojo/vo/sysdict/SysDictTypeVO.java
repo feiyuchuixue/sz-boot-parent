@@ -33,7 +33,13 @@ public class SysDictTypeVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description = "字典类型")
-    private String type;
+    @Schema(description = "字典来源")
+    private String sourceCode;
+
+    @Schema(description = "字典来源名称")
+    private String sourceName;
+
+    @Schema(description = "来源区间")
+    private String sourceRange;
 
 }

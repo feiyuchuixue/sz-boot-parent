@@ -23,6 +23,12 @@ public class DictTypeVO {
     @Schema(description = "字典类型名称")
     private String typeName;
 
+    @Schema(description = "字典来源编码")
+    private String sourceCode;
+
+    @Schema(description = "字典来源名称")
+    private String sourceName;
+
     @Schema(description = "是否是动态字典")
     @JsonProperty("isDynamic")
     private boolean isDynamic = false;

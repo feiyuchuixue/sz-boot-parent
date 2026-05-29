@@ -27,4 +27,7 @@ public class SysDictTypeUpDTO {
     @Schema(description = "备注")
     private String remark;
 
+    @Schema(description = "字典来源", example = "custom")
+    private String sourceCode;
+
 }

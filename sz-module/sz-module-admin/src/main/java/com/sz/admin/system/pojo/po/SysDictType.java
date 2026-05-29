@@ -7,7 +7,6 @@ import com.mybatisflex.annotation.Table;
 import com.sz.core.common.enums.YesNoEnum;
 import com.sz.db.EntityChangeListener;
 import com.sz.db.LogicDeleteFill;
-import com.sz.platform.enums.DictCategoryEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -73,6 +72,6 @@ public class SysDictType implements Serializable {
     @Schema(description = "删除人ID")
     private Long deleteId;
 
-    @Schema(description = "字典类型: system 系统, business 业务")
-    private DictCategoryEnum type;
+    @Schema(description = "字典来源")
+    private String sourceCode;
 }

@@ -19,7 +19,8 @@ public class SysDictTypeAddDTO {
     @Schema(description = "备注")
     private String remark;
 
-    @Schema(description = "字典类型")
-    private String type;
+    @NotBlank(message = "字典来源不能为空")
+    @Schema(description = "字典来源", requiredMode = Schema.RequiredMode.REQUIRED, example = "custom")
+    private String sourceCode;
 
 }

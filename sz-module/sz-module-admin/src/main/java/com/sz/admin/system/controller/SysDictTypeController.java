@@ -5,6 +5,7 @@ import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeAddDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeListDTO;
 import com.sz.admin.system.pojo.dto.sysdict.SysDictTypeUpDTO;
 import com.sz.admin.system.pojo.po.SysDictType;
+import com.sz.admin.system.pojo.vo.sysdict.SysDictTypeVO;
 import com.sz.core.common.dict.DictTypeVO;
 import com.sz.admin.system.service.SysDictTypeService;
 import com.sz.core.common.constant.GlobalConstant;
@@ -69,7 +70,7 @@ public class SysDictTypeController {
     @Operation(summary = "列表查询")
     @SaCheckPermission(value = "sys.dict.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
-    public ApiResult<PageResult<SysDictType>> list(SysDictTypeListDTO dto) {
+    public ApiResult<PageResult<SysDictTypeVO>> list(SysDictTypeListDTO dto) {
         return ApiPageResult.success(sysDictTypeService.list(dto));
     }
 

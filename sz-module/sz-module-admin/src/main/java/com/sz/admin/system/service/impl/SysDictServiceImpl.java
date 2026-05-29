@@ -3,6 +3,7 @@ package com.sz.admin.system.service.impl;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysDictMapper;
@@ -15,17 +16,17 @@ import com.sz.admin.system.pojo.po.SysDictType;
 import com.sz.admin.system.pojo.po.table.SysDictTableDef;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.admin.system.service.SysDictTypeService;
+import com.sz.core.common.dict.DictLoaderFactory;
+import com.sz.core.common.dict.DictService;
 import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.common.dict.DictService;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.StreamUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
-import com.sz.core.common.dict.DictLoaderFactory;
 import com.sz.platform.socket.SocketService;
 import com.sz.redis.RedisCache;
 import freemarker.template.Template;
@@ -35,8 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYPE;
@@ -66,10 +69,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     private final SocketService socketService;
 
-    private static Long generateCustomId(Long firstPart, int secondPart) {
-        secondPart += 1;
-        String paddedFirstPart = String.format("%04d", firstPart); // 格式化为四位数字，不足补零
-        String paddedSecondPart = String.format("%03d", secondPart); // 格式化为三位数字，不足补零
+    private static Long generateCustomId(Long firstPart, int nextSuffix) {
+        String paddedFirstPart = String.format("%04d", firstPart);
+        String paddedSecondPart = String.format("%03d", nextSuffix);
         String part = paddedFirstPart + paddedSecondPart;
         return Long.valueOf(part);
     }
@@ -85,16 +87,18 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
                 .where(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()));
         CommonResponseEnum.EXISTS.message("字典已存在").assertTrue(count(wrapper) > 0);
 
-        wrapper = QueryWrapper.create().where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()));
-        AtomicReference<Long> dictCount = new AtomicReference<>(0L);
-        QueryWrapper finalWrapper = wrapper;
-        // 跳过逻辑删除，查询真实count数
-        LogicDeleteManager.execWithoutLogicDelete(() -> dictCount.set(count(finalWrapper)));
-        Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), dictCount.get().intValue());
+        if (Utils.isNotNull(dto.getAlias())) {
+            wrapper = QueryWrapper.create().where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId()))
+                    .where(SysDictTableDef.SYS_DICT.ALIAS.eq(dto.getAlias()));
+            CommonResponseEnum.EXISTS.message("字典别名已存在").assertTrue(count(wrapper) > 0);
+        }
+
+        Long nextSuffix = getNextSuffix(dto.getSysDictTypeId());
+        CommonResponseEnum.INVALID.message("当前字典类型下字典项数量已超过三位流水上限").assertTrue(nextSuffix > 999);
+        Long generateCustomId = generateCustomId(dto.getSysDictTypeId(), nextSuffix.intValue());
         sysDict.setId(generateCustomId);
         save(sysDict);
         upCache(dto.getSysDictTypeId());
-        socketService.syncDict();
     }
 
     @Override
@@ -104,10 +108,14 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
                 .and(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId())).and(SysDictTableDef.SYS_DICT.CODE_NAME.eq(dto.getCodeName()))
                 .count();
         CommonResponseEnum.EXISTS.message(SysDictTableDef.SYS_DICT.CODE_NAME.getName() + "已存在").assertTrue(count > 0);
+        if (Utils.isNotNull(dto.getAlias())) {
+            long aliasCount = QueryChain.of(this.mapper).select().from(SysDictTableDef.SYS_DICT).where(SysDictTableDef.SYS_DICT.ID.ne(dto.getId()))
+                    .and(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dto.getSysDictTypeId())).and(SysDictTableDef.SYS_DICT.ALIAS.eq(dto.getAlias())).count();
+            CommonResponseEnum.EXISTS.message(SysDictTableDef.SYS_DICT.ALIAS.getName() + "已存在").assertTrue(aliasCount > 0);
+        }
         sysDict.setId(dto.getId());
         saveOrUpdate(sysDict);
         upCache(dto.getSysDictTypeId());
-        socketService.syncDict();
     }
 
     private void upCache(Long dictTypeId) {
@@ -223,6 +231,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     @Override
     public Map<String, List<DictVO>> getDictByCode(List<String> typeCode) {
         return typeCode.stream().collect(Collectors.toMap(code -> code, this::getDictByType));
+    }
+
+    private Long getNextSuffix(Long dictTypeId) {
+        final Long[] maxIdHolder = {null};
+        LogicDeleteManager.execWithoutLogicDelete(() -> maxIdHolder[0] = QueryChain.of(this.mapper).select(QueryMethods.max(SysDictTableDef.SYS_DICT.ID))
+                .from(SysDictTableDef.SYS_DICT).where(SysDictTableDef.SYS_DICT.SYS_DICT_TYPE_ID.eq(dictTypeId)).oneAs(Long.class));
+        Long maxId = maxIdHolder[0];
+        if (maxId == null) {
+            return 1L;
+        }
+        return maxId % 1000 + 1;
     }
 
 }

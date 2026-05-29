@@ -110,7 +110,7 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.findPermission());
     }
 
-    @Operation(summary = "导出sql")
+    @Operation(summary = "导出 Liquibase XML")
     @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("sql/export")
     public ApiResult<String> exportMenuSql(@RequestBody SelectIdsDTO dto) {
