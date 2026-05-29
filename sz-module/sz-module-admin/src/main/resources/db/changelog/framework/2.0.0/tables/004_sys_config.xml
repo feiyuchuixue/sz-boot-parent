@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_config: framework struct + init -->
+<changeSet  id="framework-struct-sys-config-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_config"/></not>
+        </preConditions>
+        <createTable tableName="sys_config" remarks="参数配置表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="参数配置ID"><constraints primaryKey="true"/></column>
+            <column name="config_name" type="VARCHAR(50)" remarks="参数名"><constraints nullable="false"/></column>
+            <column name="config_key" type="VARCHAR(50)" remarks="参数key"><constraints nullable="false"/></column>
+            <column name="config_value" type="VARCHAR(512)" remarks="参数value"><constraints nullable="false"/></column>
+            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"/>
+            <column name="frontend_visible" type="ENUM('T','F')" defaultValue="F" remarks="该参数是否需要前端加载、缓存及使用"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="remark" type="VARCHAR(255)" remarks="备注"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-config-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_config</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="1"/>
+            <column name="config_name" value="主体名称"/>
+            <column name="config_key" value="sys.dept.entityName"/>
+            <column name="config_value" value="xx公司"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-03-22 10:42:46"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2024-05-10 19:55:41"/>
+            <column name="remark" value="公司主体名称"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="2"/>
+            <column name="config_name" value="系统账户-初始密码"/>
+            <column name="config_key" value="sys.user.initPwd"/>
+            <column name="config_value" value="sz123456"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-04-10 09:56:58"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2024-04-10 10:13:28"/>
+            <column name="remark" value=""/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="3"/>
+            <column name="config_name" value="密码错误尝试次数限制"/>
+            <column name="config_key" value="sys.pwd.errCnt"/>
+            <column name="config_value" value="5"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-06-05 20:40:21"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2024-06-05 20:50:11"/>
+            <column name="remark" value="一段时间内的密码最大错误次数"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="4"/>
+            <column name="config_name" value="密码错误冻结时间（分）"/>
+            <column name="config_key" value="sys_pwd.lockTime"/>
+            <column name="config_value" value="30"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-06-05 20:42:22"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2024-06-05 20:43:30"/>
+            <column name="remark" value="时间到期后自动解冻"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="5"/>
+            <column name="config_name" value="业务字典起始号段"/>
+            <column name="config_key" value="sys.dict.startNo"/>
+            <column name="config_value" value="2000"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-07-08 17:29:16"/>
+            <column name="remark" value="业务字典起始号段。1000作为默认的系统字典号段。"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="6"/>
+            <column name="config_name" value="是否启用验证码"/>
+            <column name="config_key" value="sys.captcha.state"/>
+            <column name="config_value" value="true"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-11-07 15:39:50"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-01-08 15:54:37"/>
+            <column name="remark" value=""/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="7"/>
+            <column name="config_name" value="验证码有效时间（秒）"/>
+            <column name="config_key" value="sys.captcha.expire"/>
+            <column name="config_value" value="120"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-08 22:06:40"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="8"/>
+            <column name="config_name" value="验证码请求次数限制"/>
+            <column name="config_key" value="sys.captcha.requestLimit"/>
+            <column name="config_value" value="100"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-08 22:09:28"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-10-16 17:30:09"/>
+            <column name="remark" value="一段时间内的验证码请求次数上限（0为不限制），默认100次"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="9"/>
+            <column name="config_name" value="验证码计数周期（分）"/>
+            <column name="config_key" value="sys.captcha.requestCycle"/>
+            <column name="config_value" value="10"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-08 22:13:09"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-10-16 17:30:40"/>
+            <column name="remark" value="默认10（分）"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="10"/>
+            <column name="config_name" value="验证码水印"/>
+            <column name="config_key" value="sys.captcha.waterText"/>
+            <column name="config_value" value="Sz-Admin"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-08 22:15:00"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-01-09 09:39:15"/>
+            <column name="remark" value="验证码右下角水印图案"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="11"/>
+            <column name="config_name" value="是否启用验证码水印"/>
+            <column name="config_key" value="sys.captcha.waterEnable"/>
+            <column name="config_value" value="true"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-08 22:18:10"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-01-09 09:39:36"/>
+            <column name="remark" value=""/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="12"/>
+            <column name="config_name" value="水印字体"/>
+            <column name="config_key" value="sys.captcha.waterFont"/>
+            <column name="config_value" value="Arial"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-01-09 08:58:33"/>
+            <column name="remark" value="请确认服务器是否支持该字体，并注意在商业用途中需确保字体版权合法使用"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="13"/>
+            <column name="config_name" value="超级管理员角色权限配置"/>
+            <column name="config_key" value="sys.admin.superAdminRoleId"/>
+            <column name="config_value" value="1"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-04 13:06:45"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-11-04 16:32:25"/>
+            <column name="remark" value="超管权限，指定的生效角色 ID。"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="14"/>
+            <column name="config_name" value="登录请求次数限制"/>
+            <column name="config_key" value="sys.login.requestLimit"/>
+            <column name="config_value" value="100"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-10-14 16:35:28"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-10-15 16:40:34"/>
+            <column name="remark" value="一段时间内的登录请求次数限制，根据requestId（Ip + UserAgent）判断；若为 0 则不限制"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="15"/>
+            <column name="config_name" value="登录次数计数周期（分）"/>
+            <column name="config_key" value="sys.login.requestCycle"/>
+            <column name="config_value" value="10"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-10-14 16:36:14"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2025-10-16 16:51:44"/>
+            <column name="remark" value="默认10分钟"/>
+        </insert>
+        <insert tableName="sys_config">
+            <column name="id" valueNumeric="16"/>
+            <column name="config_name" value="资源访问模式"/>
+            <column name="config_key" value="oss.accessMode"/>
+            <column name="config_value" value="private"/>
+            <column name="is_lock" value="T"/>
+            <column name="frontend_visible" value="T"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2026-01-13 09:59:09"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2026-01-16 13:57:52"/>
+            <column name="remark" value="用于控制前端资源文件（如 Minio OSS）访问方式。当值为 public 时，前端直接使用数据库中存储的完整资源 URL 进行加载，适用于公开访问的资源；当值为 private 时，前端通过 Minio 获取私有资源的临时授权地址进行加载，适用于需权限验证的私有资源。"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

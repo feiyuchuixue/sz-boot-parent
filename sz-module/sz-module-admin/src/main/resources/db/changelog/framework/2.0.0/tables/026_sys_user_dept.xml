@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_user_dept: framework struct + init -->
+<changeSet  id="framework-struct-sys-user-dept-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_user_dept"/></not>
+        </preConditions>
+        <createTable tableName="sys_user_dept" remarks="用户-部门关系表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="用户-部门关系ID"><constraints primaryKey="true"/></column>
+            <column name="dept_id" type="BIGINT" remarks="部门ID (sys_dept_id)"/>
+            <column name="user_id" type="BIGINT" remarks="用户ID(sys_user_id)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

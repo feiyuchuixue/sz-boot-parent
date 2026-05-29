@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_temp_file: framework struct + init -->
+<changeSet  id="framework-struct-sys-temp-file-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_temp_file"/></not>
+        </preConditions>
+        <createTable tableName="sys_temp_file" remarks="模版文件表">
+            <column name="id" type="BIGINT" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="sys_file_id" type="BIGINT" remarks="文件ID"/>
+            <column name="temp_name" type="VARCHAR(255)" defaultValue="" remarks="模版名"/>
+            <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注"/>
+            <column name="del_flag" type="ENUM('T','F')" remarks="逻辑删除"/>
+            <column name="create_id" type="BIGINT" remarks="创建人"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_id" type="BIGINT" remarks="更新人"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="url" type="JSON" remarks="地址(JSON数组对象)"/>
+            <column name="alias" type="VARCHAR(64)" defaultValue="" remarks="标识，唯一"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

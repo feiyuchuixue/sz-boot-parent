@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_message_user: framework struct + init -->
+<changeSet  id="framework-struct-sys-message-user-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_message_user"/></not>
+        </preConditions>
+        <createTable tableName="sys_message_user" remarks="消息接收用户表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="ID"><constraints primaryKey="true"/></column>
+            <column name="message_id" type="BIGINT" remarks="消息ID"><constraints nullable="false"/></column>
+            <column name="receiver_id" type="BIGINT" remarks="接收人ID"><constraints nullable="false"/></column>
+            <column name="is_read" type="ENUM('T','F')" defaultValue="F" remarks="是否已读"><constraints nullable="false"/></column>
+            <column name="read_time" type="DATETIME" remarks="阅读时间"/>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

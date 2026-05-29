@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dept: framework struct + init -->
+<changeSet  id="framework-struct-sys-dept-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_dept"/></not>
+        </preConditions>
+        <createTable tableName="sys_dept" remarks="部门表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="部门ID"><constraints primaryKey="true"/></column>
+            <column name="name" type="VARCHAR(32)" remarks="部门名称"><constraints nullable="false"/></column>
+            <column name="pid" type="BIGINT" remarks="父级ID"><constraints nullable="false"/></column>
+            <column name="deep" type="INT" remarks="层级"/>
+            <column name="sort" type="INT" remarks="排序"/>
+            <column name="has_children" type="ENUM('T','F')" defaultValue="F" remarks="是否有子级"/>
+            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="remark" type="VARCHAR(64)" remarks="备注"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

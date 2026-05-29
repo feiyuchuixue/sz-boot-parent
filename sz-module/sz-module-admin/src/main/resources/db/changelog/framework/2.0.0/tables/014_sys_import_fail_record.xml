@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_import_fail_record: framework struct + init -->
+<changeSet  id="framework-struct-sys-import-fail-record-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_import_fail_record"/></not>
+        </preConditions>
+        <createTable tableName="sys_import_fail_record" remarks="导入（Excel）失败记录表">
+            <column name="id" type="BIGINT" remarks="主键（雪花ID）"><constraints primaryKey="true"/></column>
+            <column name="batch_id" type="VARCHAR(64)" remarks="导入批次ID"><constraints nullable="false"/></column>
+            <column name="biz_type" type="VARCHAR(64)" remarks="业务类型"><constraints nullable="false"/></column>
+            <column name="row_no" type="INT" remarks="失败行号"><constraints nullable="false"/></column>
+            <column name="biz_key" type="VARCHAR(255)" remarks="业务主识别值"/>
+            <column name="biz_key_label" type="VARCHAR(64)" remarks="业务主识别值标签"/>
+            <column name="error_code" type="VARCHAR(64)" remarks="错误码"/>
+            <column name="error_msg" type="VARCHAR(500)" remarks="错误信息"><constraints nullable="false"/></column>
+            <column name="handle_status" type="VARCHAR(32)" remarks="处理状态"><constraints nullable="false"/></column>
+            <column name="row_data" type="JSON" remarks="当前失败行原始快照(JSON)"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"><constraints nullable="false"/></column>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+        </createTable>
+        <createIndex tableName="sys_import_fail_record" indexName="idx_batch_id">
+            <column name="batch_id"/>
+        </createIndex>
+        <createIndex tableName="sys_import_fail_record" indexName="idx_biz_type_create_time_fail">
+            <column name="biz_type"/>
+            <column name="create_time"/>
+        </createIndex>
+        <createIndex tableName="sys_import_fail_record" indexName="idx_biz_type_handle_status">
+            <column name="biz_type"/>
+            <column name="handle_status"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

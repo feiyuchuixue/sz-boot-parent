@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_data_role_relation: framework struct + init -->
+<changeSet  id="framework-struct-sys-data-role-relation-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_data_role_relation"/></not>
+        </preConditions>
+        <createTable tableName="sys_data_role_relation" remarks="系统数据角色-关联表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="ID"><constraints primaryKey="true"/></column>
+            <column name="role_id" type="BIGINT" remarks="sys_data_role_id （数据角色表ID）"/>
+            <column name="relation_type_cd" type="VARCHAR(10)" remarks="关联类型，data_scope_relation_type"/>
+            <column name="relation_id" type="BIGINT" remarks="关联表id，联动relation_type_cd（部门ID或个人ID）"/>
+            <column name="menu_id" type="VARCHAR(64)" remarks="菜单id"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- generator_table_column: demo data -->
+
+    <changeSet id="demo-data-generator-table-column-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM generator_table_column WHERE column_id IN (34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52)</sqlCheck>
+        </preConditions>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="34"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="id"/>
+            <column name="column_comment" value="ID"/>
+            <column name="column_type" value="bigint"/>
+            <column name="java_type" value="Long"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="id"/>
+            <column name="up_camel_field" value="Id"/>
+            <column name="is_pk" value="1"/>
+            <column name="is_increment" value="1"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="0"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="35"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="year"/>
+            <column name="column_comment" value="统计年限"/>
+            <column name="column_type" value="varchar(4)"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="year"/>
+            <column name="up_camel_field" value="Year"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="1"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="36"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="month"/>
+            <column name="column_comment" value="统计月份"/>
+            <column name="column_type" value="varchar(2)"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="month"/>
+            <column name="up_camel_field" value="Month"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="1"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="37"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="during_time"/>
+            <column name="column_comment" value="统计年月"/>
+            <column name="column_type" value="varchar(10)"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="date-picker"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="duringTime"/>
+            <column name="up_camel_field" value="DuringTime"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="4"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="38"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="teacher_id"/>
+            <column name="column_comment" value="教师id"/>
+            <column name="column_type" value="varchar(32)"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="teacherId"/>
+            <column name="up_camel_field" value="TeacherId"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="1"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="5"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="39"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="teacher_common_type"/>
+            <column name="column_comment" value="讲师区分类型"/>
+            <column name="column_type" value="int"/>
+            <column name="java_type" value="Integer"/>
+            <column name="search_type" value="select"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="teacherCommonType"/>
+            <column name="up_camel_field" value="TeacherCommonType"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="1"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="select"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="6"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="40"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="total_teaching"/>
+            <column name="column_comment" value="授课总数"/>
+            <column name="column_type" value="int"/>
+            <column name="java_type" value="Integer"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="totalTeaching"/>
+            <column name="up_camel_field" value="TotalTeaching"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="7"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="41"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="total_class_count"/>
+            <column name="column_comment" value="服务班次数"/>
+            <column name="column_type" value="int"/>
+            <column name="java_type" value="Integer"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="totalClassCount"/>
+            <column name="up_camel_field" value="TotalClassCount"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="8"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="42"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="total_hours"/>
+            <column name="column_comment" value="课时总数"/>
+            <column name="column_type" value="decimal(10,2)"/>
+            <column name="java_type" value="BigDecimal"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value="java.math.BigDecimal"/>
+            <column name="java_field" value="totalHours"/>
+            <column name="up_camel_field" value="TotalHours"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="9"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="43"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="check_status"/>
+            <column name="column_comment" value="核对状态"/>
+            <column name="column_type" value="int"/>
+            <column name="java_type" value="Integer"/>
+            <column name="search_type" value="select"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="checkStatus"/>
+            <column name="up_camel_field" value="CheckStatus"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="1"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="radio"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="10"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="44"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="check_time"/>
+            <column name="column_comment" value="核对时间"/>
+            <column name="column_type" value="datetime"/>
+            <column name="java_type" value="LocalDateTime"/>
+            <column name="search_type" value="date-picker"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value="java.time.LocalDateTime"/>
+            <column name="java_field" value="checkTime"/>
+            <column name="up_camel_field" value="CheckTime"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="BETWEEN"/>
+            <column name="html_type" value="datetime"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="11"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="45"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="last_sync_time"/>
+            <column name="column_comment" value="最近一次同步时间"/>
+            <column name="column_type" value="datetime"/>
+            <column name="java_type" value="LocalDateTime"/>
+            <column name="search_type" value="date-picker"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value="java.time.LocalDateTime"/>
+            <column name="java_field" value="lastSyncTime"/>
+            <column name="up_camel_field" value="LastSyncTime"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="1"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="BETWEEN"/>
+            <column name="html_type" value="datetime"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="12"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="46"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="remark"/>
+            <column name="column_comment" value="备注"/>
+            <column name="column_type" value="varchar(255)"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="remark"/>
+            <column name="up_camel_field" value="Remark"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="1"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="13"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="47"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="create_id"/>
+            <column name="column_comment" value="创建人ID"/>
+            <column name="column_type" value="bigint"/>
+            <column name="java_type" value="Long"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="createId"/>
+            <column name="up_camel_field" value="CreateId"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="0"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="1"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value="FieldFill.INSERT"/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value="dynamic_user_options"/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="14"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="48"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="create_time"/>
+            <column name="column_comment" value="生成时间"/>
+            <column name="column_type" value="datetime"/>
+            <column name="java_type" value="LocalDateTime"/>
+            <column name="search_type" value="date-picker"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value="java.time.LocalDateTime"/>
+            <column name="java_field" value="createTime"/>
+            <column name="up_camel_field" value="CreateTime"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="0"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="1"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value="FieldFill.INSERT"/>
+            <column name="query_type" value="BETWEEN"/>
+            <column name="html_type" value="datetime"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="15"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="49"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="update_id"/>
+            <column name="column_comment" value="更新人ID"/>
+            <column name="column_type" value="bigint"/>
+            <column name="java_type" value="Long"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="number"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="updateId"/>
+            <column name="up_camel_field" value="UpdateId"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="0"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="1"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value="FieldFill.UPDATE"/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="input-number"/>
+            <column name="dict_type" value="dynamic_user_options"/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="16"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="50"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="update_time"/>
+            <column name="column_comment" value="更新时间"/>
+            <column name="column_type" value="datetime"/>
+            <column name="java_type" value="LocalDateTime"/>
+            <column name="search_type" value="date-picker"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value="java.time.LocalDateTime"/>
+            <column name="java_field" value="updateTime"/>
+            <column name="up_camel_field" value="UpdateTime"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="0"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="1"/>
+            <column name="is_autofill" value="1"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value="FieldFill.UPDATE"/>
+            <column name="query_type" value="BETWEEN"/>
+            <column name="html_type" value="datetime"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="17"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="51"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="dept_scope"/>
+            <column name="column_comment" value="部门范围"/>
+            <column name="column_type" value="json"/>
+            <column name="java_type" value="String"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value=""/>
+            <column name="java_field" value="deptScope"/>
+            <column name="up_camel_field" value="DeptScope"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="0"/>
+            <column name="is_edit" value="0"/>
+            <column name="is_list" value="0"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="0"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value=""/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{}"/>
+            <column name="sort" valueNumeric="18"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+        <insert tableName="generator_table_column">
+            <column name="column_id" valueNumeric="52"/>
+            <column name="table_id" valueNumeric="2"/>
+            <column name="column_name" value="url"/>
+            <column name="column_comment" value="文件地址(JSON)"/>
+            <column name="column_type" value="json"/>
+            <column name="java_type" value="List&lt;UploadResult&gt;"/>
+            <column name="search_type" value="input"/>
+            <column name="ts_type" value="string"/>
+            <column name="java_type_package" value="com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.core.common.entity.UploadResult,java.util.List,com.mybatisflex.annotation.Column"/>
+            <column name="java_field" value="url"/>
+            <column name="up_camel_field" value="Url"/>
+            <column name="is_pk" value="0"/>
+            <column name="is_increment" value="0"/>
+            <column name="is_required" value="0"/>
+            <column name="is_insert" value="1"/>
+            <column name="is_edit" value="1"/>
+            <column name="is_list" value="1"/>
+            <column name="is_query" value="0"/>
+            <column name="is_import" value="0"/>
+            <column name="is_export" value="0"/>
+            <column name="is_autofill" value="0"/>
+            <column name="is_unique_valid" value="0"/>
+            <column name="autofill_type" value=""/>
+            <column name="query_type" value="EQ"/>
+            <column name="html_type" value="fileUpload"/>
+            <column name="dict_type" value=""/>
+            <column name="is_logic_del" value="0"/>
+            <column name="options" value="{&quot;file-download-list.align&quot;:&quot;left&quot;,&quot;upload-files.dir&quot;:&quot;tmp&quot;,&quot;upload-files.limit&quot;:&quot;5&quot;,&quot;upload-files.fileSize&quot;:&quot;3&quot;,&quot;upload-files.accept&quot;:&quot;&quot;,&quot;file-download-list.maxRows&quot;:&quot;3&quot;}"/>
+            <column name="sort" valueNumeric="19"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:29"/>
+            <column name="dict_show_way" value="0"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

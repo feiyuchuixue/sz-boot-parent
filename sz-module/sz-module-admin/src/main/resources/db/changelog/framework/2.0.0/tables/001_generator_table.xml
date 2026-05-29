@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- generator_table: framework struct + init -->
+<changeSet  id="framework-struct-generator-table-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="generator_table"/></not>
+        </preConditions>
+        <createTable tableName="generator_table" remarks="Generator Table">
+            <column name="table_id" type="BIGINT" autoIncrement="true" remarks="编号"><constraints primaryKey="true"/></column>
+            <column name="table_name" type="VARCHAR(255)" remarks="表名称"><constraints nullable="false"/></column>
+            <column name="table_comment" type="VARCHAR(255)" remarks="表描述"/>
+            <column name="class_name" type="VARCHAR(255)" remarks="实体类名称"/>
+            <column name="camel_class_name" type="VARCHAR(255)" remarks="camel实体类名称"/>
+            <column name="tpl_category" type="VARCHAR(255)" remarks="使用的模版"/>
+            <column name="package_name" type="VARCHAR(255)" remarks="生成包路径"/>
+            <column name="module_name" type="VARCHAR(255)" remarks="生成模块名"/>
+            <column name="business_name" type="VARCHAR(255)" remarks="生成业务名"/>
+            <column name="function_name" type="VARCHAR(255)" remarks="生成功能名"/>
+            <column name="function_author" type="VARCHAR(255)" remarks="生成作者名"/>
+            <column name="type" type="VARCHAR(1)" remarks="生成方式(0 zip压缩包；1 自定义路径)"/>
+            <column name="options" type="VARCHAR(255)" remarks="其他参数"/>
+            <column name="parent_menu_id" type="VARCHAR(255)" remarks="上级菜单id"/>
+            <column name="path" type="VARCHAR(255)" remarks="生成路径"/>
+            <column name="path_api" type="VARCHAR(255)" remarks="api生成路径"/>
+            <column name="path_web" type="VARCHAR(255)" remarks="web生成路径"/>
+            <column name="menu_init_type" type="CHAR(1)" defaultValue="1" remarks="是否自动创建菜单路由（1 是）"><constraints nullable="false"/></column>
+            <column name="btn_permission_type" type="CHAR(1)" defaultValue="1" remarks="是否自动创建按钮权限 (1 是)"><constraints nullable="false"/></column>
+            <column name="btn_data_scope_type" type="CHAR(1)" defaultValue="1" remarks="是否开启数据权限（1 是）"><constraints nullable="false"/></column>
+            <column name="has_import" type="CHAR(1)" defaultValue="1" remarks="是否支持导入(1 是)"><constraints nullable="false"/></column>
+            <column name="has_export" type="CHAR(1)" defaultValue="1" remarks="是否支持导出(1 是)"><constraints nullable="false"/></column>
+            <column name="generate_type" type="VARCHAR(255)" defaultValue="all" remarks="生成类型（全量：all，后端：server，接口：service）"><constraints nullable="false"/></column>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="create_time" type="TIMESTAMP" remarks="创建时间"/>
+            <column name="update_time" type="TIMESTAMP" remarks="更新时间"/>
+            <column name="is_autofill" type="CHAR(1)" defaultValue="1" remarks="是否自动填充(1 是)"/>
+            <column name="window_show_type" type="CHAR(1)" defaultValue="0" remarks="窗口展示方式(0 dialog弹窗；1 drawer 抽屉)"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_client: framework struct + init -->
+<changeSet  id="framework-struct-sys-client-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_client"/></not>
+        </preConditions>
+        <createTable tableName="sys_client" remarks="系统授权表">
+            <column name="client_id" type="VARCHAR(64)" remarks="客户端id"><constraints primaryKey="true"/></column>
+            <column name="client_key" type="VARCHAR(32)" remarks="客户端key"/>
+            <column name="client_secret" type="VARCHAR(255)" remarks="客户端秘钥"/>
+            <column name="grant_type_cd" type="VARCHAR(255)" defaultValue="password" remarks="授权类型"/>
+            <column name="device_type_cd" type="VARCHAR(32)" remarks="设备类型"/>
+            <column name="active_timeout" type="INT" defaultValueNumeric="1800" remarks="token活跃超时时间"/>
+            <column name="timeout" type="INT" defaultValueNumeric="604800" remarks="token固定超时"/>
+            <column name="client_status_cd" type="VARCHAR(10)" defaultValue="0" remarks="状态（正常 禁用）"/>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标志"/>
+            <column name="create_dept" type="BIGINT" remarks="创建部门"/>
+            <column name="create_id" type="BIGINT" remarks="创建者"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_id" type="BIGINT" remarks="更新者"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="remark" type="VARCHAR(250)" remarks="备注"/>
+            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-client-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_client</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_client">
+            <column name="client_id" value="195da9fcce574852b850068771cde034"/>
+            <column name="client_key" value="sz-admin"/>
+            <column name="client_secret" value="839ce050d3814949af9b2e1f815bc620"/>
+            <column name="grant_type_cd" value="password"/>
+            <column name="device_type_cd" value="1004001"/>
+            <column name="active_timeout" valueNumeric="86400"/>
+            <column name="timeout" valueNumeric="604800"/>
+            <column name="client_status_cd" value="1003001"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-01-22 13:43:51"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2024-04-12 16:06:49"/>
+            <column name="remark" value="演示client，禁止删除"/>
+            <column name="is_lock" value="T"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

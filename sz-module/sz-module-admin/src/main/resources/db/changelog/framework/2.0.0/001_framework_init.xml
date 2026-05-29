@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="tables/001_generator_table.xml" relativeToChangelogFile="true"/>
+    <include file="tables/002_generator_table_column.xml" relativeToChangelogFile="true"/>
+    <include file="tables/003_sys_client.xml" relativeToChangelogFile="true"/>
+    <include file="tables/004_sys_config.xml" relativeToChangelogFile="true"/>
+    <include file="tables/005_sys_data_role_relation.xml" relativeToChangelogFile="true"/>
+    <include file="tables/006_sys_dept.xml" relativeToChangelogFile="true"/>
+    <include file="tables/007_sys_dept_closure.xml" relativeToChangelogFile="true"/>
+    <include file="tables/008_sys_dept_leader.xml" relativeToChangelogFile="true"/>
+    <include file="tables/009_sys_dept_role.xml" relativeToChangelogFile="true"/>
+    <include file="tables/010_sys_dict.xml" relativeToChangelogFile="true"/>
+    <include file="tables/011_sys_dict_type.xml" relativeToChangelogFile="true"/>
+    <include file="tables/012_sys_export_info.xml" relativeToChangelogFile="true"/>
+    <include file="tables/013_sys_import_batch.xml" relativeToChangelogFile="true"/>
+    <include file="tables/014_sys_import_fail_record.xml" relativeToChangelogFile="true"/>
+    <include file="tables/015_sys_login_log.xml" relativeToChangelogFile="true"/>
+    <include file="tables/016_sys_menu.xml" relativeToChangelogFile="true"/>
+    <include file="tables/017_sys_message.xml" relativeToChangelogFile="true"/>
+    <include file="tables/018_sys_message_user.xml" relativeToChangelogFile="true"/>
+    <include file="tables/019_sys_resource.xml" relativeToChangelogFile="true"/>
+    <include file="tables/020_sys_role.xml" relativeToChangelogFile="true"/>
+    <include file="tables/021_sys_role_menu.xml" relativeToChangelogFile="true"/>
+    <include file="tables/022_sys_temp_file.xml" relativeToChangelogFile="true"/>
+    <include file="tables/023_sys_temp_file_history.xml" relativeToChangelogFile="true"/>
+    <include file="tables/024_sys_user.xml" relativeToChangelogFile="true"/>
+    <include file="tables/025_sys_user_data_role.xml" relativeToChangelogFile="true"/>
+    <include file="tables/026_sys_user_dept.xml" relativeToChangelogFile="true"/>
+    <include file="tables/027_sys_user_role.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

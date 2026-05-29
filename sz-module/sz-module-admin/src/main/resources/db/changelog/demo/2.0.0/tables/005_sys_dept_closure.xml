@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dept_closure: demo data -->
+
+    <changeSet id="demo-data-sys-dept-closure-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_dept_closure</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="1"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="1"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="2"/>
+            <column name="descendant_id" valueNumeric="2"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="2"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="3"/>
+            <column name="descendant_id" valueNumeric="3"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="3"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="4"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="4"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="4"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="5"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="5"/>
+            <column name="descendant_id" valueNumeric="5"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="5"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="6"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="6"/>
+            <column name="descendant_id" valueNumeric="6"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="6"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="7"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="7"/>
+            <column name="descendant_id" valueNumeric="7"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="2"/>
+            <column name="descendant_id" valueNumeric="7"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="8"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="8"/>
+            <column name="descendant_id" valueNumeric="8"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="2"/>
+            <column name="descendant_id" valueNumeric="8"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="9"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="9"/>
+            <column name="descendant_id" valueNumeric="9"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="3"/>
+            <column name="descendant_id" valueNumeric="9"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="10"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="10"/>
+            <column name="descendant_id" valueNumeric="10"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="3"/>
+            <column name="descendant_id" valueNumeric="10"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="11"/>
+            <column name="descendant_id" valueNumeric="11"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="11"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="12"/>
+            <column name="descendant_id" valueNumeric="12"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="12"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="13"/>
+            <column name="descendant_id" valueNumeric="13"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="13"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="14"/>
+            <column name="descendant_id" valueNumeric="14"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="14"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="15"/>
+            <column name="depth" valueNumeric="3"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="15"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="15"/>
+            <column name="descendant_id" valueNumeric="15"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="15"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="16"/>
+            <column name="depth" valueNumeric="3"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="16"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="16"/>
+            <column name="descendant_id" valueNumeric="16"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="16"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="17"/>
+            <column name="depth" valueNumeric="3"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="17"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="17"/>
+            <column name="descendant_id" valueNumeric="17"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="17"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="18"/>
+            <column name="depth" valueNumeric="3"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="18"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="18"/>
+            <column name="descendant_id" valueNumeric="18"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="18"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="0"/>
+            <column name="descendant_id" valueNumeric="19"/>
+            <column name="depth" valueNumeric="3"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="1"/>
+            <column name="descendant_id" valueNumeric="19"/>
+            <column name="depth" valueNumeric="2"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="19"/>
+            <column name="descendant_id" valueNumeric="19"/>
+            <column name="depth" valueNumeric="0"/>
+        </insert>
+        <insert tableName="sys_dept_closure">
+            <column name="ancestor_id" valueNumeric="4"/>
+            <column name="descendant_id" valueNumeric="19"/>
+            <column name="depth" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

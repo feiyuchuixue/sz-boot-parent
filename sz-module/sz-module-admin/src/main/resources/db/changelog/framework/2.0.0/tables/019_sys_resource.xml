@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_resource: framework struct + init -->
+<changeSet  id="framework-struct-sys-resource-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_resource"/></not>
+        </preConditions>
+        <createTable tableName="sys_resource" remarks="资源实体主表">
+            <column name="id" type="BIGINT" remarks="主键（雪花ID）"><constraints primaryKey="true"/></column>
+            <column name="scene_code" type="VARCHAR(64)" remarks="场景编码，如 sso.provider.logo"><constraints nullable="false"/></column>
+            <column name="object_key" type="VARCHAR(512)" remarks="存储键（相对路径/objectName），如 providers/github.svg"><constraints nullable="false"/></column>
+            <column name="e_tag" type="VARCHAR(128)" remarks="ETag 哈希值"/>
+            <column name="origin_name" type="VARCHAR(255)" remarks="原始文件名"/>
+            <column name="size" type="BIGINT" remarks="文件大小（字节）"/>
+            <column name="content_type" type="VARCHAR(128)" remarks="MIME 类型"/>
+            <column name="storage_type" type="VARCHAR(16)" remarks="存储类型：LOCAL / OSS"><constraints nullable="false"/></column>
+            <column name="biz_key" type="VARCHAR(255)" remarks="业务标识，如 providerKey"/>
+            <column name="del_flag" type="CHAR(1)" defaultValue="F" remarks="逻辑删除：T=已删除 F=正常"><constraints nullable="false"/></column>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="create_id" type="BIGINT" remarks="创建人"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="update_id" type="BIGINT" remarks="更新人"/>
+        </createTable>
+        <createIndex tableName="sys_resource" indexName="idx_scene_code">
+            <column name="scene_code"/>
+        </createIndex>
+        <createIndex tableName="sys_resource" indexName="idx_biz_key">
+            <column name="scene_code"/>
+            <column name="biz_key"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

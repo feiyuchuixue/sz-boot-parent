@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_user: framework struct + init -->
+<changeSet  id="framework-struct-sys-user-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_user"/></not>
+        </preConditions>
+        <createTable tableName="sys_user" remarks="系统用户表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="用户ID"><constraints primaryKey="true"/></column>
+            <column name="username" type="VARCHAR(32)" remarks="用户名"><constraints nullable="false"/></column>
+            <column name="pwd" type="VARCHAR(512)" remarks="密码"><constraints nullable="false"/></column>
+            <column name="phone" type="VARCHAR(20)" remarks="手机号"/>
+            <column name="nickname" type="VARCHAR(32)" remarks="昵称"/>
+            <column name="sex" type="TINYINT(1)" remarks="性别(0 未知 1 男 2 女)"/>
+            <column name="birthday" type="VARCHAR(255)" remarks="生日"/>
+            <column name="logo" type="VARCHAR(255)" remarks="头像地址"/>
+            <column name="age" type="INT" remarks="年龄，--废弃，以生日为主"/>
+            <column name="id_card" type="VARCHAR(32)" remarks="身份证"/>
+            <column name="email" type="VARCHAR(256)" remarks="邮箱地址"/>
+            <column name="account_status_cd" type="VARCHAR(10)" remarks="账户状态 (如 冻结；禁言；正常。 关联字典表account_status)"/>
+            <column name="user_tag_cd" type="VARCHAR(255)" defaultValue="" remarks="标签（自定义关联到字典表）"/>
+            <column name="last_login_time" type="DATETIME" remarks="最近一次登录时间"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="是否删除"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+        </createTable>
+        <createIndex tableName="sys_user" indexName="username_index">
+            <column name="username"/>
+        </createIndex>
+        <createIndex tableName="sys_user" indexName="create_time_index">
+            <column name="create_time" descending="true"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-user-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="1"/>
+            <column name="username" value="admin"/>
+            <column name="pwd" value="$2a$10$lv0HmNLnLrKzfzrFNWc.ku3MFBM5.XsPvTdbz71gLogv.mSbvDN5S"/>
+            <column name="phone" value="19988887777"/>
+            <column name="nickname" value="系统管理员"/>
+            <column name="sex" valueNumeric="1"/>
+            <column name="birthday" value="2022-01-01"/>
+            <column name="logo" value="logo/user/20260501/微信图片_20240420160033.jpg"/>
+            <column name="age" valueNumeric="1"/>
+            <column name="id_card" value=""/>
+            <column name="email" value=""/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001002"/>
+            <column name="last_login_time" valueDate="2024-02-02 13:36:04"/>
+            <column name="create_time" valueDate="2023-08-18 11:15:10"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:52"/>
+            <column name="del_flag" value="F"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

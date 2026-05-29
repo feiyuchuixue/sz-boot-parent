@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dict: framework struct + init -->
+<changeSet  id="framework-struct-sys-dict-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_dict"/></not>
+        </preConditions>
+        <createTable tableName="sys_dict" remarks="字典表">
+            <column name="id" type="BIGINT" remarks="字典ID(规则)"><constraints primaryKey="true"/></column>
+            <column name="sys_dict_type_id" type="BIGINT" remarks="关联sys_dict_type ID"><constraints nullable="false"/></column>
+            <column name="code_name" type="VARCHAR(64)" remarks="字典名称"><constraints nullable="false"/></column>
+            <column name="alias" type="VARCHAR(64)" defaultValue="" remarks="字典（Key）别名，某些情况下如果不想使用id作为key"><constraints nullable="false"/></column>
+            <column name="sort" type="INT" remarks="排序(正序)"><constraints nullable="false"/></column>
+            <column name="callback_show_style" type="VARCHAR(255)" remarks="回显样式"/>
+            <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注"><constraints nullable="false"/></column>
+            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="is_show" type="ENUM('T','F')" defaultValue="T" remarks="是否展示"><constraints nullable="false"/></column>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="是否删除"><constraints nullable="false"/></column>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="delete_time" type="DATETIME" remarks="删除时间"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="delete_id" type="BIGINT" remarks="删除人ID"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-dict-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_dict</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1000001"/>
+            <column name="sys_dict_type_id" valueNumeric="1000"/>
+            <column name="code_name" value="正常"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:30:23"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1000002"/>
+            <column name="sys_dict_type_id" valueNumeric="1000"/>
+            <column name="code_name" value="禁用"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="info"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:33:45"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1000003"/>
+            <column name="sys_dict_type_id" valueNumeric="1000"/>
+            <column name="code_name" value="禁言"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="callback_show_style" value="info"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:33:54"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1001001"/>
+            <column name="sys_dict_type_id" valueNumeric="1001"/>
+            <column name="code_name" value="测试用户"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="callback_show_style" value="warning"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:38:58"/>
+            <column name="update_time" valueDate="2025-11-05 14:56:22"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1001002"/>
+            <column name="sys_dict_type_id" valueNumeric="1001"/>
+            <column name="code_name" value="超级管理员"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="danger"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:39:05"/>
+            <column name="update_time" valueDate="2025-11-05 14:56:34"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1001003"/>
+            <column name="sys_dict_type_id" valueNumeric="1001"/>
+            <column name="code_name" value="普通用户"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-20 16:39:11"/>
+            <column name="update_time" valueDate="2025-11-05 14:56:39"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1002001"/>
+            <column name="sys_dict_type_id" valueNumeric="1002"/>
+            <column name="code_name" value="目录"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="warning"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-21 11:23:05"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:52"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1002002"/>
+            <column name="sys_dict_type_id" valueNumeric="1002"/>
+            <column name="code_name" value="菜单"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-21 11:23:17"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:52"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1002003"/>
+            <column name="sys_dict_type_id" valueNumeric="1002"/>
+            <column name="code_name" value="按钮"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="callback_show_style" value="danger"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2023-08-21 11:23:22"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:52"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1003001"/>
+            <column name="sys_dict_type_id" valueNumeric="1003"/>
+            <column name="code_name" value="正常"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 09:44:52"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1003002"/>
+            <column name="sys_dict_type_id" valueNumeric="1003"/>
+            <column name="code_name" value="禁用"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="info"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 09:45:16"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1004001"/>
+            <column name="sys_dict_type_id" valueNumeric="1004"/>
+            <column name="code_name" value="PC"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value="pc端"/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:03:19"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1004002"/>
+            <column name="sys_dict_type_id" valueNumeric="1004"/>
+            <column name="code_name" value="小程序"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value="小程序端"/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:03:47"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1004003"/>
+            <column name="sys_dict_type_id" valueNumeric="1004"/>
+            <column name="code_name" value="Androd"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:04:35"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1004004"/>
+            <column name="sys_dict_type_id" valueNumeric="1004"/>
+            <column name="code_name" value="IOS"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="4"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:04:42"/>
+            <column name="update_time" valueDate="2024-04-12 15:58:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1005001"/>
+            <column name="sys_dict_type_id" valueNumeric="1005"/>
+            <column name="code_name" value="密码认证"/>
+            <column name="alias" value="password"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:20:32"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:52"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1005002"/>
+            <column name="sys_dict_type_id" valueNumeric="1005"/>
+            <column name="code_name" value="小程序认证"/>
+            <column name="alias" value="applet"/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:20:40"/>
+            <column name="update_time" valueDate="2024-04-12 16:51:58"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1005003"/>
+            <column name="sys_dict_type_id" valueNumeric="1005"/>
+            <column name="code_name" value="三方认证"/>
+            <column name="alias" value="third"/>
+            <column name="sort" valueNumeric="400"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:20:51"/>
+            <column name="update_time" valueDate="2024-04-12 16:51:49"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1005004"/>
+            <column name="sys_dict_type_id" valueNumeric="1005"/>
+            <column name="code_name" value="短信认证"/>
+            <column name="alias" value="sms"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-01-22 10:20:57"/>
+            <column name="update_time" valueDate="2024-04-12 16:51:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1006001"/>
+            <column name="sys_dict_type_id" valueNumeric="1006"/>
+            <column name="code_name" value="全部"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:55:48"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:28"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1006002"/>
+            <column name="sys_dict_type_id" valueNumeric="1006"/>
+            <column name="code_name" value="本部门及以下"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:56:57"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:29"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1006003"/>
+            <column name="sys_dict_type_id" valueNumeric="1006"/>
+            <column name="code_name" value="仅本部门"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="3"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:57:22"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:32"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1006004"/>
+            <column name="sys_dict_type_id" valueNumeric="1006"/>
+            <column name="code_name" value="仅本人"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="4"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:57:57"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:34"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1006005"/>
+            <column name="sys_dict_type_id" valueNumeric="1006"/>
+            <column name="code_name" value="自定义"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="5"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:58:11"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:36"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1007001"/>
+            <column name="sys_dict_type_id" valueNumeric="1007"/>
+            <column name="code_name" value="部门权限"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:59:00"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:38"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1007002"/>
+            <column name="sys_dict_type_id" valueNumeric="1007"/>
+            <column name="code_name" value="个人权限"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="primary"/>
+            <column name="remark" value="个人权限高优先级"/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-06-25 18:59:27"/>
+            <column name="update_time" valueDate="2024-06-25 19:11:41"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1008001"/>
+            <column name="sys_dict_type_id" valueNumeric="1008"/>
+            <column name="code_name" value="待办"/>
+            <column name="alias" value="todo"/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="warning"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2025-04-21 15:22:45"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1008002"/>
+            <column name="sys_dict_type_id" valueNumeric="1008"/>
+            <column name="code_name" value="消息"/>
+            <column name="alias" value="msg"/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2025-04-21 15:23:01"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1009001"/>
+            <column name="sys_dict_type_id" valueNumeric="1009"/>
+            <column name="code_name" value="登陆成功"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2025-07-29 22:49:22"/>
+            <column name="update_time" valueDate="2025-07-29 22:49:22"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1009002"/>
+            <column name="sys_dict_type_id" valueNumeric="1009"/>
+            <column name="code_name" value="登陆失败"/>
+            <column name="alias" value=""/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="danger"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="F"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2025-07-29 22:49:34"/>
+            <column name="update_time" valueDate="2025-07-29 22:49:34"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

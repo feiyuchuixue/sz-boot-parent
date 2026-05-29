@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_role: framework struct + init -->
+<changeSet  id="framework-struct-sys-role-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_role"/></not>
+        </preConditions>
+        <createTable tableName="sys_role" remarks="系统角色表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="角色ID"><constraints primaryKey="true"/></column>
+            <column name="role_name" type="VARCHAR(64)" remarks="角色名称"><constraints nullable="false"/></column>
+            <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="简介"><constraints nullable="false"/></column>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除与否"><constraints nullable="false"/></column>
+            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="permissions" type="VARCHAR(64)" defaultValue="" remarks="标识，唯一"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-role-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_role</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_role">
+            <column name="id" valueNumeric="1"/>
+            <column name="role_name" value="超级管理员"/>
+            <column name="remark" value=""/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2024-05-10 21:28:31"/>
+            <column name="update_time" valueDate="2025-04-24 15:45:53"/>
+            <column name="is_lock" value="T"/>
+            <column name="permissions" value="admin"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

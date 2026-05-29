@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_import_batch: framework struct + init -->
+<changeSet  id="framework-struct-sys-import-batch-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_import_batch"/></not>
+        </preConditions>
+        <createTable tableName="sys_import_batch" remarks="导入（Excel）批次表">
+            <column name="id" type="BIGINT" remarks="主键（雪花ID）"><constraints primaryKey="true"/></column>
+            <column name="batch_id" type="VARCHAR(64)" remarks="导入批次ID（UUID）"><constraints nullable="false" unique="true" uniqueConstraintName="uk_batch_id"/></column>
+            <column name="biz_type" type="VARCHAR(64)" remarks="业务类型"><constraints nullable="false"/></column>
+            <column name="biz_name" type="VARCHAR(128)" remarks="业务名称"><constraints nullable="false"/></column>
+            <column name="file_name" type="VARCHAR(255)" remarks="导入文件名"/>
+            <column name="operator_id" type="BIGINT" remarks="操作人ID"/>
+            <column name="total_count" type="INT" defaultValueNumeric="0" remarks="总条数"><constraints nullable="false"/></column>
+            <column name="success_count" type="INT" defaultValueNumeric="0" remarks="成功条数"><constraints nullable="false"/></column>
+            <column name="fail_count" type="INT" defaultValueNumeric="0" remarks="失败条数"><constraints nullable="false"/></column>
+            <column name="status" type="VARCHAR(32)" remarks="批次状态"><constraints nullable="false"/></column>
+            <column name="remark" type="VARCHAR(500)" remarks="备注"/>
+            <column name="create_time" type="DATETIME" remarks="创建时间"><constraints nullable="false"/></column>
+            <column name="finish_time" type="DATETIME" remarks="完成时间"/>
+        </createTable>
+        <createIndex tableName="sys_import_batch" indexName="idx_biz_type_create_time">
+            <column name="biz_type"/>
+            <column name="create_time"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dept_closure: framework struct + init -->
+<changeSet  id="framework-struct-sys-dept-closure-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_dept_closure"/></not>
+        </preConditions>
+        <createTable tableName="sys_dept_closure" remarks="部门祖籍关系表">
+            <column name="ancestor_id" type="BIGINT" remarks="祖先节点ID"><constraints nullable="false"/></column>
+            <column name="descendant_id" type="BIGINT" remarks="后代节点ID"><constraints nullable="false"/></column>
+            <column name="depth" type="INT" remarks="祖先节点到后代节点的距离"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

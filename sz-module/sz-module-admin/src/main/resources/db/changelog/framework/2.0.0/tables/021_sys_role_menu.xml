@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_role_menu: framework struct + init -->
+<changeSet  id="framework-struct-sys-role-menu-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_role_menu"/></not>
+        </preConditions>
+        <createTable tableName="sys_role_menu" remarks="系统角色-菜单表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="系统角色-菜单ID"><constraints primaryKey="true"/></column>
+            <column name="menu_id" type="VARCHAR(32)" remarks="sys_menu_id （菜单表）"><constraints nullable="false"/></column>
+            <column name="role_id" type="BIGINT" remarks="sys_role_id （角色表）"/>
+            <column name="permission_type" type="ENUM('menu','scope')" defaultValue="menu" remarks="权限类型（功能权限；数据权限）"/>
+            <column name="data_scope_cd" type="VARCHAR(255)" remarks="数据权限范围，data_scope字典"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-role-menu-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_role_menu</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="1"/>
+            <column name="menu_id" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="2"/>
+            <column name="menu_id" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="3"/>
+            <column name="menu_id" value="0f98b89c67e54cb0bcff2b56aa98832f"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="4"/>
+            <column name="menu_id" value="8255bac5eae748a0a8500167963b3e00"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="5"/>
+            <column name="menu_id" value="cea01dcde9b24b5a8686bdc33c438cd7"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="6"/>
+            <column name="menu_id" value="6e25a716c1a646009a9be90b16f0a682"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="7"/>
+            <column name="menu_id" value="330a1a0a857c4ad1a95327db5134e420"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="8"/>
+            <column name="menu_id" value="e91eeaea8f1546d3921839469fe247b6"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="9"/>
+            <column name="menu_id" value="686a5522b0334d4da51aa15b3fd1a303"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="10"/>
+            <column name="menu_id" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="11"/>
+            <column name="menu_id" value="df2894b4c06e47cab84142d81edc494d"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="12"/>
+            <column name="menu_id" value="0933b165ffc14d558e8de43ccb6687f6"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="13"/>
+            <column name="menu_id" value="445b73dda9a34ad681d2705a7abcf2f6"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="14"/>
+            <column name="menu_id" value="5b5fb3748c6a4ed5a4dda3877508c3a7"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="15"/>
+            <column name="menu_id" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="16"/>
+            <column name="menu_id" value="9338bf2f57984825bc227bb618f9db81"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="17"/>
+            <column name="menu_id" value="05194ef5fa7a4a308a44f6f5c6791c3a"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="18"/>
+            <column name="menu_id" value="fa0c65ad783d4bf9b919a6db02ef1428"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="19"/>
+            <column name="menu_id" value="ee36ad68586e42fa8a896215c544cb76"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="20"/>
+            <column name="menu_id" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="21"/>
+            <column name="menu_id" value="4f39ef0fd2f748f6ab7d6d20d98bc4af"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="22"/>
+            <column name="menu_id" value="818cc6e1889d46579525ad8ab921eeb8"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="23"/>
+            <column name="menu_id" value="9830d86487184961b90fc527c9604720"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="24"/>
+            <column name="menu_id" value="81647226a2d047e8ab0b70472350ee69"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="25"/>
+            <column name="menu_id" value="97f11d74c98047ba80f011a3da9d882c"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="26"/>
+            <column name="menu_id" value="1a86a9d2b3ca49439277fff9f499c7cd"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="27"/>
+            <column name="menu_id" value="29d33eba6b73420287d8f7e64aea62b3"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="28"/>
+            <column name="menu_id" value="ede76f5e60b640aa9de2ba7216b90ceb"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="29"/>
+            <column name="menu_id" value="3a54d488132b4331bf3cd5e6d86ffcf4"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="30"/>
+            <column name="menu_id" value="b428eba3f9a34025a46c394df5390b88"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="31"/>
+            <column name="menu_id" value="9e731ff422184fc1be2022c5c985735e"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="32"/>
+            <column name="menu_id" value="6c46fd01faf042fc9dd4a9c9b9ef2c5a"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="33"/>
+            <column name="menu_id" value="5b33ac3d630543d09d1388fae4d13fc0"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="34"/>
+            <column name="menu_id" value="8d0b8b57a58e41a5a5e840cc2b3703f4"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="35"/>
+            <column name="menu_id" value="8354d626cc65487594a7c38e98de1bad"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="36"/>
+            <column name="menu_id" value="8fd6721941494fd5bbe16bec82b235be"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="37"/>
+            <column name="menu_id" value="006bdbacd71a481f88b6acf895529acd"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="38"/>
+            <column name="menu_id" value="3ba9407560a1490583fefa10b22bc74f"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="45"/>
+            <column name="menu_id" value="da1b46db642f42978f83ed5eb34870ce"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="46"/>
+            <column name="menu_id" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="47"/>
+            <column name="menu_id" value="b5ce6412c26447348a7267de3ea11a21"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="48"/>
+            <column name="menu_id" value="3d7eed8398d3457c897b2e8bf838e9c6"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="49"/>
+            <column name="menu_id" value="310d02bb121645d1b7a7f949f48c981b"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="50"/>
+            <column name="menu_id" value="2d6b78ad03de4cf1a3899f25cd7fe0ee"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="51"/>
+            <column name="menu_id" value="fbdcbcc0ccf547b4b78a4fc2cf303236"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="52"/>
+            <column name="menu_id" value="012efc4ef8d24304a8562534f319524a"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="72"/>
+            <column name="menu_id" value="7a4544831af34e69aa73148bf84b9924"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="73"/>
+            <column name="menu_id" value="c4896e8735a745bda9b47ecaf50f46f2"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="77"/>
+            <column name="menu_id" value="8231a369712e4f8f8ac09fce232cd034"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="78"/>
+            <column name="menu_id" value="e931c84b8bc945a7b6ba2d58c8a93afc"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="79"/>
+            <column name="menu_id" value="87a26b76daad47c2a12c470605563c4a"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="80"/>
+            <column name="menu_id" value="f1ef824156c0402c90189d58afb1613e"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="81"/>
+            <column name="menu_id" value="191878090b294ec5892a68081dd91428"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="83"/>
+            <column name="menu_id" value="0bef80d81a264f689d091613053c659e"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="84"/>
+            <column name="menu_id" value="abecbec6abe74023abaa653f827a3b0f"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="85"/>
+            <column name="menu_id" value="9dfeebc408e1490e88bf10db3b5e1239"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="86"/>
+            <column name="menu_id" value="d90946bc9ed54e598e3c4471dbd1f496"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="87"/>
+            <column name="menu_id" value="bef8f1330490494f924314eec9687055"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="88"/>
+            <column name="menu_id" value="6307bd1221fb474b8c8777afaed4440f"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="89"/>
+            <column name="menu_id" value="31dca47db78f4c14b9cfe65226061b65"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="91"/>
+            <column name="menu_id" value="62dd478ed2f54792b08ed9202e73d2cf"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="92"/>
+            <column name="menu_id" value="47e5805374bc44a2831126676b8c78dd"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="93"/>
+            <column name="menu_id" value="c555243b02814270948a240e8d2d3408"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="94"/>
+            <column name="menu_id" value="765d139874424930b0a672128712de9b"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="id" valueNumeric="97"/>
+            <column name="menu_id" value="b3d357cf69034286988f05a346f2412c"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

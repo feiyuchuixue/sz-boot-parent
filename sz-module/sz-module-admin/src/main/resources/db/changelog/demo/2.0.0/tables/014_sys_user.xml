@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_user: demo data -->
+
+    <changeSet id="demo-data-sys-user-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user WHERE id IN (2, 3, 4, 5, 6)</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="2"/>
+            <column name="username" value="user"/>
+            <column name="pwd" value="$2a$10$Km4pU/DdW/.LXRYgR446S.HCdcjIHkp7uFisXtCVoaXyXfveBHjlO"/>
+            <column name="nickname" value="测试用户"/>
+            <column name="sex" valueNumeric="1"/>
+            <column name="birthday" value="2024-01-01"/>
+            <column name="logo" value="logo/user/20260501/bg6.png"/>
+            <column name="age" valueNumeric="0"/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001003"/>
+            <column name="create_time" valueDate="2024-05-09 21:50:02"/>
+            <column name="update_time" valueDate="2024-05-10 22:30:54"/>
+            <column name="del_flag" value="F"/>
+        </insert>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="3"/>
+            <column name="username" value="test1"/>
+            <column name="pwd" value="$2a$10$QXRq4OGoHahxlXbULJxIXe0RgOCdW7C716bes9qh4gopIVROAVxXW"/>
+            <column name="phone" value=""/>
+            <column name="nickname" value="测试1-本部及以下"/>
+            <column name="birthday" value=""/>
+            <column name="logo" value="logo/user/20260501/bg8.png"/>
+            <column name="age" valueNumeric="0"/>
+            <column name="id_card" value=""/>
+            <column name="email" value=""/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001003"/>
+            <column name="create_time" valueDate="2024-07-08 08:47:31"/>
+            <column name="update_time" valueDate="2024-07-08 09:17:41"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="4"/>
+            <column name="username" value="test2"/>
+            <column name="pwd" value="$2a$10$uMZA6KiYtvnLVHSukXiB2ufvKdp827nO/6p6jWn1ydEYoLA0kgPqK"/>
+            <column name="phone" value=""/>
+            <column name="nickname" value="测试2-仅本部"/>
+            <column name="birthday" value=""/>
+            <column name="logo" value=""/>
+            <column name="age" valueNumeric="0"/>
+            <column name="id_card" value=""/>
+            <column name="email" value=""/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001003"/>
+            <column name="create_time" valueDate="2024-07-08 08:47:41"/>
+            <column name="update_time" valueDate="2024-07-08 09:17:11"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="5"/>
+            <column name="username" value="test3"/>
+            <column name="pwd" value="$2a$10$UWKoQfMAFxk/qdTI4vQLgOjho5xtjNJhdbHmJNoYuNZkuOq2WCoZm"/>
+            <column name="phone" value=""/>
+            <column name="nickname" value="测试3-仅本人"/>
+            <column name="birthday" value=""/>
+            <column name="logo" value=""/>
+            <column name="age" valueNumeric="0"/>
+            <column name="id_card" value=""/>
+            <column name="email" value=""/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001003"/>
+            <column name="create_time" valueDate="2024-07-08 08:47:50"/>
+            <column name="update_time" valueDate="2024-07-08 09:17:56"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_user">
+            <column name="id" valueNumeric="6"/>
+            <column name="username" value="test4"/>
+            <column name="pwd" value="$2a$10$bCgJMtfSPhn6Mvn2AGx5z.NDVHXBvxl7/XEvlH52wbBpAWkLvwVVe"/>
+            <column name="phone" value=""/>
+            <column name="nickname" value="测试4-自定义"/>
+            <column name="birthday" value=""/>
+            <column name="logo" value=""/>
+            <column name="age" valueNumeric="0"/>
+            <column name="id_card" value=""/>
+            <column name="email" value=""/>
+            <column name="account_status_cd" value="1000001"/>
+            <column name="user_tag_cd" value="1001003"/>
+            <column name="create_time" valueDate="2024-07-08 08:47:58"/>
+            <column name="update_time" valueDate="2024-07-08 09:18:33"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

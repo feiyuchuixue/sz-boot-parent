@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_login_log: framework struct + init -->
+<changeSet  id="framework-struct-sys-login-log-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_login_log"/></not>
+        </preConditions>
+        <createTable tableName="sys_login_log" remarks="登陆日志表">
+            <column name="id" type="BIGINT" autoIncrement="true" remarks="登陆ID"><constraints primaryKey="true"/></column>
+            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="user_name" type="VARCHAR(32)" remarks="用户名"/>
+            <column name="login_status" type="VARCHAR(10)" remarks="登陆状态"/>
+            <column name="login_time" type="DATETIME" remarks="登陆时间"/>
+            <column name="ip_address" type="VARCHAR(50)" remarks="登陆ip地址"/>
+            <column name="login_location" type="VARCHAR(50)" remarks="登陆地点"/>
+            <column name="browser" type="VARCHAR(50)" remarks="浏览器类型"/>
+            <column name="os" type="VARCHAR(50)" remarks="操作系统"/>
+            <column name="msg" type="VARCHAR(50)" remarks="提示消息"/>
+            <column name="remark" type="VARCHAR(255)" remarks="备注"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
