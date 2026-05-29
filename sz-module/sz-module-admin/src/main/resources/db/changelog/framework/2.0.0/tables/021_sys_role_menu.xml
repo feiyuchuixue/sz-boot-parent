@@ -437,4 +437,29 @@
             <column name="data_scope_cd" value=""/>
         </insert>
     </changeSet>
+
+    <changeSet id="framework-constraint-sys-data-role-relation-uk-biz-202605221620" author="升职哦（sz）">
+        <preConditions onFail="HALT">
+            <tableExists tableName="sys_data_role_relation"/>
+            <not>
+                <uniqueConstraintExists
+                    tableName="sys_data_role_relation"
+                    constraintName="uk_sys_data_role_relation_biz"/>
+            </not>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM (
+                                         SELECT role_id, menu_id, relation_type_cd, relation_id
+                                         FROM sys_data_role_relation
+                                         GROUP BY role_id, menu_id, relation_type_cd, relation_id
+                                         HAVING COUNT(*) > 1
+                                     ) t
+            </sqlCheck>
+        </preConditions>
+
+        <addUniqueConstraint
+            tableName="sys_data_role_relation"
+            columnNames="role_id,menu_id,relation_type_cd,relation_id"
+            constraintName="uk_sys_data_role_relation_biz"/>
+    </changeSet>
+
 </databaseChangeLog>

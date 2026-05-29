@@ -17,13 +17,8 @@ public class ApiPrefixConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix(normalize(adminPrefix), HandlerTypePredicate.forBasePackage(
-                "com.sz.admin.system",
-                "com.sz.admin.teacher",
-                "com.sz.applet",
-                "com.sz.security.controller",
-                "com.sz.www"
-        ));
+        configurer.addPathPrefix(normalize(adminPrefix), HandlerTypePredicate.forBasePackage("com.sz.admin.system", "com.sz.admin.teacher", "com.sz.applet",
+                "com.sz.security.controller", "com.sz.www"));
         configurer.addPathPrefix(normalize(generatorPrefix), HandlerTypePredicate.forBasePackage("com.sz.generator.controller"));
     }
 

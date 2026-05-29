@@ -2,11 +2,13 @@ package com.sz.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleCreateDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleListDTO;
 import com.sz.admin.system.pojo.dto.sysrole.SysRoleUpdateDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysRole;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 import com.sz.admin.system.service.SysRoleMenuService;
 import com.sz.admin.system.service.SysRoleService;
@@ -84,6 +86,13 @@ public class SysRoleController {
     @GetMapping("/menu")
     public ApiResult<SysRoleMenuVO> findRoleMenuByRoleId(@NotZero @RequestParam Long roleId) {
         return ApiResult.success(sysRoleMenuService.queryRoleMenu(roleId));
+    }
+
+    @Operation(summary = "瑙掕壊鏉冮檺鑴氭湰瀵煎嚭")
+    @SaCheckPermission(value = "sys.role.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/menu/script/export")
+    public ApiResult<ScriptExportVO> exportRoleMenuScript(@RequestBody ScriptExportDTO dto) {
+        return ApiResult.success(sysRoleMenuService.exportRoleMenuScript(dto));
     }
 
 }

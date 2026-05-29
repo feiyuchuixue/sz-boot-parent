@@ -29,6 +29,10 @@ public class AdminScriptExportService {
 
     private static final String DICT_SQL_TEMPLATE = "admin-script/sql/dictImport.sql.ftl";
 
+    private static final String ROLE_MENU_XML_TEMPLATE = "admin-script/liquibase/roleMenuImport.xml.ftl";
+
+    private static final String ROLE_MENU_SQL_TEMPLATE = "admin-script/sql/roleMenuImport.sql.ftl";
+
     private final FreeMarkerConfigurer configurer;
 
     private final AdminScriptDialectResolver dialectResolver;
@@ -39,6 +43,10 @@ public class AdminScriptExportService {
 
     public ScriptExportVO renderDictExport(Map<String, Object> model, String requestedDialect) throws IOException {
         return render(model, requestedDialect, DICT_XML_TEMPLATE, DICT_SQL_TEMPLATE, "dictImport", "字典脚本");
+    }
+
+    public ScriptExportVO renderRoleMenuExport(Map<String, Object> model, String requestedDialect) throws IOException {
+        return render(model, requestedDialect, ROLE_MENU_XML_TEMPLATE, ROLE_MENU_SQL_TEMPLATE, "roleMenu", "角色权限脚本");
     }
 
     public String renderMenuSql(Map<String, Object> model, String requestedDialect) throws IOException {

@@ -5,14 +5,17 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysRoleMenuMapper;
 import com.sz.admin.system.mapper.SysUserMapper;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysDataRoleRelation;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
+import com.sz.admin.system.script.AdminScriptExportService;
 import com.sz.admin.system.service.*;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.event.EventPublisher;
@@ -27,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +60,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     private final SysDataRoleRelationService sysDataRoleRelationService;
 
     private final SysUserMapper sysUserMapper;
+
+    private final AdminScriptExportService scriptExportService;
 
     @Override
     @Transactional
@@ -171,6 +177,42 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         }
         menuVO.setScope(scopes);
         return menuVO;
+    }
+
+    @Override
+    public ScriptExportVO exportRoleMenuScript(ScriptExportDTO dto) {
+        try {
+            return scriptExportService.renderRoleMenuExport(buildRoleMenuScriptModel(dto), dto.getSqlDialect());
+        } catch (IOException e) {
+            log.error("exportRoleMenuScript error", e);
+            return new ScriptExportVO();
+        }
+    }
+
+    private Map<String, Object> buildRoleMenuScriptModel(ScriptExportDTO dto) {
+        Map<String, Object> dataModel = new HashMap<>();
+        List<SysRoleMenu> roleMenuList = new ArrayList<>();
+        List<SysDataRoleRelation> dataRoleRelationList = new ArrayList<>();
+
+        if (Utils.isNotNull(dto.getIds())) {
+            QueryWrapper roleMenuWrapper = QueryWrapper.create().in(SysRoleMenu::getRoleId, dto.getIds()).orderBy(SysRoleMenu::getRoleId).asc()
+                    .orderBy(SysRoleMenu::getPermissionType).asc().orderBy(SysRoleMenu::getMenuId).asc().orderBy(SysRoleMenu::getDataScopeCd).asc();
+            roleMenuList = list(roleMenuWrapper);
+
+            List<Long> customScopeMenuIds = roleMenuList.stream().filter(item -> "scope".equals(item.getPermissionType()))
+                    .filter(item -> DataScopeConstant.CUSTOM.equals(item.getDataScopeCd())).map(SysRoleMenu::getMenuId).distinct().toList();
+            if (!customScopeMenuIds.isEmpty()) {
+                QueryWrapper relationWrapper = QueryWrapper.create().in(SysDataRoleRelation::getRoleId, dto.getIds())
+                        .in(SysDataRoleRelation::getMenuId, customScopeMenuIds).orderBy(SysDataRoleRelation::getRoleId).asc()
+                        .orderBy(SysDataRoleRelation::getMenuId).asc().orderBy(SysDataRoleRelation::getRelationTypeCd).asc()
+                        .orderBy(SysDataRoleRelation::getRelationId).asc();
+                dataRoleRelationList = sysDataRoleRelationService.list(relationWrapper);
+            }
+        }
+
+        dataModel.put("roleMenuList", roleMenuList);
+        dataModel.put("dataRoleRelationList", dataRoleRelationList);
+        return dataModel;
     }
 
     private List<SysRoleMenu> getMenuList(Long roleId, String permissionType) {

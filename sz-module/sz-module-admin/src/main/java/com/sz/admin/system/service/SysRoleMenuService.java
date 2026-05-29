@@ -1,8 +1,10 @@
 package com.sz.admin.system.service;
 
 import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.scriptexport.ScriptExportDTO;
 import com.sz.admin.system.pojo.dto.sysrolemenu.SysRoleMenuDTO;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
+import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 
@@ -22,6 +24,8 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
     void change(SysRoleMenuDTO dto);
 
     SysRoleMenuVO queryRoleMenu(Long roleId);
+
+    ScriptExportVO exportRoleMenuScript(ScriptExportDTO dto);
 
     Map<Long, RoleMenuScopeVO> getUserScope(Collection<String> roleIds);
 }
