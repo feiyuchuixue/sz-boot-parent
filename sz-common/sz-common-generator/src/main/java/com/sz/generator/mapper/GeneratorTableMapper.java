@@ -5,8 +5,6 @@ import com.sz.generator.pojo.dto.DbTableQueryDTO;
 import com.sz.generator.pojo.dto.MenuCreateDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.result.SysMenuResult;
-import com.sz.generator.pojo.result.TableColumResult;
-import com.sz.generator.pojo.result.TableResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,19 +19,8 @@ import java.util.List;
  */
 public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
 
-    List<TableResult> selectDbTableListByNames(@Param("tableNames") List<String> tableNames);
-
     /**
-     * 查询指定table的column列
-     *
-     * @param tableName
-     *            表名
-     * @return 列信息
-     */
-    List<TableColumResult> selectDbTableColumnsByName(@Param("tableName") String tableName);
-
-    /**
-     * 根据tableName清空表记录
+     * 根据 tableName 清空表记录
      *
      * @param tableNames
      *            表名集合
@@ -41,19 +28,12 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     void cleanTableRecordByTableName(@Param("tableNames") List<String> tableNames);
 
     /**
-     * 根据tableName清空字段表
+     * 根据 tableName 清空字段表
      *
      * @param tableNames
      *            表名集合
      */
     void cleanTableColumnByTableName(@Param("tableNames") List<String> tableNames);
-
-    /**
-     * 查询未导入的表
-     *
-     * @return 表信息
-     */
-    List<GeneratorTable> selectDbTableNotInImport(@Param("queryDTO") DbTableQueryDTO queryDTO);
 
     /**
      * 查询已经导入的表
@@ -65,10 +45,10 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
     List<GeneratorTable> selectDbTableByImport(@Param("queryDTO") DbTableQueryDTO queryDTO);
 
     /**
-     * 根据pid 查询上级菜单
+     * 根据 pid 查询上级菜单
      *
      * @param pid
-     *            上级菜单id
+     *            上级菜单 id
      * @return 菜单信息
      */
     SysMenuResult selectSysMenuByPid(@Param("pid") Long pid);
@@ -77,9 +57,11 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
 
     int selectMenuCount(@Param("pid") Long pid);
 
-    void syncTreeHasChildren();
+    List<Long> selectEnabledMenuIds();
 
-    void syncTreeDeep();
+    List<Long> selectEnabledMenuParentIds();
+
+    void updateMenuHasChildren(@Param("id") Long id, @Param("hasChildren") String hasChildren);
 
     int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component, @Param("pid") Long pid);
 

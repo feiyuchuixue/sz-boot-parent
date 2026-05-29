@@ -3,7 +3,7 @@
 <#compress>
 <#if dictTypeList?has_content>
 <#list dictTypeList as dictType>
-    INSERT IGNORE INTO `sys_dict_type` (`id`, `type_name`, `type_code`, `is_lock`, `is_show`, `del_flag`, `remark`, `create_time`, `update_time`, `delete_time`, `create_id`, `update_id`, `delete_id`, `type`) VALUES (${dictType.id}, '${dictType.typeName}', '${dictType.typeCode}', '${dictType.isLock}', '${dictType.isShow}', '${dictType.delFlag}', '${dictType.remark}', '${dictType.createTime}', NULL, NULL, NULL, NULL, NULL, '${dictType.type}');
+    INSERT IGNORE INTO `sys_dict_type` (`id`, `type_name`, `type_code`, `source_code`, `is_builtin`, `is_lock`, `is_show`, `del_flag`, `remark`, `create_time`, `update_time`, `delete_time`, `create_id`, `update_id`, `delete_id`, `type`) VALUES (${dictType.id}, '${dictType.typeName}', '${dictType.typeCode}', '${(dictType.sourceCode)!}', '${(dictType.isBuiltin)!"F"}', '${dictType.isLock}', '${dictType.isShow}', '${dictType.delFlag}', '${dictType.remark}', '${dictType.createTime}', NULL, NULL, NULL, NULL, NULL, '${dictType.type}');
 </#list>
 </#if>
 </#compress>

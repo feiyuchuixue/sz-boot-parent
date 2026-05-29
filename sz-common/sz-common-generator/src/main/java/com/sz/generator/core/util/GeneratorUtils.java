@@ -267,6 +267,13 @@ public class GeneratorUtils {
     }
 
     private static void setNumberTypeAttributes(String columnType, GeneratorTableColumn tableColumn) {
+        String dbType = getDbType(columnType).toUpperCase();
+        if ("DECIMAL".equals(dbType) || "NUMERIC".equals(dbType)) {
+            tableColumn.setJavaType(GeneratorConstants.TYPE_BIG_DECIMAL);
+            tableColumn.setJavaTypePackage("java.math.BigDecimal");
+            tableColumn.setHtmlType(GeneratorConstants.HTML_INPUT_NUMBER);
+            return;
+        }
         String[] str = split(substringBetween(columnType, "(", ")"), ",");
         if (str != null && str.length == 2 && Integer.parseInt(str[1]) > 0) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_BIG_DECIMAL);

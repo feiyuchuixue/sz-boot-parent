@@ -15,7 +15,7 @@ public class MenuSqlCodeBuilder extends AbstractCodeGenerationTemplate {
 
     @Override
     protected String getTemplateFileName() {
-        return File.separator + "sql" + File.separator + "menuInit.sql.ftl";
+        return File.separator + "liquibase" + File.separator + "menuInit.xml.ftl";
     }
 
     @Override
@@ -30,22 +30,22 @@ public class MenuSqlCodeBuilder extends AbstractCodeGenerationTemplate {
 
     @Override
     protected String getExtension() {
-        return ".sql";
+        return ".xml";
     }
 
     @Override
     protected String alias() {
-        return "sql";
+        return "liquibase";
     }
 
     @Override
     protected String language() {
-        return "sql";
+        return "xml";
     }
 
     @Override
     protected String getZipParentPackage() {
-        return "sql";
+        return "liquibase";
     }
 
     @Override

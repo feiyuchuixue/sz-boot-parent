@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sz.generator.mapper.GeneratorTableMapper">
 
-    <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.sz.generator.pojo.po.GeneratorTable">
         <id column="table_id" property="tableId"/>
         <result column="table_name" property="tableName"/>
@@ -29,167 +28,115 @@
         <result column="btn_data_scope_type" property="btnDataScopeType"/>
     </resultMap>
 
-    <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        table_id
-        , table_name, table_comment, class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, type, path, path_api, path_web, create_id, create_time, update_id, update_time, options, has_import, has_export, is_autofill, btn_data_scope_type
+        table_id, table_name, table_comment, class_name, tpl_category, package_name, module_name, business_name,
+        function_name, function_author, type, path, path_api, path_web, create_id, create_time, update_id,
+        update_time, options, has_import, has_export, is_autofill, btn_data_scope_type
     </sql>
 
     <sql id="Sys_Menu_Column">
-        id
-        , pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden, has_children, is_link, is_full, is_affix, is_keep_alive, del_flag
+        id, pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden,
+        has_children, is_link, is_full, is_affix, is_keep_alive, del_flag
     </sql>
-
 
     <delete id="cleanTableRecordByTableName">
         DELETE
         FROM generator_table
-        where table_name in
+        WHERE table_name IN
         <foreach collection="tableNames" item="name" open="(" separator="," close=")">
             #{name}
         </foreach>
     </delete>
-    <delete id="cleanTableColumnByTableName">
-        DELETE FROM generator_table_column
-        WHERE EXISTS (
-        SELECT 1
-        FROM generator_table
-        WHERE generator_table_column.table_id = generator_table.table_id
-        AND generator_table.table_name IN
-        <foreach collection="tableNames" item="name" open="(" separator="," close=")">
-            #{name}
-        </foreach>
-        );
-    </delete>
-    <select id="selectDbTableListByNames" resultType="com.sz.generator.pojo.result.TableResult">
-        select table_name, table_comment, create_time, update_time from information_schema.tables
-        where table_schema = (select database())
-        and table_name in
-        <foreach collection="tableNames" item="name" open="(" separator="," close=")">
-            #{name}
-        </foreach>
-    </select>
-    <select id="selectDbTableColumnsByName" resultType="com.sz.generator.pojo.result.TableColumResult">
-        SELECT column_name,
-               (CASE WHEN (is_nullable = 'no' <![CDATA[ && ]]> column_key != 'PRI') THEN '1' ELSE NULL END) AS is_required,
-               (CASE WHEN column_key = 'PRI' THEN '1' ELSE '0' END)                               AS is_pk,
-               ordinal_position                                                                   AS sort,
-               column_comment,
-               (CASE WHEN extra = 'auto_increment' THEN '1' ELSE '0' END)                         AS is_increment,
-               column_type
-        FROM information_schema.COLUMNS
-        WHERE table_schema = (SELECT DATABASE
-                                         ())
-          AND table_name = (#{tableName})
 
-        ORDER BY ordinal_position
-    </select>
-    <select id="selectDbTableNotInImport" resultType="com.sz.generator.pojo.po.GeneratorTable">
-        SELECT table_name, table_comment, create_time, update_time from information_schema.tables
-        WHERE table_schema = (select database())
-        AND table_name NOT LIKE 'generator_%'
-        AND table_name NOT IN (select table_name from generator_table)
-        <if test="queryDTO.filterSys">
-            AND table_name NOT LIKE 'sys_%'
-        </if>
-        <if test="queryDTO.tableName != null and queryDTO.tableName != ''">
-            AND lower(table_name) like lower(concat('%', #{queryDTO.tableName}, '%'))
-        </if>
-        <if test="queryDTO.tableComment != null and queryDTO.tableComment != ''">
-            AND lower(table_comment) like lower(concat('%', #{queryDTO.tableComment}, '%'))
-        </if>
-        ORDER BY create_time desc
-    </select>
+    <delete id="cleanTableColumnByTableName">
+        DELETE
+        FROM generator_table_column
+        WHERE EXISTS (
+            SELECT 1
+            FROM generator_table
+            WHERE generator_table_column.table_id = generator_table.table_id
+              AND generator_table.table_name IN
+            <foreach collection="tableNames" item="name" open="(" separator="," close=")">
+                #{name}
+            </foreach>
+        )
+    </delete>
+
     <select id="selectDbTableByImport" resultType="com.sz.generator.pojo.po.GeneratorTable">
-        select
-        <include refid="Base_Column_List"></include>
-        from generator_table
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM generator_table
         <where>
             <if test="queryDTO.tableName != null and queryDTO.tableName != ''">
-                AND table_name like lower(concat('%', #{queryDTO.tableName}, '%'))
+                AND LOWER(table_name) LIKE LOWER(CONCAT('%', #{queryDTO.tableName}, '%'))
             </if>
             <if test="queryDTO.tableComment != null and queryDTO.tableComment != ''">
-                AND table_comment like lower(concat('%', #{queryDTO.tableComment}, '%'))
+                AND LOWER(table_comment) LIKE LOWER(CONCAT('%', #{queryDTO.tableComment}, '%'))
             </if>
         </where>
     </select>
+
     <select id="selectSysMenuByPid" resultType="com.sz.generator.pojo.result.SysMenuResult">
-        select
-        <include refid="Sys_Menu_Column"></include>
-        from
-        sys_menu
-        where id = #{pid}
-    </select>
-    <select id="selectMenuCount" resultType="java.lang.Integer">
-        select count(1)
-        from sys_menu
-        where pid = #{pid}
-    </select>
-    <select id="countMenu" resultType="java.lang.Integer">
-        SELECT count(1)
+        SELECT
+        <include refid="Sys_Menu_Column"/>
         FROM sys_menu
-        WHERE NAME = #{name}
+        WHERE id = #{pid}
+    </select>
+
+    <select id="selectMenuCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_menu
+        WHERE pid = #{pid}
+    </select>
+
+    <select id="countMenu" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_menu
+        WHERE name = #{name}
           AND path = #{path}
           AND component = #{component}
           AND pid = #{pid}
           AND menu_type_cd != '1002003'
-	      AND del_flag = 'F'
+          AND del_flag = 'F'
     </select>
+
     <select id="countMenuBtn" resultType="java.lang.Integer">
-        SELECT count(1)
+        SELECT COUNT(1)
         FROM sys_menu
         WHERE permissions = #{permissions}
           AND menu_type_cd = '1002003'
           AND del_flag = 'F'
     </select>
+
     <insert id="insertMenu">
-        INSERT INTO `sys_menu` (`id`,
-                                `pid`,
-                                `path`,
-                                `name`,
-                                `title`,
-                                `icon`,
-                                `component`,
-                                `sort`,
-                                `deep`,
-                                `menu_type_cd`,
-                                `permissions`,
-                                `has_children`,
-                                `use_data_scope`)
-        VALUES (#{createDTO.id},
-                #{createDTO.pid},
-                #{createDTO.path},
-                #{createDTO.name},
-                #{createDTO.title},
-                #{createDTO.icon},
-                #{createDTO.component},
-                #{createDTO.sort},
-                #{createDTO.deep},
-                #{createDTO.menuTypeCd},
-                #{createDTO.permissions},
-                #{createDTO.hasChildren},
-                #{createDTO.useDataScope})
-
+        INSERT INTO sys_menu (
+            id, pid, path, name, title, icon, component, sort, deep, menu_type_cd, permissions, has_children, use_data_scope
+        )
+        VALUES (
+            #{createDTO.id}, #{createDTO.pid}, #{createDTO.path}, #{createDTO.name}, #{createDTO.title},
+            #{createDTO.icon}, #{createDTO.component}, #{createDTO.sort}, #{createDTO.deep}, #{createDTO.menuTypeCd},
+            #{createDTO.permissions}, #{createDTO.hasChildren}, #{createDTO.useDataScope}
+        )
     </insert>
-    <update id="syncTreeHasChildren">
-        UPDATE sys_menu AS m
-            JOIN (
-            SELECT id,
-            IF(EXISTS (SELECT 1 FROM sys_menu WHERE pid = sub_m.id), 'T', 'F') AS has_children
-            FROM sys_menu AS sub_m
-            WHERE 1=1 and sub_m.del_flag = 'F'
-            ) AS subquery
-        ON m.id = subquery.id
-            SET m.has_children = 'T'
-        WHERE subquery.has_children = 'T';
-    </update>
-    <update id="syncTreeDeep">
-        UPDATE sys_menu AS m
-            JOIN sys_menu AS parent
-        ON m.pid = parent.id
-            SET m.deep = parent.deep + 1
-        WHERE 1=1 and m.del_flag = 'F';
-    </update>
 
+    <select id="selectEnabledMenuIds" resultType="java.lang.Long">
+        SELECT id
+        FROM sys_menu
+        WHERE del_flag = 'F'
+    </select>
+
+    <select id="selectEnabledMenuParentIds" resultType="java.lang.Long">
+        SELECT DISTINCT pid
+        FROM sys_menu
+        WHERE del_flag = 'F'
+          AND pid IS NOT NULL
+          AND pid != 0
+    </select>
+
+    <update id="updateMenuHasChildren">
+        UPDATE sys_menu
+        SET has_children = #{hasChildren}
+        WHERE id = #{id}
+    </update>
 
 </mapper>

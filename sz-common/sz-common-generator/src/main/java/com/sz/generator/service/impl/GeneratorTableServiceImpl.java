@@ -11,6 +11,7 @@ import com.sz.db.id.SzIdUtil;
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.CodeModelBuilder;
 import com.sz.generator.core.builder.sql.MenuSqlCodeBuilder;
+import com.sz.generator.core.metadata.GeneratorDbMetadataService;
 import com.sz.generator.core.util.BuildTemplateUtils;
 import com.sz.generator.core.util.GeneratorUtils;
 import com.sz.generator.mapper.GeneratorTableMapper;
@@ -69,6 +70,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private final GeneratorProperties generatorProperties;
 
+    private final GeneratorDbMetadataService metadataService;
+
     /**
      * 导入表
      * 
@@ -82,7 +85,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         // 禁止相同table_name的记录出现多条，先执行清除操作，再生成覆盖
         this.mapper.cleanTableColumnByTableName(tableNames);
         this.mapper.cleanTableRecordByTableName(tableNames);
-        List<TableResult> tableResults = this.mapper.selectDbTableListByNames(tableNames);
+        List<TableResult> tableResults = metadataService.selectDbTableListByNames(tableNames);
         GeneratorTable generatorTable;
         GeneratorTableColumn generatorTableColumn;
         List<GeneratorTableColumn> tableColumns = new ArrayList<>();
@@ -107,7 +110,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             save(generatorTable);
             Long tableId = generatorTable.getTableId();
             String tableName = table.getTableName();
-            List<TableColumResult> tableColumResults = this.mapper.selectDbTableColumnsByName(tableName);
+            List<TableColumResult> tableColumResults = metadataService.selectDbTableColumnsByName(tableName);
             int i = 1;
             for (TableColumResult columResult : tableColumResults) {
                 generatorTableColumn = GeneratorUtils.initColumnField(columResult, tableId, i);
@@ -127,9 +130,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
      */
     @Override
     public PageResult<GeneratorTable> selectDbTableNotInImport(DbTableQueryDTO dto) {
-        PageUtils.toPage(dto);
-        List<GeneratorTable> generatorTables = this.mapper.selectDbTableNotInImport(dto);
-        return PageUtils.getPageResult(generatorTables);
+        return metadataService.selectDbTableNotInImport(dto);
     }
 
     /**
@@ -342,7 +343,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     @Override
     public Template getMenuSqlTemplate() throws IOException {
-        return configurer.getConfiguration().getTemplate(File.separator + "sql" + File.separator + "menuImport.sql.ftl");
+        return configurer.getConfiguration().getTemplate(File.separator + "liquibase" + File.separator + "menuImport.xml.ftl");
     }
 
     private void handleTemplates(List<AbstractCodeGenerationTemplate> templates, List<GeneratorPreviewVO> previews, Map<String, Object> model)
@@ -414,7 +415,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             }
         }
         menus.addAll(createButtonPermissions(menuId, model, menuDeep, isInsertDB, detailVO));
-        this.mapper.syncTreeHasChildren();
+        if (isInsertDB) {
+            syncTreeHasChildren();
+        }
         return menus;
     }
 
@@ -515,6 +518,18 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         dto.setHasChildren("F");
         dto.setSort(sort);
         return dto;
+    }
+
+    private void syncTreeHasChildren() {
+        List<Long> menuIds = this.mapper.selectEnabledMenuIds();
+        if (menuIds.isEmpty()) {
+            return;
+        }
+        Set<Long> parentIds = new HashSet<>(this.mapper.selectEnabledMenuParentIds());
+        for (Long menuId : menuIds) {
+            String hasChildren = parentIds.contains(menuId) ? "T" : "F";
+            this.mapper.updateMenuHasChildren(menuId, hasChildren);
+        }
     }
 
     @Override
