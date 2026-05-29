@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">Sz-Admin</h1>
-<h4 align="center">基于 Spring Boot 4.x、JDK 21、Vue 3 的轻量级中后台脚手架</h4>
+<h4 align="center">基于 Spring Boot 4.x、JDK 21、Vue 3、Vite 7 的轻量级中后台脚手架</h4>
 
 <p align="center">
   <a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub" alt="GitHub Stars"></a>
@@ -34,7 +34,7 @@ Sz-Admin 也可以理解为“升职 Admin”，寓意升职加薪、节节高�
 
 | 亮点 | 说明 |
 | --- | --- |
-| 现代技术栈 | Spring Boot 4.x、JDK 21、Vue 3、Vite 6、TypeScript |
+| 现代技术栈 | Spring Boot 4.x、JDK 21、Vue 3.5、Vite 7.3、TypeScript 5.2 |
 | 贴近真实开发 | 来自实际中后台开发场景的持续实践，注重细节和开发体验，尽量降低使用者的心智负担 |
 | 模块边界清晰 | 后端拆分 `sz-common`、`sz-module`、`sz-service`，官方能力和二开业务更容易隔离 |
 | 升级友好 | 推荐自有业务独立成 `sz-module-*`，减少直接改官方核心模块带来的升级冲突 |
@@ -115,13 +115,13 @@ Sz-Admin 也可以理解为“升职 Admin”，寓意升职加薪、节节高�
 
 | 技术 | 说明 |
 | --- | --- |
-| Vue 3 | 前端核心框架 |
-| Vite 6 | 前端开发与构建工具 |
-| TypeScript | 类型约束和工程可维护性 |
-| Element Plus | UI 组件库 |
-| Pinia | 状态管理 |
-| Vue Router | 路由管理 |
-| Axios | HTTP 客户端，v2.0.0 使用 `adminHttp` / `generatorHttp` 区分接口域 |
+| Vue 3.5.x | 前端核心框架 |
+| Vite 7.3.3 | 前端开发与构建工具 |
+| TypeScript 5.2.x | 类型约束和工程可维护性 |
+| Element Plus 2.14.x | UI 组件库 |
+| Pinia 3.x | 状态管理 |
+| Vue Router 5.x | 路由管理 |
+| Axios 1.16.x | HTTP 客户端，v2.0.0 使用 `adminHttp` / `auditHttp` / `generatorHttp` 区分接口域 |
 
 ## 项目结构
 
@@ -172,7 +172,7 @@ sz-admin/
 
 前端 v2.0.0 保留 `src/views` 的低成本开发路径，普通系统管理页面、简单 CRUD 和一次性业务可以继续放在 `src/views`；具备独立领域、可选启用、派生项目复用或团队并行开发诉求的业务，建议放入 `src/modules/<domain>`，再通过 `src/core` 与 `src/editions` 进行注册和组合。
 
-动态菜单组件解析会按“模块显式注册 -> `src/modules` 约定路径 -> `src/views` 兜底”的顺序匹配。接口调用通过 `adminHttp` / `generatorHttp` 区分管理端与生成器接口，并与 `VITE_ADMIN_API_BASE`、`VITE_GENERATOR_API_BASE` 保持一致。
+动态菜单组件解析会按“模块显式注册 -> `src/modules` 约定路径 -> `src/views` 兜底”的顺序匹配。接口调用通过 `adminHttp` / `auditHttp` / `generatorHttp` 区分管理端、审计与生成器接口，并与 `VITE_ADMIN_API_BASE`、`VITE_AUDIT_API_BASE`、`VITE_GENERATOR_API_BASE` 保持一致。
 
 ## 环境要求
 
@@ -182,8 +182,8 @@ sz-admin/
 | Maven | 3.8+，推荐 3.9.x |
 | 数据库 | MySQL 8.0.17+ 或 PostgreSQL 16+，二选一启用 |
 | Redis | 7.x |
-| Node.js | 18+，推荐 20.x LTS |
-| pnpm | 9.x |
+| Node.js | >= 20.19.0，推荐 20.19.5 |
+| pnpm | 10.17.1 |
 
 ## 快速启动
 
@@ -209,6 +209,7 @@ cd sz-boot-parent
 | --- | --- |
 | 后端服务 | `http://127.0.0.1:9991/api` |
 | 管理端 API | `http://127.0.0.1:9991/api/admin/**` |
+| 审计 API | `http://127.0.0.1:9991/api/audit/**` |
 | 生成器 API | `http://127.0.0.1:9991/api/generator/**` |
 | Swagger UI | `http://127.0.0.1:9991/api/swagger-ui.html` |
 | 健康检查 | `http://127.0.0.1:9991/api/actuator/health` |
@@ -221,7 +222,8 @@ cd sz-boot-parent
 ```shell
 git clone https://github.com/feiyuchuixue/sz-admin.git
 cd sz-admin
-npm install pnpm -g
+corepack enable
+corepack prepare pnpm@10.17.1 --activate
 pnpm install
 pnpm dev
 ```
@@ -232,6 +234,7 @@ pnpm dev
 VITE_USER_NODE_ENV=development
 VITE_PUBLIC_PATH=/
 VITE_ADMIN_API_BASE=/api/admin
+VITE_AUDIT_API_BASE=/api/audit
 VITE_GENERATOR_API_BASE=/api/generator
 VITE_API_PROXY_TARGET=http://127.0.0.1:9991
 VITE_APP_CLIENT_ID=195da9fcce574852b850068771cde034
