@@ -4,11 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
-    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
-    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
-    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
-
     <!-- sys_user: framework struct + init -->
     <changeSet id="framework-struct-sys-user-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -23,7 +18,6 @@
             <column name="sex" type="TINYINT(1)" remarks="性别(0 未知 1 男 2 女)"/>
             <column name="birthday" type="VARCHAR(255)" remarks="生日"/>
             <column name="logo" type="VARCHAR(255)" remarks="头像地址"/>
-            <column name="age" type="INT" remarks="年龄，--废弃，以生日为主"/>
             <column name="id_card" type="VARCHAR(32)" remarks="身份证"/>
             <column name="email" type="VARCHAR(256)" remarks="邮箱地址"/>
             <column name="account_status_cd" type="VARCHAR(10)" remarks="账户状态 (如 冻结；禁言；正常。 关联字典表account_status)"/>
@@ -56,7 +50,6 @@
             <column name="sex" valueNumeric="1"/>
             <column name="birthday" value="2022-01-01"/>
             <column name="logo" value="logo/user/20260501/微信图片_20240420160033.jpg"/>
-            <column name="age" valueNumeric="1"/>
             <column name="id_card" value=""/>
             <column name="email" value=""/>
             <column name="account_status_cd" value="1000001"/>

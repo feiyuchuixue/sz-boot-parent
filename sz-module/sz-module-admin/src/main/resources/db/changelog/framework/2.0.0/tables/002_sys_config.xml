@@ -4,11 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
-    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
-    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
-    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
-
     <!-- sys_config: framework struct + init -->
 <changeSet  id="framework-struct-sys-config-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">

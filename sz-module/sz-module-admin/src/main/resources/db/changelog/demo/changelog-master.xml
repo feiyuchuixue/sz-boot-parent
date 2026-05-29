@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- 演示/测试数据：生产环境不需要时，可在聚合 master 注释此模块的 include。 -->
+    <include file="2.0.0/001_demo_init.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

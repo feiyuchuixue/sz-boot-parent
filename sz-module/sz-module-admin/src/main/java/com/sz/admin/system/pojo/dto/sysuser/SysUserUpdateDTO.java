@@ -33,9 +33,6 @@ public class SysUserUpdateDTO {
     @Schema(description = "头像")
     private String logo;
 
-    @Schema(description = "年龄")
-    private Integer age;
-
     @Schema(description = "性别")
     private Integer sex;
 

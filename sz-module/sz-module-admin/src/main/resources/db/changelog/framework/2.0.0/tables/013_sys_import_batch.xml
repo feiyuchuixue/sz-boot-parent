@@ -4,9 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
-    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
-
     <!-- sys_import_batch: framework struct + init -->
 <changeSet  id="framework-struct-sys-import-batch-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">

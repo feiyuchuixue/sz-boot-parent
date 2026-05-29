@@ -52,9 +52,6 @@ public class SysUser implements Serializable {
     @Schema(description = "头像地址")
     private String logo;
 
-    @Schema(description = "年龄")
-    private Integer age;
-
     @Schema(description = "身份证")
     private String idCard;
 

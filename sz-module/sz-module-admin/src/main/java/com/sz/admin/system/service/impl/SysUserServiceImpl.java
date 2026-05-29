@@ -706,8 +706,4 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         updateById(sysUser);
     }
-
-    public static void main(String[] args) {
-        System.out.printf("pwd =" + BcryptUtils.hashPwd("sz123456"));
-    }
 }
