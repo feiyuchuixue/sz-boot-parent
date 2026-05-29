@@ -15,7 +15,7 @@ import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
-import com.sz.core.datascope.SimpleDataScopeHelper;
+import com.sz.core.datascope.DataScopeSession;
 import com.sz.core.util.*;
 import com.sz.excel.imports.model.ExcelImportResultVO;
 import com.sz.excel.utils.ExcelUtils;
@@ -64,25 +64,19 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
-        try {
-            SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
+        try (var ignored = new DataScopeSession(TeacherStatistics.class)) {
             Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 调试sql
             page.getRecords().forEach(this::fillAccessUrl);
             return PageUtils.getPageResult(page);
-        } finally {
-            SimpleDataScopeHelper.clearDataScope();
         }
     }
 
     @Override
     public List<TeacherStatisticsVO> list(TeacherStatisticsListDTO dto) {
-        try {
-            SimpleDataScopeHelper.start(TeacherStatistics.class); // 指定要追加条件的表PO实体
+        try (var ignored = new DataScopeSession(TeacherStatistics.class)) {
             List<TeacherStatisticsVO> list = listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
             list.forEach(this::fillAccessUrl);
             return list;
-        } finally {
-            SimpleDataScopeHelper.clearDataScope();
         }
     }
 

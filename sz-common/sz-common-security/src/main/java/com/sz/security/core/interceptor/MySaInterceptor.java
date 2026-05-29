@@ -40,7 +40,7 @@ public class MySaInterceptor extends SaInterceptor {
                 // 如果此 Method 标注了 @SaCheckPermission，则进行（数据权限）校验
                 SaCheckPermission checkPermission = (SaCheckPermission) SaAnnotationStrategy.instance.getAnnotation.apply(method, SaCheckPermission.class);
                 if (checkPermission != null) {
-                    ControlThreadLocal.set(new ControlPermissions(checkPermission.value(), checkPermission.mode().name()));
+                    ControlThreadLocal.set(new ControlPermissions(checkPermission.value()));
                 }
             }
 
@@ -48,8 +48,7 @@ public class MySaInterceptor extends SaInterceptor {
             auth.run(handler);
 
         } catch (StopMatchException e) {
-            // StopMatchException 异常代表：停止匹配，进入Controller
-            ControlThreadLocal.clearDataScope();
+            // 停止匹配，正常进入 Controller，ControlPermissions 由 afterCompletion 统一清理
         } catch (BackResultException e) {
             ControlThreadLocal.clearDataScope();
             // BackResultException 异常代表：停止匹配，向前端输出结果
