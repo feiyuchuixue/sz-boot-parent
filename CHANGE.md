@@ -1,4 +1,154 @@
 # 更新日志
+
+## v2.0.0 （20260529）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2.0.0)
+>
+> 本版本基于 `v1.3.4-beta` 之后的实际代码变化整理。v2.0.0 涉及大量不兼容重构，升级前请先阅读升级指南并完成数据库、配置和业务代码备份。
+
+### sz-boot-parent
+
+#### 新增
+
+- 新增 `sz-module` 业务模块层，后端主结构调整为 `sz-common`、`sz-module`、`sz-service` 三层。
+- 新增 `sz-module-admin`，承载后台管理业务实现，`sz-service-admin` 调整为启动和装配层。
+- 新增 `sz-module-common`，用于放置跨模块业务契约、配置 key 常量和字典常量。
+- 新增 `sz-module-generator`，代码生成器从 `sz-common-generator` 迁移到业务模块层，为后续独立扩展做准备。
+- 新增 `sz-module-audit`，提供操作审计、性能日志、异常日志查询接口和审计数据持久化能力。
+- 新增 `sz-common-log` 审计采集能力，支持 `@OperationAudit`、`@OperationAuditIgnore`、traceId、慢操作阈值、请求参数与响应摘要记录策略。
+- 新增 `sz-common-db-core`，承载 MyBatis-Flex 公共配置、雪花 ID、类型处理器和数据权限抽象。
+- 新增 `sz-common-db-postgresql`，提供 PostgreSQL 数据权限方言和数组字段处理能力。
+- 新增 PostgreSQL 支持，代码生成器、Liquibase、数据权限、SQL 元数据读取同步适配 MySQL/PostgreSQL。
+- 新增字典来源管理，新增 `sys_dict_source` 表，并在 `sys_dict_type` 上增加 `source_code`，支持按来源和 ID 区间治理框架内置字典与业务自定义字典。
+- 新增模块化 API 前缀配置 `sz.api-prefix.modules.admin/audit/generator`，并通过 `ApiPrefixRegister` 由各业务模块声明默认前缀和 Controller 扫描范围。
+- 新增 `@Phone`、`@IdCard` 等数据校验注解，增强 DTO 入参校验能力。
+- 新增脚本导出能力，支持菜单、字典、角色-权限等初始化与迁移脚本预览、导出。
+- 新增角色-权限脚本导出接口 `POST /sys-role/menu/script/export`，可导出 `sys_role_menu` 与 `sys_data_role_relation` 的 SQL / Liquibase XML，辅助迁移功能授权和自定义数据权限范围。
+- 新增字典来源动态字典 `dynamic_dict_source_options`，字典类型新增时可直接从来源管理中选择归属来源。
+- 新增静态字典查询接口 `GET /sys-dict/static` 与批量按类型查询接口 `GET /sys-dict/code?typeCode=...`，支持静态字典预热与动态字典按需加载。
+
+#### 重构
+
+- Spring Boot 从 3.5.x 升级到 4.0.6，并同步升级 Sa-Token、Jackson、MyBatis-Flex、HikariCP、Springdoc 等依赖。
+- 后端业务实现从 `sz-service-admin` 迁移到 `sz-module-admin`，服务层只负责组合模块、数据库实现和运行配置。
+- 数据库 changelog 重构为模块级结构，拆分 `framework`、`audit`、`generator`、`demo` 入口，便于多 module、多 Liquibase 体系演进。
+- 全局 ID 体系统一向雪花 `Long` 迁移，移除历史自增 ID、UUID、字符串 ID 混用场景。
+- 密码加密逻辑切换为 `BcryptUtils`，旧密码规则与新规则不兼容。
+- 数据权限核心逻辑重构，配置入口合并到系统角色授权；`sys_role_menu.permission_type=scope` 保存菜单级数据范围，`sys_data_role_relation` 只承载自定义部门/用户范围。
+- 数据权限方言抽象公共执行流程，并分别实现 MySQL 与 PostgreSQL。
+- WebSocket 消息处理重构，新增 `ClientMessage`、`SocketPushMessage`，优化服务间消息转发、鉴权和跨域处理。
+- 全局错误响应重构，响应结构更贴近 HTTP 状态语义。
+- 代码生成器数据库元数据读取、菜单导入、初始化脚本、路径选择和模板输出逻辑重构。
+
+#### 优化
+
+- 优化菜单深度验证和循环引用处理逻辑。
+- 优化部门、用户角色等批量查询逻辑，减少重复查询。
+- 优化 Liquibase 初始化脚本，补充索引并清理无效脚本。
+- 优化防抖配置和异常写法，防抖能力下沉到 `sz-common-security`。
+- 优化用户资料接口，在用户不存在时给出明确异常。
+- 优化数据权限自定义范围处理，修正关系类型映射。
+- 优化字典加载器与缓存机制：`DictLoaderFactory` 精确区分动态字典加载器和默认静态字典加载器，Redis 增加静态字典加载标记与类型列表，字典来源变更时同步刷新 `dynamic_dict_source_options`。
+- 优化 Sa-Token 异常处理，登录失效和权限不足响应统一使用 `CommonResponseEnum` 中定义的 HTTP 状态，减少硬编码状态码。
+
+#### 不兼容变更
+
+- 代码生成器 Maven 坐标从 `sz-common-generator` 变更为 `sz-module-generator`。
+- `sz-service-admin` 不再作为业务实现主目录，自定义业务代码建议迁移到独立 `sz-module-*`。
+- ID 类型统一为 `Long`，旧数据库和前端若仍传字符串 ID 需要迁移。
+- 旧密码加密规则不再直接兼容 BCrypt，存量用户需重置密码或提供临时兼容迁移。
+- 切换 PostgreSQL 时必须同时修改 `DB_TYPE` 和 `sz-service-admin/pom.xml` 中的数据库模块依赖。
+- v2.0.0 的 Liquibase 目录与旧版 SQL changelog 差异较大，存量库不建议直接无演练原地升级。
+- `sys_dict_type` 新增 `source_code` 字段，存量自定义字典需要归属到 `framework`、`custom` 或自定义来源。
+- 新增审计表 `sys_operation_log`、`sys_operation_log_detail`，存量库升级时默认不会迁移历史操作日志，需要按新功能评估是否启用和规划保留周期。
+- 独立数据角色不再作为当前官网主流程，存量数据权限需迁移到系统角色、菜单 `use_data_scope` 和 `sys_role_menu` / `sys_data_role_relation` 组合模型。
+
+#### 数据库与迁移辅助
+
+- 升级指南新增 MySQL / PostgreSQL 数据库备份命令、结构盘点脚本、ID 映射表脚本。
+- 升级指南新增数据权限结构检查脚本，辅助核对 `sys_menu.use_data_scope`、`sys_role_menu.permission_type/data_scope_cd` 和 `sys_data_role_relation`。
+- 升级指南新增 `sys_dict_source` 与 `sys_dict_type.source_code` 的 MySQL / PostgreSQL 补齐脚本。
+- 升级指南新增审计日志模块说明，覆盖 `sz-module-audit`、`audit-log.yml`、`VITE_AUDIT_API_BASE`、审计菜单权限和生产日志量风险。
+- 升级指南补充角色-权限脚本导出使用说明，明确该脚本依赖目标库已存在对应角色、菜单、部门或用户 ID。
+- 文档明确脚本仅作为辅助工具，不能覆盖所有二开场景，生产执行前必须先备份并在影子库验证。
+- 对存量库迁移给出保守建议：优先“v2.0.0 新库初始化 + 旧库数据映射导入”，不建议未演练原地升级。
+
+### sz-admin
+
+#### 新增
+
+- 新增 `src/core`，提供登录适配器、模块注册、菜单组件解析等底座能力。
+- 新增 `src/editions/admin.ts`，默认 edition 注册本地登录适配器、audit 模块和 toolbox 模块。
+- 新增 `src/modules/audit`，提供操作审计、性能日志、异常日志三类诊断视图和审计详情抽屉。
+- 新增 `src/modules/toolbox`，代码生成器前端页面迁移到模块目录。
+- 新增 `adminHttp`、`auditHttp` 和 `generatorHttp` 三个 HTTP 实例，分别对应管理端、审计和生成器接口。
+- 新增字典来源管理页面，支持字典类型与来源配置联动；后续官网可补充列表、编辑弹窗和字典类型关联来源截图。
+- 新增脚本预览弹窗 `ScriptPreviewDialog`。
+- 角色管理新增 SQL 导出入口，按角色导出权限迁移脚本，并复用脚本预览弹窗和 SQL 方言选择。
+- 新增环境变量 `VITE_ADMIN_API_BASE`、`VITE_AUDIT_API_BASE`、`VITE_GENERATOR_API_BASE`、`VITE_API_PROXY_TARGET`。
+- 新增 `packageManager: pnpm@10.17.1` 与 `engines.node >=20.19.0` 声明，统一本地、CI 和部署构建环境口径。
+- 角色授权弹窗支持在菜单维度同时维护功能权限和数据权限范围，只有开启 `useDataScope` 的菜单允许配置数据范围。
+- 新增 `src/core/authSession.ts`，统一处理 axios、blob 下载错误和 WebSocket `4401` 触发的会话过期清理、提示与登录页跳转。
+
+#### 重构
+
+- API 调用方式统一改为 `adminHttp` / `auditHttp` / `generatorHttp`，废弃旧 `src/api/helper/prefix.ts` 前缀拼接模式。
+- Vite proxy 改为基于 API base 动态注册，支持管理端、审计和生成器接口分离。
+- 前端构建链集中升级：Vite `6.4.2 -> 7.3.3`、Vue `3.5.33 -> 3.5.35`、Element Plus `2.13.7 -> 2.14.0`、Pinia `2.3.1 -> 3.0.4`、Vue Router `4.6.4 -> 5.0.7`、Axios `1.15.2 -> 1.16.1`、VueUse `10.11.1 -> 14.3.0`、Sass `1.87.0 -> 1.100.0`。
+- Pinia 持久化插件升级到 `pinia-plugin-persistedstate 4.7.1`，持久化配置从 `paths` 迁移为 `pick`。
+- 动态路由组件解析重构，按模块注册表、`src/modules/<domain>/views`、旧 `src/views` 的顺序匹配。
+- WebSocket 前端重构，增加心跳机制、自定义关闭码和鉴权失效处理。
+- 登录流程适配 `AuthAdapter`，为派生项目替换登录方式预留扩展点。
+- 代码生成器前端接口、类型和页面迁移到 `src/modules/toolbox`。
+- 字典状态管理重构为“静态字典全量预热 + 指定 typeCode 按需加载”，`optionsStore` 增加已加载、过期和加载中状态，减少动态字典无谓请求。
+
+#### 修复
+
+- 修复系统菜单上级目录回显问题。
+- 修复附件回显为空时文件列表初始化异常。
+- 同步适配后端错误响应结构。
+- 优化会话过期后的返回路径处理，登录页支持携带 `back` 参数，重新登录后回到原目标页面。
+
+#### 不兼容变更
+
+- 旧 API 写法 `http + ADMIN_MODULE` 需要迁移为 `adminHttp`、`auditHttp` 或 `generatorHttp`。
+- 旧环境变量 `VITE_API_URL` 需要迁移为新的 API base 与 proxy target 配置。
+- 前端构建环境需要升级到 Node.js `>=20.19.0`，建议使用 pnpm `10.17.1` 重新安装依赖。
+- 二开 store 如使用 `pinia-plugin-persistedstate` 旧版 `paths` 配置，需要同步改为 `pick`。
+- 菜单 `component` 字段需要能命中模块注册表、`src/modules/<domain>/views` 或旧 `src/views`。
+- 派生项目如需替换登录方式，应通过 edition 和 `AuthAdapter` 接入。
+
+#### 兼容与截图占位
+
+- 传统 `src/views` 页面仍作为动态路由兜底路径，普通旧页面无需一次性迁移到 `src/modules`。
+- 新模块优先通过 `src/modules/<domain>` 和 edition 注册接入，便于派生项目按需组合。
+- 截图占位：字典来源管理、审计日志三页签、脚本预览弹窗、模块路由未命中 warn、WebSocket 鉴权失效重登。
+
+### 官网文档
+
+#### 新增
+
+- 新增 v2.0.0 升级指南。
+- 新增独立业务模块接入指南，以官方 `sz-module-audit` 为例说明后端 module、API 前缀、Liquibase、前端 HTTP client、edition 注册和菜单 component 映射。
+- 新增审计日志文档，说明操作审计、性能日志、异常日志的启用流程、配置、表结构、前端页面和生产注意事项。
+- 新增官网文档维护 `AGENTS.md`。
+- 升级指南按“迁移 + 兼容 + 新功能 + 行为变化”重新组织 v2.0.0 内容，并补充可执行辅助脚本和免责声明。
+- 更新部署相关文档，补充 `sz-deploy-v3`、Docker Compose 快速部署、GitHub Actions CI/CD、普通升级和蓝绿部署的当前推荐链路。
+
+#### 修正
+
+- 将主线技术栈从 Spring Boot 3 更新为 Spring Boot 4。
+- 将数据库迁移主线统一为 Liquibase，移除 Flyway 作为当前方案的描述。
+- 更新目录结构、配置说明、代码生成器、快速开始、多数据源和 FAQ 中的旧口径。
+- 修正部署总览、Docker 快速部署和 GitHub CI/CD 的旧口径，明确 CI/CD 只负责构建推送镜像并远程触发 `sz-deploy-v3` 的 `upgrade.sh` 或 `deploy.sh`。
+- 重新核对并补正数据权限、数据字典文档，明确 v2.0.0 的系统角色数据权限模型、字典来源、动态字典和脚本导出口径。
+
+---
+
+---
+
 ## v1.3.4-beta （20260503）
 
 > [!NOTE]
