@@ -4,3 +4,4 @@
 # 排除logs日志文件夹
 /logs/
 /data/
+**/.flattened-pom.xml

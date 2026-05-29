@@ -16,7 +16,6 @@
     </parent>
 
     <modules>
-        <module>sz-dependencies</module>
         <module>sz-common</module>
         <module>sz-module</module>
         <module>sz-service</module>
@@ -32,32 +31,100 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- 内部模块版本统一收敛，子模块新增依赖时优先省略 version。 -->
             <dependency>
                 <groupId>com.sz</groupId>
-                <artifactId>sz-dependencies</artifactId>
+                <artifactId>sz-common-core</artifactId>
                 <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-db-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-db-mysql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-db-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-db-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-db-mongodb</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-mq</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-log</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz.wechat</groupId>
+                <artifactId>sz-common-wechat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz.excel</groupId>
+                <artifactId>sz-common-excel</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz.oss</groupId>
+                <artifactId>sz-common-oss</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz.resource</groupId>
+                <artifactId>sz-common-resource</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-module-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-module-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-module-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-service-admin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sz</groupId>
+                <artifactId>sz-service-websocket</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <!--全局通用依赖-->
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-    </dependencies>
     <!--maven仓库加速，按需引用-->
    <!-- <repositories>
         &lt;!&ndash;阿里云仓库&ndash;&gt;

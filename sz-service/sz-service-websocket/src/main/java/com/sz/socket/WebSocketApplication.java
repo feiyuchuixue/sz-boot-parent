@@ -1,10 +1,9 @@
 package com.sz.socket;
 
-import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import com.sz.core.util.AppVersionUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -13,23 +12,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class WebSocketApplication {
 
-    @Value("${app.version}")
-    private String appVersion;
-
-    @Getter
-    private static String version;
-
-    @PostConstruct
-    public void init() {
-        setVersion(appVersion);
-    }
-
-    private static void setVersion(String appVersion) {
-        WebSocketApplication.version = appVersion;
-    }
-
     public static void main(String[] args) {
-        SpringApplication.run(WebSocketApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(WebSocketApplication.class, args);
         String template = """
                                                            __             _
                                                           [  |  _        / |_
@@ -39,7 +23,8 @@ public class WebSocketApplication {
                 [\\__) )[_____]       [\\__) )'.__.' '.___.'[__|  \\_]'.__.'\\__/
                 ------------------%s (v%s)-------------------
                 """;
-        String result = String.format(template, "https://szadmin.cn", getVersion());
+        String version = AppVersionUtils.resolve(context.getEnvironment().getProperty("app.version"), WebSocketApplication.class);
+        String result = String.format(template, "https://szadmin.cn", version);
         System.out.println(result);
     }
 

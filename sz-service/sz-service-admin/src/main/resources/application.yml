@@ -26,7 +26,7 @@ spring:
       max-file-size: 10MB
       max-request-size: 15MB
 app:
-  version: @project.version@
+  version: '@project.version@'
 sz:
   api-prefix:
     admin: /admin

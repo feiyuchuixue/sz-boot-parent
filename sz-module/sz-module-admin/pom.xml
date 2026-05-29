@@ -14,64 +14,85 @@
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-module-common</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-core</artifactId>
-            <version>${revision}</version>
         </dependency>
         <!-- 数据库模块 -->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-core</artifactId>
-            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-annotation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
         </dependency>
         <!--鉴权模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-security</artifactId>
-            <version>${revision}</version>
         </dependency>
         <!--代码生成模块-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
         <!--微信模块-->
         <dependency>
             <groupId>com.sz.wechat</groupId>
             <artifactId>sz-common-wechat</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--日志模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-log</artifactId>
-            <version>${revision}</version>
         </dependency>
         <!--redis模块-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-redis</artifactId>
-            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sz.excel</groupId>
             <artifactId>sz-common-excel</artifactId>
-            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.idev.excel</groupId>
+            <artifactId>fastexcel-core</artifactId>
         </dependency>
         <!-- oss模块 -->
         <dependency>
             <groupId>com.sz.oss</groupId>
             <artifactId>sz-common-oss</artifactId>
-            <version>${revision}</version>
         </dependency>
         <!-- resource模块-->
         <dependency>
             <groupId>com.sz.resource</groupId>
             <artifactId>sz-common-resource</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>nl.basjes.parse.useragent</groupId>
@@ -82,6 +103,85 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

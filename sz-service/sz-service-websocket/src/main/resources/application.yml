@@ -16,7 +16,7 @@ spring:
   application:
     name: websocket-service
 app:
-  version: @project.version@
+  version: '@project.version@'
 
 # WebSocket 跨域白名单（逗号分隔）；生产环境请显式指定具体域名，避免使用 *
 sz:

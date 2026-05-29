@@ -132,11 +132,18 @@ public final class PathSanitizer {
         if (findViolation(value) != null) {
             return false;
         }
-        // URL decode 后再检查
+        // URL decode 后再检查；最多解码两次，覆盖常见双重编码路径穿越。
+        String current = value;
         try {
-            String decoded = URLDecoder.decode(value, StandardCharsets.UTF_8);
-            if (!decoded.equals(value) && findViolation(decoded) != null) {
-                return false;
+            for (int i = 0; i < 2; i++) {
+                String decoded = URLDecoder.decode(current, StandardCharsets.UTF_8);
+                if (decoded.equals(current)) {
+                    return true;
+                }
+                if (findViolation(decoded) != null) {
+                    return false;
+                }
+                current = decoded;
             }
         } catch (IllegalArgumentException ignored) {
             // decode 失败（如含非法 % 序列），视为不安全

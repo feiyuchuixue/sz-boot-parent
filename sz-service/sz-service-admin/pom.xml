@@ -26,25 +26,30 @@
         </dependency>
         <dependency>
             <groupId>com.sz</groupId>
+            <artifactId>sz-common-core</artifactId>
+        </dependency>
+        <!-- 日志切面与 Logback 扩展 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
             <artifactId>sz-module-admin</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-module-generator</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!-- Mysql 数据库-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-mysql</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!-- Postgresql 数据库-->
 <!--        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-postgresql</artifactId>
-            <version>${project.version}</version>
         </dependency>-->
         <!-- springdoc OpenAPI 文档 -->
         <dependency>
@@ -52,8 +57,13 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models-jakarta</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
+
 </project>
