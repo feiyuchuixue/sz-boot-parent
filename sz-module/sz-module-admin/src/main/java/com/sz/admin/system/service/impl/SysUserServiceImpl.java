@@ -1,7 +1,6 @@
 package com.sz.admin.system.service.impl;
 
 import cn.dev33.satoken.exception.SaTokenException;
-import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.PageHelper;
@@ -145,7 +144,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser user = BeanCopyUtils.copy(dto, SysUser.class);
         QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getUsername, dto.getUsername());
         CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
-        String encodePwd = getEncoderPwd(getInitPassword());
+        String encodePwd = BcryptUtils.hashPwd(getInitPassword());
         user.setPwd(encodePwd);
         user.setAccountStatusCd("1000001");
         user.setUserTagCd("1001003");
@@ -284,32 +283,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
-    /**
-     * 该方将被删除，v1.4.0-beta版本后请使用 {@link BcryptUtils#hashPwd(String) 替代}
-     * 注意：此变更可能会导致导致历史数据的密码无法匹配，建议在升级前先行执行一次全量的密码加密更新（update sys_user set pwd =
-     * #{getEncoderPwd(pwd)}）
-     *
-     * @param pwd
-     * @return
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    private String getEncoderPwd(String pwd) {
-        return BCrypt.hashpw(pwd, BCrypt.gensalt(10));
-    }
-
-    /**
-     * 该方将被删除，v1.4.0-beta版本后请使用 {@link BcryptUtils#matchEncoderPwd(String, String)
-     * 替代} 注意：此变更可能会导致导致历史数据的密码无法匹配，建议在升级前先行执行一次全量的密码加密更新（update sys_user set pwd =
-     * #{getEncoderPwd(pwd)}）
-     *
-     * @param pwd
-     * @return
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    private boolean matchEncoderPwd(String pwd, String pwdEncoder) {
-        return BCrypt.checkpw(pwd, pwdEncoder);
-    }
-
     @Override
     public SysUserRoleVO findSysUserRole(Long userId) {
         List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
@@ -353,19 +326,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 获取用户信息;
-     *
-     * @return {@link SysUserVO}
-     * @deprecated 请使用 {@link SysUserService#getProfile}
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    @Override
-    public SysUserVO getUserInfo() {
-        SysUser sysUser = getById(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
-        return BeanCopyUtils.copy(sysUser, SysUserVO.class);
-    }
-
-    /**
      * 更改（当前用户）密码
      *
      * @param dto
@@ -374,8 +334,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void changePassword(SysUserPasswordDTO dto) {
         SysUser sysUser = getById(StpUtil.getLoginIdAsLong()); // 获取当前用户id
-        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getOldPwd(), sysUser.getPwd()));
-        sysUser.setPwd(getEncoderPwd(dto.getNewPwd()));
+        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(BcryptUtils.matchEncoderPwd(dto.getOldPwd(), sysUser.getPwd()));
+        sysUser.setPwd(BcryptUtils.hashPwd(dto.getNewPwd()));
         updateById(sysUser);
         redisCache.clearUserInfo(sysUser.getUsername());
         authService.kickOut(StpUtil.getLoginIdAsLong());
@@ -391,7 +351,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void resetPassword(Long id) {
         SysUser user = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(user);
-        user.setPwd(getEncoderPwd(getInitPassword()));
+        user.setPwd(BcryptUtils.hashPwd(getInitPassword()));
         updateById(user);
         authService.kickOut(id);
     }
@@ -452,9 +412,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 1. 批量查用户基本信息
-        List<SysUser> users = QueryChain.of(SysUser.class)
-                .where(SysUser::getId).in(userIds)
-                .list();
+        List<SysUser> users = QueryChain.of(SysUser.class).where(SysUser::getId).in(userIds).list();
 
         // 2. 分离超管 / 普通用户（超管走单个路径，数据逻辑不同）
         List<SysUser> superAdmins = users.stream().filter(this::isSuperAdminUser).toList();
@@ -473,26 +431,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         List<Long> normalUserIds = normalUsers.stream().map(SysUser::getId).toList();
 
-        // 4. 批量查角色：sys_user_role WHERE user_id IN (...)  → 1 次查询
+        // 4. 批量查角色：sys_user_role WHERE user_id IN (...) → 1 次查询
         Map<Long, List<String>> userRolesMap = sysUserRoleService.getUserRolesByUserIds(normalUserIds);
 
-        // 5. 批量查直属部门：sys_user_dept WHERE user_id IN (...)  → 1 次查询
-        List<SysUserDept> userDeptList = QueryChain.of(SysUserDept.class)
-                .select(SYS_USER_DEPT.USER_ID, SYS_USER_DEPT.DEPT_ID)
-                .where(SYS_USER_DEPT.USER_ID.in(normalUserIds))
-                .list();
-        Map<Long, List<Long>> userDeptsMap = userDeptList.stream().collect(
-                Collectors.groupingBy(
-                        SysUserDept::getUserId,
-                        Collectors.mapping(SysUserDept::getDeptId, Collectors.toList())
-                )
-        );
+        // 5. 批量查直属部门：sys_user_dept WHERE user_id IN (...) → 1 次查询
+        List<SysUserDept> userDeptList = QueryChain.of(SysUserDept.class).select(SYS_USER_DEPT.USER_ID, SYS_USER_DEPT.DEPT_ID)
+                .where(SYS_USER_DEPT.USER_ID.in(normalUserIds)).list();
+        Map<Long, List<Long>> userDeptsMap = userDeptList.stream()
+                .collect(Collectors.groupingBy(SysUserDept::getUserId, Collectors.mapping(SysUserDept::getDeptId, Collectors.toList())));
 
-        // 6. 合并所有直属部门ID，批量查子孙节点：sys_dept_closure WHERE ancestor_id IN (...)  → 1 次查询
-        List<Long> allDeptIds = userDeptList.stream()
-                .map(SysUserDept::getDeptId)
-                .distinct()
-                .toList();
+        // 6. 合并所有直属部门ID，批量查子孙节点：sys_dept_closure WHERE ancestor_id IN (...) → 1 次查询
+        List<Long> allDeptIds = userDeptList.stream().map(SysUserDept::getDeptId).distinct().toList();
         Map<Long, List<Long>> deptDescendantsMap = sysDeptClosureService.descendantsGroupByAncestor(allDeptIds);
 
         // 7. 按用户组装 deptAndChildren（将该用户所有直属部门的子孙节点合并去重）
@@ -509,9 +458,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 8. 数据权限：收集所有普通用户角色并集，统一查 1 次 getUserScope
         Map<Long, RoleMenuScopeVO> fullScopeMap = Collections.emptyMap();
         if (dataScopeProperties.isEnabled()) {
-            Set<String> allRoles = userRolesMap.values().stream()
-                    .flatMap(List::stream)
-                    .collect(Collectors.toSet());
+            Set<String> allRoles = userRolesMap.values().stream().flatMap(List::stream).collect(Collectors.toSet());
             // getUserScope 内部已按 role IN (...) 过滤，返回结果是所有角色对应的菜单数据权限配置
             // 该结果按 menuId 维度存储，与具体用户无关，所有普通用户直接共享
             fullScopeMap = sysRoleMenuService.getUserScope(allRoles);
@@ -571,7 +518,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LoginUser loginUser = new LoginUser();
         loginUser.setUserInfo(userInfo);
         loginUser.setPermissions(sysPermissionService.getMenuPermissions(sysUser)); // 获取用户permissions
-        loginUser.setRoles(sysPermissionService.getRoles(sysUser));                 // 获取用户角色
+        loginUser.setRoles(sysPermissionService.getRoles(sysUser)); // 获取用户角色
         // 先查直属部门，再传入 getDeptAndChildren，避免重复查询 sys_user_dept
         List<Long> depts = sysPermissionService.getDepts(sysUser);
         loginUser.setDepts(depts);
@@ -596,8 +543,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private void validatePassword(String password, String hashedPassword, String username) {
         String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
-        @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-        boolean checkpwd = BCrypt.checkpw(password, hashedPassword);
+        boolean checkpwd = BcryptUtils.matchEncoderPwd(password, hashedPassword);
         if (!checkpwd)
             redisCache.countPwdErr(username, Utils.getLongVal(timeout));
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(checkpwd);
@@ -732,7 +678,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Long userId = StpUtil.getLoginIdAsLong();
         SysUser sysUser = getById(userId);
         // 验证当前密码
-        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
+        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(BcryptUtils.matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
         // 唯一性校验：不能与其他用户的手机号/邮箱重复
         QueryWrapper uniqueWrapper;
         if ("phone".equals(dto.getField())) {
@@ -752,7 +698,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Long userId = StpUtil.getLoginIdAsLong();
         SysUser sysUser = getById(userId);
         // 验证当前密码
-        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
+        CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertFalse(BcryptUtils.matchEncoderPwd(dto.getPassword(), sysUser.getPwd()));
         // 将对应字段置空
         if ("phone".equals(dto.getField())) {
             sysUser.setPhone("");
@@ -762,4 +708,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         updateById(sysUser);
     }
 
+    public static void main(String[] args) {
+        System.out.printf("pwd =" + BcryptUtils.hashPwd("sz123456"));
+    }
 }

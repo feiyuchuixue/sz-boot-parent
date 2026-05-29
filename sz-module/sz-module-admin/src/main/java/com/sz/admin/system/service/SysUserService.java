@@ -71,14 +71,6 @@ public interface SysUserService extends IService<SysUser> {
     void changeSysUserRole(SysUserRoleDTO dto);
 
     /**
-     * 获取用户信息
-     *
-     * @return {@link SysUserVO}
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    SysUserVO getUserInfo();
-
-    /**
      * 更改密码
      *
      * @param dto
@@ -95,11 +87,13 @@ public interface SysUserService extends IService<SysUser> {
     void resetPassword(Long id);
 
     /**
-     * 使用已构建好的 LoginUser 同步用户 SaSession，避免重复查库
-     * 适用于批量场景（buildLoginUserBatch 已完成 LoginUser 构建后调用）
+     * 使用已构建好的 LoginUser 同步用户 SaSession，避免重复查库 适用于批量场景（buildLoginUserBatch 已完成
+     * LoginUser 构建后调用）
      *
-     * @param userId    用户ID
-     * @param loginUser 已构建好的最新 LoginUser
+     * @param userId
+     *            用户ID
+     * @param loginUser
+     *            已构建好的最新 LoginUser
      */
     void syncUserInfoWithLoginUser(Long userId, LoginUser loginUser);
 
@@ -108,10 +102,10 @@ public interface SysUserService extends IService<SysUser> {
     LoginUser buildLoginUser(Long userId);
 
     /**
-     * 批量构建多个用户的 LoginUser（普通用户走批量查询路径，超管走单个路径）
-     * 相比逐个调用 buildLoginUser，大幅减少 DB 查询次数
+     * 批量构建多个用户的 LoginUser（普通用户走批量查询路径，超管走单个路径） 相比逐个调用 buildLoginUser，大幅减少 DB 查询次数
      *
-     * @param userIds 用户ID列表
+     * @param userIds
+     *            用户ID列表
      * @return userId -> LoginUser 的映射
      */
     Map<Long, LoginUser> buildLoginUserBatch(List<Long> userIds);

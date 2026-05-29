@@ -13,7 +13,7 @@
         <insert tableName="sys_user">
             <column name="id" valueNumeric="2"/>
             <column name="username" value="user"/>
-            <column name="pwd" value="$2a$10$Km4pU/DdW/.LXRYgR446S.HCdcjIHkp7uFisXtCVoaXyXfveBHjlO"/>
+            <column name="pwd" value="$2a$12$nV2W/nbMb3R/j7m5ZF0N8OOacMq.3oUy370Bv.3NpjPuqk8yPFM7u"/>
             <column name="nickname" value="测试用户"/>
             <column name="sex" valueNumeric="1"/>
             <column name="birthday" value="2024-01-01"/>
@@ -47,7 +47,7 @@
         <insert tableName="sys_user">
             <column name="id" valueNumeric="4"/>
             <column name="username" value="test2"/>
-            <column name="pwd" value="$2a$10$uMZA6KiYtvnLVHSukXiB2ufvKdp827nO/6p6jWn1ydEYoLA0kgPqK"/>
+            <column name="pwd" value="$2a$12$/Ls8QwNoOQuzU2VBybvE5uqhb2DlSE6pD/p9t/TrH0I68o7QmBlO6"/>
             <column name="phone" value=""/>
             <column name="nickname" value="测试2-仅本部"/>
             <column name="birthday" value=""/>
@@ -66,7 +66,7 @@
         <insert tableName="sys_user">
             <column name="id" valueNumeric="5"/>
             <column name="username" value="test3"/>
-            <column name="pwd" value="$2a$10$UWKoQfMAFxk/qdTI4vQLgOjho5xtjNJhdbHmJNoYuNZkuOq2WCoZm"/>
+            <column name="pwd" value="$2a$12$5dYi1C2nKssx6cOeQRGhaOoZt0zUQcGQdFxeYHnruE.xvw4m1rGcq"/>
             <column name="phone" value=""/>
             <column name="nickname" value="测试3-仅本人"/>
             <column name="birthday" value=""/>
@@ -85,7 +85,7 @@
         <insert tableName="sys_user">
             <column name="id" valueNumeric="6"/>
             <column name="username" value="test4"/>
-            <column name="pwd" value="$2a$10$bCgJMtfSPhn6Mvn2AGx5z.NDVHXBvxl7/XEvlH52wbBpAWkLvwVVe"/>
+            <column name="pwd" value="$2a$12$rPUPPwdx1a1huRCIifKJJuKuBee0xU0KD0B596A1psd6HHAzNfobu"/>
             <column name="phone" value=""/>
             <column name="nickname" value="测试4-自定义"/>
             <column name="birthday" value=""/>
