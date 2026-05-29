@@ -43,21 +43,21 @@
         <insert tableName="sys_data_role_relation">
             <column name="id" valueNumeric="74"/>
             <column name="role_id" valueNumeric="7"/>
-            <column name="relation_type_cd" value="1007001"/>
+            <column name="relation_type_cd" value="1007002"/>
             <column name="relation_id" valueNumeric="3"/>
             <column name="menu_id" value="705327582698147908"/>
         </insert>
         <insert tableName="sys_data_role_relation">
             <column name="id" valueNumeric="75"/>
             <column name="role_id" valueNumeric="7"/>
-            <column name="relation_type_cd" value="1007001"/>
+            <column name="relation_type_cd" value="1007002"/>
             <column name="relation_id" valueNumeric="5"/>
             <column name="menu_id" value="705327582698147908"/>
         </insert>
         <insert tableName="sys_data_role_relation">
             <column name="id" valueNumeric="76"/>
             <column name="role_id" valueNumeric="7"/>
-            <column name="relation_type_cd" value="1007002"/>
+            <column name="relation_type_cd" value="1007001"/>
             <column name="relation_id" valueNumeric="15"/>
             <column name="menu_id" value="705327582698147908"/>
         </insert>

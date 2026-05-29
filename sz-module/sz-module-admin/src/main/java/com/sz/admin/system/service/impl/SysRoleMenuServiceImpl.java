@@ -99,8 +99,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             scopeRoleMenus.add(roleMenu);
 
             if (DataScopeConstant.CUSTOM.equals(dataScope)) { // 自定义数据权限
-                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.DEPT, scope.getUserIds());
-                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.USER, scope.getDeptIds());
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.USER, scope.getUserIds());
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.DEPT, scope.getDeptIds());
             }
         }
         saveBatch(scopeRoleMenus);
@@ -158,9 +158,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                 List<Long> deptIds = new ArrayList<>();
                 List<Long> userIds = new ArrayList<>();
                 for (SysDataRoleRelation relation : group) {
-                    if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 用户维度
+                    if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 用户维度
                         userIds.add(relation.getRelationId());
-                    } else if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 部门维度
+                    } else if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 部门维度
                         deptIds.add(relation.getRelationId());
                     }
                 }
@@ -228,9 +228,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                 Set<Long> deptIds = new HashSet<>();
                 Set<Long> userIds = new HashSet<>();
                 for (SysDataRoleRelation relation : group) {
-                    if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 用户维度
+                    if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 用户维度
                         userIds.add(relation.getRelationId());
-                    } else if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 部门维度
+                    } else if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 部门维度
                         deptIds.add(relation.getRelationId());
                     }
                 }
@@ -248,24 +248,31 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             RoleMenuScopeVO scopeVO = new RoleMenuScopeVO();
             scopeVO.setMenuId(menuId);
 
-            // 1. 找出最高优先权 dataScopeCd=DataScopeConstant.CUSTOM 的所有菜单（可有多个角色）
-            boolean hasCustom = false;
-            for (SysRoleMenu menu : menus) {
-                if (DataScopeConstant.CUSTOM.equals(menu.getDataScopeCd())) {
-                    hasCustom = true;
-                    break;
-                }
-            }
+            // 1. 分离：找出非自定义中的最小值（最宽松），以及是否存在自定义配置
+            boolean hasCustom = menus.stream().anyMatch(m -> DataScopeConstant.CUSTOM.equals(m.getDataScopeCd()));
+            String minNonCustom = menus.stream().map(SysRoleMenu::getDataScopeCd).filter(cd -> !DataScopeConstant.CUSTOM.equals(cd)).min(String::compareTo)
+                    .orElse(null);
 
-            if (hasCustom) {
+            if (!hasCustom) {
+                // 纯非自定义：取最小值（最宽松），默认兜底仅本人
+                scopeVO.setDataScopeCd(minNonCustom != null ? minNonCustom : DataScopeConstant.SELF_ONLY);
+                scopeVO.setCustomScope(null);
+                scopeVO.setExtraCustomScope(null);
+            } else if (minNonCustom == null) {
+                // 纯自定义：原逻辑不变
                 scopeVO.setDataScopeCd(DataScopeConstant.CUSTOM);
                 scopeVO.setCustomScope(customScopeMap.get(menuId));
-            } else {
-                // 没有自定义范围时，取dataScopeCd的最小值（字符串比较即可，通常1006001<..2<..3...）
-                String minScope = menus.stream().map(SysRoleMenu::getDataScopeCd).min(String::compareTo).orElse(DataScopeConstant.SELF_ONLY); // 默认取最小范围 仅本人
-                scopeVO.setDataScopeCd(minScope);
-                // 无自定义权限
+                scopeVO.setExtraCustomScope(null);
+            } else if (DataScopeConstant.ALL.equals(minNonCustom)) {
+                // 非自定义最宽松为"全部"：直接放行，CUSTOM 子集被吸收，无需 OR
+                scopeVO.setDataScopeCd(DataScopeConstant.ALL);
                 scopeVO.setCustomScope(null);
+                scopeVO.setExtraCustomScope(null);
+            } else {
+                // 非自定义（1006002~1006004）+ 自定义共存：取非自定义最宽松值，附加 extraCustomScope 做 OR
+                scopeVO.setDataScopeCd(minNonCustom);
+                scopeVO.setCustomScope(null);
+                scopeVO.setExtraCustomScope(customScopeMap.get(menuId));
             }
             scopeVOMap.put(menuId, scopeVO);
         }

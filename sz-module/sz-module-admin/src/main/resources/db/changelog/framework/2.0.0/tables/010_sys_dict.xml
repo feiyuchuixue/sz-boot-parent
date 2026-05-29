@@ -398,7 +398,7 @@
             <column name="alias" value=""/>
             <column name="sort" valueNumeric="2"/>
             <column name="callback_show_style" value="primary"/>
-            <column name="remark" value="个人权限高优先级"/>
+            <column name="remark" value=""/>
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>

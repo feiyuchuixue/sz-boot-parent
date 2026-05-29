@@ -18,6 +18,9 @@ public class RoleMenuScopeVO {
     @Schema(description = "自定义数据权限范围，当dataScopeCd为1006005时使用")
     private CustomScope customScope;
 
+    @Schema(description = "附加自定义权限范围：当 dataScopeCd 为 1006002~1006004 且同时存在自定义配置时，" + "此字段非空，SQL 拼接时以 OR 追加自定义条件，实现最大权限并集")
+    private CustomScope extraCustomScope;
+
     @Data
     public static class CustomScope {
 

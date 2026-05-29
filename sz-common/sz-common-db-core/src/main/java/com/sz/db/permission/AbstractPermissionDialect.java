@@ -188,13 +188,16 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
 
     /**
      * 按 scope 的 dataScopeCd 分发，拼接对应的 SQL WHERE 条件。
+     * <p>
+     * 当 dataScopeCd 为 1006002~1006004 且 extraCustomScope 非空时， 将自定义范围的
+     * deptIds/userIds 合并进标准规则的集合，一次性构造 SQL，实现 OR 并集语义。
      */
     private void applyScope(QueryWrapper queryWrapper, OperateType operateType, RoleMenuScopeVO scope, String tableName, LoginUser loginUser) {
         String dataScopeCd = scope.getDataScopeCd();
         switch (dataScopeCd) {
             case DataScopeConstant.ALL, DataScopeConstant.DEPT_AND_BELOW, DataScopeConstant.DEPT_ONLY, DataScopeConstant.SELF_ONLY ->
-                applyDataScopeRules(queryWrapper, operateType, dataScopeCd, tableName, SimpleDataScopeHelper.get());
-            case DataScopeConstant.CUSTOM -> { // 自定义
+                applyDataScopeRules(queryWrapper, operateType, dataScopeCd, tableName, SimpleDataScopeHelper.get(), scope.getExtraCustomScope(), loginUser);
+            case DataScopeConstant.CUSTOM -> { // 纯自定义
                 RoleMenuScopeVO.CustomScope customScope = scope.getCustomScope();
                 Set<Long> deptIds = new HashSet<>();
                 Set<Long> userIds = new HashSet<>();
@@ -277,10 +280,10 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
         return (anno == null) ? StringUtils.toSnakeCase(clazz.getSimpleName()) : anno.value();
     }
 
-    private void applyDataScopeRules(QueryWrapper queryWrapper, OperateType operateType, String rule, String table, Class<?> tableClazz) {
-        LoginUser loginUser = LoginUtils.getLoginUser();
+    private void applyDataScopeRules(QueryWrapper queryWrapper, OperateType operateType, String rule, String table, Class<?> tableClazz,
+            RoleMenuScopeVO.CustomScope extraCustomScope, LoginUser loginUser) {
         assert loginUser != null;
-        // 全部数据，直接放行
+        // 全部数据，直接放行（extraCustomScope 是子集，无需 OR）
         if (DataScopeConstant.ALL.equals(rule)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
@@ -293,6 +296,13 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
             // DataScopeConstant.SELF_ONLY（仅本人）：不加部门，只加当前用户
         }
         userList.add(loginUser.getUserInfo().getId());
+        // 若存在附加自定义范围（extraCustomScope），将其 deptIds/userIds 并入集合，实现 OR 并集语义
+        if (extraCustomScope != null) {
+            if (Utils.isNotNull(extraCustomScope.getDeptIds()))
+                deptList.addAll(extraCustomScope.getDeptIds());
+            if (Utils.isNotNull(extraCustomScope.getUserIds()))
+                userList.addAll(extraCustomScope.getUserIds());
+        }
         buildSql(queryWrapper, table, deptList, userList, tableClazz);
     }
 
