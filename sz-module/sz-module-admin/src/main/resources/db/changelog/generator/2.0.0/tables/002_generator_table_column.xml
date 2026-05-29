@@ -4,8 +4,50 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <!-- generator_table_column: framework struct + init -->
-<changeSet  id="framework-struct-generator-table-column-202605100838" author="升职哦（sz）">
+    <!-- generator_table_column: generator struct + init -->
+<changeSet  id="generator-struct-generator-table-column-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="generator_table_column"/></not>
+        </preConditions>
+        <createTable tableName="generator_table_column" remarks="Generator Table Column">
+            <column name="column_id" type="BIGINT" autoIncrement="true" remarks="编号"><constraints primaryKey="true"/></column>
+            <column name="table_id" type="BIGINT" remarks="归属表编号"/>
+            <column name="column_name" type="VARCHAR(255)" remarks="列名称"/>
+            <column name="column_comment" type="VARCHAR(255)" remarks="列描述"/>
+            <column name="column_type" type="VARCHAR(255)" remarks="列类型"/>
+            <column name="java_type" type="VARCHAR(255)" remarks="JAVA类型"/>
+            <column name="search_type" type="VARCHAR(255)" defaultValue="" remarks="搜索类型"/>
+            <column name="ts_type" type="VARCHAR(255)" remarks="ts类型"/>
+            <column name="java_type_package" type="VARCHAR(255)" remarks="java类型包名"/>
+            <column name="java_field" type="VARCHAR(255)" remarks="JAVA字段名"/>
+            <column name="up_camel_field" type="VARCHAR(255)" remarks="get开头的驼峰字段名"/>
+            <column name="is_pk" type="CHAR(1)" defaultValue="0" remarks="是否主键（1是）"/>
+            <column name="is_increment" type="CHAR(1)" defaultValue="0" remarks="是否自增（1是）"/>
+            <column name="is_required" type="CHAR(1)" defaultValue="0" remarks="是否必填（1是）"/>
+            <column name="is_insert" type="CHAR(1)" defaultValue="0" remarks="是否为插入字段（1是）"/>
+            <column name="is_edit" type="CHAR(1)" defaultValue="0" remarks="是否编辑字段（1是）"/>
+            <column name="is_list" type="CHAR(1)" defaultValue="0" remarks="是否列表字段（1是）"/>
+            <column name="is_query" type="CHAR(1)" defaultValue="0" remarks="是否查询字段（1是）"/>
+            <column name="is_import" type="CHAR(1)" defaultValue="0" remarks="是否导入字段(1 是)"/>
+            <column name="is_export" type="CHAR(1)" defaultValue="0" remarks="是否导出字段(1 是)"/>
+            <column name="is_autofill" type="CHAR(1)" defaultValue="0" remarks="是否自动填充(1 是)"/>
+            <column name="is_unique_valid" type="CHAR(1)" defaultValue="0" remarks="是否进行唯一校验(1 是)"/>
+            <column name="autofill_type" type="VARCHAR(255)" remarks="自动填充类型"/>
+            <column name="query_type" type="VARCHAR(255)" remarks="查询方式"/>
+            <column name="html_type" type="VARCHAR(255)" remarks="显示类型"/>
+            <column name="dict_type" type="VARCHAR(255)" remarks="字典类型"/>
+            <column name="is_logic_del" type="CHAR(1)" defaultValue="0" remarks="是否逻辑删除(1 是)"/>
+            <column name="options" type="TEXT" remarks="其他设置"/>
+            <column name="sort" type="INT" remarks="排序"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+            <column name="create_time" type="TIMESTAMP" remarks="创建时间"/>
+            <column name="update_time" type="TIMESTAMP" remarks="更新时间"/>
+            <column name="dict_show_way" type="VARCHAR(255)" defaultValue="0" remarks="字典展示方式（0 唯一标识；1 别名）"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet  id="generator-init-generator-table-column-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="generator_table_column"/></not>
         </preConditions>

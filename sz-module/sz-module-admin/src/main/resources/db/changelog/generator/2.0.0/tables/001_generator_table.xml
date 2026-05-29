@@ -4,8 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <!-- generator_table: framework struct + init -->
-<changeSet  id="framework-struct-generator-table-202605100838" author="升职哦（sz）">
+    <!-- generator_table: generator struct + init -->
+<changeSet  id="generator-struct-generator-table-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="generator_table"/></not>
         </preConditions>
@@ -40,5 +40,41 @@
             <column name="is_autofill" type="CHAR(1)" defaultValue="1" remarks="是否自动填充(1 是)"/>
             <column name="window_show_type" type="CHAR(1)" defaultValue="0" remarks="窗口展示方式(0 dialog弹窗；1 drawer 抽屉)"><constraints nullable="false"/></column>
         </createTable>
+    </changeSet>
+    <changeSet id="generator-init-generator-table-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM generator_table WHERE table_id IN (2)</sqlCheck>
+        </preConditions>
+        <insert tableName="generator_table">
+            <column name="table_id" valueNumeric="2"/>
+            <column name="table_name" value="teacher_statistics"/>
+            <column name="table_comment" value="教师统计总览表"/>
+            <column name="class_name" value="TeacherStatistics"/>
+            <column name="camel_class_name" value="teacherStatistics"/>
+            <column name="tpl_category" value="crud"/>
+            <column name="package_name" value="com.sz.admin"/>
+            <column name="module_name" value="teacher"/>
+            <column name="business_name" value="teacherStatistics"/>
+            <column name="function_name" value="教师统计总览表"/>
+            <column name="function_author" value="sz-admin"/>
+            <column name="type" value="0"/>
+            <column name="options" value=""/>
+            <column name="parent_menu_id" value="0"/>
+            <column name="path" value="/"/>
+            <column name="path_api" value="E:\dev\Code\Github\sz-boot-parent\sz-service\sz-service-admin"/>
+            <column name="path_web" value=""/>
+            <column name="menu_init_type" value="1"/>
+            <column name="btn_permission_type" value="1"/>
+            <column name="btn_data_scope_type" value="1"/>
+            <column name="has_import" value="1"/>
+            <column name="has_export" value="1"/>
+            <column name="generate_type" value="all"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2025-11-08 09:11:50"/>
+            <column name="update_time" valueDate="2025-11-08 10:26:28"/>
+            <column name="is_autofill" value="1"/>
+            <column name="window_show_type" value="0"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

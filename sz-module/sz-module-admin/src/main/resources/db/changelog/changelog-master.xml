@@ -4,6 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <include file="framework/2.0.0/001_framework_init.xml" relativeToChangelogFile="true"/>
+    <!-- 代码生成器表结构：不需要代码生成器功能时，可注释下一行。 -->
+    <include file="generator/2.0.0/001_generator_init.xml" relativeToChangelogFile="true"/>
     <!-- 演示/测试数据：生产环境不需要时，可注释下一行。 -->
     <include file="demo/2.0.0/001_demo_init.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
