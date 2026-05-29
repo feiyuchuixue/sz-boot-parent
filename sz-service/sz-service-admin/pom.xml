@@ -30,17 +30,17 @@
             <version>${project.version}</version>
         </dependency>
         <!-- Mysql 数据库-->
-<!--        <dependency>
+        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-mysql</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <!-- Postgresql 数据库-->
-        <dependency>
+<!--        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-postgresql</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- springdoc OpenAPI 文档 -->
         <dependency>
             <groupId>org.springdoc</groupId>

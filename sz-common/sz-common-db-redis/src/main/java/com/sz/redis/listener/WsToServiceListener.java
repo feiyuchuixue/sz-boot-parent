@@ -29,11 +29,21 @@ public class WsToServiceListener implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        TransferMessage tm = (TransferMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [ws-to-service] tm = {}", JsonUtils.toJsonString(tm));
-        // 调用所有实现了TransferMessageHandler接口的处理器
+        Object raw = redisTemplate.getValueSerializer().deserialize(message.getBody());
+        if (!(raw instanceof TransferMessage)) {
+            log.warn("[ws-to-service] 收到非 TransferMessage 类型消息，已忽略, type={}", raw == null ? "null" : raw.getClass().getName());
+            return;
+        }
+        TransferMessage tm = (TransferMessage) raw;
+        if (log.isDebugEnabled()) {
+            log.debug("[ws-to-service] tm = {}", JsonUtils.toJsonString(tm));
+        }
         for (WsToServiceMsgHandler handler : messageHandlers) {
-            handler.handlerMsg(tm);
+            try {
+                handler.handlerMsg(tm);
+            } catch (Exception e) {
+                log.error("[ws-to-service] handler 处理异常, handler={}, err={}", handler.getClass().getSimpleName(), e.getMessage(), e);
+            }
         }
     }
 

@@ -1,8 +1,7 @@
 package com.sz.socket.configuration;
 
-import com.sz.core.common.entity.SocketMessage;
+import com.sz.core.common.entity.SocketPushMessage;
 import com.sz.core.common.entity.TransferMessage;
-import com.sz.core.common.enums.SocketChannelEnum;
 import com.sz.core.util.JsonUtils;
 import com.sz.redis.handler.ServiceToWsMsgHandler;
 import com.sz.socket.sever.WebSocketServer;
@@ -11,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * 在业务层接收订阅额消息，并结合业务进行处理
+ * 在业务层接收订阅的消息，并结合业务进行处理
  */
 @Component
 @RequiredArgsConstructor
@@ -23,26 +22,20 @@ public class ServiceMessageHandler implements ServiceToWsMsgHandler {
     @Override
     public void handleTransferMessage(TransferMessage tm) {
         log.info(" sz-service-websocket [service-to-ws] tm = {}", JsonUtils.toJsonString(tm));
-        SocketMessage tmMessage = tm.getMessage();
-        SocketChannelEnum channel = tmMessage.getChannel();
-        switch (tmMessage.getScope()) {
-            case SERVER : // 通知到后台服务端
-                if (SocketChannelEnum.CLOSE == channel) {
-                    // todo ...
-                }
-                break;
-            case SOCKET_CLIENT : // 通知到socket客户端，即浏览器、移动端等
-                // 推送给全体用户
+        SocketPushMessage tmMessage = tm.getMessage();
+        if (tmMessage == null) {
+            log.warn("【websocket】service-to-ws 消息体为空，已忽略");
+            return;
+        }
+        switch (tm.getScope()) {
+            case SOCKET_CLIENT : // 通知到 socket 客户端，即浏览器、移动端等
                 if (tm.isToPushAll()) {
-                    webSocketServer.sendMessageToAllUser(tm.getMessage());
-                    // 推送给指定用户
+                    webSocketServer.sendMessageToAllUser(tmMessage);
                 } else {
-                    webSocketServer.sendMessage(tm.getToUsers(), tm.getMessage());
+                    webSocketServer.sendMessage(tm.getToUsers(), tmMessage);
                 }
                 break;
-            case SOCKET_SERVER :
-                // todo something ..
-                break;
+            // SERVER / SOCKET_SERVER 当前 ws 服务无需处理，由业务侧或其他 handler 接管
             default :
                 break;
         }

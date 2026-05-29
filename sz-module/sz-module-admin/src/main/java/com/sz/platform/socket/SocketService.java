@@ -1,11 +1,9 @@
 package com.sz.platform.socket;
 
 import com.sz.admin.system.pojo.dto.sysmessage.PayloadBody;
-import com.sz.core.common.entity.SocketMessage;
-import com.sz.core.common.entity.TransferMessage;
-import com.sz.core.common.enums.MessageTransferScopeEnum;
+import com.sz.core.common.entity.SocketPushMessage;
 import com.sz.core.common.enums.SocketChannelEnum;
-import com.sz.core.util.JsonUtils;
+import com.sz.core.util.SocketUtil;
 import com.sz.redis.WebsocketRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,63 +18,43 @@ public class SocketService {
     private final WebsocketRedisService websocketRedisService;
 
     /**
-     * 同步前端配置
+     * 同步前端配置（全员广播）
      */
     public void syncFrontendConfig() {
-        TransferMessage tm = new TransferMessage();
-        tm.setToPushAll(true);
-        SocketMessage sb = new SocketMessage();
-        sb.setChannel(SocketChannelEnum.SYNC_FRONTEND_CONF);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
+        websocketRedisService.sendServiceToWs(SocketUtil.broadcast(SocketPushMessage.of(SocketChannelEnum.SYNC_FRONTEND_CONF)));
     }
 
     /**
-     * 同步字典数据
+     * 同步字典数据（全员广播）
      */
     public void syncDict() {
-        TransferMessage tm = new TransferMessage();
-        tm.setToPushAll(true);
-        SocketMessage sb = new SocketMessage();
-        sb.setChannel(SocketChannelEnum.SYNC_DICT);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
+        websocketRedisService.sendServiceToWs(SocketUtil.broadcast(SocketPushMessage.of(SocketChannelEnum.SYNC_DICT)));
     }
 
     /**
-     * 同步权限数据
-     * 
+     * 同步权限数据（定向推送）
+     *
      * @param userId
      *            用户id
      */
-    public void syncPermission(Object userId) {
-        TransferMessage tm = new TransferMessage();
-        tm.setToPushAll(false);
-        tm.setToUsers(List.of(userId));
-        SocketMessage sb = new SocketMessage();
-        sb.setChannel(SocketChannelEnum.SYNC_PERMISSIONS);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
+    public void syncPermission(Long userId) {
+        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.SYNC_PERMISSIONS), List.of(String.valueOf(userId))));
     }
 
     /**
      * 强制（指定用户）下线
-     * 
+     *
      * @param userId
      *            用户id
      */
-    public void kickOff(Object userId) {
-        TransferMessage tm = new TransferMessage();
-        tm.setToUsers(Collections.singletonList(userId));
-        SocketMessage sb = new SocketMessage();
-        sb.setChannel(SocketChannelEnum.KICK_OFF);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
+    public void kickOff(Long userId) {
+        websocketRedisService
+                .sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.KICK_OFF), Collections.singletonList(String.valueOf(userId))));
     }
 
     /**
      * 发送消息
-     * 
+     *
      * @param body
      *            消息体
      * @param senderId
@@ -84,21 +62,14 @@ public class SocketService {
      * @param receiverIds
      *            接收者ID列表
      */
-    public void sendMessage(PayloadBody body, String senderId, List<Object> receiverIds) {
-        SocketMessage message = SocketMessage.builder().data(JsonUtils.toJsonString(body)).channel(SocketChannelEnum.MESSAGE)
-                .scope(MessageTransferScopeEnum.SOCKET_CLIENT).build();
-        TransferMessage msg = TransferMessage.builder().message(message).fromUser(senderId).toPushAll(false).toUsers(receiverIds).build();
-        websocketRedisService.sendServiceToWs(msg);
+    public void sendMessage(PayloadBody body, Long senderId, List<Long> receiverIds) {
+        List<String> toUsers = receiverIds == null ? Collections.emptyList() : receiverIds.stream().map(String::valueOf).toList();
+        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.MESSAGE, body), toUsers, String.valueOf(senderId)));
     }
 
-    public void readMessage(String fromUserId, List<?> toUsers) {
-        SocketMessage message = SocketMessage.builder().data(null).channel(SocketChannelEnum.READ).scope(MessageTransferScopeEnum.SOCKET_CLIENT).build();
-        TransferMessage msg = new TransferMessage();
-        msg.setMessage(message);
-        msg.setFromUser(fromUserId);
-        msg.setToPushAll(false);
-        msg.setToUsers(toUsers);
-        websocketRedisService.sendServiceToWs(msg);
+    public void readMessage(Long fromUserId, List<Long> toUsers) {
+        List<String> normalized = toUsers == null ? Collections.emptyList() : toUsers.stream().map(String::valueOf).toList();
+        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.READ), normalized, String.valueOf(fromUserId)));
     }
 
 }

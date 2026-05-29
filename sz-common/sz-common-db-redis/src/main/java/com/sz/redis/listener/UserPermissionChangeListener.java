@@ -29,11 +29,21 @@ public class UserPermissionChangeListener implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        UserPermissionChangeMessage upcm = (UserPermissionChangeMessage) redisTemplate.getValueSerializer().deserialize(message.getBody());
-        log.info(" [user change permission ] tm = {}", JsonUtils.toJsonString(upcm));
-        // 调用所有实现了TransferMessageHandler接口的处理器
+        Object raw = redisTemplate.getValueSerializer().deserialize(message.getBody());
+        if (!(raw instanceof UserPermissionChangeMessage)) {
+            log.warn("[user-permission-change] 收到非 UserPermissionChangeMessage 类型消息，已忽略, type={}", raw == null ? "null" : raw.getClass().getName());
+            return;
+        }
+        UserPermissionChangeMessage upcm = (UserPermissionChangeMessage) raw;
+        if (log.isDebugEnabled()) {
+            log.debug("[user-permission-change] upcm = {}", JsonUtils.toJsonString(upcm));
+        }
         for (UserPermissionChangeMsgHandler handler : messageHandlers) {
-            handler.handlerMsg(upcm);
+            try {
+                handler.handlerMsg(upcm);
+            } catch (Exception e) {
+                log.error("[user-permission-change] handler 处理异常, handler={}, err={}", handler.getClass().getSimpleName(), e.getMessage(), e);
+            }
         }
     }
 

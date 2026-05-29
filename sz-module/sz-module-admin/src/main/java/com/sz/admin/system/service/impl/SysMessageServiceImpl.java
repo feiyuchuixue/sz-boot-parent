@@ -21,6 +21,7 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,7 +60,8 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         PayloadBody body = new PayloadBody();
         body.setTitle(dto.getTitle());
         body.setContent(dto.getContent());
-        socketService.sendMessage(body, dto.getSenderId().toString(), dto.getReceiverIds());
+        List<Long> receiverLongIds = receiverIds == null ? Collections.emptyList() : receiverIds.stream().map(Utils::getLongVal).toList();
+        socketService.sendMessage(body, dto.getSenderId(), receiverLongIds);
     }
 
     @Override
@@ -124,6 +126,6 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         Long userId = Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId();
         UpdateChain.of(SysMessageUser.class).set(SYS_MESSAGE_USER.IS_READ, "T").set(SYS_MESSAGE_USER.READ_TIME, LocalDateTime.now())
                 .where(SYS_MESSAGE_USER.MESSAGE_ID.eq(messageId)).where(SYS_MESSAGE_USER.RECEIVER_ID.eq(userId)).update();
-        socketService.readMessage(userId.toString(), List.of(userId));
+        socketService.readMessage(userId, List.of(userId));
     }
 }

@@ -38,6 +38,6 @@ router:
     - "/webjars/**"
     - "/swagger-resources"
     - "/favicon.ico"
-    - "/swagger-ui.html"
+    - "/swagger-ui/**"
     - "/www/**"
     - "/wechat/**"
