@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 </#if>
 import lombok.RequiredArgsConstructor;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
@@ -53,7 +54,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${createPermission}")
 </#if>
     @PostMapping
-    public ApiResult<Void> create(@RequestBody ${dtoCreateClassName} dto) {
+    public ApiResult<Void> create(@Valid @RequestBody ${dtoCreateClassName} dto) {
         ${serviceName}.create(dto);
         return ApiResult.success();
     }
@@ -63,7 +64,7 @@ public class ${controllerClassName}  {
     @SaCheckPermission(value = "${updatePermission}")
 </#if>
     @PutMapping
-    public ApiResult<Void> update(@RequestBody ${dtoUpdateClassName} dto) {
+    public ApiResult<Void> update(@Valid @RequestBody ${dtoUpdateClassName} dto) {
         ${serviceName}.update(dto);
         return ApiResult.success();
     }

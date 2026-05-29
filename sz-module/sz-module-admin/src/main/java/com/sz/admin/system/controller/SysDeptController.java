@@ -42,7 +42,7 @@ public class SysDeptController {
     @Operation(summary = "新增")
     @SaCheckPermission(value = "sys.dept.create", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
-    public ApiResult<Void> create(@RequestBody SysDeptCreateDTO dto) {
+    public ApiResult<Void> create(@Valid @RequestBody SysDeptCreateDTO dto) {
         sysDeptService.create(dto);
         return ApiResult.success();
     }
@@ -50,7 +50,7 @@ public class SysDeptController {
     @Operation(summary = "修改")
     @SaCheckPermission(value = "sys.dept.update", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
-    public ApiResult<Void> update(@RequestBody SysDeptUpdateDTO dto) {
+    public ApiResult<Void> update(@Valid @RequestBody SysDeptUpdateDTO dto) {
         sysDeptService.update(dto);
         return ApiResult.success();
     }

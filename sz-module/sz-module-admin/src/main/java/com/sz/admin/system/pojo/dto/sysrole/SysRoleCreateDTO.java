@@ -1,6 +1,8 @@
 package com.sz.admin.system.pojo.dto.sysrole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -11,7 +13,9 @@ import lombok.Data;
 @Schema(description = "角色添加")
 public class SysRoleCreateDTO {
 
-    @Schema(description = "角色名称")
+    @NotBlank(message = "角色名称不能为空")
+    @Size(max = 50, message = "角色名称长度不能超过50个字符")
+    @Schema(description = "角色名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String roleName;
 
     @Schema(description = "备注")

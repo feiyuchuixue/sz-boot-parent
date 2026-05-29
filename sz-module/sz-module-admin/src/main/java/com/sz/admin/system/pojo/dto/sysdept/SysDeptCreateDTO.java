@@ -1,6 +1,9 @@
 package com.sz.admin.system.pojo.dto.sysdept;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.util.List;
 
@@ -16,10 +19,13 @@ import java.util.List;
 @Schema(description = "SysDept添加DTO")
 public class SysDeptCreateDTO {
 
-    @Schema(description = "部门名称")
+    @NotBlank(message = "部门名称不能为空")
+    @Size(max = 50, message = "部门名称长度不能超过50个字符")
+    @Schema(description = "部门名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "父级id")
+    @NotNull(message = "父级ID不能为空")
+    @Schema(description = "父级id", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long pid;
 
     @Schema(description = "排序")

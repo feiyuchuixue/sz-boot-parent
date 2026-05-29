@@ -9,7 +9,7 @@ import lombok.Data;
 @Schema(description = "字典类型修改")
 public class SysDictTypeUpDTO {
 
-    @NotNull(message = "id不能为")
+    @NotNull(message = "id不能为空")
     @Schema(description = "id")
     private Long id;
 

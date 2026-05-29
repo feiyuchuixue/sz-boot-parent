@@ -1,7 +1,7 @@
 package com.sz.admin.system.pojo.dto.sysmenu;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -17,7 +17,7 @@ public class SysMenuCreateDTO {
     @Schema(description = "菜单id（修改菜单时必填）")
     private Long id;
 
-    @NotNull(message = "菜单名称不能为空")
+    @NotBlank(message = "菜单名称不能为空")
     @Schema(description = "菜单名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
 

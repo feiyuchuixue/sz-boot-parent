@@ -4,6 +4,7 @@ import com.sz.core.common.valid.annotation.NotZero;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class SysDictCreateDTO {
     @Schema(description = "关联sys_dict_type id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
     private Long sysDictTypeId;
 
+    @NotBlank(message = "字典名称不能为空")
     @Schema(description = "字典名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "禁用")
     private String codeName;
 
