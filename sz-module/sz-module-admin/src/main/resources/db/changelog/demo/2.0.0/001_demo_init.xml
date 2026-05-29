@@ -19,8 +19,7 @@
     <include file="tables/012_sys_temp_file.xml" relativeToChangelogFile="true"/>
     <include file="tables/013_sys_temp_file_history.xml" relativeToChangelogFile="true"/>
     <include file="tables/014_sys_user.xml" relativeToChangelogFile="true"/>
-    <include file="tables/015_sys_user_data_role.xml" relativeToChangelogFile="true"/>
-    <include file="tables/016_sys_user_dept.xml" relativeToChangelogFile="true"/>
-    <include file="tables/017_sys_user_role.xml" relativeToChangelogFile="true"/>
-    <include file="tables/018_teacher_statistics.xml" relativeToChangelogFile="true"/>
+    <include file="tables/015_sys_user_dept.xml" relativeToChangelogFile="true"/>
+    <include file="tables/016_sys_user_role.xml" relativeToChangelogFile="true"/>
+    <include file="tables/017_teacher_statistics.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

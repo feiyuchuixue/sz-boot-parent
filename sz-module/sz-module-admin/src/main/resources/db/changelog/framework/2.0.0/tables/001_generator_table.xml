@@ -23,7 +23,7 @@
             <column name="function_author" type="VARCHAR(255)" remarks="生成作者名"/>
             <column name="type" type="VARCHAR(1)" remarks="生成方式(0 zip压缩包；1 自定义路径)"/>
             <column name="options" type="VARCHAR(255)" remarks="其他参数"/>
-            <column name="parent_menu_id" type="VARCHAR(255)" remarks="上级菜单id"/>
+            <column name="parent_menu_id" type="BIGINT" remarks="上级菜单id"/>
             <column name="path" type="VARCHAR(255)" remarks="生成路径"/>
             <column name="path_api" type="VARCHAR(255)" remarks="api生成路径"/>
             <column name="path_web" type="VARCHAR(255)" remarks="web生成路径"/>

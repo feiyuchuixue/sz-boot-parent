@@ -28,7 +28,6 @@
     <include file="tables/022_sys_temp_file.xml" relativeToChangelogFile="true"/>
     <include file="tables/023_sys_temp_file_history.xml" relativeToChangelogFile="true"/>
     <include file="tables/024_sys_user.xml" relativeToChangelogFile="true"/>
-    <include file="tables/025_sys_user_data_role.xml" relativeToChangelogFile="true"/>
-    <include file="tables/026_sys_user_dept.xml" relativeToChangelogFile="true"/>
-    <include file="tables/027_sys_user_role.xml" relativeToChangelogFile="true"/>
+    <include file="tables/025_sys_user_dept.xml" relativeToChangelogFile="true"/>
+    <include file="tables/026_sys_user_role.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

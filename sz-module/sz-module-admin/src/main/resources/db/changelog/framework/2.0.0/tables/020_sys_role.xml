@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_role"/></not>
         </preConditions>
         <createTable tableName="sys_role" remarks="系统角色表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="角色ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="角色ID"><constraints primaryKey="true"/></column>
             <column name="role_name" type="VARCHAR(64)" remarks="角色名称"><constraints nullable="false"/></column>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="简介"><constraints nullable="false"/></column>
             <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除与否"><constraints nullable="false"/></column>

@@ -8,11 +8,11 @@
 
     <changeSet id="demo-data-sys-menu-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu WHERE id IN ('7391f12ad51049c2b86d231d39708c71', '73d312f4fa8949ddba3d9807c0c56f00', '8061d8e79be744bf91b7b438f8e8e887', '85b54322630f43a39296488a5e76ba16', '91ccb13b5c174583803a4c492a5dfdb6', 'ab1ac16c617d41979472ebe433c1f8e4', 'cb3500315dba4c2d83e4d92edf36dff7')</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu WHERE id IN ('705327582685564993', '705327582689759298', '705327582693953603', '705327582698147908', '705327582702342213', '705327582706536518', '705327582710730823')</sqlCheck>
         </preConditions>
         <insert tableName="sys_menu">
-            <column name="id" value="7391f12ad51049c2b86d231d39708c71"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582685564993"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="修改"/>
@@ -33,8 +33,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="73d312f4fa8949ddba3d9807c0c56f00"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582689759298"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除"/>
@@ -55,8 +55,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8061d8e79be744bf91b7b438f8e8e887"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582693953603"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="导出"/>
@@ -77,7 +77,7 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582698147908"/>
             <column name="pid" value="0"/>
             <column name="path" value="/teacher/teacherStatistics"/>
             <column name="name" value="TeacherStatisticsView"/>
@@ -99,8 +99,8 @@
             <column name="use_data_scope" value="T"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="91ccb13b5c174583803a4c492a5dfdb6"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582702342213"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="导入"/>
@@ -121,8 +121,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="ab1ac16c617d41979472ebe433c1f8e4"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582706536518"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -143,8 +143,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="cb3500315dba4c2d83e4d92edf36dff7"/>
-            <column name="pid" value="85b54322630f43a39296488a5e76ba16"/>
+            <column name="id" value="705327582710730823"/>
+            <column name="pid" value="705327582698147908"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增"/>

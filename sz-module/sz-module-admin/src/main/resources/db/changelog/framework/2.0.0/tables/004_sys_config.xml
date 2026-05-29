@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_config"/></not>
         </preConditions>
         <createTable tableName="sys_config" remarks="参数配置表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="参数配置ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="参数配置ID"><constraints primaryKey="true"/></column>
             <column name="config_name" type="VARCHAR(50)" remarks="参数名"><constraints nullable="false"/></column>
             <column name="config_key" type="VARCHAR(50)" remarks="参数key"><constraints nullable="false"/></column>
             <column name="config_value" type="VARCHAR(512)" remarks="参数value"><constraints nullable="false"/></column>

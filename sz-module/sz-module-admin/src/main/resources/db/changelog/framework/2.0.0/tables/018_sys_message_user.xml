@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_message_user"/></not>
         </preConditions>
         <createTable tableName="sys_message_user" remarks="消息接收用户表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="ID"><constraints primaryKey="true"/></column>
             <column name="message_id" type="BIGINT" remarks="消息ID"><constraints nullable="false"/></column>
             <column name="receiver_id" type="BIGINT" remarks="接收人ID"><constraints nullable="false"/></column>
             <column name="is_read" type="ENUM('T','F')" defaultValue="F" remarks="是否已读"><constraints nullable="false"/></column>

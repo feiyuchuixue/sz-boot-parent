@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_user"/></not>
         </preConditions>
         <createTable tableName="sys_user" remarks="系统用户表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="用户ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="用户ID"><constraints primaryKey="true"/></column>
             <column name="username" type="VARCHAR(32)" remarks="用户名"><constraints nullable="false"/></column>
             <column name="pwd" type="VARCHAR(512)" remarks="密码"><constraints nullable="false"/></column>
             <column name="phone" type="VARCHAR(20)" remarks="手机号"/>

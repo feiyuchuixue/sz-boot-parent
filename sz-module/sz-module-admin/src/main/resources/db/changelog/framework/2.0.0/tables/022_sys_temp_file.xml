@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_temp_file"/></not>
         </preConditions>
         <createTable tableName="sys_temp_file" remarks="模版文件表">
-            <column name="id" type="BIGINT" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT"><constraints primaryKey="true"/></column>
             <column name="sys_file_id" type="BIGINT" remarks="文件ID"/>
             <column name="temp_name" type="VARCHAR(255)" defaultValue="" remarks="模版名"/>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注"/>

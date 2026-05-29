@@ -10,9 +10,12 @@
             <not><tableExists tableName="sys_dept_role"/></not>
         </preConditions>
         <createTable tableName="sys_dept_role" remarks="系统部门-角色关联表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="部门-角色关联ID"><constraints primaryKey="true"/></column>
-            <column name="dept_id" type="BIGINT" remarks="部门ID (sys_dept_id)"/>
-            <column name="role_id" type="BIGINT" remarks="角色ID(sys_role_id)"/>
+            <column name="dept_id" type="BIGINT" remarks="部门ID (sys_dept_id)"><constraints nullable="false"/></column>
+            <column name="role_id" type="BIGINT" remarks="角色ID(sys_role_id)"><constraints nullable="false"/></column>
         </createTable>
+        <addPrimaryKey tableName="sys_dept_role" columnNames="dept_id,role_id" constraintName="pk_sys_dept_role"/>
+        <createIndex tableName="sys_dept_role" indexName="idx_dept_role_role_id">
+            <column name="role_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

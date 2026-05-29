@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_message"/></not>
         </preConditions>
         <createTable tableName="sys_message" remarks="消息管理">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="消息ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="消息ID"><constraints primaryKey="true"/></column>
             <column name="message_type_cd" type="VARCHAR(32)" remarks="消息类型"><constraints nullable="false"/></column>
             <column name="sender_id" type="BIGINT" remarks="发送人ID"><constraints nullable="false"/></column>
             <column name="title" type="VARCHAR(255)" remarks="消息标题"><constraints nullable="false"/></column>

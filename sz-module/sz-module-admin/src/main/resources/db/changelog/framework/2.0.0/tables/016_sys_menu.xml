@@ -10,8 +10,8 @@
             <not><tableExists tableName="sys_menu"/></not>
         </preConditions>
         <createTable tableName="sys_menu" remarks="系统菜单表">
-            <column name="id" type="VARCHAR(32)" remarks="菜单表id"><constraints primaryKey="true"/></column>
-            <column name="pid" type="VARCHAR(32)" remarks="父级id"><constraints nullable="false"/></column>
+            <column name="id" type="BIGINT" remarks="菜单表id"><constraints primaryKey="true"/></column>
+            <column name="pid" type="BIGINT" remarks="父级id"><constraints nullable="false"/></column>
             <column name="path" type="VARCHAR(255)" defaultValue="" remarks="路径"><constraints nullable="false"/></column>
             <column name="name" type="VARCHAR(64)" defaultValue="" remarks="路由名称"/>
             <column name="title" type="VARCHAR(64)" remarks="标题"><constraints nullable="false"/></column>
@@ -22,20 +22,20 @@
             <column name="deep" type="INT" remarks="层级"><constraints nullable="false"/></column>
             <column name="menu_type_cd" type="VARCHAR(32)" defaultValue="" remarks="菜单类型 （字典表menu_type）"><constraints nullable="false"/></column>
             <column name="permissions" type="VARCHAR(64)" defaultValue="" remarks="按钮权限"/>
-            <column name="is_hidden" type="ENUM('T','F')" defaultValue="F" remarks="是否隐藏"/>
-            <column name="has_children" type="ENUM('T','F')" defaultValue="F" remarks="是否有子级"><constraints nullable="false"/></column>
-            <column name="is_link" type="ENUM('T','F')" defaultValue="F" remarks="路由外链时填写的访问地址"/>
-            <column name="is_full" type="ENUM('T','F')" defaultValue="F" remarks="菜单是否全屏"/>
-            <column name="is_affix" type="ENUM('T','F')" defaultValue="F" remarks="菜单是否固定在标签页"/>
-            <column name="is_keep_alive" type="ENUM('T','F')" defaultValue="F" remarks="当前路由是否缓存"/>
+            <column name="is_hidden" type="VARCHAR(1)" defaultValue="F" remarks="是否隐藏"/>
+            <column name="has_children" type="VARCHAR(1)" defaultValue="F" remarks="是否有子级"><constraints nullable="false"/></column>
+            <column name="is_link" type="VARCHAR(1)" defaultValue="F" remarks="路由外链时填写的访问地址"/>
+            <column name="is_full" type="VARCHAR(1)" defaultValue="F" remarks="菜单是否全屏"/>
+            <column name="is_affix" type="VARCHAR(1)" defaultValue="F" remarks="菜单是否固定在标签页"/>
+            <column name="is_keep_alive" type="VARCHAR(1)" defaultValue="F" remarks="当前路由是否缓存"/>
             <column name="create_time" type="DATETIME" remarks="创建时间"/>
             <column name="update_time" type="DATETIME" remarks="更新时间"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="是否删除"><constraints nullable="false"/></column>
+            <column name="del_flag" type="VARCHAR(1)" defaultValue="F" remarks="是否删除"><constraints nullable="false"/></column>
             <column name="delete_id" type="BIGINT" remarks="删除人ID"/>
             <column name="delete_time" type="DATETIME" remarks="删除时间"/>
-            <column name="use_data_scope" type="ENUM('T','F')" defaultValue="F" remarks="菜单是否开启数据权限"/>
+            <column name="use_data_scope" type="VARCHAR(1)" defaultValue="F" remarks="菜单是否开启数据权限"/>
         </createTable>
     </changeSet>
 
@@ -44,8 +44,8 @@
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu</sqlCheck>
         </preConditions>
         <insert tableName="sys_menu">
-            <column name="id" value="006bdbacd71a481f88b6acf895529acd"/>
-            <column name="pid" value="8354d626cc65487594a7c38e98de1bad"/>
+            <column name="id" value="705327582412935168"/>
+            <column name="pid" value="705327582555541538"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="修改"/>
@@ -66,8 +66,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="012efc4ef8d24304a8562534f319524a"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582417129473"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="预览按钮"/>
@@ -88,8 +88,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="05194ef5fa7a4a308a44f6f5c6791c3a"/>
-            <column name="pid" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="id" value="705327582421323778"/>
+            <column name="pid" value="705327582589095978"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑菜单"/>
@@ -110,8 +110,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="0933b165ffc14d558e8de43ccb6687f6"/>
-            <column name="pid" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="id" value="705327582425518083"/>
+            <column name="pid" value="705327582631039028"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑角色"/>
@@ -132,8 +132,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="0bef80d81a264f689d091613053c659e"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582429712388"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询账号"/>
@@ -154,8 +154,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="0e529e8a9dbf450898b695e051c36d48"/>
-            <column name="pid" value="da1b46db642f42978f83ed5eb34870ce"/>
+            <column name="id" value="705327582433906693"/>
+            <column name="pid" value="705327582643621943"/>
             <column name="path" value="/toolbox/generator"/>
             <column name="name" value="Generator"/>
             <column name="title" value="代码生成"/>
@@ -176,8 +176,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="0f98b89c67e54cb0bcff2b56aa98832f"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582438100998"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增账号"/>
@@ -198,8 +198,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="140c9ed43ef54542bbcdde8a5d928400"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582442295303"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/account"/>
             <column name="name" value="AccountManage"/>
             <column name="title" value="账号管理"/>
@@ -220,8 +220,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="191878090b294ec5892a68081dd91428"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582446489608"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/sysLoginLog"/>
             <column name="name" value="SysLoginLogView"/>
             <column name="title" value="登陆日志"/>
@@ -242,8 +242,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="1a86a9d2b3ca49439277fff9f499c7cd"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582450683913"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除字典"/>
@@ -264,8 +264,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="29d33eba6b73420287d8f7e64aea62b3"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582454878218"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/conf"/>
             <column name="name" value="ConfigManage"/>
             <column name="title" value="参数管理"/>
@@ -286,8 +286,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="2d6b78ad03de4cf1a3899f25cd7fe0ee"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582459072523"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除按钮"/>
@@ -308,8 +308,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="310d02bb121645d1b7a7f949f48c981b"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582463266828"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="生成按钮"/>
@@ -330,8 +330,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="31dca47db78f4c14b9cfe65226061b65"/>
-            <column name="pid" value="8354d626cc65487594a7c38e98de1bad"/>
+            <column name="id" value="705327582467461133"/>
+            <column name="pid" value="705327582555541538"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -352,8 +352,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="330a1a0a857c4ad1a95327db5134e420"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582471655438"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="解锁"/>
@@ -374,8 +374,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="3a54d488132b4331bf3cd5e6d86ffcf4"/>
-            <column name="pid" value="29d33eba6b73420287d8f7e64aea62b3"/>
+            <column name="id" value="705327582475849743"/>
+            <column name="pid" value="705327582454878218"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="修改参数"/>
@@ -396,8 +396,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="3ba9407560a1490583fefa10b22bc74f"/>
-            <column name="pid" value="8354d626cc65487594a7c38e98de1bad"/>
+            <column name="id" value="705327582480044048"/>
+            <column name="pid" value="705327582555541538"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除"/>
@@ -418,8 +418,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="3d7eed8398d3457c897b2e8bf838e9c6"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582484238353"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑按钮"/>
@@ -440,8 +440,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="445b73dda9a34ad681d2705a7abcf2f6"/>
-            <column name="pid" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="id" value="705327582488432658"/>
+            <column name="pid" value="705327582631039028"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除角色"/>
@@ -462,8 +462,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="47e5805374bc44a2831126676b8c78dd"/>
-            <column name="pid" value="8231a369712e4f8f8ac09fce232cd034"/>
+            <column name="id" value="705327582492626963"/>
+            <column name="pid" value="705327582547152928"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -484,8 +484,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="4f39ef0fd2f748f6ab7d6d20d98bc4af"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582496821268"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增字典类型"/>
@@ -506,8 +506,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="5b33ac3d630543d09d1388fae4d13fc0"/>
-            <column name="pid" value="9e731ff422184fc1be2022c5c985735e"/>
+            <column name="id" value="705327582501015573"/>
+            <column name="pid" value="705327582597484588"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="修改"/>
@@ -528,8 +528,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="5b5fb3748c6a4ed5a4dda3877508c3a7"/>
-            <column name="pid" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="id" value="705327582505209878"/>
+            <column name="pid" value="705327582631039028"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="设置权限"/>
@@ -550,8 +550,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="62dd478ed2f54792b08ed9202e73d2cf"/>
-            <column name="pid" value="c4896e8735a745bda9b47ecaf50f46f2"/>
+            <column name="id" value="705327582509404183"/>
+            <column name="pid" value="705327582622650418"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -572,8 +572,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="6307bd1221fb474b8c8777afaed4440f"/>
-            <column name="pid" value="9e731ff422184fc1be2022c5c985735e"/>
+            <column name="id" value="705327582513598488"/>
+            <column name="pid" value="705327582597484588"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -594,8 +594,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="686a5522b0334d4da51aa15b3fd1a303"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582517792793"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="设置部门"/>
@@ -616,8 +616,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="6c46fd01faf042fc9dd4a9c9b9ef2c5a"/>
-            <column name="pid" value="9e731ff422184fc1be2022c5c985735e"/>
+            <column name="id" value="705327582521987098"/>
+            <column name="pid" value="705327582597484588"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增"/>
@@ -638,8 +638,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="6e25a716c1a646009a9be90b16f0a682"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582526181403"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="设置角色"/>
@@ -660,8 +660,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="765d139874424930b0a672128712de9b"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582530375708"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -682,8 +682,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="7a4544831af34e69aa73148bf84b9924"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582534570013"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="SQL按钮"/>
@@ -704,8 +704,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="81647226a2d047e8ab0b70472350ee69"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582538764318"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增字典"/>
@@ -726,8 +726,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="818cc6e1889d46579525ad8ab921eeb8"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582542958623"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑字典类型"/>
@@ -748,8 +748,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8231a369712e4f8f8ac09fce232cd034"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582547152928"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/fileTemp"/>
             <column name="name" value="SysTempFileView"/>
             <column name="title" value="模版文件管理"/>
@@ -770,8 +770,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8255bac5eae748a0a8500167963b3e00"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582551347233"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑账号"/>
@@ -792,8 +792,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8354d626cc65487594a7c38e98de1bad"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582555541538"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/dept"/>
             <column name="name" value="SysDeptView"/>
             <column name="title" value="部门管理"/>
@@ -814,8 +814,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="87a26b76daad47c2a12c470605563c4a"/>
-            <column name="pid" value="8231a369712e4f8f8ac09fce232cd034"/>
+            <column name="id" value="705327582559735843"/>
+            <column name="pid" value="705327582547152928"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="修改"/>
@@ -836,7 +836,7 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582563930148"/>
             <column name="pid" value="0"/>
             <column name="path" value="/system"/>
             <column name="name" value="system"/>
@@ -858,8 +858,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8d0b8b57a58e41a5a5e840cc2b3703f4"/>
-            <column name="pid" value="9e731ff422184fc1be2022c5c985735e"/>
+            <column name="id" value="705327582568124453"/>
+            <column name="pid" value="705327582597484588"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除"/>
@@ -880,8 +880,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="8fd6721941494fd5bbe16bec82b235be"/>
-            <column name="pid" value="8354d626cc65487594a7c38e98de1bad"/>
+            <column name="id" value="705327582572318758"/>
+            <column name="pid" value="705327582555541538"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增"/>
@@ -902,8 +902,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="9338bf2f57984825bc227bb618f9db81"/>
-            <column name="pid" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="id" value="705327582576513063"/>
+            <column name="pid" value="705327582589095978"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增菜单"/>
@@ -924,8 +924,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="97f11d74c98047ba80f011a3da9d882c"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582580707368"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="编辑字典"/>
@@ -946,8 +946,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="9830d86487184961b90fc527c9604720"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582584901673"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除字典类型"/>
@@ -968,8 +968,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="99c2ee7b882749e597bcd62385f368fb"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582589095978"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/menu"/>
             <column name="name" value="MenuManage"/>
             <column name="title" value="菜单管理"/>
@@ -990,8 +990,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="9dfeebc408e1490e88bf10db3b5e1239"/>
-            <column name="pid" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="id" value="705327582593290283"/>
+            <column name="pid" value="705327582589095978"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询菜单"/>
@@ -1012,8 +1012,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="9e731ff422184fc1be2022c5c985735e"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582597484588"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/client"/>
             <column name="name" value="ClientManageView"/>
             <column name="title" value="客户端管理"/>
@@ -1034,8 +1034,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="abecbec6abe74023abaa653f827a3b0f"/>
-            <column name="pid" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="id" value="705327582601678893"/>
+            <column name="pid" value="705327582631039028"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询角色"/>
@@ -1056,8 +1056,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="b3d357cf69034286988f05a346f2412c"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582605873198"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="设置账户类型"/>
@@ -1078,8 +1078,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="b428eba3f9a34025a46c394df5390b88"/>
-            <column name="pid" value="29d33eba6b73420287d8f7e64aea62b3"/>
+            <column name="id" value="705327582610067503"/>
+            <column name="pid" value="705327582454878218"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除参数"/>
@@ -1100,8 +1100,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="b5ce6412c26447348a7267de3ea11a21"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582614261808"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="导入按钮"/>
@@ -1122,8 +1122,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="bef8f1330490494f924314eec9687055"/>
-            <column name="pid" value="29d33eba6b73420287d8f7e64aea62b3"/>
+            <column name="id" value="705327582618456113"/>
+            <column name="pid" value="705327582454878218"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询参数"/>
@@ -1144,8 +1144,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="c4896e8735a745bda9b47ecaf50f46f2"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582622650418"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/file"/>
             <column name="name" value="SysFileView"/>
             <column name="title" value="文件管理"/>
@@ -1166,8 +1166,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="c555243b02814270948a240e8d2d3408"/>
-            <column name="pid" value="191878090b294ec5892a68081dd91428"/>
+            <column name="id" value="705327582626844723"/>
+            <column name="pid" value="705327582446489608"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询"/>
@@ -1188,8 +1188,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="c6dd479d5b304731be403d7551c60d70"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582631039028"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/role"/>
             <column name="name" value="RoleManage"/>
             <column name="title" value="角色管理"/>
@@ -1210,8 +1210,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="cea01dcde9b24b5a8686bdc33c438cd7"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582635233333"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除账号"/>
@@ -1232,8 +1232,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="d90946bc9ed54e598e3c4471dbd1f496"/>
-            <column name="pid" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
+            <column name="id" value="705327582639427638"/>
+            <column name="pid" value="705327582647816248"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="查询字典"/>
@@ -1254,7 +1254,7 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="da1b46db642f42978f83ed5eb34870ce"/>
+            <column name="id" value="705327582643621943"/>
             <column name="pid" value="0"/>
             <column name="path" value="/toolbox"/>
             <column name="name" value="toolbox"/>
@@ -1276,8 +1276,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="dcb6aabcd910469ebf3efbc7e43282d4"/>
-            <column name="pid" value="88b2e5def2ff474fa8bf3537d4a2fe5b"/>
+            <column name="id" value="705327582647816248"/>
+            <column name="pid" value="705327582563930148"/>
             <column name="path" value="/system/dict"/>
             <column name="name" value="DictManage"/>
             <column name="title" value="字典管理"/>
@@ -1298,8 +1298,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="df2894b4c06e47cab84142d81edc494d"/>
-            <column name="pid" value="c6dd479d5b304731be403d7551c60d70"/>
+            <column name="id" value="705327582652010553"/>
+            <column name="pid" value="705327582631039028"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增角色"/>
@@ -1320,8 +1320,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="e91eeaea8f1546d3921839469fe247b6"/>
-            <column name="pid" value="140c9ed43ef54542bbcdde8a5d928400"/>
+            <column name="id" value="705327582656204858"/>
+            <column name="pid" value="705327582442295303"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="重置密码"/>
@@ -1342,8 +1342,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="e931c84b8bc945a7b6ba2d58c8a93afc"/>
-            <column name="pid" value="8231a369712e4f8f8ac09fce232cd034"/>
+            <column name="id" value="705327582660399163"/>
+            <column name="pid" value="705327582547152928"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增"/>
@@ -1364,8 +1364,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="ede76f5e60b640aa9de2ba7216b90ceb"/>
-            <column name="pid" value="29d33eba6b73420287d8f7e64aea62b3"/>
+            <column name="id" value="705327582664593468"/>
+            <column name="pid" value="705327582454878218"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="新增参数"/>
@@ -1386,8 +1386,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="ee36ad68586e42fa8a896215c544cb76"/>
-            <column name="pid" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="id" value="705327582668787773"/>
+            <column name="pid" value="705327582589095978"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="SQL按钮"/>
@@ -1408,8 +1408,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="f1ef824156c0402c90189d58afb1613e"/>
-            <column name="pid" value="8231a369712e4f8f8ac09fce232cd034"/>
+            <column name="id" value="705327582672982078"/>
+            <column name="pid" value="705327582547152928"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除"/>
@@ -1430,8 +1430,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="fa0c65ad783d4bf9b919a6db02ef1428"/>
-            <column name="pid" value="99c2ee7b882749e597bcd62385f368fb"/>
+            <column name="id" value="705327582677176383"/>
+            <column name="pid" value="705327582589095978"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="删除菜单"/>
@@ -1452,8 +1452,8 @@
             <column name="use_data_scope" value="F"/>
         </insert>
         <insert tableName="sys_menu">
-            <column name="id" value="fbdcbcc0ccf547b4b78a4fc2cf303236"/>
-            <column name="pid" value="0e529e8a9dbf450898b695e051c36d48"/>
+            <column name="id" value="705327582681370688"/>
+            <column name="pid" value="705327582433906693"/>
             <column name="path" value=""/>
             <column name="name" value=""/>
             <column name="title" value="zip下载按钮"/>

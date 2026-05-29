@@ -8,30 +8,25 @@
 
     <changeSet id="demo-data-sys-user-role-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user_role WHERE id IN (8, 9, 10, 11, 12)</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user_role WHERE user_id IN (2, 3, 4, 5, 6)</sqlCheck>
         </preConditions>
         <insert tableName="sys_user_role">
-            <column name="id" valueNumeric="8"/>
             <column name="role_id" valueNumeric="3"/>
             <column name="user_id" valueNumeric="2"/>
         </insert>
         <insert tableName="sys_user_role">
-            <column name="id" valueNumeric="9"/>
             <column name="role_id" valueNumeric="4"/>
             <column name="user_id" valueNumeric="3"/>
         </insert>
         <insert tableName="sys_user_role">
-            <column name="id" valueNumeric="10"/>
             <column name="role_id" valueNumeric="5"/>
             <column name="user_id" valueNumeric="4"/>
         </insert>
         <insert tableName="sys_user_role">
-            <column name="id" valueNumeric="11"/>
             <column name="role_id" valueNumeric="6"/>
             <column name="user_id" valueNumeric="5"/>
         </insert>
         <insert tableName="sys_user_role">
-            <column name="id" valueNumeric="12"/>
             <column name="role_id" valueNumeric="7"/>
             <column name="user_id" valueNumeric="6"/>
         </insert>

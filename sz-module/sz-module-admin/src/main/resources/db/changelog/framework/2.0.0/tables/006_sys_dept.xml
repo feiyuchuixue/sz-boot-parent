@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_dept"/></not>
         </preConditions>
         <createTable tableName="sys_dept" remarks="部门表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="部门ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="部门ID"><constraints primaryKey="true"/></column>
             <column name="name" type="VARCHAR(32)" remarks="部门名称"><constraints nullable="false"/></column>
             <column name="pid" type="BIGINT" remarks="父级ID"><constraints nullable="false"/></column>
             <column name="deep" type="INT" remarks="层级"/>

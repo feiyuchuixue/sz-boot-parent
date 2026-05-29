@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_login_log"/></not>
         </preConditions>
         <createTable tableName="sys_login_log" remarks="登陆日志表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="登陆ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="登陆ID"><constraints primaryKey="true"/></column>
             <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
             <column name="user_name" type="VARCHAR(32)" remarks="用户名"/>
             <column name="login_status" type="VARCHAR(10)" remarks="登陆状态"/>

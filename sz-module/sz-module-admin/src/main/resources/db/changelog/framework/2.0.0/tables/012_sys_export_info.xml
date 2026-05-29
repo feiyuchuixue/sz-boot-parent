@@ -10,10 +10,10 @@
             <not><tableExists tableName="sys_export_info"/></not>
         </preConditions>
         <createTable tableName="sys_export_info" remarks="导出信息">
-            <column name="id" type="INT" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT"><constraints primaryKey="true"/></column>
             <column name="file_name" type="VARCHAR(32)" remarks="导出的文件名称"/>
             <column name="export_status_cd" type="VARCHAR(10)" defaultValue="" remarks="导出状态,关联字典表export_status"/>
-            <column name="create_id" type="INT" remarks="创建人ID"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="create_time" type="DATETIME" defaultValueComputed="CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" remarks="创建时间"/>
         </createTable>
     </changeSet>

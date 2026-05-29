@@ -10,9 +10,12 @@
             <not><tableExists tableName="sys_dept_leader"/></not>
         </preConditions>
         <createTable tableName="sys_dept_leader" remarks="部门领导人表">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="部门领导人ID"><constraints primaryKey="true"/></column>
-            <column name="dept_id" type="INT" remarks="部门ID"/>
+            <column name="dept_id" type="BIGINT" remarks="部门ID"><constraints nullable="false"/></column>
             <column name="leader_id" type="BIGINT" remarks="领导人ID（sys_user_id）"><constraints nullable="false"/></column>
         </createTable>
+        <addPrimaryKey tableName="sys_dept_leader" columnNames="dept_id,leader_id" constraintName="pk_sys_dept_leader"/>
+        <createIndex tableName="sys_dept_leader" indexName="idx_dept_leader_leader_id">
+            <column name="leader_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

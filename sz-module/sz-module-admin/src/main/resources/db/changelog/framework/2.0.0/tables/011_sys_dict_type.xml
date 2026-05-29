@@ -10,7 +10,7 @@
             <not><tableExists tableName="sys_dict_type"/></not>
         </preConditions>
         <createTable tableName="sys_dict_type" remarks="字典类型">
-            <column name="id" type="BIGINT" autoIncrement="true" remarks="字典类型ID"><constraints primaryKey="true"/></column>
+            <column name="id" type="BIGINT" remarks="字典类型ID"><constraints primaryKey="true"/></column>
             <column name="type_name" type="VARCHAR(64)" defaultValue="" remarks="字典类型名(中文)"><constraints nullable="false"/></column>
             <column name="type_code" type="VARCHAR(64)" remarks="字典类型码(英文)"><constraints nullable="false"/></column>
             <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定，锁定的属性无法在页面进行修改"/>

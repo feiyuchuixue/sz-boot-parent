@@ -14,5 +14,9 @@
             <column name="descendant_id" type="BIGINT" remarks="后代节点ID"><constraints nullable="false"/></column>
             <column name="depth" type="INT" remarks="祖先节点到后代节点的距离"><constraints nullable="false"/></column>
         </createTable>
+        <addPrimaryKey tableName="sys_dept_closure" columnNames="ancestor_id,descendant_id" constraintName="pk_sys_dept_closure"/>
+        <createIndex tableName="sys_dept_closure" indexName="idx_dept_closure_descendant_id">
+            <column name="descendant_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

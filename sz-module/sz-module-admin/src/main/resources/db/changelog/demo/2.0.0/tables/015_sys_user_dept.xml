@@ -8,25 +8,21 @@
 
     <changeSet id="demo-data-sys-user-dept-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user_dept WHERE id IN (1, 2, 3, 4)</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_user_dept WHERE user_id IN (2, 3, 4, 5)</sqlCheck>
         </preConditions>
         <insert tableName="sys_user_dept">
-            <column name="id" valueNumeric="1"/>
             <column name="dept_id" valueNumeric="4"/>
             <column name="user_id" valueNumeric="2"/>
         </insert>
         <insert tableName="sys_user_dept">
-            <column name="id" valueNumeric="2"/>
             <column name="dept_id" valueNumeric="4"/>
             <column name="user_id" valueNumeric="3"/>
         </insert>
         <insert tableName="sys_user_dept">
-            <column name="id" valueNumeric="3"/>
             <column name="dept_id" valueNumeric="15"/>
             <column name="user_id" valueNumeric="4"/>
         </insert>
         <insert tableName="sys_user_dept">
-            <column name="id" valueNumeric="4"/>
             <column name="dept_id" valueNumeric="15"/>
             <column name="user_id" valueNumeric="5"/>
         </insert>

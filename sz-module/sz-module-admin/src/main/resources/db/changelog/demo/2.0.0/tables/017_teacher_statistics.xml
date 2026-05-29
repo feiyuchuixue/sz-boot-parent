@@ -5,7 +5,7 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <!-- teacher_statistics: demo data -->
-<changeSet  id="demo-struct-teacher-statistics-202605100838" author="升职哦（sz）">
+    <changeSet id="demo-struct-teacher-statistics-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="teacher_statistics"/></not>
         </preConditions>
@@ -153,4 +153,14 @@
             <column name="has_invalid" value="F"/>
         </insert>
     </changeSet>
+
+    <changeSet id="demo-struct-teacher-statistics-idx-dept-scope-202605120000" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="teacher_statistics"/>
+            <not><indexExists tableName="teacher_statistics" indexName="idx_dept_scope"/></not>
+        </preConditions>
+        <!-- dept_scope 多值索引（MySQL 8.0.17+），使 JSON_OVERLAPS 查询可走索引 -->
+        <sql>ALTER TABLE `teacher_statistics` ADD INDEX `idx_dept_scope` ((CAST(`dept_scope` AS UNSIGNED ARRAY)))</sql>
+    </changeSet>
+
 </databaseChangeLog>
