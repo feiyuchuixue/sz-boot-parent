@@ -658,6 +658,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public UserProfileVO getProfile() {
         Long userId = StpUtil.getLoginIdAsLong();
         SysUser sysUser = getById(userId);
+        CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         UserProfileVO profileVO = BeanCopyUtils.copy(sysUser, UserProfileVO.class);
         profileVO.setAvatar(sysUser.getLogo());
         return profileVO;
