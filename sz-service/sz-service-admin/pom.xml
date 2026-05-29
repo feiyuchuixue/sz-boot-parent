@@ -15,7 +15,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- aspect aop 切面-->
+        <!-- aspect aop 切面 -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
@@ -33,16 +33,6 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-common-log</artifactId>
         </dependency>
-        <!-- MySQL 数据库模块，默认启用；如需切换 PostgreSQL，请注释本依赖并放开下方 PostgreSQL 依赖。 -->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-mysql</artifactId>
-        </dependency>
-        <!-- PostgreSQL 数据库模块；数据库模块只启用一个，需与 application.yml 中的 DB_TYPE 保持一致。 -->
-<!--        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-postgresql</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-module-admin</artifactId>
@@ -75,5 +65,29 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-mysql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>postgresql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-postgresql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>
