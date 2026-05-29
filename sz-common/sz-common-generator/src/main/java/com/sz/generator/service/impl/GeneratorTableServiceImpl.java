@@ -7,6 +7,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
+import com.sz.db.id.SzIdUtil;
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.CodeModelBuilder;
 import com.sz.generator.core.builder.sql.MenuSqlCodeBuilder;
@@ -397,8 +398,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if ("0".equals(detailVO.getGeneratorInfo().getMenuInitType())) { // 获取代码配置，是否启用菜单（菜单不启用，按钮也不会启用）初始化
             return menus;
         }
-        String menuId = Utils.generateUUIDs(); // 按钮父级id,菜单id
-        String parentMenuId = detailVO.getGeneratorInfo().getParentMenuId();
+        Long menuId = SzIdUtil.nextId(); // 按钮父级id,菜单id
+        Long parentMenuId = detailVO.getGeneratorInfo().getParentMenuId();
         int menuDeep = getMenuDepth(parentMenuId);
         String routerName = model.get("indexDefineOptionsName").toString();
         String path = buildPath(detailVO);
@@ -417,7 +418,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return menus;
     }
 
-    private int getMenuDepth(String parentMenuId) {
+    private int getMenuDepth(Long parentMenuId) {
         SysMenuResult sysMenuResult = this.mapper.selectSysMenuByPid(parentMenuId);
         return (sysMenuResult != null) ? sysMenuResult.getDeep() + 1 : 1;
     }
@@ -430,7 +431,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return buildPath(detailVO) + SEPARATOR + "index";
     }
 
-    private boolean assertMenuDoesNotExist(String routerName, String path, String component, String parentMenuId) {
+    private boolean assertMenuDoesNotExist(String routerName, String path, String component, Long parentMenuId) {
         int menuCount = this.mapper.countMenu(routerName, path, component, parentMenuId);
         String message = String.format("菜单已存在: name=%s, path=%s, component=%s, pid=%s", routerName, path, component, parentMenuId);
         // CommonResponseEnum.EXISTS.message(1001, message).assertTrue(menuCount > 0);
@@ -438,8 +439,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return menuCount > 0;
     }
 
-    private List<MenuCreateDTO> createButtonPermissions(String menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB,
-            GeneratorDetailVO detailVO) {
+    private List<MenuCreateDTO> createButtonPermissions(Long menuId, Map<String, Object> model, int menuDeep, boolean isInsertDB, GeneratorDetailVO detailVO) {
         List<MenuCreateDTO> buttonMenus = new ArrayList<>();
 
         int order = 1;
@@ -467,7 +467,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return buttonMenus;
     }
 
-    private MenuCreateDTO buildAndInsertButton(String menuId, String action, String permission, int order, int deep, boolean isInsertDB) {
+    private MenuCreateDTO buildAndInsertButton(Long menuId, String action, String permission, int order, int deep, boolean isInsertDB) {
         MenuCreateDTO btnDto = buildBtn(menuId, action, permission, order, deep);
         if (isInsertDB) {
             this.mapper.insertMenu(btnDto);
@@ -475,8 +475,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return btnDto;
     }
 
-    private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, String btnParentId, String parentMenuId, String path, String routerName,
-            String component, int count, int parentDeep) {
+    private static MenuCreateDTO buildMenu(GeneratorDetailVO detailVO, Long btnParentId, Long parentMenuId, String path, String routerName, String component,
+            int count, int parentDeep) {
         MenuCreateDTO createDTO = new MenuCreateDTO();
         createDTO.setId(btnParentId);
         if (Utils.isNotNull(parentMenuId)) {
@@ -500,9 +500,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return createDTO;
     }
 
-    private MenuCreateDTO buildBtn(String btnParentId, String btnName, String createPermission, int sort, int menuDeep) {
+    private MenuCreateDTO buildBtn(Long btnParentId, String btnName, String createPermission, int sort, int menuDeep) {
         MenuCreateDTO dto = new MenuCreateDTO();
-        dto.setId(Utils.generateUUIDs());
+        dto.setId(SzIdUtil.nextId());
         dto.setPid(btnParentId);
         dto.setPath("");
         dto.setName("");
