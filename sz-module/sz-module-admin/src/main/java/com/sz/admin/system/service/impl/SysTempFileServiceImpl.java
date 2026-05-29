@@ -12,23 +12,19 @@ import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.po.SysTempFile;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
-import com.sz.admin.system.service.SysFileService;
 import com.sz.admin.system.service.SysTempFileHistoryService;
 import com.sz.admin.system.service.SysTempFileService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
-import com.sz.oss.OssClient;
 import com.sz.resource.model.ResourceRef;
 import com.sz.resource.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
@@ -47,10 +43,6 @@ import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FIL
 @Service
 @RequiredArgsConstructor
 public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTempFile> implements SysTempFileService {
-
-    private final OssClient ossClient;
-
-    private final SysFileService sysFileService;
 
     private final SysTempFileHistoryService sysTempFileHistoryService;
 
@@ -119,21 +111,6 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
         SysTempFileVO vo = BeanCopyUtils.copy(sysTempFile, SysTempFileVO.class);
         fillAccessUrl(vo);
         return vo;
-    }
-
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    @Override
-    public UploadResult uploadFile(MultipartFile file) {
-        UploadResult uploadResult = null;
-        try {
-            uploadResult = ossClient.upload(file, "tmp", "");
-            Long fileId = sysFileService.fileLog(uploadResult);
-            uploadResult.setFileId(fileId);
-        } catch (Exception e) {
-            log.error(" sysTempFile oss upload error", e);
-            CommonResponseEnum.FILE_UPLOAD_ERROR.assertTrue(true);
-        }
-        return uploadResult;
     }
 
     private static QueryWrapper buildQueryWrapper(SysTempFileListDTO dto) {

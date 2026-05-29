@@ -2,7 +2,6 @@ package com.sz.core.util;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,51 +23,6 @@ public class BeanCopyUtils {
 
     private BeanCopyUtils() {
         throw new IllegalStateException("BeanCopyUtils class Illegal");
-    }
-
-    /**
-     * ！！！将在下个版本移除！！！ 已弃用的方法，用于复制对象属性。
-     * <p>
-     * 此方法使用 Spring 的 `BeanUtils.copyProperties` 来复制源对象的属性到目标对象。 建议使用 `ModelMapper`
-     * 实现，提供更灵活和强大的映射功能。
-     * </p>
-     *
-     * @param <T>
-     *            源对象的类型
-     * @param <M>
-     *            目标对象的类型
-     * @param source
-     *            源对象
-     * @param target
-     *            目标对象
-     * @deprecated 此方法将在后续版本中弃用，请使用 `ModelMapper` 实现。
-     * @since 2021-09-01
-     */
-    @Deprecated(since = "2021-09-01", forRemoval = true)
-    public static <T, M> void springCopy(T source, M target) {
-        BeanUtils.copyProperties(source, target);
-    }
-
-    /**
-     * ！！！将在下个版本移除！！！ 已弃用的方法，用于将源对象转换为指定类型的目标对象。
-     * <p>
-     * 此方法将在后续版本中弃用，建议使用 `ModelMapper` 实现以获得更灵活和强大的映射功能。
-     * </p>
-     *
-     * @param <T>
-     *            目标对象的类型
-     * @param source
-     *            源对象
-     * @param clazz
-     *            目标对象的类类型
-     * @return 转换后的目标对象实例
-     * @deprecated 使用 `ModelMapper` 替代此方法，以支持更加灵活的对象转换。
-     */
-    @Deprecated(since = "2021-09-01", forRemoval = true)
-    public static <T> T springCopy(Object source, Class<T> clazz) {
-        T target = BeanUtils.instantiateClass(clazz);
-        BeanUtils.copyProperties(source, target);
-        return target;
     }
 
     /**

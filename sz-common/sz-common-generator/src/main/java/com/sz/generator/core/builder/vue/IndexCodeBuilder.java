@@ -12,7 +12,6 @@ import java.util.Map;
  * @author sz
  * @since 2024/1/16 8:02
  */
-@Deprecated
 public class IndexCodeBuilder extends AbstractCodeGenerationTemplate {
 
     public IndexCodeBuilder(FreeMarkerConfigurer configurer, String rootPath, GeneratorDetailVO detailVO, Map<String, Object> model) {

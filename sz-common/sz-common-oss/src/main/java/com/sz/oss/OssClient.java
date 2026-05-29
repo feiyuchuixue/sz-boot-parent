@@ -7,7 +7,6 @@ import com.sz.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.core.async.BlockingInputStreamAsyncRequestBody;
@@ -28,7 +27,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -57,76 +55,6 @@ public class OssClient {
     private final S3AsyncClient s3AsyncClient;
 
     private static final String FILE_SEPARATOR = "/";
-
-    /**
-     * 上传文件（含扩展名 / MIME 校验）
-     *
-     * @param file
-     *            文件
-     * @param dirTag
-     *            目录
-     * @param bucket
-     *            存储桶，null 或空串时回退到 {@code oss.bucket-name}
-     * @return 上传结果
-     * @deprecated 请使用 sz-common-resource 的 ResourceService.upload()，
-     *             命名策略由场景配置（NamingRuleEnum）控制。
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public UploadResult upload(MultipartFile file, String dirTag, String bucket) throws IOException {
-        // naming 字段已迁移至 sz-common-resource，此处固定使用 UUID 命名
-        String objectName;
-        String originalFilename = file.getOriginalFilename();
-        objectName = dirTag + generateFileName(originalFilename);
-        objectName = objectName.replaceAll("#", "");
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), originalFilename, bucket);
-    }
-
-    /**
-     * 上传文件（含扩展名 / MIME 校验，指定完整文件名）
-     *
-     * @param file
-     *            文件
-     * @param dirTag
-     *            目录标签
-     * @param filename
-     *            文件名
-     * @param bucket
-     *            存储桶，null 或空串时回退到 {@code oss.bucket-name}
-     * @return 上传结果
-     * @deprecated 请使用 sz-common-resource 的 ResourceService.upload()，
-     *             命名策略由场景配置（NamingRuleEnum）控制。
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public UploadResult upload(MultipartFile file, String dirTag, String filename, String bucket) throws IOException {
-        String objectName = dirTag + "/" + filename;
-        return upload(file.getInputStream(), objectName, file.getSize(), file.getContentType(), file.getOriginalFilename(), bucket);
-    }
-
-    /**
-     * 上传文件（含扩展名 / MIME 校验）
-     *
-     * @param inputStream
-     *            输入流
-     * @param objectName
-     *            对象名（可包含路径）
-     * @param size
-     *            文件大小
-     * @param contentType
-     *            MIME 类型
-     * @param originalFilename
-     *            原始文件名（用于扩展名校验）
-     * @param bucket
-     *            存储桶，null 或空串时回退到全局默认
-     * @return 上传结果
-     * @deprecated 请使用 sz-common-resource 的 ResourceService.upload()， 校验逻辑已迁移至
-     *             resource 模块的安全策略体系。
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public UploadResult upload(InputStream inputStream, String objectName, Long size, String contentType, String originalFilename, String bucket) {
-        // 扩展名 + MIME 校验：两项均不在白名单时才拦截
-        CommonResponseEnum.FILE_UPLOAD_EXT_ERROR.assertFalse(isAllowedExt(originalFilename) && isAllowedMimeType(Objects.requireNonNull(contentType)));
-        return uploadDirect(inputStream, objectName, size, contentType, originalFilename, bucket);
-    }
 
     /**
      * 上传文件（跳过扩展名 / MIME 校验）
@@ -209,49 +137,6 @@ public class OssClient {
     public void delete(String bucket, String objectName) {
         String resolvedBucket = resolveBucket(bucket);
         s3Client.deleteObject(b -> b.bucket(resolvedBucket).key(objectName));
-    }
-
-    /**
-     * 生成私有文件临时访问 URL（全局默认 bucket，默认有效期 3600 秒）
-     *
-     * @param objectName
-     *            对象名
-     * @return Presigned URL
-     * @deprecated 请使用 {@link #getPrivateUrl(String, String, long)}
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public String getPrivateUrl(String objectName) {
-        return getPrivateUrl(null, objectName, DEFAULT_EXPIRE_TIME);
-    }
-
-    /**
-     * 生成私有文件临时访问 URL（默认有效期 3600 秒）
-     *
-     * @param bucket
-     *            存储桶，null 或空串时回退到全局默认
-     * @param objectName
-     *            对象名
-     * @return Presigned URL
-     * @deprecated 请使用 {@link #getPrivateUrl(String, String, long)}
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public String getPrivateUrl(String bucket, String objectName) {
-        return getPrivateUrl(bucket, objectName, DEFAULT_EXPIRE_TIME);
-    }
-
-    /**
-     * 生成私有文件临时访问 URL（指定有效期，全局默认 bucket）
-     *
-     * @param objectName
-     *            对象名
-     * @param second
-     *            有效期（秒）
-     * @return Presigned URL
-     * @deprecated 请使用 {@link #getPrivateUrl(String, String, long)}
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public String getPrivateUrl(String objectName, Long second) {
-        return getPrivateUrl(null, objectName, second);
     }
 
     /**
@@ -437,36 +322,6 @@ public class OssClient {
         }
         // 路径风格：https://endpoint/bucketName
         return scheme + "://" + cleanEndpoint + "/" + bucketName;
-    }
-
-    /**
-     * 扩展名校验（白名单为空时放行）
-     *
-     * @param fileName
-     *            文件名
-     * @return 是否允许
-     * @deprecated 校验逻辑已迁移至 sz-common-resource
-     *             模块的安全策略体系（ResourceSecurityPolicyProvider）。
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public boolean isAllowedExt(String fileName) {
-        // 白名单字段已迁移至 sz-common-resource，此处始终放行
-        return true;
-    }
-
-    /**
-     * MIME 类型校验（白名单为空时放行）
-     *
-     * @param mimeType
-     *            MIME 类型
-     * @return 是否允许
-     * @deprecated 校验逻辑已迁移至 sz-common-resource
-     *             模块的安全策略体系（ResourceSecurityPolicyProvider）。
-     */
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    public boolean isAllowedMimeType(String mimeType) {
-        // 白名单字段已迁移至 sz-common-resource，此处始终放行
-        return true;
     }
 
     /**

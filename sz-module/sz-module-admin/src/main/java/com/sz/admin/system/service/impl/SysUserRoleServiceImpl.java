@@ -45,7 +45,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     /**
      * 批量查询多个用户的角色（单次 IN 查询）
      *
-     * @param userIds 用户ID列表
+     * @param userIds
+     *            用户ID列表
      * @return userId -> 角色ID列表 的映射
      */
     @Override
@@ -53,17 +54,11 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         if (userIds == null || userIds.isEmpty()) {
             return Collections.emptyMap();
         }
-        QueryWrapper queryWrapper = QueryWrapper.create()
-                .select(SYS_USER_ROLE.USER_ID, SYS_USER_ROLE.ROLE_ID)
-                .from(SYS_USER_ROLE)
+        QueryWrapper queryWrapper = QueryWrapper.create().select(SYS_USER_ROLE.USER_ID, SYS_USER_ROLE.ROLE_ID).from(SYS_USER_ROLE)
                 .where(SYS_USER_ROLE.USER_ID.in(userIds));
         List<SysUserRole> list = list(queryWrapper);
-        return list.stream().collect(
-                Collectors.groupingBy(
-                        SysUserRole::getUserId,
-                        Collectors.mapping(r -> String.valueOf(r.getRoleId()), Collectors.toList())
-                )
-        );
+        return list.stream()
+                .collect(Collectors.groupingBy(SysUserRole::getUserId, Collectors.mapping(r -> String.valueOf(r.getRoleId()), Collectors.toList())));
     }
 
 }

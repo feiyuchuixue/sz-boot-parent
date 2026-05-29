@@ -10,7 +10,6 @@ import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserProfileVO;
 import com.sz.admin.system.service.SysDeptService;
-import com.sz.admin.system.service.SysUserDataRoleService;
 import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
@@ -40,8 +39,6 @@ public class SysUserController {
     private final SysUserService sysUserService;
 
     private final SysDeptService sysDeptService;
-
-    private final SysUserDataRoleService sysUserDataRoleService;
 
     @Operation(summary = "添加用户")
     @SaCheckPermission(value = "sys.user.create_btn", orRole = GlobalConstant.SUPER_ROLE)
@@ -96,13 +93,6 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    @Operation(summary = "登录信息查询")
-    @GetMapping("/userinfo")
-    public ApiResult<SysUserVO> getUserInfo() {
-        return ApiResult.success(sysUserService.getUserInfo());
-    }
-
     @Operation(summary = "（个人）修改密码")
     @PutMapping("/password")
     public ApiResult<Void> changePassword(@Valid @RequestBody SysUserPasswordDTO dto) {
@@ -145,21 +135,6 @@ public class SysUserController {
     @GetMapping("options")
     public ApiResult<List<UserOptionVO>> getUserOptions() {
         return ApiResult.success(sysUserService.getUserOptions());
-    }
-
-    @Operation(summary = "用户数据角色信息查询-（穿梭框）")
-    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
-    @GetMapping("datarole")
-    public ApiResult<SysUserRoleVO> findUserDataRole(@NotZero @RequestParam Long userId) {
-        return ApiResult.success(sysUserDataRoleService.queryRoleMenu(userId));
-    }
-
-    @Operation(summary = "用户数据角色信息修改 -（穿梭框）")
-    @SaCheckPermission(value = "sys.user.data_role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
-    @PutMapping("datarole")
-    public ApiResult<Void> changeDataUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
-        sysUserDataRoleService.changeRole(dto);
-        return ApiResult.success();
     }
 
     @Operation(summary = "用户类型设置")

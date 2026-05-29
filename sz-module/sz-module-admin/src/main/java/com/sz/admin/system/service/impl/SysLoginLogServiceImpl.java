@@ -4,31 +4,21 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysLoginLogMapper;
-import com.sz.admin.system.pojo.dto.SysLoginLogCreateDTO;
 import com.sz.admin.system.pojo.dto.SysLoginLogListDTO;
-import com.sz.admin.system.pojo.dto.SysLoginLogUpdateDTO;
 import com.sz.admin.system.pojo.po.SysLoginLog;
 import com.sz.admin.system.pojo.vo.SysLoginLogVO;
 import com.sz.admin.system.service.SysLoginLogService;
 import com.sz.core.common.entity.PageResult;
-import com.sz.core.common.entity.SelectIdsDTO;
-import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.ip.IpUtils;
 import com.sz.core.util.*;
-import com.sz.excel.utils.ExcelUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.springframework.stereotype.Service;
 
-import java.io.OutputStream;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * <p>
@@ -46,53 +36,9 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     private static final UserAgentAnalyzer USER_AGENT_ANALYZER = UserAgentAnalyzer.newBuilder().dropTests().build();
 
     @Override
-    public void create(SysLoginLogCreateDTO dto) {
-        SysLoginLog sysLoginLog = BeanCopyUtils.copy(dto, SysLoginLog.class);
-        save(sysLoginLog);
-    }
-
-    @Override
-    public void update(SysLoginLogUpdateDTO dto) {
-        SysLoginLog sysLoginLog = BeanCopyUtils.copy(dto, SysLoginLog.class);
-        QueryWrapper wrapper;
-        // id有效性校验
-        wrapper = QueryWrapper.create().eq(SysLoginLog::getId, dto.getId());
-        CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
-
-        saveOrUpdate(sysLoginLog);
-    }
-
-    @Override
     public PageResult<SysLoginLogVO> page(SysLoginLogListDTO dto) {
         Page<SysLoginLogVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysLoginLogVO.class);
         return PageUtils.getPageResult(page);
-    }
-
-    @Override
-    public List<SysLoginLogVO> list(SysLoginLogListDTO dto) {
-        return listAs(buildQueryWrapper(dto), SysLoginLogVO.class);
-    }
-
-    @Override
-    public void remove(SelectIdsDTO dto) {
-        CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
-        removeByIds(dto.getIds());
-    }
-
-    @Override
-    public SysLoginLogVO detail(Object id) {
-        SysLoginLog sysLoginLog = getById((Serializable) id);
-        CommonResponseEnum.INVALID_ID.assertNull(sysLoginLog);
-        return BeanCopyUtils.copy(sysLoginLog, SysLoginLogVO.class);
-    }
-
-    @SneakyThrows
-    @Override
-    public void exportExcel(SysLoginLogListDTO dto, HttpServletResponse response) {
-        List<SysLoginLogVO> list = list(dto);
-        String fileName = "登陆日志表模板";
-        OutputStream os = FileUtils.getOutputStream(response, fileName + ".xlsx");
-        ExcelUtils.exportExcel(list, "登陆日志表", SysLoginLogVO.class, os);
     }
 
     /**
@@ -119,7 +65,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
                     log.setLoginLocation(realAddressByIP);
                     log.setBrowser(agent.getValue(UserAgent.AGENT_NAME));
                     log.setOs(agent.getValue(UserAgent.OPERATING_SYSTEM_NAME));
-                    this.mapper.insertLoginLog(log);
+                    save(log);
                 } catch (Exception e) {
                     log.error("登陆日志记录异常-用户名:{}, 状态:{}, 错误:{}", username, status, e.getMessage());
                 }
@@ -132,7 +78,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
             log.setLoginStatus(status);
             log.setLoginTime(LocalDateTime.now());
             log.setMsg(msg);
-            this.mapper.insertLoginLog(log);
+            save(log);
         }
     }
 

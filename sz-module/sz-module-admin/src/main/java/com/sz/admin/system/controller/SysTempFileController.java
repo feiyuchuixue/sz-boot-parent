@@ -1,7 +1,5 @@
 package com.sz.admin.system.controller;
 
-import com.sz.core.common.annotation.DebounceIgnore;
-import com.sz.core.common.entity.UploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -71,13 +68,4 @@ public class SysTempFileController {
     public ApiResult<SysTempFileVO> detail(@PathVariable Object id) {
         return ApiResult.success(sysTempFileService.detail(id));
     }
-
-    @Deprecated(since = "v1.4.0-beta", forRemoval = true)
-    @DebounceIgnore
-    @Operation(summary = "上传模板文件")
-    @PostMapping("/upload")
-    public ApiResult<UploadResult> upload(@RequestParam MultipartFile file) {
-        return ApiResult.success(sysTempFileService.uploadFile(file));
-    }
-
 }

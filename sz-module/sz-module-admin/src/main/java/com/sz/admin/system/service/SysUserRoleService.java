@@ -21,7 +21,8 @@ public interface SysUserRoleService extends IService<SysUserRole> {
     /**
      * 批量查询多个用户的角色（IN 查询，减少 N 次单查为 1 次）
      *
-     * @param userIds 用户ID列表
+     * @param userIds
+     *            用户ID列表
      * @return userId -> 角色ID列表 的映射
      */
     Map<Long, List<String>> getUserRolesByUserIds(List<Long> userIds);

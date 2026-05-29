@@ -50,10 +50,9 @@ public class MysqlPermissionDialect extends AbstractPermissionDialect {
     @Override
     protected String buildDeptUnitSql(String table, String field, Collection<Long> deptList) {
         // 使用 JSON_OVERLAPS 替代多个 JSON_CONTAINS OR，可命中多值索引（MySQL 8.0.17+）
-        // 索引建法：ALTER TABLE xxx ADD INDEX idx_dept_scope ((CAST(dept_scope AS UNSIGNED ARRAY)));
-        String jsonArray = deptList.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",", "[", "]"));
+        // 索引建法：ALTER TABLE xxx ADD INDEX idx_dept_scope ((CAST(dept_scope AS UNSIGNED
+        // ARRAY)));
+        String jsonArray = deptList.stream().map(String::valueOf).collect(Collectors.joining(",", "[", "]"));
         return " JSON_OVERLAPS(`" + table + "`.`" + field + "`, '" + jsonArray + "')";
     }
 

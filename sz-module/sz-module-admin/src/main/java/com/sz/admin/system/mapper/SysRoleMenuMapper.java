@@ -2,9 +2,6 @@ package com.sz.admin.system.mapper;
 
 import com.mybatisflex.core.BaseMapper;
 import com.sz.admin.system.pojo.po.SysRoleMenu;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>
@@ -15,8 +12,5 @@ import java.util.List;
  * @since 2023-08-21
  */
 public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
-
-    void insertBatchSysRoleMenu(@Param("menuIds") List<String> menuIds, @Param("roleId") Long roleId, @Param("permissionType") String permissionType,
-            @Param("dataScopeCd") String dataScopeCd);
 
 }

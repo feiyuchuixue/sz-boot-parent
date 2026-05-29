@@ -156,15 +156,6 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public String ossPrivateUrl(String bucket, String url) {
-        CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
-        String finalBucket = getBucketFromUrl(url, bucket);
-        String objectName = getObjectNameFromUrl(url);
-        log.info("bucket = {}, objectName = {}", finalBucket, objectName);
-        return ossClient.getPrivateUrl(finalBucket, objectName);
-    }
-
-    @Override
     public void urlDownload(String url, HttpServletResponse response) throws IOException {
         CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
         URL parsedUrl;

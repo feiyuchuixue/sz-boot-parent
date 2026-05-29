@@ -10,7 +10,6 @@ import com.sz.admin.system.service.CommonService;
 import com.sz.core.common.annotation.Debounce;
 import com.sz.core.common.entity.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -58,15 +57,6 @@ public class CommonController {
     @Operation(summary = "一次性认证参数，用于登录密码加密传输场景")
     public ApiResult<ChallengeVO> challenge() {
         return ApiResult.success(commonService.challenge());
-    }
-
-    @SaCheckLogin
-    @GetMapping("oss/objects/private-url")
-    @Operation(summary = "获取OSS私有文件访问URL")
-    public ApiResult<String> getOssPrivateUrl(
-            @Parameter(description = "OSS Bucket 名称，若不传则使用系统默认 Bucket", required = false, example = "my-bucket") @RequestParam(value = "bucket", required = false) String bucket,
-            @Parameter(description = "存储在 OSS 中的原始对象地址（可为完整 URL 或 objectKey 对应的 URL）", required = true, example = "https://oss-example.com/my-bucket/path/to/file.png") @RequestParam("url") String url) {
-        return ApiResult.success(commonService.ossPrivateUrl(bucket, url));
     }
 
     @SaCheckLogin

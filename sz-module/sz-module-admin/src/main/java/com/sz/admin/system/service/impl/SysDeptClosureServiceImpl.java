@@ -107,7 +107,8 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
     /**
      * 批量查询多个祖先节点的子孙节点，按祖先分组返回（单次 IN 查询）
      *
-     * @param ancestorIds 祖先节点ID列表
+     * @param ancestorIds
+     *            祖先节点ID列表
      * @return ancestorId -> 子孙节点ID列表（含自身）的映射
      */
     @Override
@@ -115,16 +116,11 @@ public class SysDeptClosureServiceImpl extends ServiceImpl<SysDeptClosureMapper,
         if (ancestorIds == null || ancestorIds.isEmpty()) {
             return Collections.emptyMap();
         }
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SYS_DEPT_CLOSURE.ANCESTOR_ID, SYS_DEPT_CLOSURE.DESCENDANT_ID)
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT_CLOSURE.ANCESTOR_ID, SYS_DEPT_CLOSURE.DESCENDANT_ID)
                 .where(SYS_DEPT_CLOSURE.ANCESTOR_ID.in(ancestorIds));
         List<SysDeptClosure> list = list(wrapper);
-        return list.stream().collect(
-                Collectors.groupingBy(
-                        SysDeptClosure::getAncestorId,
-                        Collectors.mapping(SysDeptClosure::getDescendantId, Collectors.toList())
-                )
-        );
+        return list.stream()
+                .collect(Collectors.groupingBy(SysDeptClosure::getAncestorId, Collectors.mapping(SysDeptClosure::getDescendantId, Collectors.toList())));
     }
 
     /**

@@ -16,8 +16,6 @@ import java.util.List;
  */
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
-    void insertBatchSysUserRole(@Param("roleIds") List<Long> roleIds, @Param("userId") Long userId);
-
     List<String> queryMenuIdByUserId(@Param("userId") Long userId);
 
     List<String> queryPermissionByUserId(@Param("userId") Long userId);

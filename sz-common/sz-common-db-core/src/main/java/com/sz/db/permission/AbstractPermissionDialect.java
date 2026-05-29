@@ -81,9 +81,8 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
     /**
      * 构造排除超管创建数据的 SQL 片段（通常 NOT EXISTS 子查询）。
      * <p>
-     * dept 模式下，dept_scope 存储创建人归属部门快照；超管归属全部门，导致任意部门用户均能通过
-     * JSON_OVERLAPS 命中超管数据。需在部门过滤条件上附加本片段（AND），将超管数据排除在外。
-     * allowAdminView=true 时不追加本片段，超管数据仍可见。
+     * dept 模式下，dept_scope 存储创建人归属部门快照；超管归属全部门，导致任意部门用户均能通过 JSON_OVERLAPS
+     * 命中超管数据。需在部门过滤条件上附加本片段（AND），将超管数据排除在外。 allowAdminView=true 时不追加本片段，超管数据仍可见。
      */
     protected abstract String buildExcludeAdminSql(String table);
 
@@ -278,14 +277,13 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
     /**
      * 通用编排：调用子类抽象方法构造完整 SQL 并注入 WHERE 条件。
      * <p>
-     * 字段存在性说明：
-     * - user 模式：部门过滤和用户过滤都使用 create_id，检查一次即可。
-     * - dept 模式：部门过滤使用 dept_scope，用户过滤（兜底自己）使用 create_id，需分别检查。
-     *   dept_scope 不存在不影响 create_id 的用户过滤分支，不能一刀切 return。
+     * 字段存在性说明： - user 模式：部门过滤和用户过滤都使用 create_id，检查一次即可。 - dept 模式：部门过滤使用
+     * dept_scope，用户过滤（兜底自己）使用 create_id，需分别检查。 dept_scope 不存在不影响 create_id
+     * 的用户过滤分支，不能一刀切 return。
      * <p>
-     * allowAdminView 说明：
-     * - 仅对"部门过滤"有意义：deptList 非空时，true=追加 OR EXISTS 超管条件，false=追加 AND NOT EXISTS 排除超管。
-     * - deptList 为空（如"仅本人"规则）时，allowAdminView 不生效，只拼 create_id = 自己，语义纯粹。
+     * allowAdminView 说明： - 仅对"部门过滤"有意义：deptList 非空时，true=追加 OR EXISTS 超管条件，false=追加
+     * AND NOT EXISTS 排除超管。 - deptList 为空（如"仅本人"规则）时，allowAdminView 不生效，只拼 create_id
+     * = 自己，语义纯粹。
      */
     private void buildSql(QueryWrapper queryWrapper, String table, Collection<Long> deptList, Collection<Long> userList, Class<?> tableClazz) {
         String unit = getLogicMinUnit();
@@ -306,8 +304,8 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
                 if (allowAdminView) {
                     sb.append(buildUserUnitDeptSql(table, FIELD_CREATE_ID, deptList));
                 } else {
-                    sb.append("(").append(buildUserUnitDeptSql(table, FIELD_CREATE_ID, deptList))
-                            .append(" AND ").append(buildExcludeAdminSql(table)).append(")");
+                    sb.append("(").append(buildUserUnitDeptSql(table, FIELD_CREATE_ID, deptList)).append(" AND ").append(buildExcludeAdminSql(table))
+                            .append(")");
                 }
                 isFirstAppend = false;
             } else if (isFieldExists(tableClazz, StringUtils.toCamelCase(FIELD_DEPT_SCOPE))) {
@@ -315,8 +313,7 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
                 if (allowAdminView) {
                     sb.append(buildDeptUnitSql(table, FIELD_DEPT_SCOPE, deptList));
                 } else {
-                    sb.append("(").append(buildDeptUnitSql(table, FIELD_DEPT_SCOPE, deptList))
-                            .append(" AND ").append(buildExcludeAdminSql(table)).append(")");
+                    sb.append("(").append(buildDeptUnitSql(table, FIELD_DEPT_SCOPE, deptList)).append(" AND ").append(buildExcludeAdminSql(table)).append(")");
                 }
                 isFirstAppend = false;
             }

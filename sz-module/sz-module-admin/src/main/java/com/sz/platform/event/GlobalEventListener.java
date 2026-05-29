@@ -34,10 +34,7 @@ public class GlobalEventListener {
             return;
         }
         // 将 userIds 转为 List<Long>，统一批量构建 LoginUser，减少 DB 查询
-        List<Long> userIds = rawUserIds.stream()
-                .map(id -> Long.parseLong(id.toString()))
-                .distinct()
-                .toList();
+        List<Long> userIds = rawUserIds.stream().map(id -> Long.parseLong(id.toString())).distinct().toList();
         Map<Long, LoginUser> loginUserMap = sysUserService.buildLoginUserBatch(userIds);
         // 逐个同步 SaSession 并发送 WebSocket 通知
         for (Long userId : userIds) {

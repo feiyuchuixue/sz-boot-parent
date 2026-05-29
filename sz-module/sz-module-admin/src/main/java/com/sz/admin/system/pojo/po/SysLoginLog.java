@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.io.Serial;
-import com.sz.db.EntityChangeListener;
 import java.time.LocalDateTime;
 
 /**
@@ -19,16 +18,16 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
-@Table(value = "sys_login_log", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
+@Table(value = "sys_login_log")
 @Schema(description = "登陆日志表")
 public class SysLoginLog implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id
     @Schema(description = "登陆ID")
-    private Integer id;
+    private Long id;
 
     @Column(isLogicDelete = true)
     @Schema(description = "删除标识")

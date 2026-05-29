@@ -29,7 +29,8 @@ public interface SysDeptClosureService extends IService<SysDeptClosure> {
     /**
      * 批量查询多个祖先节点的子孙节点，按祖先分组返回（单次 IN 查询）
      *
-     * @param ancestorIds 祖先节点ID列表
+     * @param ancestorIds
+     *            祖先节点ID列表
      * @return ancestorId -> 子孙节点ID列表（含自身）的映射
      */
     Map<Long, List<Long>> descendantsGroupByAncestor(List<Long> ancestorIds);

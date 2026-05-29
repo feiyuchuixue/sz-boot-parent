@@ -27,8 +27,10 @@ public interface SysPermissionService {
     /**
      * 获取用户部门及子孙节点（传入已查好的直属部门，避免重复查询）
      *
-     * @param sysUser 用户信息
-     * @param depts   已查好的用户直属部门ID列表
+     * @param sysUser
+     *            用户信息
+     * @param depts
+     *            已查好的用户直属部门ID列表
      * @return 部门及子孙节点ID列表
      */
     List<Long> getDeptAndChildren(SysUser sysUser, List<Long> depts);
