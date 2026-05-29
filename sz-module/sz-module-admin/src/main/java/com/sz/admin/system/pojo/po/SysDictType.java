@@ -31,7 +31,7 @@ public class SysDictType implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id(keyType = KeyType.None)
     @Schema(description = "字典类型id")
     private Long id;
 

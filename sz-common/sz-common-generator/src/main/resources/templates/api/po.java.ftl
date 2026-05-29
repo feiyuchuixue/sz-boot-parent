@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.io.Serial;
 import com.sz.db.EntityChangeListener;
+import com.sz.db.id.SzIdGenerator;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -43,7 +44,7 @@ public class ${poClassName} implements Serializable {
         <#if field.isIncrement == "1">
     @Id(keyType = KeyType.Auto)
         <#else>
-    @Id
+    @Id(keyType = KeyType.Generator, value = SzIdGenerator.NAME)
         </#if>
     </#if>
     <#-- 逻辑删除 -->

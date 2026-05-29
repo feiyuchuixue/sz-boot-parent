@@ -10,7 +10,7 @@ import java.util.Collection;
 public class RoleMenuScopeVO {
 
     @Schema(description = "sys_menu_id （菜单表）")
-    private String menuId;
+    private Long menuId;
 
     @Schema(description = "数据权限范围")
     private String dataScopeCd;

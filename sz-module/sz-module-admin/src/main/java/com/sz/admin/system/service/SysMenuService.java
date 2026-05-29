@@ -59,9 +59,9 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<SysMenuVO> findMenuListByUserId(Long userId);
 
-    List<MenuTreeVO> getSimpleMenuTree(String nodeId);
+    List<MenuTreeVO> getSimpleMenuTree(Long nodeId);
 
-    List<MenuTreeVO> getMenuTreeVOS(String nodeId, boolean isShowButton);
+    List<MenuTreeVO> getMenuTreeVOS(Long nodeId, boolean isShowButton);
 
     List<MenuTreeVO> queryRoleMenuTree(boolean isShowButton);
 
@@ -72,7 +72,7 @@ public interface SysMenuService extends IService<SysMenu> {
      *
      * @return {@link SysMenu}
      */
-    SysMenu detail(String id);
+    SysMenu detail(Long id);
 
     MenuPermissionVO hasExistsPermissions(MenuPermissionDTO dto);
 
@@ -87,9 +87,9 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<String> findAllPermissions();
 
-    Map<String, String> getBtnMenuByPermissions(Collection<String> permissions);
+    Map<String, Long> getBtnMenuByPermissions(Collection<String> permissions);
 
     List<MenuTreeVO> queryDataRoleMenu();
 
-    void changeMenuDataScope(String menuId);
+    void changeMenuDataScope(Long menuId);
 }

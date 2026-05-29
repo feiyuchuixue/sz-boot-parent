@@ -1,7 +1,6 @@
 package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class SysDataRoleRelation implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id
     @Schema(description = "ID")
     private Long id;
 
@@ -39,6 +38,6 @@ public class SysDataRoleRelation implements Serializable {
     private Long relationId;
 
     @Schema(description = "sys_menu id")
-    private String menuId;
+    private Long menuId;
 
 }

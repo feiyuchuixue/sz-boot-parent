@@ -18,10 +18,10 @@ import java.util.List;
 public class SysMenuVO {
 
     @Schema(description = "id")
-    private String id;
+    private Long id;
 
     @Schema(description = "pid")
-    private String pid;
+    private Long pid;
 
     @Schema(description = "路径")
     private String path;

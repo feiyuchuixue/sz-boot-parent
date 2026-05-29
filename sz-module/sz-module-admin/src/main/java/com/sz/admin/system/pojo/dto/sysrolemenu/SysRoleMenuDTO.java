@@ -37,7 +37,7 @@ public class SysRoleMenuDTO {
         private List<Long> userIds;
 
         @Schema(description = "菜单id")
-        private String menuId;
+        private Long menuId;
 
     }
 
@@ -45,7 +45,7 @@ public class SysRoleMenuDTO {
     public static class Menu {
 
         @Schema(description = "菜单id数组")
-        private List<String> menuIds;
+        private List<Long> menuIds;
     }
 
 }

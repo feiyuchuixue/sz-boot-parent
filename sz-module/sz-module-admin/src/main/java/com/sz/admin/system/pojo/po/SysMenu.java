@@ -30,10 +30,10 @@ public class SysMenu implements Serializable {
 
     @Id
     @Schema(description = "菜单表id")
-    private String id;
+    private Long id;
 
     @Schema(description = "父级id")
-    private String pid;
+    private Long pid;
 
     @Schema(description = "路径")
     private String path;

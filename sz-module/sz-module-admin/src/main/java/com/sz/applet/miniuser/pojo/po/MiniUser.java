@@ -8,6 +8,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import com.sz.db.EntityChangeListener;
+import com.sz.db.id.SzIdGenerator;
 import java.time.LocalDateTime;
 /**
  * <p>
@@ -25,7 +26,7 @@ public class MiniUser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id(keyType = KeyType.Generator, value = SzIdGenerator.NAME)
     @Schema(description = "ID")
     private Integer id;
 

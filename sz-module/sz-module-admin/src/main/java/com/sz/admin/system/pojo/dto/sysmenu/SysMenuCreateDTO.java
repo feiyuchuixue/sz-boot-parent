@@ -15,7 +15,7 @@ import lombok.Data;
 public class SysMenuCreateDTO {
 
     @Schema(description = "菜单id（修改菜单时必填）")
-    private String id;
+    private Long id;
 
     @NotNull(message = "菜单名称不能为空")
     @Schema(description = "菜单名称", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -24,7 +24,7 @@ public class SysMenuCreateDTO {
     /**
      * 父级id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 路径

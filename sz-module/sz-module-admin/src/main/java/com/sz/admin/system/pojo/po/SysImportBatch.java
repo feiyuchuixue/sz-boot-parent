@@ -1,9 +1,7 @@
 package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.mybatisflex.core.keygen.KeyGenerators;
 import com.sz.excel.imports.spi.ImportBatchContext;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -20,7 +18,7 @@ public class SysImportBatch implements Serializable, ImportBatchContext {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
+    @Id
     @Schema(description = "主键")
     private Long id;
 

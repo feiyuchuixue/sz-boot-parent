@@ -1,7 +1,5 @@
 package com.sz.admin.system.pojo.po;
 
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.db.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,14 +24,10 @@ public class SysUserDept implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
-    @Schema(description = "ID")
-    private Long id;
+    @Schema(description = "sys_user_id")
+    private Long userId;
 
     @Schema(description = "sys_dept_id")
     private Long deptId;
-
-    @Schema(description = "sys_user_id")
-    private Long userId;
 
 }

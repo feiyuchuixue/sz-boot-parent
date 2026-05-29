@@ -78,13 +78,13 @@ public class SysMenuController {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.menu.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
-    public ApiResult<SysMenu> detail(@PathVariable String id) {
+    public ApiResult<SysMenu> detail(@PathVariable Long id) {
         return ApiResult.success(sysMenuService.detail(id));
     }
 
     @Operation(summary = "查询上级菜单")
     @GetMapping("tree")
-    public ApiResult<List<MenuTreeVO>> queryParentListTree(@RequestParam(required = false) String nodeId) {
+    public ApiResult<List<MenuTreeVO>> queryParentListTree(@RequestParam(required = false) Long nodeId) {
         return ApiResult.success(sysMenuService.getSimpleMenuTree(nodeId));
     }
 
@@ -128,7 +128,7 @@ public class SysMenuController {
     @Operation(summary = "修改数据权限状态")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("/datarole/change/{id}")
-    public ApiResult<Void> changeDataRole(@PathVariable String id) {
+    public ApiResult<Void> changeDataRole(@PathVariable Long id) {
         sysMenuService.changeMenuDataScope(id);
         return ApiResult.success();
     }

@@ -1,6 +1,7 @@
 package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.db.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +26,7 @@ public class SysClient implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id
+    @Id(keyType = KeyType.None)
     @Schema(description = "客户端id")
     private String clientId;
 

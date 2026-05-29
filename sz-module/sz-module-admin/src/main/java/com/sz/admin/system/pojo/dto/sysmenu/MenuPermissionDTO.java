@@ -12,7 +12,7 @@ import lombok.Data;
 public class MenuPermissionDTO {
 
     @Schema(description = "菜单id")
-    private String id;
+    private Long id;
 
     @Schema(description = "权限标识", requiredMode = Schema.RequiredMode.REQUIRED)
     private String permissions;

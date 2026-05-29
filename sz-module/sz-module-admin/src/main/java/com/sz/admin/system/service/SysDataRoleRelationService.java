@@ -18,13 +18,13 @@ import java.util.List;
 public interface SysDataRoleRelationService extends IService<SysDataRoleRelation> {
 
     @Transactional
-    void batchSave(Long roleId, String menuId, String relationTypeCd, List<Long> relationIds);
+    void batchSave(Long roleId, Long menuId, String relationTypeCd, List<Long> relationIds);
 
     List<Long> getSelectRelationId(Long roleId, String relationTypeCd);
 
     void deleteByRoleId(Long roleId);
 
-    List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<String> menuIds);
+    List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<Long> menuIds);
 
-    List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<String> menuIds);
+    List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<Long> menuIds);
 }

@@ -24,7 +24,7 @@ public class SysLoginLogVO {
 
     @ExcelIgnore
     @Schema(description = "登陆ID")
-    private Integer id;
+    private Long id;
 
     @ExcelProperty(value = "用户名")
     @Schema(description = "用户名")

@@ -91,7 +91,7 @@ public class GeneratorTable implements Serializable {
     /**
      * 上级菜单id
      */
-    private String parentMenuId;
+    private Long parentMenuId;
 
     /**
      * 生成路径

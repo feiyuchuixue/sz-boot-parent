@@ -1,7 +1,5 @@
 package com.sz.admin.system.pojo.po;
 
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -27,13 +25,9 @@ public class SysDeptRole implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
-    @Schema(description = "id")
-    private Long id;
+    @Schema(description = " 部门id(sys_dept_id)")
+    private Long deptId;
 
     @Schema(description = "角色id (sys_role_id)")
     private Long roleId;
-
-    @Schema(description = " 部门id(sys_dept_id)")
-    private Long deptId;
 }

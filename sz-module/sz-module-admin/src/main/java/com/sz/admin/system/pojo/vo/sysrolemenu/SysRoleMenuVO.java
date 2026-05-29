@@ -18,7 +18,7 @@ import java.util.List;
 public class SysRoleMenuVO {
 
     @Schema(description = "选中的菜单id")
-    private List<String> selectMenuIds = new ArrayList<>();
+    private List<Long> selectMenuIds = new ArrayList<>();
 
     @Schema(description = "菜单列表")
     private List<MenuTreeVO> menuLists;
@@ -36,7 +36,7 @@ public class SysRoleMenuVO {
     public static class Scope {
 
         @Schema(description = "菜单id")
-        private String menuId;
+        private Long menuId;
 
         @Schema(description = "数据权限范围")
         private String dataScope;

@@ -3,14 +3,14 @@
 <mapper namespace="com.sz.admin.system.mapper.SysUserDeptMapper">
     <!-- 通用映射 -->
     <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysUserDept">
-        <id column="id" property="id"/>
-        <result column="dept_id" property="deptId"/>
         <result column="user_id" property="userId"/>
+        <result column="dept_id" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, dept_id, user_id
+        user_id, dept_id
     </sql>
 
 </mapper>
+

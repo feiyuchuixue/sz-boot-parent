@@ -2,7 +2,6 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.platform.listener.TableSysRoleListener;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +28,7 @@ public class SysRole implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id
     @Schema(description = "角色id")
     private Long id;
 

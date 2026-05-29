@@ -7,7 +7,7 @@ public class SysUserDataMetaVO {
 
     private Long userId;
 
-    private String menuId;
+    private Long menuId;
 
     private Long roleId;
 

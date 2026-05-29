@@ -41,7 +41,7 @@ public class SysDataRoleVO {
     private LocalDateTime updateTime;
 
     @Schema(description = "选中的菜单id数组")
-    private List<String> selectMenuIds;
+    private List<Long> selectMenuIds;
 
     @Schema(description = "选中的部门id数组")
     private List<Long> selectDeptIds;

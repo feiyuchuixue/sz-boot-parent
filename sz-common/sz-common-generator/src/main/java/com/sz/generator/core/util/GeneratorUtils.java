@@ -60,7 +60,7 @@ public class GeneratorUtils {
         generatorTable.setFunctionAuthor(author);
         generatorTable.setType("0");
         generatorTable.setPath("/");
-        generatorTable.setParentMenuId("0"); // 默认父级菜单id设置为根目录
+        generatorTable.setParentMenuId(0L); // 默认父级菜单id设置为根目录
 
         return generatorTable;
     }

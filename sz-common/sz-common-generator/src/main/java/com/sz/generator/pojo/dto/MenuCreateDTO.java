@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 public class MenuCreateDTO {
 
-    private String id;
+    private Long id;
 
-    private String pid = "0";
+    private Long pid = 0L;
 
     private String path;
 

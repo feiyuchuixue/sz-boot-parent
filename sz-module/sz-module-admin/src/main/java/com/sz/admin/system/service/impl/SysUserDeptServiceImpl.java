@@ -1,6 +1,5 @@
 package com.sz.admin.system.service.impl;
 
-import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.sz.admin.system.mapper.SysUserDeptMapper;
@@ -35,8 +34,7 @@ public class SysUserDeptServiceImpl extends ServiceImpl<SysUserDeptMapper, SysUs
         List<Long> userIds = dto.getUserIds();
         List<Long> deptIds = dto.getDeptIds();
         if (!userIds.isEmpty()) {
-            List<Long> removeIds = QueryChain.of(SysUserDept.class).select(SYS_USER_DEPT.ID).where(SYS_USER_DEPT.USER_ID.in(userIds)).listAs(Long.class);
-            removeByIds(removeIds);
+            remove(QueryWrapper.create().where(SYS_USER_DEPT.USER_ID.in(userIds)));
         }
 
         List<SysUserDept> batchList = new ArrayList<>();
@@ -49,7 +47,9 @@ public class SysUserDeptServiceImpl extends ServiceImpl<SysUserDeptMapper, SysUs
                 batchList.add(userDept);
             }
         }
-        saveBatch(batchList); // 重新创建user 和dept的关系
+        if (!batchList.isEmpty()) {
+            mapper.insertBatch(batchList); // 重新创建user 和dept的关系
+        }
     }
 
     @Override

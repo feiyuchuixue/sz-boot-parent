@@ -4,14 +4,13 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.sz.admin.system.pojo.po.SysDeptRole">
-        <id column="id" property="id"/>
         <result column="role_id" property="roleId"/>
         <result column="dept_id" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, role_id, user_id
+        role_id, user_id
     </sql>
 
 </mapper>

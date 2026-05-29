@@ -23,5 +23,5 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
 
     SysRoleMenuVO queryRoleMenu(Long roleId);
 
-    Map<String, RoleMenuScopeVO> getUserScope(Collection<String> roleIds);
+    Map<Long, RoleMenuScopeVO> getUserScope(Collection<String> roleIds);
 }

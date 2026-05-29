@@ -24,9 +24,9 @@ public class LoginUser {
     private List<Long> deptAndChildren = new ArrayList<>();
 
     @Schema(description = "权限标识与菜单关系数组")
-    private Map<String, String> permissionAndMenuIds = new HashMap<>();
+    private Map<String, Long> permissionAndMenuIds = new HashMap<>();
 
     @Schema(description = "数据权限范围")
-    private Map<String, RoleMenuScopeVO> dataScope;
+    private Map<Long, RoleMenuScopeVO> dataScope;
 
 }

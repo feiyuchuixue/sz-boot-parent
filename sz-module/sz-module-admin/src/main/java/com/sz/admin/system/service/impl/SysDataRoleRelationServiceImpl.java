@@ -29,7 +29,7 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
 
     @Transactional
     @Override
-    public void batchSave(Long roleId, String menuId, String relationTypeCd, List<Long> relationIds) {
+    public void batchSave(Long roleId, Long menuId, String relationTypeCd, List<Long> relationIds) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
                 .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq(relationTypeCd));
         long count = count(wrapper);
@@ -64,12 +64,12 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
     }
 
     @Override
-    public List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<String> menuIds) {
+    public List<SysDataRoleRelation> queryRelationByRoleIdAndMenuIds(Long roleId, List<Long> menuIds) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
         return list(wrapper);
     }
     @Override
-    public List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<String> menuIds) {
+    public List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<Long> menuIds) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.in(roleIds)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
         return list(wrapper);
     }

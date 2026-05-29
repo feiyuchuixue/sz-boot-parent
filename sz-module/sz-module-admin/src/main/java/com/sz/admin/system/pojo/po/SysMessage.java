@@ -2,6 +2,7 @@ package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
 import com.sz.db.EntityChangeListener;
+import com.sz.db.id.SzIdGenerator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class SysMessage implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id(keyType = KeyType.Generator, value = SzIdGenerator.NAME)
     @Schema(description = "消息ID")
     private Long id;
 

@@ -12,6 +12,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 import com.sz.db.EntityChangeListener;
+import com.sz.db.id.SzIdGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class TeacherStatistics implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id(keyType = KeyType.Generator, value = SzIdGenerator.NAME)
     @Schema(description = "id")
     private Long id;
 

@@ -71,17 +71,17 @@ public interface GeneratorTableMapper extends BaseMapper<GeneratorTable> {
      *            上级菜单id
      * @return 菜单信息
      */
-    SysMenuResult selectSysMenuByPid(@Param("pid") String pid);
+    SysMenuResult selectSysMenuByPid(@Param("pid") Long pid);
 
     void insertMenu(@Param("createDTO") MenuCreateDTO createDTO);
 
-    int selectMenuCount(@Param("pid") String pid);
+    int selectMenuCount(@Param("pid") Long pid);
 
     void syncTreeHasChildren();
 
     void syncTreeDeep();
 
-    int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component, @Param("pid") String pid);
+    int countMenu(@Param("name") String name, @Param("path") String path, @Param("component") String component, @Param("pid") Long pid);
 
     int countMenuBtn(@Param("permissions") String permissions);
 

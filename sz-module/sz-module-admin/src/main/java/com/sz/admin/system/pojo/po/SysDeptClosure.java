@@ -1,6 +1,5 @@
 package com.sz.admin.system.pojo.po;
 
-import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -23,7 +22,6 @@ public class SysDeptClosure implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id
     @Schema(description = "祖先节点ID")
     private Long ancestorId;
 

@@ -29,7 +29,7 @@ public interface SysDeptClosureMapper extends BaseMapper<SysDeptClosure> {
     @Delete(" DELETE " + " FROM " + " sys_dept_closure t " + " WHERE" + " EXISTS (" + " SELECT" + " 1 " + " FROM" + " sys_dept_closure d " + " WHERE"
             + " d.ancestor_id = #{nodeId} and t.descendant_id = d.descendant_id " + " ) " + " and "
             + " EXISTS( select 1 from sys_dept_closure a where a.descendant_id = #{nodeId} and a.ancestor_id != a.descendant_id and t.ancestor_id = a.ancestor_id )")
-    Integer detach(@Param("nodeId") Integer nodeId);
+    Integer detach(@Param("nodeId") Long nodeId);
 
     /**
      * 查询指定节点的子树
