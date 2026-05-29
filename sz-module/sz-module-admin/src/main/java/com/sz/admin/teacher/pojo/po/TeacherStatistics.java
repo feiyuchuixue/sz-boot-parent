@@ -11,7 +11,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

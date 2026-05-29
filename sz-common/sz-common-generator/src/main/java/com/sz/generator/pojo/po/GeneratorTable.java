@@ -3,9 +3,8 @@ package com.sz.generator.pojo.po;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import lombok.Data;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;

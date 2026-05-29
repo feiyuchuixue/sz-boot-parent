@@ -31,7 +31,7 @@ import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
-import com.sz.mysql.DataScopeProperties;
+import com.sz.db.DataScopeProperties;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.platform.socket.SocketService;

@@ -5,7 +5,7 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import lombok.Data;
 
 import java.io.Serial;

@@ -3,7 +3,7 @@ package com.sz.admin.system.pojo.po;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import com.sz.mysql.LogicDeleteFill;
+import com.sz.db.LogicDeleteFill;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

@@ -5,7 +5,7 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.keygen.KeyGenerators;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

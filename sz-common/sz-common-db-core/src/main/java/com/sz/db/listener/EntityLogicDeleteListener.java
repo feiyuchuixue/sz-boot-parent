@@ -1,10 +1,11 @@
-package com.sz.mysql;
+package com.sz.db.listener;
 
 import cn.dev33.satoken.exception.NotWebContextException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.dialect.IDialect;
 import com.mybatisflex.core.logicdelete.impl.DefaultLogicDeleteProcessor;
 import com.mybatisflex.core.table.TableInfo;
+import com.sz.db.LogicDeleteFill;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;

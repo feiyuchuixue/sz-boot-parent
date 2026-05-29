@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.io.Serial;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import java.time.LocalDateTime;
 
 /**

@@ -1,7 +1,8 @@
-package com.sz.mysql;
+package com.sz.db.permission;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.dialect.DbType;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
@@ -10,7 +11,6 @@ import com.sz.core.common.entity.LoginUser;
 import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.core.datascope.ControlThreadLocal;
 import com.sz.core.datascope.SimpleDataScopeHelper;
-import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.StringUtils;
 import com.sz.core.util.Utils;
 import com.sz.security.core.util.LoginUtils;
@@ -20,16 +20,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 自定义方言 -- 数据权限
+ * 数据权限方言抽象基类。
+ * <p>
+ * 通用流程（开关、登录态、目标表识别、scope 路由）写死在基类；
+ * 与方言相关的 SQL 片段构造，由具体子类（如 MysqlPermissionDialect）实现。
+ *
+ * @author sz
  */
 @Slf4j
-public class SimplePermissionDialect extends CommonsDialectImpl {
+public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
 
-    private static final String FIELD_CREATE_ID = "create_id";
+    protected static final String FIELD_CREATE_ID = "create_id";
+    protected static final String FIELD_DEPT_SCOPE = "dept_scope";
+    protected static final String SEPARATOR_STR = "$";
 
-    private static final String FIELD_DEPT_SCOPE = "dept_scope";
+    /** 由子类返回当前方言对应的 DbType，供 MybatisFlexConfiguration 注册时使用。 */
+    public abstract DbType getDbType();
 
-    private static final String SEPARATOR_STR = "$"; // 分隔符常量
+    /** 由子类决定是否启用数据权限拦截。 */
+    protected abstract boolean isDataScopeEnabled();
+
+    /** 由子类返回 logicMinUnit 配置（"user" / "dept"）。 */
+    protected abstract String getLogicMinUnit();
+
+    /** 由子类返回是否允许查看管理员数据。 */
+    protected abstract boolean isAllowAdminView();
 
     @Override
     public void prepareAuth(QueryWrapper queryWrapper, OperateType operateType) {
@@ -60,9 +75,9 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             Map<String, String> permissionMap = loginUser.getPermissionAndMenuIds();
             Map<String, RoleMenuScopeVO> scopeMap = loginUser.getDataScope();
             String firstPermission = (btnPermissions != null && btnPermissions.length > 0) ? btnPermissions[0] : "";
-            String menuId = permissionMap.get(firstPermission); // 根据 权限标识获取菜单ID
+            String menuId = permissionMap.get(firstPermission); // 根据权限标识获取菜单ID
             RoleMenuScopeVO scope = menuId == null ? null : scopeMap.get(menuId);
-            // ！如果没有配置数据权限，默认只看自己的数据
+            // 如果没有配置数据权限，默认只看自己的数据
             if (scope == null || permissionMap.isEmpty()) {
                 Set<Long> userIds = new HashSet<>();
                 Set<Long> deptIds = new HashSet<>();
@@ -94,7 +109,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
                     applyDataScopeRules(queryWrapper, operateType, dataScopeCd, tableName, SimpleDataScopeHelper.get());
                 }
             }
-
         } catch (Exception e) {
             log.error("PermissionDialect Exception: {}", e.getMessage());
         } finally {
@@ -102,22 +116,34 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
     }
 
+    // ============== 由子类实现的"方言相关"方法 ==============
+
     /**
-     * 检查是否跳过数据权限控制
+     * 以"用户"为最小单位时，构造按部门集合过滤的 SQL 片段（通常 EXISTS 子查询）。
      */
+    protected abstract String buildUserUnitDeptSql(String table, String field, Collection<Long> deptList);
+
+    /**
+     * 以"部门"为最小单位时，构造按部门集合过滤的 SQL 片段（通常 JSON 包含判断）。
+     */
+    protected abstract String buildDeptUnitSql(String table, String field, Collection<Long> deptList);
+
+    /**
+     * 构造允许查看管理员数据的 SQL 片段（通常 EXISTS 子查询）。
+     */
+    protected abstract String buildAllowAdminViewSql(String table);
+
+    /**
+     * 构造按用户集合过滤的 SQL 片段（= 或 IN）。
+     */
+    protected abstract String buildUserListSql(String table, String userField, Collection<Long> userList);
+
+    // ============== 通用工具（与方言无关，保留在基类） ==============
+
     private boolean isSkipDataScope(OperateType operateType) {
         return !SimpleDataScopeHelper.isDataScope() || !StpUtil.isLogin() || operateType != OperateType.SELECT;
     }
 
-    /**
-     * 验证当前查询是否是目标表
-     *
-     * @param queryWrapper
-     *            wrapper
-     * @param table
-     *            表名称
-     * @return boolean
-     */
     private boolean isTargetTable(QueryWrapper queryWrapper, String table) {
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
         if (queryTables == null || queryTables.isEmpty()) {
@@ -136,15 +162,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         return false;
     }
 
-    /**
-     * 初始化上下文
-     *
-     * @param queryWrapper
-     *            wrapper
-     * @param operateType
-     *            操作类型
-     * @return 是否初始化成功
-     */
     private boolean initializeContext(QueryWrapper queryWrapper, OperateType operateType) {
         List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
         List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
@@ -164,7 +181,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
 
         boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
         Map<String, QueryTable> tableMap = buildTableMap(queryTables, isJoin, joinTables);
-
         return !tableMap.isEmpty();
     }
 
@@ -191,20 +207,6 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         return (anno == null) ? StringUtils.toSnakeCase(clazz.getSimpleName()) : anno.value();
     }
 
-    /**
-     * 应用数据权限规则
-     *
-     * @param queryWrapper
-     *            wrapper
-     * @param operateType
-     *            类型
-     * @param rule
-     *            规则
-     * @param table
-     *            table表
-     * @param tableClazz
-     *            class
-     */
     private void applyDataScopeRules(QueryWrapper queryWrapper, OperateType operateType, String rule, String table, Class<?> tableClazz) {
         LoginUser loginUser = LoginUtils.getLoginUser();
         assert loginUser != null;
@@ -237,23 +239,11 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
     }
 
     /**
-     * 根据条件拼装sql
-     *
-     * @param queryWrapper
-     *            wrapper
-     * @param table
-     *            表名
-     * @param deptList
-     *            部门集合
-     * @param userList
-     *            用户集合
-     * @param tableClazz
-     *            class
+     * 通用编排：调用 4 个子类抽象方法构造完整 SQL，并 where 注入。
      */
     private void buildSql(QueryWrapper queryWrapper, String table, Collection<Long> deptList, Collection<Long> userList, Class<?> tableClazz) {
-        DataScopeProperties properties = SpringApplicationContextUtils.getInstance().getBean(DataScopeProperties.class);
-        String unit = properties.getLogicMinUnit();
-        boolean allowAdminView = properties.isAllowAdminView();
+        String unit = getLogicMinUnit();
+        boolean allowAdminView = isAllowAdminView();
 
         String field = "user".equals(unit) ? FIELD_CREATE_ID : FIELD_DEPT_SCOPE;
         if (!isFieldExists(tableClazz, StringUtils.toCamelCase(field))) {
@@ -263,23 +253,14 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         StringBuilder sb = new StringBuilder();
         boolean isFirstAppend = true;
 
-        // 构建用户或部门为单元的SQL
+        // 构建用户或部门为单元的 SQL
         if ("user".equals(unit) && !deptList.isEmpty()) { // 以用户为最小单元
-            String sqlParams = appendCollection(deptList);
-            sb.append(" EXISTS ( SELECT 1 FROM `sys_user_dept` ").append("JOIN `sys_dept` ON `sys_user_dept`.`dept_id` = `sys_dept`.`id` ")
-                    .append("WHERE `sys_user_dept`.`dept_id` IN ").append(sqlParams).append(" AND `sys_dept`.`del_flag` = 'F' ").append("AND `").append(table)
-                    .append("`.`").append(field).append("` = `sys_user_dept`.`user_id`) ");
+            sb.append(buildUserUnitDeptSql(table, field, deptList));
             isFirstAppend = false;
         } else { // 以部门为最小单元
             if (!deptList.isEmpty()) {
-                for (Long dept : deptList) {
-                    if (!isFirstAppend) {
-                        sb.append(" OR ");
-                    }
-                    sb.append(" JSON_CONTAINS(").append("`").append(table).append("`").append(".").append("`").append(field).append("`").append(", '")
-                            .append(dept).append("', '").append(SEPARATOR_STR).append("')");
-                    isFirstAppend = false;
-                }
+                sb.append(buildDeptUnitSql(table, field, deptList));
+                isFirstAppend = false;
             }
         }
 
@@ -288,21 +269,16 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
             if (!isFirstAppend) {
                 sb.append(" OR ");
             }
-            sb.append(" EXISTS (SELECT 1 FROM `sys_user` WHERE `sys_user`.`id` = `").append(table).append("`.`").append(FIELD_CREATE_ID)
-                    .append("` AND `sys_user`.`user_tag_cd` = '1001002' AND `del_flag` = 'F')");
+            sb.append(buildAllowAdminViewSql(table));
             isFirstAppend = false;
-
         }
 
         // 自定义用户条件
         if (!userList.isEmpty()) {
-            if (!isFirstAppend)
+            if (!isFirstAppend) {
                 sb.append(" OR ");
-            if (userList.size() == 1) {
-                sb.append(" `").append(table).append("`.`").append(FIELD_CREATE_ID).append("` = ").append(userList.iterator().next());
-            } else {
-                sb.append(" `").append(table).append("`.`").append(FIELD_CREATE_ID).append("` IN ").append(appendCollection(userList));
             }
+            sb.append(buildUserListSql(table, FIELD_CREATE_ID, userList));
         }
 
         // 避免重复拼装
@@ -314,7 +290,7 @@ public class SimplePermissionDialect extends CommonsDialectImpl {
         }
     }
 
-    private String appendCollection(Collection<Long> collection) {
+    protected String appendCollection(Collection<Long> collection) {
         return collection.stream().map(String::valueOf).collect(Collectors.joining(", ", "(", ")"));
     }
 }

@@ -2,7 +2,7 @@ package com.sz.platform.listener;
 
 import com.sz.admin.system.pojo.po.SysConfig;
 import com.sz.core.util.SpringApplicationContextUtils;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import com.sz.platform.socket.SocketService;
 import com.sz.redis.RedisCache;
 

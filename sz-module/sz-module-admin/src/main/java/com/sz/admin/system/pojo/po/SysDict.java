@@ -5,8 +5,8 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.core.common.enums.TrueFalseEnum;
-import com.sz.mysql.EntityChangeListener;
-import com.sz.mysql.LogicDeleteFill;
+import com.sz.db.EntityChangeListener;
+import com.sz.db.LogicDeleteFill;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

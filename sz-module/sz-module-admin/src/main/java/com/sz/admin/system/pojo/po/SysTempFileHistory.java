@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.io.Serial;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import java.time.LocalDateTime;
 import java.util.List;
 

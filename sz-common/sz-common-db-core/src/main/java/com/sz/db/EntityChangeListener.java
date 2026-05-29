@@ -1,4 +1,4 @@
-package com.sz.mysql;
+package com.sz.db;
 
 import cn.dev33.satoken.exception.NotWebContextException;
 import cn.dev33.satoken.stp.StpUtil;

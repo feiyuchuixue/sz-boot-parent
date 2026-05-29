@@ -1,7 +1,7 @@
 package com.sz.platform.listener;
 
 import com.sz.core.util.SpringApplicationContextUtils;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import com.sz.redis.RedisCache;
 
 import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;

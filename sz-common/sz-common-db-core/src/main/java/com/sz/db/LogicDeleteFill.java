@@ -1,4 +1,4 @@
-package com.sz.mysql;
+package com.sz.db;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

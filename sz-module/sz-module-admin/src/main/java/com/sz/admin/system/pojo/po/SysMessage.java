@@ -1,7 +1,7 @@
 package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
-import com.sz.mysql.EntityChangeListener;
+import com.sz.db.EntityChangeListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
 import java.io.Serializable;
