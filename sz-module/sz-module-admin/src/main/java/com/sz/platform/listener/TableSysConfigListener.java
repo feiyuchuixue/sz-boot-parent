@@ -1,0 +1,36 @@
+package com.sz.platform.listener;
+
+import com.sz.admin.system.pojo.po.SysConfig;
+import com.sz.core.util.SpringApplicationContextUtils;
+import com.sz.mysql.EntityChangeListener;
+import com.sz.platform.socket.SocketService;
+import com.sz.redis.RedisCache;
+
+public class TableSysConfigListener extends EntityChangeListener {
+
+    @Override
+    public void onInsert(Object o) {
+        super.onInsert(o);
+        onChange(o);
+    }
+
+    @Override
+    public void onUpdate(Object o) {
+        super.onUpdate(o);
+        onChange(o);
+    }
+
+    private void onChange(Object o) {
+        SysConfig sysConfig = (SysConfig) o;
+        RedisCache cache = SpringApplicationContextUtils.getInstance().getBean(RedisCache.class);
+        if (("T").equals(sysConfig.getFrontendVisible())) {
+            cache.putFrontendConfig(sysConfig.getConfigKey(), sysConfig.getConfigValue());
+        } else {
+            cache.deleteFrontendConfig(sysConfig.getConfigKey());
+        }
+        // socket 推送，参数更新事件
+        SocketService service = SpringApplicationContextUtils.getInstance().getBean(SocketService.class);
+        service.syncFrontendConfig();
+    }
+
+}

@@ -24,11 +24,16 @@ public class SlidePuzzleUtil {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     static final int BIG_WIDTH = 320;
+
     static final int BIG_HEIGHT = 160;
+
     static final int SMALL_WIDTH = 50;
+
     static final int SMALL_HEIGHT = 50;
+
     // 拼图凸起圆半径
     private static final int SMALL_CIRCLE = 10;
+
     // 凸起边界缓冲
     private static final int SMALL_CIRCLE_R1 = 2;
 
@@ -88,8 +93,7 @@ public class SlidePuzzleUtil {
     }
 
     /**
-     * 生成拼图模板：右边和上面各有一个圆形凸起，左边平坦
-     * 返回二维数组：1 = 拼图区域（显示像素），0 = 镂空区域（透明）
+     * 生成拼图模板：右边和上面各有一个圆形凸起，左边平坦 返回二维数组：1 = 拼图区域（显示像素），0 = 镂空区域（透明）
      */
     private static int[][] getSlideTemplateData() {
         int[][] data = new int[SMALL_WIDTH][SMALL_HEIGHT];
@@ -201,8 +205,7 @@ public class SlidePuzzleUtil {
         g2dSmall.dispose();
     }
 
-    private static PointVO generateJigsawPoint(int originalWidth, int originalHeight,
-                                                int jigsawWidth, int jigsawHeight, String secretKey) {
+    private static PointVO generateJigsawPoint(int originalWidth, int originalHeight, int jigsawWidth, int jigsawHeight, String secretKey) {
         int widthDifference = originalWidth - jigsawWidth;
         int heightDifference = originalHeight - jigsawHeight;
         int x, y;

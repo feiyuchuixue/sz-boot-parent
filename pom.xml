@@ -7,17 +7,21 @@
     <groupId>com.sz</groupId>
     <artifactId>sz-boot-parent</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>sz-common</module>
-        <module>sz-service</module>
-        <module>sz-dependencies</module>
-    </modules>
+
     <parent>
         <groupId>com.sz</groupId>
         <artifactId>sz-build</artifactId>
         <version>${revision}</version>
         <relativePath>./sz-build/pom.xml</relativePath>
     </parent>
+
+    <modules>
+        <module>sz-dependencies</module>
+        <module>sz-common</module>
+        <module>sz-module</module>
+        <module>sz-service</module>
+    </modules>
+
     <!--配置全局属性-->
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

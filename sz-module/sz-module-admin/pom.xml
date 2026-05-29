@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.sz</groupId>
+        <artifactId>sz-module</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>sz-module-admin</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- mysql数据库模块 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-mysql</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--鉴权模块-->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-security</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--代码生成模块-->
+        <dependency>
+            <groupId>com.sz.generator</groupId>
+            <artifactId>sz-common-generator</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--微信模块-->
+        <dependency>
+            <groupId>com.sz.wechat</groupId>
+            <artifactId>sz-common-wechat</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--日志模块-->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-log</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--redis模块-->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-redis</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sz.excel</groupId>
+            <artifactId>sz-common-excel</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- oss模块 -->
+        <dependency>
+            <groupId>com.sz.oss</groupId>
+            <artifactId>sz-common-oss</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- resource模块-->
+        <dependency>
+            <groupId>com.sz.resource</groupId>
+            <artifactId>sz-common-resource</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.basjes.parse.useragent</groupId>
+            <artifactId>yauaa</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

@@ -20,60 +20,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- 数据库依赖尽量独立引用，因为每个service引用的数据库有可能不同，因此就不再parent中配置公共的mysql依赖-->
-        <!-- mysql数据库模块 -->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-mysql</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--鉴权模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-security</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--代码生成模块-->
-        <dependency>
-            <groupId>com.sz.generator</groupId>
-            <artifactId>sz-common-generator</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--微信模块-->
-        <dependency>
-            <groupId>com.sz.wechat</groupId>
-            <artifactId>sz-common-wechat</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--日志模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-log</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--redis模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-redis</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sz.excel</groupId>
-            <artifactId>sz-common-excel</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!-- oss模块 -->
-        <dependency>
-            <groupId>com.sz.oss</groupId>
-            <artifactId>sz-common-oss</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!-- resource模块-->
-        <dependency>
-            <groupId>com.sz.resource</groupId>
-            <artifactId>sz-common-resource</artifactId>
-            <version>${revision}</version>
-        </dependency>
         <!-- aspect aop 切面-->
         <dependency>
             <groupId>org.aspectj</groupId>
@@ -83,6 +29,11 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-admin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- knife4j swagger文档 -->
         <dependency>
@@ -98,10 +49,6 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>nl.basjes.parse.useragent</groupId>
-            <artifactId>yauaa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
