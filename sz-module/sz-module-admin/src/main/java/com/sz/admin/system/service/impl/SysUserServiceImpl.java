@@ -96,6 +96,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final SocketService socketService;
 
+    private final SysUserRoleService sysUserRoleService;
+
+    private final SysDeptClosureService sysDeptClosureService;
+
     /**
      * 获取认证账户信息接角色信息
      *
@@ -334,7 +338,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         UpdateChain.of(sysUserRoleMapper).eq(SysUserRole::getUserId, dto.getUserId()).remove();
 
         if (Utils.isNotNull(dto.getRoleIds())) {
-            sysUserRoleMapper.insertBatchSysUserRole(dto.getRoleIds(), dto.getUserId());
+            List<SysUserRole> userRoles = dto.getRoleIds().stream().map(roleId -> {
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(dto.getUserId());
+                ur.setRoleId(roleId);
+                return ur;
+            }).toList();
+            sysUserRoleMapper.insertBatch(userRoles);
         }
 
         List<Long> userIds = new ArrayList<>();
@@ -391,28 +401,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public void syncUserInfo(Object userId) {
+    public void syncUserInfoWithLoginUser(Long userId, LoginUser loginUser) {
         List<String> tokens = StpUtil.getTokenValueListByLoginId(userId);
         if (tokens.isEmpty()) {
             return;
         }
-        // 1. 查询当前用户的最新用户权限信息
-        LoginUser loginUser = buildLoginUser(Long.parseLong(userId.toString()));
         int successCount = 0;
-        // todo 如果用户使用了websocket，可以结合socket来判断需要更新的“在线用户”有哪些
         for (String token : tokens) {
             try {
-                // 根据token获取用户session
                 SaSession saSession = StpUtil.getTokenSessionByToken(token);
-                // 2. 更新redis信息
                 saSession.set(LoginUtils.USER_KEY, loginUser);
                 successCount++;
             } catch (SaTokenException e) {
                 log.warn("token:{} 已失效, 无需同步用户信息", token);
             }
-            log.info("用户元数据变更，同步更新用户信息 userId:{}, 成功:{} / {}", userId, successCount, tokens.size());
         }
-        socketService.syncPermission(userId);
+        log.info("用户元数据变更，同步更新用户信息 userId:{}, 成功:{} / {}", userId, successCount, tokens.size());
+        if (successCount > 0) {
+            socketService.syncPermission(userId);
+        }
     }
 
     @Override
@@ -439,6 +446,114 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public Map<Long, LoginUser> buildLoginUserBatch(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 1. 批量查用户基本信息
+        List<SysUser> users = QueryChain.of(SysUser.class)
+                .where(SysUser::getId).in(userIds)
+                .list();
+
+        // 2. 分离超管 / 普通用户（超管走单个路径，数据逻辑不同）
+        List<SysUser> superAdmins = users.stream().filter(this::isSuperAdminUser).toList();
+        List<SysUser> normalUsers = users.stream().filter(u -> !isSuperAdminUser(u)).toList();
+
+        Map<Long, LoginUser> result = new HashMap<>();
+
+        // 3. 超管：走现有单个 buildLoginUser 逻辑，保证行为完全一致
+        for (SysUser admin : superAdmins) {
+            result.put(admin.getId(), buildLoginUser(admin.getId()));
+        }
+
+        if (normalUsers.isEmpty()) {
+            return result;
+        }
+
+        List<Long> normalUserIds = normalUsers.stream().map(SysUser::getId).toList();
+
+        // 4. 批量查角色：sys_user_role WHERE user_id IN (...)  → 1 次查询
+        Map<Long, List<String>> userRolesMap = sysUserRoleService.getUserRolesByUserIds(normalUserIds);
+
+        // 5. 批量查直属部门：sys_user_dept WHERE user_id IN (...)  → 1 次查询
+        List<SysUserDept> userDeptList = QueryChain.of(SysUserDept.class)
+                .select(SYS_USER_DEPT.USER_ID, SYS_USER_DEPT.DEPT_ID)
+                .where(SYS_USER_DEPT.USER_ID.in(normalUserIds))
+                .list();
+        Map<Long, List<Long>> userDeptsMap = userDeptList.stream().collect(
+                Collectors.groupingBy(
+                        SysUserDept::getUserId,
+                        Collectors.mapping(SysUserDept::getDeptId, Collectors.toList())
+                )
+        );
+
+        // 6. 合并所有直属部门ID，批量查子孙节点：sys_dept_closure WHERE ancestor_id IN (...)  → 1 次查询
+        List<Long> allDeptIds = userDeptList.stream()
+                .map(SysUserDept::getDeptId)
+                .distinct()
+                .toList();
+        Map<Long, List<Long>> deptDescendantsMap = sysDeptClosureService.descendantsGroupByAncestor(allDeptIds);
+
+        // 7. 按用户组装 deptAndChildren（将该用户所有直属部门的子孙节点合并去重）
+        Map<Long, List<Long>> userDeptAndChildrenMap = new HashMap<>();
+        for (Long uid : normalUserIds) {
+            List<Long> depts = userDeptsMap.getOrDefault(uid, Collections.emptyList());
+            Set<Long> deptAndChildren = new HashSet<>();
+            for (Long deptId : depts) {
+                deptAndChildren.addAll(deptDescendantsMap.getOrDefault(deptId, Collections.emptyList()));
+            }
+            userDeptAndChildrenMap.put(uid, new ArrayList<>(deptAndChildren));
+        }
+
+        // 8. 数据权限：收集所有普通用户角色并集，统一查 1 次 getUserScope
+        Map<Long, RoleMenuScopeVO> fullScopeMap = Collections.emptyMap();
+        if (dataScopeProperties.isEnabled()) {
+            Set<String> allRoles = userRolesMap.values().stream()
+                    .flatMap(List::stream)
+                    .collect(Collectors.toSet());
+            // getUserScope 内部已按 role IN (...) 过滤，返回结果是所有角色对应的菜单数据权限配置
+            // 该结果按 menuId 维度存储，与具体用户无关，所有普通用户直接共享
+            fullScopeMap = sysRoleMenuService.getUserScope(allRoles);
+        }
+
+        // 9. 按 userId 逐个组装 LoginUser（DB 密集查询均已在上方批量完成）
+        for (SysUser user : normalUsers) {
+            Long uid = user.getId();
+            BaseUserInfo userInfo = BeanCopyUtils.copy(user, BaseUserInfo.class);
+
+            LoginUser loginUser = new LoginUser();
+            loginUser.setUserInfo(userInfo);
+
+            // permissions 仍需按 userId 单独查（三表联查，本次不批量化）
+            loginUser.setPermissions(sysPermissionService.getMenuPermissions(user));
+
+            List<String> roles = userRolesMap.getOrDefault(uid, Collections.emptyList());
+            loginUser.setRoles(new HashSet<>(roles));
+
+            loginUser.setDepts(userDeptsMap.getOrDefault(uid, Collections.emptyList()));
+            loginUser.setDeptAndChildren(userDeptAndChildrenMap.getOrDefault(uid, Collections.emptyList()));
+
+            if (dataScopeProperties.isEnabled()) {
+                loginUser.setDataScope(fullScopeMap);
+                // getBtnMenuByPermissions 入参是 permissions，按用户自己的 permissions 查（本次不批量化）
+                loginUser.setPermissionAndMenuIds(menuService.getBtnMenuByPermissions(loginUser.getPermissions()));
+            }
+
+            result.put(uid, loginUser);
+        }
+
+        return result;
+    }
+
+    /**
+     * 判断是否为超级管理员（userTagCd = 1001002）
+     */
+    private boolean isSuperAdminUser(SysUser sysUser) {
+        return sysUser != null && "1001002".equals(sysUser.getUserTagCd());
+    }
+
+    @Override
     public void unlock(SelectIdsDTO dto) {
         if (dto.getIds() == null || dto.getIds().isEmpty())
             return;
@@ -456,18 +571,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LoginUser loginUser = new LoginUser();
         loginUser.setUserInfo(userInfo);
         loginUser.setPermissions(sysPermissionService.getMenuPermissions(sysUser)); // 获取用户permissions
-        loginUser.setRoles(sysPermissionService.getRoles(sysUser)); // 获取用户角色
-        loginUser.setDepts(sysPermissionService.getDepts(sysUser)); // 获取用户部门
-        loginUser.setDeptAndChildren(sysPermissionService.getDeptAndChildren(sysUser)); // 获取用户部门及子孙节点
+        loginUser.setRoles(sysPermissionService.getRoles(sysUser));                 // 获取用户角色
+        // 先查直属部门，再传入 getDeptAndChildren，避免重复查询 sys_user_dept
+        List<Long> depts = sysPermissionService.getDepts(sysUser);
+        loginUser.setDepts(depts);
+        loginUser.setDeptAndChildren(sysPermissionService.getDeptAndChildren(sysUser, depts)); // 获取用户部门及子孙节点
         if (!dataScopeProperties.isEnabled())
             return loginUser; // 未开启数据权限控制，结束逻辑return ！！！
 
         // 根据角色 获取用户数据权限范围
         Set<String> roles = loginUser.getRoles();
-        Map<String, RoleMenuScopeVO> userScope = sysRoleMenuService.getUserScope(roles);
+        Map<Long, RoleMenuScopeVO> userScope = sysRoleMenuService.getUserScope(roles);
         loginUser.setDataScope(userScope);
 
-        Map<String, String> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
+        Map<String, Long> btmPermissionMap = menuService.getBtnMenuByPermissions(loginUser.getPermissions());
         loginUser.setPermissionAndMenuIds(btmPermissionMap);
 
         return loginUser;

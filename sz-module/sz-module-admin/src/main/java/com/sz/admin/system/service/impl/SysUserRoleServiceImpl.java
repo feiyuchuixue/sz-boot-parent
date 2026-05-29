@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 
@@ -37,6 +40,30 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     public List<String> getUserRolesByUserId(Long userId) {
         QueryWrapper queryWrapper = QueryWrapper.create().select(SYS_USER_ROLE.ROLE_ID).from(SYS_USER_ROLE).where(SYS_USER_ROLE.USER_ID.eq(userId));
         return listAs(queryWrapper, String.class);
+    }
+
+    /**
+     * 批量查询多个用户的角色（单次 IN 查询）
+     *
+     * @param userIds 用户ID列表
+     * @return userId -> 角色ID列表 的映射
+     */
+    @Override
+    public Map<Long, List<String>> getUserRolesByUserIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .select(SYS_USER_ROLE.USER_ID, SYS_USER_ROLE.ROLE_ID)
+                .from(SYS_USER_ROLE)
+                .where(SYS_USER_ROLE.USER_ID.in(userIds));
+        List<SysUserRole> list = list(queryWrapper);
+        return list.stream().collect(
+                Collectors.groupingBy(
+                        SysUserRole::getUserId,
+                        Collectors.mapping(r -> String.valueOf(r.getRoleId()), Collectors.toList())
+                )
+        );
     }
 
 }

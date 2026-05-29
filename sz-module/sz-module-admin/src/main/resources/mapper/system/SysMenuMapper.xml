@@ -37,7 +37,7 @@
         id, pid, path, name, title, icon, component, redirect, sort, deep, menu_type_cd, permissions, is_hidden, has_children, is_link, is_full, is_affix, is_keep_alive, create_time, update_time, create_id, update_id, del_flag, delete_id, delete_time, use_data_scope
     </sql>
 
-    <select id="getMenuAndChildrenIds" resultType="java.lang.String">
+    <select id="getMenuAndChildrenIds" resultType="java.lang.Long">
         WITH RECURSIVE MenuCTE AS (
         SELECT id, pid
         FROM sys_menu
@@ -56,12 +56,12 @@
     </select>
 
     <!-- 递归查询要删除的节点及其子节点 -->
-    <select id="selectMenuAndChildrenIds" parameterType="java.util.List" resultType="java.lang.String">
+    <select id="selectMenuAndChildrenIds" parameterType="java.util.List" resultType="java.lang.Long">
         WITH RECURSIVE MenuCTE AS (
         SELECT id, pid
         FROM sys_menu
         WHERE id IN
-        <foreach collection="list" item="id" open="(" separator="," close=")">
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         AND del_flag = 'F'
@@ -113,7 +113,7 @@
         UPDATE sys_menu
         SET del_flag = 'T'
         WHERE id IN
-        <foreach collection="list" item="id" open="(" separator="," close=")">
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         ;

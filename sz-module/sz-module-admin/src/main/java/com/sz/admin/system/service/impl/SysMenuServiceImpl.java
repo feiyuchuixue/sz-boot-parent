@@ -12,7 +12,7 @@ import com.sz.admin.system.pojo.dto.sysmenu.MenuPermissionDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuCreateDTO;
 import com.sz.admin.system.pojo.dto.sysmenu.SysMenuListDTO;
 import com.sz.admin.system.pojo.po.SysMenu;
-import com.sz.admin.system.pojo.po.SysUserDataRole;
+import com.sz.admin.system.pojo.po.SysUserRole;
 import com.sz.admin.system.pojo.po.table.SysMenuTableDef;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuPermissionVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
@@ -27,9 +27,9 @@ import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
 import com.sz.platform.enums.AdminResponseEnum;
+
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
-
 import com.sz.platform.redis.RedisService;
 import com.sz.security.core.util.LoginUtils;
 import freemarker.template.Template;
@@ -46,10 +46,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mybatisflex.core.query.QueryMethods.select;
-import static com.sz.admin.system.pojo.po.table.SysDataRoleMenuTableDef.SYS_DATA_ROLE_MENU;
 import static com.sz.admin.system.pojo.po.table.SysMenuTableDef.SYS_MENU;
 import static com.sz.admin.system.pojo.po.table.SysRoleMenuTableDef.SYS_ROLE_MENU;
-import static com.sz.admin.system.pojo.po.table.SysUserDataRoleTableDef.SYS_USER_DATA_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 
 /**
@@ -84,7 +82,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void create(SysMenuCreateDTO dto) {
         SysMenu menu = BeanCopyUtils.copy(dto, SysMenu.class);
-        menu.setId(Utils.generateUUIDs());
         QueryWrapper wrapper;
         if (!("1002003").equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
             wrapper = QueryWrapper.create().eq(SysMenu::getName, dto.getName()).eq(SysMenu::getDelFlag, "F");
@@ -97,7 +94,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         int deep;
         if (isRoot(dto.getPid())) {
             deep = 1;
-            menu.setPid("0");
+            menu.setPid(0L);
         } else {
             wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getPid()));
             Integer parentDeep = getOne(wrapper).getDeep();
@@ -152,7 +149,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public void remove(SelectIdsDTO dto) {
         if (Utils.isNotNull(dto.getIds())) {
             // 递归查询下边的子节点id
-            List<String> list = this.mapper.selectMenuAndChildrenIds((List<String>) dto.getIds());
+            List<Long> list = this.mapper.selectMenuAndChildrenIds((List<Long>) dto.getIds());
             this.mapper.updateMenuAndChildrenIsDelete(list);
             this.mapper.syncTreeDeep();
             this.mapper.syncTreeHasChildren();
@@ -218,7 +215,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    public List<MenuTreeVO> getSimpleMenuTree(String nodeId) {
+    public List<MenuTreeVO> getSimpleMenuTree(Long nodeId) {
         // 创建根目录节点并将所有数据包裹在其中
         MenuTreeVO root = new MenuTreeVO();
         root.setId("0"); // 根目录ID通常为0
@@ -233,9 +230,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    public List<MenuTreeVO> getMenuTreeVOS(String nodeId, boolean isShowButton) {
-        List<String> childrenIds = new ArrayList<>();
-        if (nodeId != null && !nodeId.equals("0")) {
+    public List<MenuTreeVO> getMenuTreeVOS(Long nodeId, boolean isShowButton) {
+        List<Long> childrenIds = new ArrayList<>();
+        if (nodeId != null && !nodeId.equals(0L)) {
             childrenIds = this.mapper.getMenuAndChildrenIds(nodeId, isShowButton);
         }
         List<SysMenuVO> sysMenuVOS;
@@ -261,7 +258,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         String generatedContent = "";
         if (Utils.isNotNull(dto.getIds())) {
             // 递归查询下边的子节点id
-            List<String> list = this.mapper.selectMenuAndChildrenIds((List<String>) dto.getIds());
+            List<Long> list = this.mapper.selectMenuAndChildrenIds((List<Long>) dto.getIds());
             QueryWrapper queryWrapper = QueryWrapper.create().in(SysMenu::getId, list).orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
             List<SysMenu> sysMenuList = list(queryWrapper);
             if (Utils.isNotNull(sysMenuList)) {
@@ -286,7 +283,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      *            排除的id
      * @return 菜单属性
      */
-    private List<SysMenuVO> menuListTree(List<String> excludingIds) {
+    private List<SysMenuVO> menuListTree(List<Long> excludingIds) {
         QueryWrapper wrapper = QueryWrapper.create().notIn(SysMenu::getId, excludingIds).ne(SysMenu::getMenuTypeCd, "10023").orderBy(SysMenu::getDeep).asc()
                 .orderBy(SysMenu::getSort).asc().eq(SysMenu::getDelFlag, "F");
 
@@ -310,7 +307,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return {@link SysMenuVO}
      */
     @Override
-    public SysMenu detail(String id) {
+    public SysMenu detail(Long id) {
         SysMenu menu = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(menu);
         return menu;
@@ -323,8 +320,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      *            父级Id
      * @return true:是根节点
      */
-    private boolean isRoot(String pid) {
-        return pid == null || pid.equals("0");
+    private boolean isRoot(Long pid) {
+        return pid == null || pid.equals(0L);
     }
 
     /**
@@ -338,7 +335,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenuVO> rootList = new ArrayList<>();
         for (SysMenu sysMenu : list) {
             // 找到所有父级节点
-            if (sysMenu.getPid() == null || sysMenu.getPid().equals("0")) {
+            if (sysMenu.getPid() == null || sysMenu.getPid().equals(0L)) {
                 SysMenuVO sysMenuTreeVO = BeanCopyUtils.copy(sysMenu, SysMenuVO.class);
                 rootList.add(sysMenuTreeVO);
             }
@@ -407,8 +404,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    public Map<String, String> getBtnMenuByPermissions(Collection<String> permissions) {
-        Map<String, String> btnMenuMap = new HashMap<>();
+    public Map<String, Long> getBtnMenuByPermissions(Collection<String> permissions) {
+        Map<String, Long> btnMenuMap = new HashMap<>();
         if (permissions.isEmpty()) {
             return btnMenuMap;
         }
@@ -419,13 +416,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             if (list.isEmpty()) {
                 return btnMenuMap;
             }
-            Set<String> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toSet());
+            Set<Long> pids = list.stream().map(SysMenu::getPid).collect(Collectors.toSet());
             QueryWrapper checkWrapper = QueryWrapper.create().select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.ID.in(pids));
-            List<String> existsMenuIds = listAs(checkWrapper, String.class);
+            List<Long> existsMenuIds = listAs(checkWrapper, Long.class);
             for (SysMenu menu : list) {
                 if (existsMenuIds.contains(menu.getPid()) || existsMenuIds.contains(menu.getId())) { // 过滤脏数据
                     String key = menu.getPermissions();
-                    String value;
+                    Long value;
                     if (("1002002").equals(menu.getMenuTypeCd())) {
                         value = menu.getId();
                     } else {
@@ -449,7 +446,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void changeMenuDataScope(String menuId) {
+    public void changeMenuDataScope(Long menuId) {
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.ID.eq(menuId));
         SysMenu menu = getOne(wrapper);
         CommonResponseEnum.INVALID_ID.assertNull(menu);
@@ -463,10 +460,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         updateById(menu);
         UpdateChain.of(SysMenu.class).set(SYS_MENU.USE_DATA_SCOPE, useDataScope).where(SYS_MENU.PID.eq(menu.getId())).update();
-
-        List<Long> changeUserIds = QueryChain.of(SysUserDataRole.class).select(SYS_USER_DATA_ROLE.USER_ID).from(SYS_USER_DATA_ROLE).leftJoin(SYS_DATA_ROLE_MENU)
-                .on(SYS_DATA_ROLE_MENU.ROLE_ID.eq(SYS_USER_DATA_ROLE.ROLE_ID)).where(SYS_DATA_ROLE_MENU.MENU_ID.eq(menuId)).listAs(Long.class);
+        List<Long> changeUserIds = QueryChain.of(SysUserRole.class).select(SYS_USER_ROLE.USER_ID).from(SYS_USER_ROLE).leftJoin(SYS_ROLE_MENU)
+                .on(SYS_ROLE_MENU.ROLE_ID.eq(SYS_USER_ROLE.ROLE_ID)).where(SYS_ROLE_MENU.MENU_ID.eq(menuId)).listAs(Long.class);
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(changeUserIds)));
+
     }
 
 }

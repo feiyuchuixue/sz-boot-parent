@@ -3,7 +3,6 @@ package com.sz.admin.system.service;
 import com.sz.admin.system.pojo.po.SysUser;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,6 +24,13 @@ public interface SysPermissionService {
 
     List<Long> getDeptAndChildren(SysUser sysUser);
 
-    Map<String, String> buildMenuRuleMap(SysUser sysUser, Set<String> findMenuIds);
+    /**
+     * 获取用户部门及子孙节点（传入已查好的直属部门，避免重复查询）
+     *
+     * @param sysUser 用户信息
+     * @param depts   已查好的用户直属部门ID列表
+     * @return 部门及子孙节点ID列表
+     */
+    List<Long> getDeptAndChildren(SysUser sysUser, List<Long> depts);
 
 }

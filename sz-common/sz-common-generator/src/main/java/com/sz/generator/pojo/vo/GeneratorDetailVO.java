@@ -78,7 +78,7 @@ public class GeneratorDetailVO {
         private String type;
 
         @Schema(description = "上级菜单id")
-        private String parentMenuId;
+        private Long parentMenuId;
 
         @Schema(description = "api生成路径")
         private String pathApi;

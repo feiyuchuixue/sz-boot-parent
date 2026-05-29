@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<String> getMenuAndChildrenIds(@Param("menuId") String menuId, @Param("isShowButton") boolean isShowButton);
+    List<Long> getMenuAndChildrenIds(@Param("menuId") Long menuId, @Param("isShowButton") boolean isShowButton);
 
     /**
      * 更新has_children
@@ -31,19 +31,19 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     /**
      * 删除自己及子节点
      */
-    void removeTree(@Param("nodeId") String nodeId);
+    void removeTree(@Param("nodeId") Long nodeId);
 
     /**
      * @param ids
      *            ids
      */
-    void updateMenuAndChildrenIsDelete(List<String> ids);
+    void updateMenuAndChildrenIsDelete(List<Long> ids);
 
     /**
      * @param ids
      *            ids
      * @return 递归下边的子节点id集合
      */
-    List<String> selectMenuAndChildrenIds(List<String> ids);
+    List<Long> selectMenuAndChildrenIds(List<Long> ids);
 
 }
