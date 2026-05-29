@@ -1,7 +1,7 @@
 package com.sz.admin.system.pojo.po;
 
 import com.mybatisflex.annotation.*;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -41,7 +41,7 @@ public class SysTempFileHistory implements Serializable {
     private String tempName;
 
     @Schema(description = "地址")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private List<ResourceRef> url;
 
     @Schema(description = "备注")

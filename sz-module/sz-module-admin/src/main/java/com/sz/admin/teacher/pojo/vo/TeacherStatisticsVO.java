@@ -3,7 +3,7 @@ package com.sz.admin.teacher.pojo.vo;
 import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.mybatisflex.annotation.Column;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import com.sz.excel.annotation.CellMerge;
 import com.sz.excel.annotation.DictFormat;
 import com.sz.resource.model.ResourceRef;
@@ -107,7 +107,7 @@ public class TeacherStatisticsVO {
 
     @ExcelIgnore
     @Schema(description = "文件地址(JSON)")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private List<ResourceRef> url;
 
     @ExcelIgnore

@@ -401,7 +401,7 @@ public class GeneratorUtils {
         if (arraysContains(GeneratorConstants.AUTO_FILE_UPLOAD_COLUMNS, columnName) || GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(javaType)) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
             tableColumn.setJavaTypePackage(
-                    "com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
+                    "com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
             tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
             Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
             options.put("upload-files.sceneCode", "system.temp"); // 多文件上传组件：文件上传目录

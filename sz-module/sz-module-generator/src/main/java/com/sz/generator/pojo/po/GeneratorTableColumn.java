@@ -3,7 +3,7 @@ package com.sz.generator.pojo.po;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import com.sz.db.EntityChangeListener;
 import lombok.Data;
 
@@ -156,7 +156,7 @@ public class GeneratorTableColumn implements Serializable {
     /**
      * 其他设置
      */
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private Map<String, Object> options;
 
     /**

@@ -33,6 +33,16 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-common-log</artifactId>
         </dependency>
+        <!-- MySQL 数据库模块，默认启用；如需切换 PostgreSQL，请注释本依赖并放开下方 PostgreSQL 依赖。 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-mysql</artifactId>
+        </dependency>
+        <!-- PostgreSQL 数据库模块；数据库模块只启用一个，需与 application.yml 中的 DB_TYPE 保持一致。 -->
+<!--        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-postgresql</artifactId>
+        </dependency>-->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-module-admin</artifactId>
@@ -41,6 +51,7 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-module-audit</artifactId>
         </dependency>
+        <!-- 代码生成器默认随 admin 服务启用，降低本地开发和新用户使用门槛。 -->
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-module-generator</artifactId>
@@ -48,6 +59,11 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-models-jakarta</artifactId>
+        </dependency>
+        <!-- OpenAPI / Knife4j 文档能力默认可用，生产环境通过配置关闭入口。 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,50 +75,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>dev-tools</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <!-- springdoc OpenAPI 文档 -->
-                <dependency>
-                    <groupId>org.springdoc</groupId>
-                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>prod-lite</id>
-            <activation>
-                <property>
-                    <name>sz.prod-lite</name>
-                </property>
-            </activation>
-        </profile>
-        <profile>
-            <id>mysql</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.sz</groupId>
-                    <artifactId>sz-common-db-mysql</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>postgresql</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.sz</groupId>
-                    <artifactId>sz-common-db-postgresql</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
 </project>

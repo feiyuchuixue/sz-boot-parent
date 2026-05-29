@@ -3,6 +3,7 @@ package com.sz.generator.service.impl;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.mapper.GeneratorTableColumnMapper;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.po.table.GeneratorTableColumnTableDef;
@@ -20,6 +21,7 @@ import java.util.List;
  * @author sz
  * @since 2023-11-27
  */
+@ConditionalOnGeneratorEnabled
 @Service
 public class GeneratorTableColumnServiceImpl extends ServiceImpl<GeneratorTableColumnMapper, GeneratorTableColumn> implements GeneratorTableColumnService {
 

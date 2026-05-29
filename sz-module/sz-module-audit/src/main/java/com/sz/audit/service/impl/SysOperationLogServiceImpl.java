@@ -89,7 +89,7 @@ public class SysOperationLogServiceImpl extends ServiceImpl<SysOperationLogMappe
 
     @Override
     public PageResult<SysOperationLogVO> page(SysOperationLogListDTO dto) {
-        Page<SysOperationLogVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysOperationLogVO.class);
+        Page<SysOperationLogVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto, true), SysOperationLogVO.class);
         return PageUtils.getPageResult(page);
     }
 
@@ -118,7 +118,7 @@ public class SysOperationLogServiceImpl extends ServiceImpl<SysOperationLogMappe
         return vo;
     }
 
-    private QueryWrapper buildQueryWrapper(SysOperationLogListDTO dto) {
+    private QueryWrapper buildQueryWrapper(SysOperationLogListDTO dto, boolean ordered) {
         QueryWrapper wrapper = QueryWrapper.create().from(SysOperationLog.class);
         if (Utils.isNotNull(dto.getTraceId())) {
             wrapper.eq(SysOperationLog::getTraceId, dto.getTraceId());
@@ -159,14 +159,16 @@ public class SysOperationLogServiceImpl extends ServiceImpl<SysOperationLogMappe
         if (Utils.isNotNull(dto.getOperationTimeStart()) && Utils.isNotNull(dto.getOperationTimeEnd())) {
             wrapper.between(SysOperationLog::getOperationTime, dto.getOperationTimeStart(), dto.getOperationTimeEnd());
         }
-        wrapper.orderBy(SysOperationLog::getOperationTime).desc();
+        if (ordered) {
+            wrapper.orderBy(SysOperationLog::getOperationTime).desc();
+        }
         return wrapper;
     }
 
     private long countBy(SysOperationLogListDTO source, Consumer<SysOperationLogListDTO> customizer) {
         SysOperationLogListDTO dto = BeanCopyUtils.copy(source, SysOperationLogListDTO.class);
         customizer.accept(dto);
-        return count(buildQueryWrapper(dto));
+        return count(buildQueryWrapper(dto, false));
     }
 
     private boolean shouldSaveDetail(AuditEvent event) {

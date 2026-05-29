@@ -1,34 +1,46 @@
 package com.sz.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.sz.core.common.web.ApiPrefixProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
-@Data
+/**
+ * 功能模块可用性判断。
+ * <p>
+ * 当前主要用于判断代码生成器入口是否可用。generator 依赖存在且
+ * {@code sz.api-prefix.modules.generator.enabled} 未显式关闭时，认为功能可用。
+ */
 @Configuration
-@ConfigurationProperties(prefix = "sz.features")
+@EnableConfigurationProperties(ApiPrefixProperties.class)
 public class FeatureProperties {
 
-    /**
-     * 是否启用代码生成器入口。
-     * <p>
-     * 未显式配置时根据 generator 模块是否在运行时 classpath 中自动判断，保证本地开发默认可用， {@code prod-lite}
-     * 构建排除 generator 后自动隐藏菜单和权限入口。
-     */
-    private Boolean generator;
+    private static final String GENERATOR_MODULE = "generator";
+
+    private final ApiPrefixProperties apiPrefixProperties;
+
+    public FeatureProperties(ApiPrefixProperties apiPrefixProperties) {
+        this.apiPrefixProperties = apiPrefixProperties;
+    }
 
     /**
      * 返回代码生成器功能是否可用。
-     * <p>
-     * yml 中显式配置 {@code sz.features.generator} 时优先使用配置值；未配置时按 classpath 自动探测。
      *
-     * @return true 表示展示并下发 generator 菜单/权限，false 表示隐藏
+     * @return true 表示展示并下发 generator 菜单/权限，false 表示隐藏 generator 入口
      */
     public boolean isGenerator() {
-        if (generator != null) {
-            return generator;
-        }
+        return isGeneratorOnClasspath() && isGeneratorModuleEnabled();
+    }
+
+    private boolean isGeneratorOnClasspath() {
         return ClassUtils.isPresent("com.sz.generator.controller.GeneratorTableController", getClass().getClassLoader());
+    }
+
+    private boolean isGeneratorModuleEnabled() {
+        if (apiPrefixProperties.getModules() == null) {
+            return true;
+        }
+        ApiPrefixProperties.Module module = apiPrefixProperties.getModules().get(GENERATOR_MODULE);
+        return module == null || module.getEnabled() == null || module.getEnabled();
     }
 }

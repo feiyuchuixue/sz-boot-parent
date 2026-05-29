@@ -6,6 +6,7 @@ import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.util.FileUtils;
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.pojo.dto.DbTableQueryDTO;
 import com.sz.generator.pojo.dto.ImportTableDTO;
 import com.sz.generator.pojo.dto.SelectTablesDTO;
@@ -36,6 +37,7 @@ import java.util.List;
  * @author sz
  * @since 2023-11-27
  */
+@ConditionalOnGeneratorEnabled
 @Tag(name = "代码生成")
 @RestController
 @RequestMapping

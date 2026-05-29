@@ -3,7 +3,7 @@ package com.sz.admin.system.pojo.po;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.Table;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -49,7 +49,7 @@ public class SysImportFailRecord implements Serializable {
     private String handleStatus;
 
     @Schema(description = "失败行原始快照")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private Map<String, Object> rowData;
 
     @Schema(description = "创建时间")

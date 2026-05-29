@@ -708,7 +708,7 @@
             <column name="java_type" value="List&lt;UploadResult&gt;"/>
             <column name="search_type" value="input"/>
             <column name="ts_type" value="string"/>
-            <column name="java_type_package" value="com.mybatisflex.core.handler.JacksonTypeHandler,com.sz.core.common.entity.UploadResult,java.util.List,com.mybatisflex.annotation.Column"/>
+            <column name="java_type_package" value="com.sz.db.handler.Jackson3TypeHandler,com.sz.core.common.entity.UploadResult,java.util.List,com.mybatisflex.annotation.Column"/>
             <column name="java_field" value="url"/>
             <column name="up_camel_field" value="Url"/>
             <column name="is_pk" value="0"/>

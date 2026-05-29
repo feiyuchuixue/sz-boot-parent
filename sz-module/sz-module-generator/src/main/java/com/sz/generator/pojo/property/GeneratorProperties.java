@@ -1,5 +1,6 @@
 package com.sz.generator.pojo.property;
 
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  * @since 2024/1/15 8:38
  */
 @Data
+@ConditionalOnGeneratorEnabled
 @Component
 @ConfigurationProperties(prefix = "sz.generator")
 public class GeneratorProperties {

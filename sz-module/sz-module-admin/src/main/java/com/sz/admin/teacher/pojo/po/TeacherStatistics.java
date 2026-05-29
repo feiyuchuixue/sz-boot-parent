@@ -2,7 +2,7 @@ package com.sz.admin.teacher.pojo.po;
 
 import com.mybatisflex.annotation.*;
 
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import com.sz.db.handler.LongListTypeHandler;
 import com.sz.core.common.enums.YesNoEnum;
 import com.sz.resource.model.ResourceRef;
@@ -92,7 +92,7 @@ public class TeacherStatistics implements Serializable {
     private List<Long> deptScope;
 
     @Schema(description = "文件地址(JSON)")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private List<ResourceRef> url;
 
     @Schema(description = "内容html")

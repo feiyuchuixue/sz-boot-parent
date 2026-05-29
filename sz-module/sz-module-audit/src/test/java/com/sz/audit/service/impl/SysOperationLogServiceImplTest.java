@@ -3,6 +3,7 @@ package com.sz.audit.service.impl;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.sz.audit.mapper.SysOperationLogDetailMapper;
 import com.sz.audit.mapper.SysOperationLogMapper;
+import com.sz.audit.pojo.dto.SysOperationLogListDTO;
 import com.sz.audit.pojo.po.SysOperationLog;
 import com.sz.audit.pojo.po.SysOperationLogDetail;
 import com.sz.logger.AuditProperties;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,9 +83,28 @@ class SysOperationLogServiceImplTest {
         assertThat(detailMapper.inserted.get().getCreateTime()).isNotNull();
     }
 
+    @Test
+    void summaryCountWrappersDoNotCarryOrderByForPostgresqlCompatibility() {
+        TestableService service = new TestableService(new CapturingDetailMapper().proxy(), new AuditProperties());
+        SysOperationLogListDTO dto = new SysOperationLogListDTO();
+        dto.setOperationTimeStart(LocalDateTime.of(2026, 5, 29, 0, 0));
+        dto.setOperationTimeEnd(LocalDateTime.of(2026, 5, 29, 23, 59, 59));
+
+        service.summary(dto);
+
+        assertThat(service.countWrappers).hasSize(3);
+        assertThat(service.countWrappers).allSatisfy(wrapper -> {
+            String sql = wrapper.toSQL();
+            assertThat(sql).containsIgnoringCase("operation_time").containsIgnoringCase("between");
+            assertThat(sql).doesNotContainIgnoringCase("order by");
+        });
+    }
+
     private static class TestableService extends SysOperationLogServiceImpl {
 
         private SysOperationLog savedLog;
+
+        private final List<QueryWrapper> countWrappers = new ArrayList<>();
 
         TestableService(SysOperationLogDetailMapper detailMapper, AuditProperties auditProperties) {
             super(detailMapper, auditProperties);
@@ -97,6 +119,7 @@ class SysOperationLogServiceImplTest {
 
         @Override
         public long count(QueryWrapper queryWrapper) {
+            countWrappers.add(queryWrapper);
             return 0;
         }
     }

@@ -57,7 +57,7 @@ public class ${dtoCreateClassName} {
    private ${field.javaType} ${field.javaField};
  <#else>
 <#if field.javaType?starts_with("List")>
-   @Column(typeHandler = JacksonTypeHandler.class)
+   @Column(typeHandler = Jackson3TypeHandler.class)
 </#if>
 <#-- 必填校验注解 -->
 <#if field.isRequired == "1">

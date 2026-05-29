@@ -353,16 +353,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>dev-fast</id>
-            <properties>
-                <skipTests>true</skipTests>
-                <skipITs>true</skipITs>
-                <maven.test.skip>true</maven.test.skip>
-                <flatten.skip>true</flatten.skip>
-            </properties>
-        </profile>
-    </profiles>
-
 </project>

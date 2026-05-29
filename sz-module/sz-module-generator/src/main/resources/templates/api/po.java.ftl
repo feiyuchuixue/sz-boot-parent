@@ -52,7 +52,7 @@ public class ${poClassName} implements Serializable {
     @Column(isLogicDelete = true)
     </#if>
     <#if field.javaType?starts_with("List")>
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     </#if>
     @Schema(description ="${field.columnComment}")
     private ${field.javaType} ${field.javaField};

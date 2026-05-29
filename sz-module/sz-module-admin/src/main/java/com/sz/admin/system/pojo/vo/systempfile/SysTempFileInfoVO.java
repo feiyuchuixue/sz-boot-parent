@@ -2,7 +2,7 @@ package com.sz.admin.system.pojo.vo.systempfile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mybatisflex.annotation.Column;
-import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.Jackson3TypeHandler;
 import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -38,7 +38,7 @@ public class SysTempFileInfoVO {
     private Long size;
 
     @Schema(description = "文件地址")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
     private List<ResourceRef> url;
 
     @Schema(description = "对象名（唯一）")

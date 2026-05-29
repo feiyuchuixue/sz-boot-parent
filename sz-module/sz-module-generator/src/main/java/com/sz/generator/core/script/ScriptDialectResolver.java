@@ -1,5 +1,6 @@
 package com.sz.generator.core.script;
 
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 /**
  * Resolves the SQL dialect used by generated scripts.
  */
+@ConditionalOnGeneratorEnabled
 @Component
 @RequiredArgsConstructor
 public class ScriptDialectResolver {

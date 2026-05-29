@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
  * sz-module-generator module mapper scan configuration.
  */
 @Configuration
+@ConditionalOnGeneratorEnabled
 @MapperScan(basePackages = "com.sz.generator.mapper")
 public class GeneratorMapperScanConfiguration {
 }

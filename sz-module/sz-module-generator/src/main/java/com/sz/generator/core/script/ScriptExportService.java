@@ -1,5 +1,6 @@
 package com.sz.generator.core.script;
 
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.pojo.vo.ScriptExportItemVO;
 import com.sz.generator.pojo.vo.ScriptExportVO;
 import freemarker.template.Template;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * Renders XML and SQL scripts from FreeMarker templates.
  */
+@ConditionalOnGeneratorEnabled
 @Service
 @RequiredArgsConstructor
 public class ScriptExportService {

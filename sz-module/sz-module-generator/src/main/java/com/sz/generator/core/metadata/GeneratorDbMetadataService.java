@@ -3,6 +3,7 @@ package com.sz.generator.core.metadata;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.pojo.dto.DbTableQueryDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.result.TableColumResult;
@@ -25,6 +26,7 @@ import java.util.Locale;
  * Reads table metadata for the generator without binding mapper XML to one
  * dialect.
  */
+@ConditionalOnGeneratorEnabled
 @Service
 @RequiredArgsConstructor
 public class GeneratorDbMetadataService {

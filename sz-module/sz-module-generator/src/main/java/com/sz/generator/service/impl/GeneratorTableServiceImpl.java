@@ -8,6 +8,7 @@ import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
 import com.sz.db.id.SzIdUtil;
+import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.CodeModelBuilder;
 import com.sz.generator.core.metadata.GeneratorDbMetadataService;
@@ -63,6 +64,7 @@ import static com.sz.generator.pojo.po.table.GeneratorTableTableDef.GENERATOR_TA
  * @author sz
  * @since 2023-11-27
  */
+@ConditionalOnGeneratorEnabled
 @Slf4j
 @Service
 @RequiredArgsConstructor

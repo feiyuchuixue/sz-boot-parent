@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * 代码生成器 API 前缀声明。
  */
 @Configuration
+@ConditionalOnGeneratorEnabled
 public class GeneratorApiPrefixConfiguration {
 
     @Bean
