@@ -104,11 +104,13 @@ public class CommonServiceImpl implements CommonService {
             return;
         }
 
-        // 全部找不到：返回错误
+        // 全部找不到：返回 404，通过响应头传递业务码，避免覆盖下载流的二进制内容
+        String bizCode = FILE_NOT_EXISTS.getCodePrefixEnum().getPrefix() + FILE_NOT_EXISTS.getCode();
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        response.setStatus(FILE_NOT_EXISTS.getCode());
+        response.setHeader("X-Biz-Code", bizCode);
+        response.setHeader("X-Biz-Message", FILE_NOT_EXISTS.getMessage());
         OutputStream out = response.getOutputStream();
         out.write(FILE_NOT_EXISTS.getMessage().getBytes(StandardCharsets.UTF_8));
         out.flush();

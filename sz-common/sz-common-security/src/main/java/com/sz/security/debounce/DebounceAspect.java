@@ -2,9 +2,8 @@ package com.sz.security.debounce;
 
 import com.sz.core.common.annotation.Debounce;
 import com.sz.core.common.annotation.DebounceIgnore;
-import com.sz.core.common.entity.ApiPageResult;
-import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.core.common.exception.common.BusinessException;
 import com.sz.core.util.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 接口防抖切面
@@ -24,6 +22,10 @@ import java.util.concurrent.CompletableFuture;
  * 拦截 com.sz 包下所有 Controller 方法，根据 {@link DebounceProperties} 配置决定是否启用防抖， 结合
  * {@link Debounce} / {@link DebounceIgnore} 注解支持细粒度控制。 由
  * {@link DebounceAutoConfiguration} 统一注册为 Bean，无需 @Component 自扫描。
+ * </p>
+ * <p>
+ * 防抖命中时统一抛出 {@link BusinessException}（{@link CommonResponseEnum#DEBOUNCE}）， 由
+ * {@link com.sz.core.common.exception.GlobalExceptionHandler} 映射为 HTTP 429。
  * </p>
  *
  * @author sz
@@ -70,20 +72,8 @@ public class DebounceAspect {
         String lockKey = Utils.generateDebounceRequestId(request);
         boolean lockAcquired = debounceService.acquireLock(lockKey, lockTime);
         if (!lockAcquired) {
-            // 锁获取失败，按返回类型返回防抖提示
-            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
-                return CompletableFuture.completedFuture(ApiResult.error(CommonResponseEnum.DEBOUNCE));
-            }
-            Class<?> returnType = method.getReturnType();
-            if (returnType.isAssignableFrom(ApiPageResult.class)) {
-                return ApiPageResult.error(CommonResponseEnum.DEBOUNCE);
-            } else if (returnType.isAssignableFrom(ApiResult.class)) {
-                return ApiResult.error(CommonResponseEnum.DEBOUNCE);
-            } else if (returnType.isAssignableFrom(String.class)) {
-                return CommonResponseEnum.DEBOUNCE.getMessage();
-            } else {
-                throw new IllegalStateException("无法处理的返回类型：" + method.getReturnType().getName());
-            }
+            // 防抖命中：抛出业务异常，由 GlobalExceptionHandler 统一映射为 HTTP 429
+            CommonResponseEnum.DEBOUNCE.assertFalse(false);
         }
         return point.proceed();
     }

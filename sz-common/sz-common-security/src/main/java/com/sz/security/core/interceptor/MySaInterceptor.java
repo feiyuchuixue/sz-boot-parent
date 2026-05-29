@@ -52,13 +52,8 @@ public class MySaInterceptor extends SaInterceptor {
         } catch (BackResultException e) {
             ControlThreadLocal.clearDataScope();
             // BackResultException 异常代表：停止匹配，向前端输出结果
-            // 请注意此处默认 Content-Type 为 text/plain，如果需要返回 JSON 信息，需要在 back 前自行设置 Content-Type
-            // 为 application/json
-            // 例如：SaHolder.getResponse().setHeader("Content-Type",
-            // "application/json;charset=UTF-8");
-            if (response.getContentType() == null) {
-                response.setContentType("text/plain; charset=utf-8");
-            }
+            // 统一输出 JSON 格式，确保前端拦截器可正常解析
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print(e.getMessage());
             return false;
         }

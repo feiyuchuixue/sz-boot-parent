@@ -26,7 +26,6 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
-import com.sz.platform.enums.AdminResponseEnum;
 import com.sz.platform.constant.dict.MenuTypeConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
@@ -85,7 +84,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         QueryWrapper wrapper;
         if (!(MenuTypeConstant.BUTTON).equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
             wrapper = QueryWrapper.create().eq(SysMenu::getName, dto.getName()).eq(SysMenu::getDelFlag, "F");
-            AdminResponseEnum.MENU_NAME_EXISTS.assertTrue(count(wrapper) > 0);
+            CommonResponseEnum.MENU_NAME_EXISTS.assertTrue(count(wrapper) > 0);
 
             wrapper = QueryWrapper.create().eq(SysMenu::getPath, dto.getPath()).eq(SysMenu::getDelFlag, "F");
             CommonResponseEnum.EXISTS.message("menuPath已存在").assertTrue(count(wrapper) > 0);
