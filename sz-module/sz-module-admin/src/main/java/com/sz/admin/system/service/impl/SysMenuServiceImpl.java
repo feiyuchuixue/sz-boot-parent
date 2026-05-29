@@ -21,6 +21,7 @@ import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.SysMenuVO;
 import com.sz.admin.system.script.AdminScriptExportService;
 import com.sz.admin.system.service.SysMenuService;
+import com.sz.config.FeatureProperties;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.entity.UserPermissionChangeMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
@@ -69,6 +70,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private final AdminScriptExportService scriptExportService;
 
     private final EventPublisher eventPublisher;
+
+    private final FeatureProperties featureProperties;
 
     /**
      * 创建菜单
@@ -180,7 +183,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             wrapper.ne(SysMenu::getMenuTypeCd, MenuTypeConstant.BUTTON);
         }
         // 菜单全部数据
-        List<SysMenu> list = list(wrapper);
+        List<SysMenu> list = filterDisabledFeatureMenus(list(wrapper));
         return buildMenuTree(list, false);
     }
 
@@ -195,7 +198,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .from(SYS_USER_ROLE).leftJoin(SYS_ROLE_MENU).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE_MENU.ROLE_ID)).leftJoin(SYS_MENU)
                 .on(SYS_ROLE_MENU.MENU_ID.eq(SYS_MENU.ID)).where(SYS_MENU.MENU_TYPE_CD.ne(MenuTypeConstant.BUTTON)).where(SYS_USER_ROLE.USER_ID.eq(userId))
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SYS_MENU.SORT.asc());
-        List<SysMenu> list = list(wrapper);
+        List<SysMenu> list = filterDisabledFeatureMenus(list(wrapper));
         return buildMenuTree(list, true);
     }
 
@@ -209,7 +212,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
         QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, MenuTypeConstant.BUTTON) // 排除按钮
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
-        List<SysMenu> list = list(wrapper);
+        List<SysMenu> list = filterDisabledFeatureMenus(list(wrapper));
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
         return TreeUtils.buildTree(menuTreeVOS, root, nodeId);
     }
@@ -283,7 +286,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .orderBy(SysMenu::getSort).asc().eq(SysMenu::getDelFlag, "F");
 
         // 菜单全部数据
-        List<SysMenu> list = list(wrapper);
+        List<SysMenu> list = filterDisabledFeatureMenus(list(wrapper));
         return buildMenuTree(list, false);
     }
 
@@ -344,6 +347,39 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         logSkippedMenus(menuList, renderedIds, loggedIds);
         return treeList;
+    }
+
+    private List<SysMenu> filterDisabledFeatureMenus(List<SysMenu> menus) {
+        if (featureProperties.isGenerator() || menus == null || menus.isEmpty()) {
+            return menus;
+        }
+        return menus.stream().filter(menu -> !isGeneratorMenu(menu)).toList();
+    }
+
+    private boolean isGeneratorMenu(SysMenu menu) {
+        if (menu == null) {
+            return false;
+        }
+        return isGeneratorPermission(menu.getPermissions()) || containsGeneratorPath(menu.getPath()) || containsGeneratorPath(menu.getComponent());
+    }
+
+    private List<String> filterDisabledFeaturePermissions(List<String> permissions) {
+        if (featureProperties.isGenerator() || permissions == null || permissions.isEmpty()) {
+            return permissions;
+        }
+        return permissions.stream().filter(permission -> !isDisabledFeaturePermission(permission)).toList();
+    }
+
+    private boolean isDisabledFeaturePermission(String permission) {
+        return !featureProperties.isGenerator() && isGeneratorPermission(permission);
+    }
+
+    private boolean isGeneratorPermission(String permission) {
+        return permission != null && permission.startsWith("generator.");
+    }
+
+    private boolean containsGeneratorPath(String value) {
+        return value != null && value.contains("/toolbox/generator");
     }
 
     private SysMenuVO getChildrenNode(SysMenuVO sysMenu, List<SysMenu> menuList, LinkedHashSet<Long> accessPath, Set<Long> renderedIds, Set<Long> loggedIds) {
@@ -438,7 +474,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public List<String> findPermission() {
-        return sysUserRoleMapper.queryPermissionByUserId(StpUtil.getLoginIdAsLong());
+        return filterDisabledFeaturePermissions(sysUserRoleMapper.queryPermissionByUserId(StpUtil.getLoginIdAsLong()));
     }
 
     @Override
@@ -446,7 +482,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         QueryWrapper queryWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_MENU.PERMISSIONS)).from(SYS_MENU).leftJoin(SYS_ROLE_MENU)
                 .on(SYS_MENU.ID.eq(SYS_ROLE_MENU.MENU_ID)).leftJoin(SYS_USER_ROLE).on(SYS_ROLE_MENU.ROLE_ID.eq(SYS_USER_ROLE.ROLE_ID))
                 .where(SYS_USER_ROLE.USER_ID.eq(userId)).where(SYS_MENU.PERMISSIONS.isNotNull()).where(SYS_MENU.PERMISSIONS.ne(""));
-        return listAs(queryWrapper, String.class);
+        return filterDisabledFeaturePermissions(listAs(queryWrapper, String.class));
     }
 
     @Override
@@ -454,7 +490,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         QueryWrapper queryWrapper = QueryWrapper.create().select(QueryMethods.distinct(SYS_MENU.PERMISSIONS)).from(SYS_MENU).eq(SysMenu::getDelFlag, "F")
                 .isNotNull(SysMenu::getPermissions).ne(SysMenu::getPermissions, "");
 
-        return listAs(queryWrapper, String.class);
+        return filterDisabledFeaturePermissions(listAs(queryWrapper, String.class));
     }
 
     /**
@@ -543,6 +579,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             for (SysMenu menu : list) {
                 if (existsMenuIds.contains(menu.getPid()) || existsMenuIds.contains(menu.getId())) { // 过滤脏数据
                     String key = menu.getPermissions();
+                    if (isDisabledFeaturePermission(key)) {
+                        continue;
+                    }
                     Long value;
                     if (MenuTypeConstant.MENU.equals(menu.getMenuTypeCd())) {
                         value = menu.getId();

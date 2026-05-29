@@ -14,6 +14,8 @@ import com.sz.admin.system.service.SysUserService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.core.common.valid.annotation.NotZero;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -56,7 +58,7 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "批量删除")
+    @Operation(summary = "删除用户")
     @SaCheckPermission(value = "sys.user.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -64,36 +66,37 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "查询分页列表")
+    @Operation(summary = "查询用户列表")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiPageResult<PageResult<SysUserVO>> listPage(SysUserListDTO dto) {
         return ApiPageResult.success(sysUserService.page(dto));
     }
 
-    @Operation(summary = "用户详情")
+    @Operation(summary = "查询用户详情")
     @SaCheckPermission(value = "sys.user.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
     public ApiResult<SysUserVO> detail(@PathVariable Long id) {
         return ApiResult.success(sysUserService.detail(id));
     }
 
-    @Operation(summary = "用户角色信息查询-（穿梭框）")
+    @Operation(summary = "查询用户角色")
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("role")
     public ApiResult<SysUserRoleVO> findUserRole(@NotZero @RequestParam Long userId) {
         return ApiResult.success(sysUserService.findSysUserRole(userId));
     }
 
-    @Operation(summary = "用户角色信息修改 -（穿梭框）")
+    @Operation(summary = "配置用户角色")
     @SaCheckPermission(value = "sys.user.role_set_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.userId")
     @PutMapping("role")
     public ApiResult<Void> changeUserRole(@Valid @RequestBody SysUserRoleDTO dto) {
         sysUserService.changeSysUserRole(dto);
         return ApiResult.success();
     }
 
-    @Operation(summary = "（个人）修改密码")
+    @Operation(summary = "修改个人密码")
     @PutMapping("/password")
     public ApiResult<Void> changePassword(@Valid @RequestBody SysUserPasswordDTO dto) {
         sysUserService.changePassword(dto);
@@ -101,6 +104,7 @@ public class SysUserController {
     }
 
     @Operation(summary = "重置账户密码")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#userId")
     @SaCheckPermission("sys.user_resetPwd")
     @PutMapping("/reset/password/{userId}")
     public ApiResult<Void> resetPassword(@PathVariable Long userId) {
@@ -108,7 +112,8 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "账户解锁")
+    @Operation(summary = "解锁账户")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.ids")
     @SaCheckPermission(value = "sys.user.unlock_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("unlock")
     public ApiResult<Void> unlock(@RequestBody SelectIdsDTO dto) {
@@ -116,7 +121,8 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "绑定（批量）用户和部门")
+    @Operation(summary = "绑定用户部门")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.userIds")
     @SaCheckPermission(value = "sys.user.dept_set_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/dept/bind")
     public ApiResult<Void> bindDept(@RequestBody UserDeptDTO dto) {
@@ -125,19 +131,20 @@ public class SysUserController {
     }
 
     @GetMapping("/dept/tree")
-    @Operation(summary = "账户管理-部门树形列表")
+    @Operation(summary = "查询部门树")
     public ApiResult<List<DeptTreeVO>> tree() {
         return ApiResult.success(sysDeptService.getDepartmentTreeWithAdditionalNodes());
     }
 
-    @Operation(summary = "用户信息-下拉列表")
+    @Operation(summary = "查询用户下拉选项")
     @SaCheckPermission(value = {"sys.user.query_table", "sys.dept.query_table"}, mode = SaMode.OR, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("options")
     public ApiResult<List<UserOptionVO>> getUserOptions() {
         return ApiResult.success(sysUserService.getUserOptions());
     }
 
-    @Operation(summary = "用户类型设置")
+    @Operation(summary = "用户类型设置（超管）")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.userIds")
     @SaCheckPermission(value = "sys.user.admin_set_btn")
     @PostMapping("changeset/usertag")
     public ApiResult<Void> changeUserTag(@RequestBody SysUserTagDTO dto) {
@@ -145,27 +152,27 @@ public class SysUserController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "获取用户基本资料")
+    @Operation(summary = "查询个人资料")
     @GetMapping("profile")
     public ApiResult<UserProfileVO> getProfile() {
         return ApiResult.success(sysUserService.getProfile());
     }
 
-    @Operation(summary = "（个人）更新基本资料")
+    @Operation(summary = "更新个人资料")
     @PutMapping("profile")
     public ApiResult<Void> updateProfile(@Valid @RequestBody UserProfileUpdateDTO dto) {
         sysUserService.updateProfile(dto);
         return ApiResult.success();
     }
 
-    @Operation(summary = "（个人）更新联系方式（手机号/邮箱）")
+    @Operation(summary = "更新个人联系方式")
     @PutMapping("profile/contact")
     public ApiResult<Void> updateContact(@Valid @RequestBody SysUserContactUpdateDTO dto) {
         sysUserService.updateContact(dto);
         return ApiResult.success();
     }
 
-    @Operation(summary = "（个人）解绑联系方式（手机号/邮箱）")
+    @Operation(summary = "解绑个人联系方式")
     @DeleteMapping("profile/contact")
     public ApiResult<Void> unbindContact(@Valid @RequestBody SysUserContactUnbindDTO dto) {
         sysUserService.unbindContact(dto);

@@ -34,7 +34,7 @@ public class SysConfigController {
 
     private final SysConfigService sysConfigService;
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增参数配置")
     @SaCheckPermission(value = "sys.config.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult<Void> create(@RequestBody SysConfigCreateDTO dto) {
@@ -42,7 +42,7 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "修改")
+    @Operation(summary = "修改参数配置")
     @SaCheckPermission(value = "sys.config.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult<Void> update(@RequestBody SysConfigUpdateDTO dto) {
@@ -50,7 +50,7 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除参数配置")
     @SaCheckPermission(value = "sys.config.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -58,21 +58,21 @@ public class SysConfigController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询参数配置列表")
     @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysConfig>> list(SysConfigListDTO dto) {
         return ApiPageResult.success(sysConfigService.list(dto));
     }
 
-    @Operation(summary = "详情")
+    @Operation(summary = "查询参数配置详情")
     @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
     public ApiResult<SysConfig> detail(@PathVariable Long id) {
         return ApiResult.success(sysConfigService.detail(id));
     }
 
-    @Operation(summary = "前端获取参数列表")
+    @Operation(summary = "查询前端参数配置")
     @GetMapping("/frontend-configs")
     public ApiResult<Map<String, String>> listFrontendConfigs() {
         return ApiResult.success(sysConfigService.getConfigVO());

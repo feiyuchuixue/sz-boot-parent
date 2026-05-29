@@ -194,7 +194,7 @@
             <column name="id" valueNumeric="1004001"/>
             <column name="sys_dict_type_id" valueNumeric="1004"/>
             <column name="code_name" value="PC"/>
-            <column name="alias" value=""/>
+            <column name="alias" value="PC"/>
             <column name="sort" valueNumeric="1"/>
             <column name="callback_show_style" value="success"/>
             <column name="remark" value="pc端"/>
@@ -208,7 +208,7 @@
             <column name="id" valueNumeric="1004002"/>
             <column name="sys_dict_type_id" valueNumeric="1004"/>
             <column name="code_name" value="小程序"/>
-            <column name="alias" value=""/>
+            <column name="alias" value="MiniApp"/>
             <column name="sort" valueNumeric="2"/>
             <column name="callback_show_style" value="success"/>
             <column name="remark" value="小程序端"/>
@@ -221,8 +221,8 @@
         <insert tableName="sys_dict">
             <column name="id" valueNumeric="1004003"/>
             <column name="sys_dict_type_id" valueNumeric="1004"/>
-            <column name="code_name" value="Androd"/>
-            <column name="alias" value=""/>
+            <column name="code_name" value="Android"/>
+            <column name="alias" value="Android"/>
             <column name="sort" valueNumeric="3"/>
             <column name="callback_show_style" value="success"/>
             <column name="remark" value=""/>
@@ -236,7 +236,7 @@
             <column name="id" valueNumeric="1004004"/>
             <column name="sys_dict_type_id" valueNumeric="1004"/>
             <column name="code_name" value="IOS"/>
-            <column name="alias" value=""/>
+            <column name="alias" value="IOS"/>
             <column name="sort" valueNumeric="4"/>
             <column name="callback_show_style" value="success"/>
             <column name="remark" value=""/>

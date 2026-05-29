@@ -39,12 +39,11 @@
         </dependency>
         <dependency>
             <groupId>com.sz</groupId>
-            <artifactId>sz-module-generator</artifactId>
+            <artifactId>sz-module-audit</artifactId>
         </dependency>
-        <!-- springdoc OpenAPI 文档 -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -62,6 +61,27 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <id>dev-tools</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <!-- springdoc OpenAPI 文档 -->
+                <dependency>
+                    <groupId>org.springdoc</groupId>
+                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>prod-lite</id>
+            <activation>
+                <property>
+                    <name>sz.prod-lite</name>
+                </property>
+            </activation>
+        </profile>
         <profile>
             <id>mysql</id>
             <activation>

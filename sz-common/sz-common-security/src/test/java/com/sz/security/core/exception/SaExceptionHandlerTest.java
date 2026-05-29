@@ -32,8 +32,7 @@ class SaExceptionHandlerTest {
     @Test
     @DisplayName("NotPermissionException should return HTTP 403 and C108")
     void handlerNotPermissionExceptionShouldReturnForbiddenWithInvalidPermissionCode() {
-        ResponseEntity<ApiResult<Void>> response =
-                handler.handlerNotPermissionException(new NotPermissionException("system:user:list", "login"));
+        ResponseEntity<ApiResult<Void>> response = handler.handlerNotPermissionException(new NotPermissionException("system:user:list", "login"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
@@ -43,8 +42,7 @@ class SaExceptionHandlerTest {
     @Test
     @DisplayName("NotRoleException should return HTTP 403 and C108")
     void handlerNotRoleExceptionShouldReturnForbiddenWithInvalidPermissionCode() {
-        ResponseEntity<ApiResult<Void>> response =
-                handler.handlerNotRoleException(new NotRoleException("admin", "login"));
+        ResponseEntity<ApiResult<Void>> response = handler.handlerNotRoleException(new NotRoleException("admin", "login"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();

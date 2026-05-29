@@ -16,7 +16,9 @@ spring:
       # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
       auto-commit: true
       # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认30分钟
-      max-lifetime: 1800000
+      max-lifetime: 540000
+      # Keep idle connections fresh before MySQL/proxy idle timeout closes them.
+      keepalive-time: 300000
       # 数据库连接超时时间,默认30秒
       connection-timeout: 30000
       # 连接测试query

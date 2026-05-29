@@ -17,6 +17,8 @@ import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -46,7 +48,7 @@ public class SysMenuController {
 
     private final SysPermissionService sysPermissionService;
 
-    @Operation(summary = "添加菜单")
+    @Operation(summary = "新增菜单")
     @SaCheckPermission(value = "sys.menu.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody SysMenuCreateDTO dto) {
@@ -55,6 +57,7 @@ public class SysMenuController {
     }
 
     @Operation(summary = "修改菜单")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.id")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult<Void> update(@Valid @RequestBody SysMenuCreateDTO dto) {
@@ -62,7 +65,7 @@ public class SysMenuController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "批量删除")
+    @Operation(summary = "删除菜单")
     @SaCheckPermission(value = "sys.menu.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -70,28 +73,28 @@ public class SysMenuController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询菜单列表")
     @SaCheckPermission(value = "sys.menu.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<List<SysMenuVO>> list(SysMenuListDTO dto) {
         return ApiResult.success(sysMenuService.menuList(dto));
     }
 
-    @Operation(summary = "详情")
+    @Operation(summary = "查询菜单详情")
     @SaCheckPermission(value = "sys.menu.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("{id}")
     public ApiResult<SysMenu> detail(@PathVariable Long id) {
         return ApiResult.success(sysMenuService.detail(id));
     }
 
-    @Operation(summary = "查询上级菜单")
+    @Operation(summary = "查询上级菜单树")
     @GetMapping("tree")
     public ApiResult<List<MenuTreeVO>> queryParentListTree(@RequestParam(required = false) Long nodeId) {
         return ApiResult.success(sysMenuService.getSimpleMenuTree(nodeId));
     }
 
     @DebounceIgnore
-    @Operation(summary = "查询用户具有的菜单")
+    @Operation(summary = "查询当前用户菜单")
     @GetMapping("/menu")
     public ApiResult<List<SysMenuVO>> queryMenuByUserId() {
         Long userId = StpUtil.getLoginIdAsLong();
@@ -99,7 +102,7 @@ public class SysMenuController {
         return ApiResult.success(menuList);
     }
 
-    @Operation(summary = "查询菜单按钮权限是否存在")
+    @Operation(summary = "校验按钮权限编码")
     @GetMapping("/btn/exists")
     public ApiResult<MenuPermissionVO> findBtnPermission(MenuPermissionDTO dto) {
         return ApiResult.success(sysMenuService.hasExistsPermissions(dto));
@@ -112,14 +115,16 @@ public class SysMenuController {
         return ApiResult.success(sysMenuService.findPermission());
     }
 
-    @Operation(summary = "导出 Liquibase XML")
+    @Operation(summary = "导出菜单 Liquibase脚本")
+    @OperationAudit(operationType = OperationType.EXPORT, bizId = "#dto.ids")
     @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("sql/export")
     public ApiResult<String> exportMenuSql(@RequestBody SelectIdsDTO dto) {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
     }
 
-    @Operation(summary = "瀵煎嚭鑿滃崟鑴氭湰")
+    @Operation(summary = "导出菜单 SQL脚本")
+    @OperationAudit(operationType = OperationType.EXPORT, bizId = "#dto.ids")
     @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("script/export")
     public ApiResult<ScriptExportVO> exportMenuScript(@RequestBody ScriptExportDTO dto) {
@@ -127,7 +132,7 @@ public class SysMenuController {
     }
 
     @DebounceIgnore
-    @Operation(summary = "查询用户角色", description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
+    @Operation(summary = "查询当前用户角色", description = "如果用户是超级管理员（user_tag_cd='1001002'），输出 'admin'；否则输出用户的角色id")
     @GetMapping("/user/roles")
     public ApiResult<List<String>> findUserRoles() {
         Set<String> roles = sysPermissionService.getRoles(StpUtil.getLoginIdAsLong());
@@ -135,6 +140,7 @@ public class SysMenuController {
     }
 
     @Operation(summary = "修改数据权限状态")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#id")
     @SaCheckPermission(value = "sys.menu.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("/datarole/change/{id}")
     public ApiResult<Void> changeDataRole(@PathVariable Long id) {

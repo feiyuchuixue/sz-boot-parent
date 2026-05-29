@@ -26,9 +26,12 @@ public interface SysDeptClosureMapper extends BaseMapper<SysDeptClosure> {
      *            节点ID
      * @return 分离的节点数
      */
-    @Delete(" DELETE " + " FROM " + " sys_dept_closure t " + " WHERE" + " EXISTS (" + " SELECT" + " 1 " + " FROM" + " sys_dept_closure d " + " WHERE"
-            + " d.ancestor_id = #{nodeId} and t.descendant_id = d.descendant_id " + " ) " + " and "
-            + " EXISTS( select 1 from sys_dept_closure a where a.descendant_id = #{nodeId} and a.ancestor_id != a.descendant_id and t.ancestor_id = a.ancestor_id )")
+    @Delete(" DELETE FROM sys_dept_closure " + " WHERE (ancestor_id, descendant_id) IN (" + "     SELECT ancestor_id, descendant_id FROM ("
+            + "         SELECT t.ancestor_id, t.descendant_id " + "         FROM sys_dept_closure t " + "         WHERE EXISTS (" + "             SELECT 1 "
+            + "             FROM sys_dept_closure d " + "             WHERE d.ancestor_id = #{nodeId} " + "             AND t.descendant_id = d.descendant_id "
+            + "         ) " + "         AND EXISTS (" + "             SELECT 1 " + "             FROM sys_dept_closure a "
+            + "             WHERE a.descendant_id = #{nodeId} " + "             AND a.ancestor_id != a.descendant_id "
+            + "             AND t.ancestor_id = a.ancestor_id " + "         )" + "     ) detached_tree" + " )")
     Integer detach(@Param("nodeId") Long nodeId);
 
     /**

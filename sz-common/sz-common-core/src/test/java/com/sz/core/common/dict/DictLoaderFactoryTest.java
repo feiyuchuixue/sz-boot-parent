@@ -18,15 +18,14 @@ class DictLoaderFactoryTest {
 
         assertThat(loader.getDynamicPrefix()).isEqualTo("dynamic_");
         assertThat(loader.getDynamicTypeCode()).isEqualTo("dynamic_user_options");
-        assertThat(factory.getDictByType("dynamic_user_options")).hasSize(1)
-                .extracting(DictVO::getSysDictTypeCode).containsExactly("dynamic_user_options");
+        assertThat(factory.getDictByType("dynamic_user_options")).hasSize(1).extracting(DictVO::getSysDictTypeCode).containsExactly("dynamic_user_options");
         assertThat(factory.getDictByType("user_options")).isEmpty();
     }
 
     @Test
     void dynamicLoaderRejectsBlankAndDuplicateTypeCode() {
-        assertThatThrownBy(() -> new DictLoaderFactory(List.of(new TestDynamicLoader("", "空类型"))))
-                .isInstanceOf(IllegalStateException.class).hasMessageContaining("typeCode");
+        assertThatThrownBy(() -> new DictLoaderFactory(List.of(new TestDynamicLoader("", "空类型")))).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("typeCode");
 
         assertThatThrownBy(() -> new DictLoaderFactory(List.of(new TestDynamicLoader("dept_options", "部门A"), new TestDynamicLoader("dept_options", "部门B"))))
                 .isInstanceOf(IllegalStateException.class).hasMessageContaining("dynamic_dept_options");

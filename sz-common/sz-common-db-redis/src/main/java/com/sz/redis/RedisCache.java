@@ -113,8 +113,7 @@ public class RedisCache {
     }
 
     private void markStaticDictLoaded(Map<String, List<DictVO>> dictMap) {
-        redisTemplate.opsForValue().set(CommonKeyConstants.SYS_DICT_STATIC_TYPES, new ArrayList<>(dictMap.keySet()), DICT_CACHE_HOURS,
-                TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(CommonKeyConstants.SYS_DICT_STATIC_TYPES, new ArrayList<>(dictMap.keySet()), DICT_CACHE_HOURS, TimeUnit.HOURS);
         redisTemplate.opsForValue().set(CommonKeyConstants.SYS_DICT_STATIC_LOADED, "T", DICT_CACHE_HOURS, TimeUnit.HOURS);
     }
 

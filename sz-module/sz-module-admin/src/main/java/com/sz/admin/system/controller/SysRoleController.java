@@ -18,6 +18,8 @@ import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 import com.sz.core.common.valid.annotation.NotZero;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -42,7 +44,7 @@ public class SysRoleController {
 
     private final SysRoleMenuService sysRoleMenuService;
 
-    @Operation(summary = "角色新增")
+    @Operation(summary = "新增角色")
     @SaCheckPermission(value = "sys.role.create_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody SysRoleCreateDTO dto) {
@@ -50,7 +52,8 @@ public class SysRoleController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "角色修改")
+    @Operation(summary = "修改角色")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.id")
     @SaCheckPermission(value = "sys.role.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult<Void> update(@Valid @RequestBody SysRoleUpdateDTO dto) {
@@ -58,7 +61,7 @@ public class SysRoleController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "删除、批量删除")
+    @Operation(summary = "删除角色")
     @SaCheckPermission(value = "sys.role.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -66,7 +69,7 @@ public class SysRoleController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询角色列表")
     @SaCheckPermission(value = "sys.role.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysRole>> listPage(SysRoleListDTO dto) {
@@ -74,6 +77,7 @@ public class SysRoleController {
     }
 
     @Operation(summary = "角色菜单配置")
+    @OperationAudit(operationType = OperationType.UPDATE, bizId = "#dto.roleId")
     @SaCheckPermission(value = {"sys.role.setting_btn", "sys.role.update_btn"}, mode = SaMode.AND, orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping("/menu")
     public ApiResult<Void> changeRoleMenu(@RequestBody SysRoleMenuDTO dto) {
@@ -81,14 +85,15 @@ public class SysRoleController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "角色菜单信息查询")
+    @Operation(summary = "查询角色菜单")
     @SaCheckPermission(value = {"sys.role.setting_btn", "sys.role.update_btn"}, mode = SaMode.AND, orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/menu")
     public ApiResult<SysRoleMenuVO> findRoleMenuByRoleId(@NotZero @RequestParam Long roleId) {
         return ApiResult.success(sysRoleMenuService.queryRoleMenu(roleId));
     }
 
-    @Operation(summary = "瑙掕壊鏉冮檺鑴氭湰瀵煎嚭")
+    @Operation(summary = "导出角色权限脚本")
+    @OperationAudit(operationType = OperationType.EXPORT, bizId = "#dto.ids")
     @SaCheckPermission(value = "sys.role.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("/menu/script/export")
     public ApiResult<ScriptExportVO> exportRoleMenuScript(@RequestBody ScriptExportDTO dto) {

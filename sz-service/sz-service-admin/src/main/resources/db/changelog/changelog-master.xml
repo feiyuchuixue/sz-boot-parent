@@ -5,6 +5,8 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!-- sz-module-admin 模块（framework / generator / demo） -->
     <include file="db/changelog/module-admin-changelog.xml"/>
+    <!-- sz-module-audit 模块 可选，如无需可注释 -->
+    <include file="db/changelog/module-audit-changelog.xml" errorIfMissing="false"/>
     <!-- sz-module-generator 模块 可选，如无需可注释 -->
-    <include file="db/changelog/module-generator-changelog.xml"/>
+    <include file="db/changelog/module-generator-changelog.xml" errorIfMissing="false"/>
 </databaseChangeLog>

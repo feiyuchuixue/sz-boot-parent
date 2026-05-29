@@ -101,7 +101,7 @@ class DebounceAspectTest {
     }
 
     private static HttpServletRequest request(String method) {
-        return (HttpServletRequest) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[] {HttpServletRequest.class},
+        return (HttpServletRequest) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[]{HttpServletRequest.class},
                 (proxy, invokedMethod, args) -> switch (invokedMethod.getName()) {
                     case "getMethod" -> method;
                     case "getRequestURI" -> "/api/demo";
@@ -113,14 +113,14 @@ class DebounceAspectTest {
     }
 
     private static ProceedingJoinPoint joinPoint(Method method, Object target, AtomicInteger proceedCount) {
-        MethodSignature signature = (MethodSignature) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[] {MethodSignature.class},
+        MethodSignature signature = (MethodSignature) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[]{MethodSignature.class},
                 (proxy, invokedMethod, args) -> switch (invokedMethod.getName()) {
                     case "getMethod" -> method;
                     case "getDeclaringType" -> method.getDeclaringClass();
                     case "getDeclaringTypeName" -> method.getDeclaringClass().getName();
                     default -> defaultValue(invokedMethod.getReturnType());
                 });
-        return (ProceedingJoinPoint) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[] {ProceedingJoinPoint.class},
+        return (ProceedingJoinPoint) Proxy.newProxyInstance(DebounceAspectTest.class.getClassLoader(), new Class<?>[]{ProceedingJoinPoint.class},
                 (proxy, invokedMethod, args) -> switch (invokedMethod.getName()) {
                     case "getSignature" -> signature;
                     case "getTarget", "getThis" -> target;

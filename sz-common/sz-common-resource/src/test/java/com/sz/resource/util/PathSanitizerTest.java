@@ -11,14 +11,11 @@ class PathSanitizerTest {
     void objectKeyRejectsTraversalAndUnsafeSegments() {
         assertThat(PathSanitizer.validate("avatars/20260526/logo.png", PathSanitizer.Mode.OBJECT_KEY)).isTrue();
 
-        assertThatThrownBy(() -> PathSanitizer.validate("../secret.txt", PathSanitizer.Mode.OBJECT_KEY))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> PathSanitizer.validate("../secret.txt", PathSanitizer.Mode.OBJECT_KEY)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("父目录引用");
-        assertThatThrownBy(() -> PathSanitizer.validate("avatars\\.env", PathSanitizer.Mode.OBJECT_KEY))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> PathSanitizer.validate("avatars\\.env", PathSanitizer.Mode.OBJECT_KEY)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("反斜杠");
-        assertThatThrownBy(() -> PathSanitizer.validate("avatars/.env", PathSanitizer.Mode.OBJECT_KEY))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> PathSanitizer.validate("avatars/.env", PathSanitizer.Mode.OBJECT_KEY)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("隐藏文件");
     }
 
@@ -36,8 +33,7 @@ class PathSanitizerTest {
         assertThat(PathSanitizer.validate(null, PathSanitizer.Mode.CONFIG)).isTrue();
         assertThat(PathSanitizer.validate("avatars", PathSanitizer.Mode.CONFIG)).isTrue();
 
-        assertThatThrownBy(() -> PathSanitizer.validate("/etc/passwd", PathSanitizer.Mode.CONFIG))
-                .isInstanceOf(IllegalStateException.class)
+        assertThatThrownBy(() -> PathSanitizer.validate("/etc/passwd", PathSanitizer.Mode.CONFIG)).isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("绝对路径");
     }
 }

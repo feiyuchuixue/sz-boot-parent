@@ -33,8 +33,7 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
         if (relationIds == null) {
             relationIds = List.of();
         }
-        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId))
-                .where(SYS_DATA_ROLE_RELATION.MENU_ID.eq(menuId))
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.eq(roleId)).where(SYS_DATA_ROLE_RELATION.MENU_ID.eq(menuId))
                 .where(SYS_DATA_ROLE_RELATION.RELATION_TYPE_CD.eq(relationTypeCd));
         long count = count(wrapper);
         if (count > 0) {
@@ -78,8 +77,8 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
             return List.of();
         }
         // roles 中只含数字字符串（role id），转 Long 避免 PG bigint = varchar 类型不匹配
-        List<Long> numericRoleIds = roleIds.stream().filter(roleId -> roleId != null && roleId.trim().matches("\\d+")).map(roleId -> Long.valueOf(roleId.trim()))
-                .toList();
+        List<Long> numericRoleIds = roleIds.stream().filter(roleId -> roleId != null && roleId.trim().matches("\\d+"))
+                .map(roleId -> Long.valueOf(roleId.trim())).toList();
         if (numericRoleIds.isEmpty()) {
             return List.of();
         }

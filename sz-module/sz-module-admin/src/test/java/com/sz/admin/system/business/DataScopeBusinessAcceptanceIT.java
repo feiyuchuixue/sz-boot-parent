@@ -104,19 +104,12 @@ class DataScopeBusinessAcceptanceIT {
     void getUserScopeMergesNonCustomCustomAndAllScopesByBusinessPriority() {
         SysDataRoleRelationService relationService = mock(SysDataRoleRelationService.class);
         MockableSysRoleMenuService service = new MockableSysRoleMenuService(relationService);
-        service.listResults.add(List.of(
-                roleMenu(1L, 10L, DataScopeConstant.DEPT_ONLY),
-                roleMenu(2L, 10L, DataScopeConstant.DEPT_AND_BELOW),
-                roleMenu(1L, 20L, DataScopeConstant.CUSTOM),
-                roleMenu(1L, 30L, DataScopeConstant.ALL),
-                roleMenu(2L, 30L, DataScopeConstant.CUSTOM),
-                roleMenu(1L, 40L, DataScopeConstant.SELF_ONLY),
-                roleMenu(2L, 40L, DataScopeConstant.CUSTOM)));
+        service.listResults.add(List.of(roleMenu(1L, 10L, DataScopeConstant.DEPT_ONLY), roleMenu(2L, 10L, DataScopeConstant.DEPT_AND_BELOW),
+                roleMenu(1L, 20L, DataScopeConstant.CUSTOM), roleMenu(1L, 30L, DataScopeConstant.ALL), roleMenu(2L, 30L, DataScopeConstant.CUSTOM),
+                roleMenu(1L, 40L, DataScopeConstant.SELF_ONLY), roleMenu(2L, 40L, DataScopeConstant.CUSTOM)));
         when(relationService.listByRoleIdsAndMenuIds(eq(List.of("1", "2")), anyList()))
-                .thenReturn(List.of(relation(1L, 20L, DataScopeRelationTypeConstant.DEPT, 700L),
-                        relation(1L, 20L, DataScopeRelationTypeConstant.USER, 800L),
-                        relation(2L, 40L, DataScopeRelationTypeConstant.DEPT, 900L),
-                        relation(2L, 40L, DataScopeRelationTypeConstant.USER, 901L)));
+                .thenReturn(List.of(relation(1L, 20L, DataScopeRelationTypeConstant.DEPT, 700L), relation(1L, 20L, DataScopeRelationTypeConstant.USER, 800L),
+                        relation(2L, 40L, DataScopeRelationTypeConstant.DEPT, 900L), relation(2L, 40L, DataScopeRelationTypeConstant.USER, 901L)));
 
         Map<Long, RoleMenuScopeVO> result = service.getUserScope(List.of("1", "2"));
 
@@ -158,8 +151,7 @@ class DataScopeBusinessAcceptanceIT {
         verify(relationService).batchSave(9L, 22L, DataScopeRelationTypeConstant.USER, List.of(501L));
         verify(relationService).batchSave(9L, 22L, DataScopeRelationTypeConstant.DEPT, List.of(601L, 602L));
         assertThat(service.savedScopeMenus).extracting(SysRoleMenu::getMenuId).containsExactly(21L, 22L);
-        assertThat(service.savedScopeMenus).extracting(SysRoleMenu::getDataScopeCd)
-                .containsExactly(DataScopeConstant.DEPT_ONLY, DataScopeConstant.CUSTOM);
+        assertThat(service.savedScopeMenus).extracting(SysRoleMenu::getDataScopeCd).containsExactly(DataScopeConstant.DEPT_ONLY, DataScopeConstant.CUSTOM);
 
         ArgumentCaptor<PermissionChangeEvent> eventCaptor = ArgumentCaptor.forClass(PermissionChangeEvent.class);
         verify(eventPublisher).publish(eventCaptor.capture());
@@ -199,9 +191,8 @@ class DataScopeBusinessAcceptanceIT {
         when(menuService.queryRoleMenuTree(true)).thenReturn(List.of(new MenuTreeVO()));
         when(deptService.getDeptTree(null, false, false)).thenReturn(List.of(new DeptTreeVO()));
         when(userMapper.selectListByQueryAs(any(QueryWrapper.class), eq(UserOptionVO.class))).thenReturn(List.of(new UserOptionVO()));
-        when(relationService.queryRelationByRoleIdAndMenuIds(3L, List.of(22L)))
-                .thenReturn(List.of(relation(3L, 22L, DataScopeRelationTypeConstant.USER, 7001L),
-                        relation(3L, 22L, DataScopeRelationTypeConstant.DEPT, 8001L)));
+        when(relationService.queryRelationByRoleIdAndMenuIds(3L, List.of(22L))).thenReturn(
+                List.of(relation(3L, 22L, DataScopeRelationTypeConstant.USER, 7001L), relation(3L, 22L, DataScopeRelationTypeConstant.DEPT, 8001L)));
 
         SysRoleMenuVO result = service.queryRoleMenu(3L);
 

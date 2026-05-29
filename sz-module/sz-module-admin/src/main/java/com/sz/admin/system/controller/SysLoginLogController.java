@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- * 登陆日志表 Controller
+ * 登录日志 Controller
  * </p>
  *
  * @author sz-admin
  * @since 2025-07-25
  */
-@Tag(name = "登陆日志表")
+@Tag(name = "登录日志")
 @RestController
 @RequestMapping("sys-login-log")
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class SysLoginLogController {
 
     private final SysLoginLogService sysLoginLogService;
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询登录日志列表")
     @SaCheckPermission(value = "sys.login.log.query_table")
     @GetMapping
     public ApiResult<PageResult<SysLoginLogVO>> list(SysLoginLogListDTO dto) {

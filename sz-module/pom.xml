@@ -12,6 +12,7 @@
     <modules>
         <module>sz-module-common</module>
         <module>sz-module-admin</module>
+        <module>sz-module-audit</module>
         <module>sz-module-generator</module>
     </modules>
 </project>

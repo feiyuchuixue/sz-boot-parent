@@ -25,8 +25,7 @@ public final class AppVersionUtils {
         if (isResolved(configuredVersion)) {
             return configuredVersion.trim();
         }
-        return implementationVersion(applicationClass)
-                .or(AppVersionUtils::projectPomRevision)
+        return implementationVersion(applicationClass).or(AppVersionUtils::projectPomRevision)
                 .orElseGet(() -> StringUtils.defaultIfBlank(configuredVersion, "unknown"));
     }
 
@@ -35,22 +34,16 @@ public final class AppVersionUtils {
     }
 
     private static Optional<String> implementationVersion(Class<?> applicationClass) {
-        return Optional.ofNullable(applicationClass)
-                .map(Class::getPackage)
-                .map(Package::getImplementationVersion)
-                .filter(StringUtils::isNotBlank);
+        return Optional.ofNullable(applicationClass).map(Class::getPackage).map(Package::getImplementationVersion).filter(StringUtils::isNotBlank);
     }
 
     private static Optional<String> projectPomRevision() {
-        return searchFrom(Path.of(StringUtils.defaultIfBlank(System.getProperty("user.dir"), ".")))
-                .or(AppVersionUtils::searchFromClasspath);
+        return searchFrom(Path.of(StringUtils.defaultIfBlank(System.getProperty("user.dir"), "."))).or(AppVersionUtils::searchFromClasspath);
     }
 
     private static Optional<String> searchFromClasspath() {
         try {
-            URI location = Objects.requireNonNull(AppVersionUtils.class.getProtectionDomain().getCodeSource())
-                    .getLocation()
-                    .toURI();
+            URI location = Objects.requireNonNull(AppVersionUtils.class.getProtectionDomain().getCodeSource()).getLocation().toURI();
             return searchFrom(Path.of(location));
         } catch (NullPointerException | URISyntaxException | IllegalArgumentException ex) {
             return Optional.empty();
@@ -78,12 +71,8 @@ public final class AppVersionUtils {
             return Optional.empty();
         }
         try {
-            return Files.readAllLines(pom)
-                    .stream()
-                    .map(String::trim)
-                    .filter(line -> line.startsWith(REVISION_START) && line.endsWith(REVISION_END))
-                    .map(line -> line.substring(REVISION_START.length(), line.length() - REVISION_END.length()).trim())
-                    .filter(StringUtils::isNotBlank)
+            return Files.readAllLines(pom).stream().map(String::trim).filter(line -> line.startsWith(REVISION_START) && line.endsWith(REVISION_END))
+                    .map(line -> line.substring(REVISION_START.length(), line.length() - REVISION_END.length()).trim()).filter(StringUtils::isNotBlank)
                     .findFirst();
         } catch (IOException ex) {
             return Optional.empty();

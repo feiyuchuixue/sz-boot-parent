@@ -23,7 +23,7 @@ import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
  * @author sz
  * @since 2024-12-05
  */
-@Tag(name = "模版文件表")
+@Tag(name = "模板文件管理")
 @RestController
 @RequestMapping("sys-temp-file")
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class SysTempFileController {
 
     private final SysTempFileService sysTempFileService;
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增模板文件")
     @SaCheckPermission(value = "sys.temp.file.create")
     @PostMapping
     public ApiResult<Void> create(@RequestBody SysTempFileCreateDTO dto) {
@@ -39,7 +39,7 @@ public class SysTempFileController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "修改")
+    @Operation(summary = "修改模板文件")
     @SaCheckPermission(value = "sys.temp.file.update")
     @PutMapping
     public ApiResult<Void> update(@RequestBody SysTempFileUpdateDTO dto) {
@@ -47,7 +47,7 @@ public class SysTempFileController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除模板文件")
     @SaCheckPermission(value = "sys.temp.file.remove")
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -55,14 +55,14 @@ public class SysTempFileController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询模板文件列表")
     @SaCheckPermission(value = "sys.temp.file.query_table")
     @GetMapping
     public ApiResult<PageResult<SysTempFileVO>> list(SysTempFileListDTO dto) {
         return ApiPageResult.success(sysTempFileService.page(dto));
     }
 
-    @Operation(summary = "详情")
+    @Operation(summary = "查询模板文件详情")
     @SaCheckPermission(value = "sys.temp.file.query_table")
     @GetMapping("/{id}")
     public ApiResult<SysTempFileVO> detail(@PathVariable Long id) {

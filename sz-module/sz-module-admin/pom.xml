@@ -19,6 +19,10 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-common-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-log</artifactId>
+        </dependency>
         <!-- 数据库模块 -->
         <dependency>
             <groupId>com.sz</groupId>

@@ -159,7 +159,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NoResourceFoundException.class)
     public ResponseEntity<ApiResult<Object>> handleNoResourceFoundException(NoResourceFoundException e) {
-        log.error(e.getMessage(), e);
+        if (e.getResourcePath().endsWith(".map")) {
+            log.debug(e.getMessage());
+        } else {
+            log.warn(e.getMessage());
+        }
         ApiResult<Object> body = new ApiResult<>("404", "请求资源不存在: " + e.getResourcePath());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }

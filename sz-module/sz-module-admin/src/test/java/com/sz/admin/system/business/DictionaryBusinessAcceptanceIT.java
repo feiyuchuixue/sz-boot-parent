@@ -3,7 +3,6 @@ package com.sz.admin.system.business;
 import com.sz.admin.system.controller.SysDictController;
 import com.sz.admin.system.mapper.SysDictMapper;
 import com.sz.admin.system.mapper.SysDictTypeMapper;
-import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.admin.system.script.AdminScriptExportService;
 import com.sz.admin.system.service.SysDictService;
 import com.sz.admin.system.service.SysDictTypeService;

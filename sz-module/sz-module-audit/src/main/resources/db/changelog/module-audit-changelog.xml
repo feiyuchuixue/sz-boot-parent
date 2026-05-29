@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!-- 审计模块：如不需要数据库审计能力，可移除 sz-module-audit 依赖并注释此入口。 -->
+    <include file="audit/2.0.0/001_audit_init.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

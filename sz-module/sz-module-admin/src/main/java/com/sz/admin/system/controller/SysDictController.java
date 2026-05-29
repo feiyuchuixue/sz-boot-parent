@@ -11,6 +11,8 @@ import com.sz.admin.system.service.SysDictService;
 import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,7 +38,7 @@ public class SysDictController {
 
     private final SysDictService sysDictService;
 
-    @Operation(summary = "字典新增")
+    @Operation(summary = "新增字典数据")
     @SaCheckPermission(value = "sys.dict.add_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody SysDictCreateDTO dto) {
@@ -44,7 +46,7 @@ public class SysDictController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "字典修改")
+    @Operation(summary = "修改字典数据")
     @SaCheckPermission(value = "sys.dict.update_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult<Void> update(@Valid @RequestBody SysDictUpdateDTO dto) {
@@ -52,7 +54,7 @@ public class SysDictController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "批量删除")
+    @Operation(summary = "删除字典数据")
     @SaCheckPermission(value = "sys.dict.delete_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
@@ -60,7 +62,7 @@ public class SysDictController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询字典数据列表")
     @SaCheckPermission(value = "sys.dict.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysDict>> list(@Valid SysDictListDTO dto) {
@@ -68,33 +70,35 @@ public class SysDictController {
     }
 
     @DebounceIgnore
-    @Operation(summary = "系统字典查询-全部")
+    @Operation(summary = "查询全部动态字典")
     @GetMapping("dict")
     public ApiResult<Map<String, List<DictVO>>> listDict() {
         return ApiResult.success(sysDictService.dictAll());
     }
 
     @DebounceIgnore
-    @Operation(summary = "系统静态字典查询-全部")
+    @Operation(summary = "查询全部静态字典")
     @GetMapping("static")
     public ApiResult<Map<String, List<DictVO>>> listStaticDict() {
         return ApiResult.success(sysDictService.dictStatic());
     }
 
-    @Operation(summary = "指定类型系统字典查询")
+    @Operation(summary = "查询指定类型字典")
     @GetMapping("dict/{typeCode}")
     public ApiResult<List<DictVO>> getDictDataByType(@PathVariable String typeCode) {
         return ApiResult.success(sysDictService.getDictByType(typeCode));
     }
 
-    @Operation(summary = "导出sql")
+    @Operation(summary = "导出字典 Liquibase脚本")
+    @OperationAudit(operationType = OperationType.EXPORT)
     @SaCheckPermission(value = "sys.dict.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("sql/export")
     public ApiResult<String> exportDictSql(@RequestBody SelectIdsDTO dto) {
         return ApiResult.success(sysDictService.exportDictSql(dto));
     }
 
-    @Operation(summary = "瀵煎嚭瀛楀吀鑴氭湰")
+    @Operation(summary = "导出字典 SQL脚本")
+    @OperationAudit(operationType = OperationType.EXPORT)
     @SaCheckPermission(value = "sys.dict.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping("script/export")
     public ApiResult<ScriptExportVO> exportDictScript(@RequestBody ScriptExportDTO dto) {
@@ -102,7 +106,7 @@ public class SysDictController {
     }
 
     @DebounceIgnore
-    @Operation(summary = "系统字典查询-根据类型查询")
+    @Operation(summary = "按类型批量查询字典")
     @GetMapping("code")
     public ApiResult<Map<String, List<DictVO>>> listDictByCode(@RequestParam("typeCode") List<String> typeCodes) {
         return ApiResult.success(sysDictService.getDictByCode(typeCodes));

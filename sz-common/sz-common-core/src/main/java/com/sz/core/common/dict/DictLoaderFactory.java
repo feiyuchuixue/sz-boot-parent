@@ -47,8 +47,7 @@ public class DictLoaderFactory {
         }
         DynamicDictLoader exists = dynamicLoaderMap.putIfAbsent(typeCode, dynamicLoader);
         if (exists != null) {
-            String message = "动态字典 typeCode 重复: " + typeCode + ", loaders: " + exists.getClass().getName() + ", "
-                    + dynamicLoader.getClass().getName();
+            String message = "动态字典 typeCode 重复: " + typeCode + ", loaders: " + exists.getClass().getName() + ", " + dynamicLoader.getClass().getName();
             throw new IllegalStateException(message);
         }
     }

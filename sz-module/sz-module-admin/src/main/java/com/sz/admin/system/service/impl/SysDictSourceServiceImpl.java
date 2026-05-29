@@ -25,10 +25,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;
 import static com.sz.admin.system.pojo.po.table.SysDictSourceTableDef.SYS_DICT_SOURCE;
+import static com.sz.admin.system.pojo.po.table.SysDictTypeTableDef.SYS_DICT_TYPE;
 import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_DICT_SOURCE_OPTIONS;
 
 @Service
@@ -117,15 +117,15 @@ public class SysDictSourceServiceImpl extends ServiceImpl<SysDictSourceMapper, S
 
     private void validateTypeOccupy(Long startId, Long endId, Long excludeSourceId) {
         if (excludeSourceId == null) {
-            long occupiedCount = QueryChain.of(SysDictType.class).list().stream().filter(item -> item.getId() >= startId && item.getId() <= endId).count();
+            long occupiedCount = QueryChain.of(SysDictType.class).where(SYS_DICT_TYPE.ID.ge(startId)).and(SYS_DICT_TYPE.ID.le(endId)).count();
             CommonResponseEnum.INVALID.message("来源区间已被现有字典类型占用").assertTrue(occupiedCount > 0);
             return;
         }
 
         SysDictSource old = getById(excludeSourceId);
         CommonResponseEnum.INVALID_ID.assertNull(old);
-        long outOfRangeCount = QueryChain.of(SysDictType.class).list().stream().filter(item -> Objects.equals(old.getSourceCode(), item.getSourceCode()))
-                .filter(item -> item.getId() < startId || item.getId() > endId).count();
+        long outOfRangeCount = QueryChain.of(SysDictType.class).where(SYS_DICT_TYPE.SOURCE_CODE.eq(old.getSourceCode()))
+                .and(SYS_DICT_TYPE.ID.lt(startId).or(SYS_DICT_TYPE.ID.gt(endId))).count();
         CommonResponseEnum.INVALID.message("来源区间外仍存在已绑定的字典类型，无法缩小或移动该区间").assertTrue(outOfRangeCount > 0);
     }
 }

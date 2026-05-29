@@ -58,6 +58,11 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         // id有效性校验
         wrapper = QueryWrapper.create().eq(TeacherStatistics::getId, dto.getId());
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // 唯一性校验
         saveOrUpdate(teacherStatistics);
     }

@@ -44,11 +44,9 @@ class ExcelEnumRuleResolverTest {
 
     @Test
     void resolveRejectsInvalidAnnotationCombinations() throws NoSuchFieldException {
-        assertThatThrownBy(() -> ExcelEnumRuleResolver.resolve(field("invalidYesNo")))
-                .isInstanceOf(IllegalStateException.class)
+        assertThatThrownBy(() -> ExcelEnumRuleResolver.resolve(field("invalidYesNo"))).isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("仅允许用于 YesNoEnum");
-        assertThatThrownBy(() -> ExcelEnumRuleResolver.resolve(field("invalidCustom")))
-                .isInstanceOf(IllegalStateException.class)
+        assertThatThrownBy(() -> ExcelEnumRuleResolver.resolve(field("invalidCustom"))).isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("必须同时指定");
     }
 
@@ -57,8 +55,7 @@ class ExcelEnumRuleResolverTest {
     }
 
     private enum Status {
-        ENABLED,
-        DISABLED
+        ENABLED, DISABLED
     }
 
     private static class SampleRow {

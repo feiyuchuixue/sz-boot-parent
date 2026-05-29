@@ -12,8 +12,10 @@ import com.sz.db.id.SzIdGenerator;
 import com.sz.db.id.SzSnowflakeProperties;
 import com.sz.db.listener.EntityLogicDeleteListener;
 import com.sz.db.permission.AbstractPermissionDialect;
+import com.sz.logger.AuditProperties;
 import com.sz.logger.PrintSQL;
 import cn.hutool.core.lang.Snowflake;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +42,9 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
     @Resource
     private ObjectProvider<AbstractPermissionDialect> permissionDialectProvider;
 
+    @Resource
+    private AuditProperties auditProperties;
+
     public MybatisFlexConfiguration() {
         QueryColumnBehavior.setIgnoreFunction(QueryColumnBehavior.IGNORE_NONE); // 关闭全局null参数忽略设置
         // register sz global key generator
@@ -49,7 +54,11 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
         keyConfig.setBefore(true);
         FlexGlobalConfig.getDefaultConfig().setKeyConfig(keyConfig);
 
-        PrintSQL.print();
+    }
+
+    @PostConstruct
+    public void initSqlAudit() {
+        PrintSQL.print(auditProperties.getSql());
     }
 
     @Bean

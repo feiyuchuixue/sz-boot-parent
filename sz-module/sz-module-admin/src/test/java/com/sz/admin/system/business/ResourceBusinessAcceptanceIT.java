@@ -55,8 +55,8 @@ class ResourceBusinessAcceptanceIT {
         SysResourceService service = mock(SysResourceService.class);
         SysResourceController controller = new SysResourceController(service);
         MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
-        MockMultipartFile first = new MockMultipartFile("files", "a.png", "image/png", new byte[] {1});
-        MockMultipartFile second = new MockMultipartFile("files", "b.png", "image/png", new byte[] {2});
+        MockMultipartFile first = new MockMultipartFile("files", "a.png", "image/png", new byte[]{1});
+        MockMultipartFile second = new MockMultipartFile("files", "b.png", "image/png", new byte[]{2});
         request.addFile(first);
         request.addFile(second);
         when(service.upload(eq("teacher.richtext"), eq(null), eq(first), eq("teacher"), eq("2026")))
@@ -76,7 +76,7 @@ class ResourceBusinessAcceptanceIT {
         ResourceService resourceService = mock(ResourceService.class);
         SysResourceMapper mapper = mock(SysResourceMapper.class);
         SysResourceServiceImpl service = new SysResourceServiceImpl(resourceService, resourceProperties(), mapper);
-        MockMultipartFile file = new MockMultipartFile("file", "avatar.png", "image/png", new byte[] {1, 2, 3});
+        MockMultipartFile file = new MockMultipartFile("file", "avatar.png", "image/png", new byte[]{1, 2, 3});
         ResourceUploadResult uploadResult = ResourceUploadResult.builder().objectKey("avatars/1001/avatar.png").originName("avatar.png").size(3L)
                 .contentType("image/png").eTag("etag-1").build();
         when(resourceService.upload(eq("user.avatar"), eq("1001"), eq(file), eq("profile"))).thenReturn(uploadResult);

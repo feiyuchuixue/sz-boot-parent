@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- * 模版文件历史表 Controller
+ * 模板文件历史 Controller
  * </p>
  *
  * @author sz-admin
  * @since 2024-12-14
  */
-@Tag(name = "模版文件历史表")
+@Tag(name = "模板文件历史")
 @RestController
 @RequestMapping("sys-temp-file-history")
 @RequiredArgsConstructor

@@ -10,6 +10,7 @@ spring:
   config:
     import:
       - file:config/${spring.profiles.active}/knife4j.yml
+      - file:config/${spring.profiles.active}/audit-log.yml
       - file:config/${spring.profiles.active}/oss.yml
       - file:config/${spring.profiles.active}/mybatis-flex.yml
       - file:config/${spring.profiles.active}/${DB_TYPE}.yml
@@ -29,8 +30,16 @@ app:
   version: '@project.version@'
 sz:
   api-prefix:
-    admin: /admin
-    generator: /generator
+    modules:
+      admin:
+        enabled: true
+        prefix: /admin
+      audit:
+        enabled: true
+        prefix: /audit
+      generator:
+        enabled: true
+        prefix: /generator
   # 是否启用数据权限拼接
   data-scope:
     enabled: true

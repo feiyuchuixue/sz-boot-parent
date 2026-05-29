@@ -23,17 +23,10 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = AdminCoreSpringBootTest.TestBootApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
-        "spring.config.name=admin-core-spring-boot-test",
-        "sz.resource.root=./data",
-        "sz.resource.scenes[0].code=admin.avatar",
-        "sz.resource.scenes[0].type=LOCAL",
-        "sz.resource.scenes[0].serve-mode=DIRECT",
-        "sz.resource.scenes[0].path=avatars",
-        "sz.resource.scenes[0].base-url=http://127.0.0.1/static/avatars",
-        "router.whitelist[0]=/captcha/**",
-        "router.whitelist[1]=/auth/login",
-        "sz.cors.allowed-origins[0]=http://127.0.0.1:3000"
-})
+        "spring.config.name=admin-core-spring-boot-test", "sz.resource.root=./data", "sz.resource.scenes[0].code=admin.avatar",
+        "sz.resource.scenes[0].type=LOCAL", "sz.resource.scenes[0].serve-mode=DIRECT", "sz.resource.scenes[0].path=avatars",
+        "sz.resource.scenes[0].base-url=http://127.0.0.1/static/avatars", "router.whitelist[0]=/captcha/**", "router.whitelist[1]=/auth/login",
+        "sz.cors.allowed-origins[0]=http://127.0.0.1:3000"})
 class AdminCoreSpringBootTest {
 
     @Autowired

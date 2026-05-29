@@ -30,7 +30,7 @@ public class SysDictSourceController {
 
     private final SysDictSourceService sysDictSourceService;
 
-    @Operation(summary = "字典来源列表")
+    @Operation(summary = "查询字典来源列表")
     @SaCheckPermission(value = "sys.dict.source.query_table")
     @GetMapping
     public ApiResult<PageResult<DictSourceVO>> list(SysDictSourceListDTO dto) {

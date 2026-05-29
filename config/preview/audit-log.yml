@@ -1,0 +1,71 @@
+sz:
+  # 审计日志配置。默认开启，修改后重启服务生效。
+  audit:
+    # SQL 审计日志，由 MyBatis-Flex audit 采集。
+    sql:
+      # 输出模式：all=打印全部 SQL；slow=仅打印慢 SQL；off=关闭 SQL 审计。
+      mode: all
+      # 慢 SQL 阈值，单位毫秒。仅 mode=slow 时用于判断是否输出。
+      slow-threshold-ms: 1000
+      # 是否打印完整 SQL。false 时只输出耗时、行数等摘要信息。
+      full-sql-enabled: true
+    # HTTP 访问审计日志，由控制器切面采集。
+    access:
+      # 输出模式：full=打印请求摘要并打印慢响应；slow=仅打印慢响应；off=关闭访问审计。
+      mode: full
+      # 慢请求阈值，单位毫秒。mode=full/slow 时用于判断是否输出响应日志。
+      slow-threshold-ms: 2000
+      # 是否记录请求/响应 body。默认关闭，避免敏感数据和大 body 进入日志。
+      body-enabled: false
+    # 操作审计主记录，用于查询“哪个用户在什么时间执行了什么操作”。
+    operation:
+      # 是否启用操作审计。默认开启。
+      enabled: true
+      # 主审计记录写入模式：sync=同步尽力写入；async=异步写入。默认 sync，失败不阻断业务。
+      write-mode: sync
+      # 默认自动采集的 HTTP 方法。GET 默认不采集；如果显式加入 GET，则 GET 也会自动采集。
+      methods: [POST, PUT, DELETE, PATCH]
+      # 慢操作阈值，单位毫秒。超过该阈值会标记 slowFlag，并触发性能诊断明细。
+      slow-threshold-ms: 2000
+      # 是否记录请求参数明细。默认开启；写操作会保存 query/form/body/方法参数，先脱敏再截断。关闭后仅保留摘要审计。
+      params-enabled: true
+      # 是否记录响应内容。默认关闭；开启后响应内容会先脱敏再截断，并异步写入明细表。
+      response-body-enabled: false
+      # 请求参数最大长度，超过后截断。
+      request-params-max-length: 4000
+      # 响应内容最大长度，超过后截断。
+      response-body-max-length: 4000
+      # 普通摘要字段最大长度，例如 URI、异常消息、权限码。
+      max-field-length: 500
+    # 性能、异常、响应内容等诊断明细配置。诊断数据默认异步保存，失败由文件日志兜底。
+    diagnostic:
+      # 是否启用诊断明细异步保存。
+      enabled: true
+      # 是否保存慢操作诊断明细。
+      performance-enabled: true
+      # 是否保存异常诊断明细。
+      exception-enabled: true
+      # 诊断异步队列容量。队列满时丢弃诊断明细并写 diagnostic 日志。
+      async-queue-capacity: 1000
+      # 诊断异步线程池核心线程数。
+      async-core-size: 2
+      # 诊断异步线程池最大线程数。
+      async-max-size: 4
+    # 轻量链路追踪配置，用于通过 traceId 串联文件日志、访问日志、SQL 审计和操作审计。
+    trace:
+      # 是否启用 traceId。
+      enabled: true
+      # 非 W3C traceparent 场景下使用的请求头名称。
+      header-name: X-Trace-Id
+      # 是否把 traceId 回写到响应头，便于前端和网关定位。
+      response-header-enabled: true
+      # 是否优先兼容 W3C traceparent 请求头。
+      traceparent-compatible: true
+    # 外部审计事件发布配置，用于后续扩展邮件、钉钉、Webhook、MQ 等通知体系；不影响核心操作审计入库。
+    event:
+      # 是否发布外部审计事件。关闭后仅停止 Spring 事件扩展，操作审计入库和文件兜底仍然生效。
+      enabled: true
+      # 内置 Spring 事件发布 Sink 的投递模式。默认异步，避免外部监听逻辑影响业务请求。
+      publish-mode: async
+      # 外部审计事件是否携带请求参数、响应体、异常堆栈等明细。默认关闭。
+      include-detail: false

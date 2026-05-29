@@ -37,7 +37,7 @@ public class SysDictTypeController {
 
     private final SysDictTypeService sysDictTypeService;
 
-    @Operation(summary = "字典类型新增")
+    @Operation(summary = "新增字典类型")
     @SaCheckPermission(value = "sys.dict.add_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody SysDictTypeAddDTO dto) {
@@ -45,7 +45,7 @@ public class SysDictTypeController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "字典类型修改")
+    @Operation(summary = "修改字典类型")
     @SaCheckPermission(value = "sys.dict.update_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @PutMapping
     public ApiResult<Void> update(@Valid @RequestBody SysDictTypeUpDTO dto) {
@@ -53,7 +53,7 @@ public class SysDictTypeController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "删除、批量删除")
+    @Operation(summary = "删除字典类型")
     @SaCheckPermission(value = "sys.dict.delete_type_btn", orRole = GlobalConstant.SUPER_ROLE)
     @DeleteMapping
     public ApiResult<Void> disable(@RequestBody SelectIdsDTO dto) {
@@ -61,20 +61,20 @@ public class SysDictTypeController {
         return ApiResult.success();
     }
 
-    @Operation(summary = "字段类型详情查询")
+    @Operation(summary = "查询字典类型详情")
     @GetMapping("{id}")
     public ApiResult<SysDictType> detail(@PathVariable Long id) {
         return ApiResult.success(sysDictTypeService.detail(id));
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询字典类型列表")
     @SaCheckPermission(value = "sys.dict.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping
     public ApiResult<PageResult<SysDictTypeVO>> list(SysDictTypeListDTO dto) {
         return ApiPageResult.success(sysDictTypeService.list(dto));
     }
 
-    @Operation(summary = "下拉字典类型查询")
+    @Operation(summary = "查询字典类型下拉选项")
     @GetMapping("selectOptionsType")
     public ApiResult<List<DictTypeVO>> selectOptionType() {
         return ApiResult.success(sysDictTypeService.selectDictTypeOptions());

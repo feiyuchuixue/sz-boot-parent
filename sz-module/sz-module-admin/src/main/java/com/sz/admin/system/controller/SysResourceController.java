@@ -8,6 +8,8 @@ import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.PageResult;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 import com.sz.resource.model.ResourceUploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,6 +58,7 @@ public class SysResourceController {
      */
     @DebounceIgnore
     @Operation(summary = "上传资源文件", description = "根据 sceneCode 自动选择存储驱动，并写入 sys_resource 审计记录。返回 objectKey（存入业务表）、accessUrl（前端预览用）和 resourceId。")
+    @OperationAudit(operationType = OperationType.IMPORT)
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ApiResult<ResourceUploadResult> upload(@Parameter(description = "场景编码，如 sso.provider.logo") @RequestParam("sceneCode") String sceneCode,
             @Parameter(description = "命名用业务标识，BIZ_KEY 命名规则时必填；与路径分层策略无关") @RequestParam(value = "bizKey", required = false) String namingKey,
@@ -106,6 +109,7 @@ public class SysResourceController {
      */
     @DebounceIgnore
     @Operation(summary = "批量上传资源文件", description = "支持同时上传多个文件，用于富文本编辑器等场景。每个文件独立处理，返回结果列表。")
+    @OperationAudit(operationType = OperationType.IMPORT)
     @PostMapping(value = "/batchUpload", consumes = "multipart/form-data")
     public ApiResult<List<ResourceUploadResult>> batchUpload(@Parameter(description = "场景编码，如 teacher.richtext") @RequestParam("sceneCode") String sceneCode,
             @Parameter(description = "路径分段，逗号分割，BIZ/BIZ_DATE 策略时生效") @RequestParam(value = "pathSegments", required = false) String pathSegments,
