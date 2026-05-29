@@ -3,6 +3,8 @@ package com.sz.db.permission;
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.dialect.DbType;
+import com.mybatisflex.core.dialect.KeywordWrap;
+import com.mybatisflex.core.dialect.LimitOffsetProcessor;
 import com.mybatisflex.core.dialect.OperateType;
 import com.mybatisflex.core.dialect.impl.CommonsDialectImpl;
 import com.mybatisflex.core.query.*;
@@ -33,6 +35,22 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
     protected static final String FIELD_CREATE_ID = "create_id";
 
     protected static final String FIELD_DEPT_SCOPE = "dept_scope";
+
+    /**
+     * 默认构造器：使用 MybatisFlex CommonsDialectImpl 默认配置（反引号 + MySQL LIMIT）， 适用于 MySQL
+     * 方言子类。
+     */
+    protected AbstractPermissionDialect() {
+        super();
+    }
+
+    /**
+     * 带参构造器：允许子类指定标识符包装方式与 LIMIT/OFFSET 处理器， 用于非 MySQL 数据库（如 PG 使用双引号 + POSTGRESQL
+     * LIMIT）。
+     */
+    protected AbstractPermissionDialect(KeywordWrap keywordWrap, LimitOffsetProcessor limitOffsetProcessor) {
+        super(keywordWrap, limitOffsetProcessor);
+    }
 
     /** 由子类返回当前方言对应的 DbType，供 MybatisFlexConfiguration 注册时使用。 */
     public abstract DbType getDbType();
@@ -229,7 +247,11 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
             }
         }
         boolean isJoin = CPI.getJoins(queryWrapper) != null && !CPI.getJoins(queryWrapper).isEmpty();
-        return !buildTableMap(queryTables, isJoin, joinTables).isEmpty();
+        boolean valid = !buildTableMap(queryTables, isJoin, joinTables).isEmpty();
+        if (!valid) {
+            super.prepareAuth(queryWrapper, operateType);
+        }
+        return valid;
     }
 
     private static Map<String, QueryTable> buildTableMap(List<QueryTable> queryTables, boolean isJoin, List<QueryTable> joinTables) {
