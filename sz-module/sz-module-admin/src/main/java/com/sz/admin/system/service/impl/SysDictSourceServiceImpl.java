@@ -19,17 +19,25 @@ import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
+import com.sz.platform.socket.SocketService;
+import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
+import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;
 import static com.sz.admin.system.pojo.po.table.SysDictSourceTableDef.SYS_DICT_SOURCE;
+import static com.sz.platform.enums.DynamicDictEnum.DYNAMIC_DICT_SOURCE_OPTIONS;
 
 @Service
 @RequiredArgsConstructor
 public class SysDictSourceServiceImpl extends ServiceImpl<SysDictSourceMapper, SysDictSource> implements SysDictSourceService {
+
+    private final RedisCache redisCache;
+
+    private final SocketService socketService;
 
     @Override
     public PageResult<DictSourceVO> page(SysDictSourceListDTO dto) {
@@ -50,6 +58,7 @@ public class SysDictSourceServiceImpl extends ServiceImpl<SysDictSourceMapper, S
         validateRange(dto.getStartId(), dto.getEndId(), null);
         validateTypeOccupy(dto.getStartId(), dto.getEndId(), null);
         save(BeanCopyUtils.copy(dto, SysDictSource.class));
+        syncDictSourceOptions();
     }
 
     @Override
@@ -62,6 +71,7 @@ public class SysDictSourceServiceImpl extends ServiceImpl<SysDictSourceMapper, S
         SysDictSource source = BeanCopyUtils.copy(dto, SysDictSource.class);
         source.setSourceCode(old.getSourceCode());
         saveOrUpdate(source);
+        syncDictSourceOptions();
     }
 
     @Override
@@ -74,6 +84,12 @@ public class SysDictSourceServiceImpl extends ServiceImpl<SysDictSourceMapper, S
                     .assertTrue(dictTypeCount > 0);
         }
         removeByIds(dto.getIds());
+        syncDictSourceOptions();
+    }
+
+    private void syncDictSourceOptions() {
+        redisCache.clearDict(DYNAMIC_DICT_PREFIX + DYNAMIC_DICT_SOURCE_OPTIONS.getTypeCode());
+        socketService.syncDict();
     }
 
     private static QueryWrapper buildQueryWrapper(SysDictSourceListDTO dto) {

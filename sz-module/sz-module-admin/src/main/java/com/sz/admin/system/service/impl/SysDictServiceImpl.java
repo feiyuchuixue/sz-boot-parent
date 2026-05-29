@@ -171,6 +171,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     @Override
+    public Map<String, List<DictVO>> dictStatic() {
+        return dictLoaderFactory.loadStaticDict();
+    }
+
+    @Override
     public List<DictVO> getDictByType(String typeCode) {
         return dictLoaderFactory.getDictByType(typeCode);
     }

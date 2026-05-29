@@ -31,8 +31,8 @@ public class DefaultStaticDictLoader implements DictLoader {
 
     @Override
     public Map<String, List<DictVO>> loadDict() {
-        if (redisCache.hasKey()) {
-            return redisCache.getAllDict();
+        if (redisCache.hasStaticDictLoaded()) {
+            return redisCache.getStaticDict();
         }
 
         // 查询所有字典

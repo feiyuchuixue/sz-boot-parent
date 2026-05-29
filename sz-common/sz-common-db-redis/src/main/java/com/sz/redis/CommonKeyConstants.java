@@ -21,6 +21,16 @@ public class CommonKeyConstants {
     public static final String SYS_DICT = "sys_dict";
 
     /**
+     * 静态字典全量加载标记
+     */
+    public static final String SYS_DICT_STATIC_LOADED = "sys_dict:static_loaded";
+
+    /**
+     * 静态字典类型编码列表
+     */
+    public static final String SYS_DICT_STATIC_TYPES = "sys_dict:static_types";
+
+    /**
      * 系统参数信息
      */
     public static final String SYS_CONFIG = "sys_config";

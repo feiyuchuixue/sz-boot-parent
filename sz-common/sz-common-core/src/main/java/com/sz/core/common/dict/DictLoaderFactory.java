@@ -8,14 +8,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class DictLoaderFactory {
 
-    // 动态字典加载器
-    private final List<DynamicDictLoader> dynamicLoaders = new ArrayList<>();
+    // 动态字典加载器，按完整 typeCode 精准命中
+    private final Map<String, DynamicDictLoader> dynamicLoaderMap = new LinkedHashMap<>();
 
     // 唯一的静态字典加载器
     private final DictLoader defaultLoader;
@@ -25,9 +26,7 @@ public class DictLoaderFactory {
         DictLoader foundDefault = null;
         for (DictLoader loader : allLoaders) {
             if (loader instanceof DynamicDictLoader dynamicLoader) {
-                if (Utils.isNotNull(dynamicLoader.getDynamicTypeCode())) {
-                    dynamicLoaders.add(dynamicLoader);
-                }
+                registerDynamicLoader(dynamicLoader);
             } else {
                 if (foundDefault == null) {
                     foundDefault = loader;
@@ -37,15 +36,40 @@ public class DictLoaderFactory {
         this.defaultLoader = foundDefault;
     }
 
+    private void registerDynamicLoader(DynamicDictLoader dynamicLoader) {
+        String typeCode = dynamicLoader.getDynamicTypeCode();
+        if (!Utils.isNotNull(typeCode)) {
+            throw new IllegalStateException("动态字典加载器 typeCode 不能为空: " + dynamicLoader.getClass().getName());
+        }
+        DynamicDictLoader exists = dynamicLoaderMap.putIfAbsent(typeCode, dynamicLoader);
+        if (exists != null) {
+            String message = "动态字典 typeCode 重复: " + typeCode + ", loaders: " + exists.getClass().getName() + ", "
+                    + dynamicLoader.getClass().getName();
+            throw new IllegalStateException(message);
+        }
+    }
+
+    /**
+     * 获取所有静态字典
+     *
+     * @return Map
+     */
+    public Map<String, List<DictVO>> loadStaticDict() {
+        return defaultLoader != null ? defaultLoader.loadDict() : Map.of();
+    }
+
     /**
      * 获取所有字典（静态 + 动态）
      *
      * @return Map
      */
     public Map<String, List<DictVO>> loadAllDict() {
-        Map<String, List<DictVO>> result = defaultLoader != null ? new HashMap<>(defaultLoader.loadDict()) : new HashMap<>();
-        for (DynamicDictLoader loader : dynamicLoaders) {
-            result.putAll(loader.loadDict());
+        Map<String, List<DictVO>> result = new HashMap<>(loadStaticDict());
+        for (DynamicDictLoader loader : dynamicLoaderMap.values()) {
+            Map<String, List<DictVO>> dictMap = loader.loadDict();
+            if (dictMap != null) {
+                result.putAll(dictMap);
+            }
         }
         return result;
     }
@@ -58,14 +82,15 @@ public class DictLoaderFactory {
      * @return DictVO集合
      */
     public List<DictVO> getDictByType(String typeCode) {
-        Map<String, List<DictVO>> allDict = loadAllDict();
-        if (!allDict.containsKey(typeCode)) {
-            if (typeCode.contains("dynamic_")) {
-                return List.of();
-            }
-            return defaultLoader != null ? defaultLoader.getDict(typeCode) : List.of();
+        if (!Utils.isNotNull(typeCode)) {
+            return List.of();
         }
-        return allDict.get(typeCode);
+        DynamicDictLoader dynamicLoader = dynamicLoaderMap.get(typeCode);
+        if (dynamicLoader != null) {
+            List<DictVO> dictList = dynamicLoader.getDict(typeCode);
+            return dictList != null ? dictList : List.of();
+        }
+        return defaultLoader != null ? defaultLoader.getDict(typeCode) : List.of();
     }
 
     /**
@@ -77,7 +102,7 @@ public class DictLoaderFactory {
         DictTypeService dictTypeService = SpringApplicationContextUtils.getInstance().getBean(DictTypeService.class);
         List<DictTypeVO> result = new ArrayList<>(dictTypeService.findDictType());
 
-        for (DynamicDictLoader loader : dynamicLoaders) {
+        for (DynamicDictLoader loader : dynamicLoaderMap.values()) {
             String typeCode = loader.getDynamicTypeCode();
             String name = loader.getTypeName();
             DictTypeVO dictTypeVO = DictTypeVO.builder().typeName(name).typeCode(typeCode).isDynamic(true).build();

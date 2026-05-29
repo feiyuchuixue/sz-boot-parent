@@ -74,6 +74,13 @@ public class SysDictController {
         return ApiResult.success(sysDictService.dictAll());
     }
 
+    @DebounceIgnore
+    @Operation(summary = "系统静态字典查询-全部")
+    @GetMapping("static")
+    public ApiResult<Map<String, List<DictVO>>> listStaticDict() {
+        return ApiResult.success(sysDictService.dictStatic());
+    }
+
     @Operation(summary = "指定类型系统字典查询")
     @GetMapping("dict/{typeCode}")
     public ApiResult<List<DictVO>> getDictDataByType(@PathVariable String typeCode) {
