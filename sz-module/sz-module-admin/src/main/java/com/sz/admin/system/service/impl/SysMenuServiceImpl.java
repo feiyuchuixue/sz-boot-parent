@@ -95,9 +95,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             deep = 1;
             menu.setPid(0L);
         } else {
-            wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getPid()));
-            Integer parentDeep = getOne(wrapper).getDeep();
-            deep = parentDeep + 1;
+            deep = validateAndGetMenuDeep(null, dto.getPid());
         }
         menu.setDeep(deep);
         menu.setCreateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
@@ -125,6 +123,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         // 菜单是否存在
         wrapper = QueryWrapper.create().where(SysMenuTableDef.SYS_MENU.ID.eq(dto.getId()));
         CommonResponseEnum.NOT_EXISTS.message("菜单不存在").assertTrue(count(wrapper) < 1);
+        int deep;
+        if (isRoot(dto.getPid())) {
+            deep = 1;
+            menu.setPid(0L);
+        } else {
+            deep = validateAndGetMenuDeep(dto.getId(), dto.getPid());
+        }
+        menu.setDeep(deep);
         menu.setUpdateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         menu.setUpdateTime(LocalDateTime.now());
         updateById(menu);
@@ -176,21 +182,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         // 菜单全部数据
         List<SysMenu> list = list(wrapper);
-        List<SysMenuVO> treeList = new ArrayList<>();
-        // 构建树形
-        for (SysMenuVO rootNode : getRootNodes(list)) {
-            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
-            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
-            menuVO.setMeta(meta);
-            SysMenuVO childrenNode = getChildrenNode(menuVO, list);
-            treeList.add(childrenNode);
-        }
-        return treeList;
+        return buildMenuTree(list, false);
     }
 
     @Override
     public List<SysMenuVO> findMenuListByUserId(Long userId) {
-        List<SysMenuVO> treeList = new ArrayList<>();
         // 菜单全部数据(当前用户下的)
         QueryWrapper wrapper = QueryWrapper.create()
                 .select(QueryMethods.distinct(SYS_MENU.ID, SYS_MENU.PID, SYS_MENU.PATH, SYS_MENU.NAME, SYS_MENU.TITLE, SYS_MENU.ICON, SYS_MENU.COMPONENT,
@@ -201,16 +197,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .on(SYS_ROLE_MENU.MENU_ID.eq(SYS_MENU.ID)).where(SYS_MENU.MENU_TYPE_CD.ne(MenuTypeConstant.BUTTON)).where(SYS_USER_ROLE.USER_ID.eq(userId))
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SYS_MENU.SORT.asc());
         List<SysMenu> list = list(wrapper);
-        // 构建树形
-        for (SysMenuVO rootNode : getRootNodes(list)) {
-            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
-            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
-            meta.setIsLink(("T").equals(meta.getIsLink()) ? menuVO.getRedirect() : "");
-            menuVO.setMeta(meta);
-            SysMenuVO childrenNode = getChildrenNode(menuVO, list);
-            treeList.add(childrenNode);
-        }
-        return treeList;
+        return buildMenuTree(list, true);
     }
 
     @Override
@@ -288,16 +275,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
         // 菜单全部数据
         List<SysMenu> list = list(wrapper);
-        List<SysMenuVO> treeList = new ArrayList<>();
-        // 构建树形
-        for (SysMenuVO rootNode : getRootNodes(list)) {
-            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
-            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
-            menuVO.setMeta(meta);
-            SysMenuVO childrenNode = getChildrenNode(menuVO, list);
-            treeList.add(childrenNode);
-        }
-        return treeList;
+        return buildMenuTree(list, false);
     }
 
     /**
@@ -342,19 +320,87 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return rootList;
     }
 
-    private SysMenuVO getChildrenNode(SysMenuVO sysMenu, List<SysMenu> menuList) {
+    private List<SysMenuVO> buildMenuTree(List<SysMenu> menuList, boolean fillRootMetaLink) {
+        List<SysMenuVO> treeList = new ArrayList<>();
+        Set<Long> renderedIds = new HashSet<>();
+        Set<Long> loggedIds = new HashSet<>();
+        for (SysMenuVO rootNode : getRootNodes(menuList)) {
+            SysMenuVO menuVO = BeanCopyUtils.copy(rootNode, SysMenuVO.class);
+            SysMenuVO.Meta meta = BeanCopyUtils.copy(rootNode, SysMenuVO.Meta.class);
+            if (fillRootMetaLink) {
+                meta.setIsLink(("T").equals(meta.getIsLink()) ? menuVO.getRedirect() : "");
+            }
+            menuVO.setMeta(meta);
+            treeList.add(getChildrenNode(menuVO, menuList, new LinkedHashSet<>(), renderedIds, loggedIds));
+        }
+        logSkippedMenus(menuList, renderedIds, loggedIds);
+        return treeList;
+    }
+
+    private SysMenuVO getChildrenNode(SysMenuVO sysMenu, List<SysMenu> menuList, LinkedHashSet<Long> accessPath, Set<Long> renderedIds, Set<Long> loggedIds) {
+        LinkedHashSet<Long> currentPath = new LinkedHashSet<>(accessPath);
+        if (sysMenu.getId() != null) {
+            currentPath.add(sysMenu.getId());
+            renderedIds.add(sysMenu.getId());
+        }
         List<SysMenuVO> childrenList = new ArrayList<>();
         for (SysMenu menu : menuList) {
             if (menu.getPid().equals(sysMenu.getId())) {
+                if (menu.getId() != null && currentPath.contains(menu.getId())) {
+                    if (loggedIds.add(menu.getId())) {
+                        log.error("菜单树构建发现循环引用，已跳过异常节点, menuId={}, pid={}, parentId={}, title={}", menu.getId(), menu.getPid(), sysMenu.getId(),
+                                sysMenu.getTitle());
+                    }
+                    continue;
+                }
                 SysMenuVO childrenNode = BeanCopyUtils.copy(menu, SysMenuVO.class);
                 SysMenuVO.Meta meta = BeanCopyUtils.copy(menu, SysMenuVO.Meta.class);
                 meta.setIsLink(("T").equals(meta.getIsLink()) ? childrenNode.getRedirect() : "");
                 childrenNode.setMeta(meta);
-                childrenList.add(getChildrenNode(childrenNode, menuList));
+                childrenList.add(getChildrenNode(childrenNode, menuList, currentPath, renderedIds, loggedIds));
             }
         }
         sysMenu.setChildren(childrenList);
         return sysMenu;
+    }
+
+    private void logSkippedMenus(List<SysMenu> menuList, Set<Long> renderedIds, Set<Long> loggedIds) {
+        for (SysMenu menu : menuList) {
+            if (menu.getId() != null && !renderedIds.contains(menu.getId()) && loggedIds.add(menu.getId())) {
+                log.error("菜单树构建跳过未挂载节点，可能存在父节点缺失或循环引用, menuId={}, pid={}, title={}", menu.getId(), menu.getPid(), menu.getTitle());
+            }
+        }
+    }
+
+    private int validateAndGetMenuDeep(Long menuId, Long pid) {
+        CommonResponseEnum.INVALID_ID.message("父级菜单不能选择自身").assertTrue(menuId != null && menuId.equals(pid));
+        QueryWrapper parentWrapper = QueryWrapper.create().eq(SysMenu::getId, pid).eq(SysMenu::getDelFlag, "F");
+        SysMenu parentMenu = getOne(parentWrapper);
+        CommonResponseEnum.INVALID_ID.message("父级菜单不存在").assertNull(parentMenu);
+        if (menuId != null) {
+            Set<Long> descendants = getMenuDescendantIds(menuId);
+            CommonResponseEnum.INVALID_ID.message("父级菜单不能选择当前菜单的子节点").assertTrue(descendants.contains(pid));
+        }
+        return parentMenu.getDeep() + 1;
+    }
+
+    private Set<Long> getMenuDescendantIds(Long menuId) {
+        Map<Long, List<Long>> childrenMap = list(QueryWrapper.create().eq(SysMenu::getDelFlag, "F")).stream()
+                .filter(menu -> menu.getPid() != null && menu.getId() != null)
+                .collect(Collectors.groupingBy(SysMenu::getPid, Collectors.mapping(SysMenu::getId, Collectors.toList())));
+        Set<Long> descendantIds = new HashSet<>();
+        Deque<Long> deque = new ArrayDeque<>();
+        descendantIds.add(menuId);
+        deque.add(menuId);
+        while (!deque.isEmpty()) {
+            Long currentId = deque.removeFirst();
+            for (Long childId : childrenMap.getOrDefault(currentId, Collections.emptyList())) {
+                if (descendantIds.add(childId)) {
+                    deque.addLast(childId);
+                }
+            }
+        }
+        return descendantIds;
     }
 
     /**
