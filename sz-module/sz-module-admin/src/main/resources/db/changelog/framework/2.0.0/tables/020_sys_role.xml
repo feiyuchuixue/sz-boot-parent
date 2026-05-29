@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_role: framework struct + init -->
-<changeSet  id="framework-struct-sys-role-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-role-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_role"/></not>
         </preConditions>
@@ -13,12 +18,12 @@
             <column name="id" type="BIGINT" remarks="角色ID"><constraints primaryKey="true"/></column>
             <column name="role_name" type="VARCHAR(64)" remarks="角色名称"><constraints nullable="false"/></column>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="简介"><constraints nullable="false"/></column>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除与否"><constraints nullable="false"/></column>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除与否"><constraints nullable="false"/></column>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
-            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
             <column name="permissions" type="VARCHAR(64)" defaultValue="" remarks="标识，唯一"/>
         </createTable>
     </changeSet>

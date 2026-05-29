@@ -70,7 +70,9 @@ public class SysDataRoleRelationServiceImpl extends ServiceImpl<SysDataRoleRelat
     }
     @Override
     public List<SysDataRoleRelation> listByRoleIdsAndMenuIds(Collection<String> roleIds, List<Long> menuIds) {
-        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.in(roleIds)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
+        // roles 中只含数字字符串（role id），转 Long 避免 PG bigint = varchar 类型不匹配
+        List<Long> numericRoleIds = roleIds.stream().map(Long::valueOf).toList();
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_DATA_ROLE_RELATION.ROLE_ID.in(numericRoleIds)).where(SYS_DATA_ROLE_RELATION.MENU_ID.in(menuIds));
         return list(wrapper);
     }
 

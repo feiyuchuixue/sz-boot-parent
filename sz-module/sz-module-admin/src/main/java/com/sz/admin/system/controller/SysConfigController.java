@@ -68,7 +68,7 @@ public class SysConfigController {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.config.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<SysConfig> detail(@PathVariable Object id) {
+    public ApiResult<SysConfig> detail(@PathVariable Long id) {
         return ApiResult.success(sysConfigService.detail(id));
     }
 

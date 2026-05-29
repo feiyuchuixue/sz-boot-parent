@@ -17,6 +17,6 @@ public class UserRoleInfoVO {
     private Long userId;
 
     @Schema(description = "角色ID")
-    private String roleIds;
+    private Long roleId;
 
 }

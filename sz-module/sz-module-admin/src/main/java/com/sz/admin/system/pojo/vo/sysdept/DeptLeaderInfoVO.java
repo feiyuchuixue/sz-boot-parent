@@ -1,22 +1,21 @@
-package com.sz.admin.system.pojo.vo.sysuser;
+package com.sz.admin.system.pojo.vo.sysdept;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * UserDeptVO
- * 
+ * DeptLeaderInfoVO
+ *
  * @author sz
- * @since 2024/4/8 9:04
  * @version 1.0
  */
 @Data
-public class UserDeptInfoVO {
-
-    @Schema(description = "用户ID")
-    private Long userId;
+public class DeptLeaderInfoVO {
 
     @Schema(description = "部门ID")
     private Long deptId;
+
+    @Schema(description = "负责人ID")
+    private Long leaderId;
 
 }

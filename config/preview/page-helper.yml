@@ -1,5 +1,5 @@
 page-helper:
-  helperDialect: mysql
+  autoDialect: true
   reasonable: false
   supportMethodsArguments: true
   params: count=countSql

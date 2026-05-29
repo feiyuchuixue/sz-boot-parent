@@ -41,15 +41,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     List<SysUserVO> queryAllSysUserList(SysUserListDTO dto);
 
     /**
-     * 查询全部部门的用户名称列表
-     * 
-     * @param ids
-     *            用户id
-     * @return 用户名称列表
-     */
-    List<SysUserVO> queryAllSysUserNameList(String[] ids);
-
-    /**
      * 查询（部门）用户列表
      * 
      * @param dto

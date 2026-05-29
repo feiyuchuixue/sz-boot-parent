@@ -104,8 +104,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         menu.setCreateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         menu.setHasChildren("F");
         save(menu);
-        this.mapper.syncTreeDeep();
-        this.mapper.syncTreeHasChildren();
+        syncTreeDeep();
+        syncTreeHasChildren();
         // 发布Permission 变更通知
         UserPermissionChangeMessage message = new UserPermissionChangeMessage(null, true);
         redisService.sendPermissionChangeMsg(message);
@@ -129,8 +129,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         menu.setUpdateId(Objects.requireNonNull(LoginUtils.getLoginUser()).getUserInfo().getId());
         menu.setUpdateTime(LocalDateTime.now());
         updateById(menu);
-        this.mapper.syncTreeDeep();
-        this.mapper.syncTreeHasChildren();
+        syncTreeDeep();
+        syncTreeHasChildren();
 
         // 发布Permission 变更通知
         UserPermissionChangeMessage message = new UserPermissionChangeMessage(null, true);
@@ -149,10 +149,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public void remove(SelectIdsDTO dto) {
         if (Utils.isNotNull(dto.getIds())) {
             // 递归查询下边的子节点id
-            List<Long> list = this.mapper.selectMenuAndChildrenIds((List<Long>) dto.getIds());
+            List<Long> list = this.mapper.selectMenuAndChildrenIds(dto.getIds());
             this.mapper.updateMenuAndChildrenIsDelete(list);
-            this.mapper.syncTreeDeep();
-            this.mapper.syncTreeHasChildren();
+            syncTreeDeep();
+            syncTreeHasChildren();
             // 发布Permission 变更通知
             UserPermissionChangeMessage message = new UserPermissionChangeMessage(null, true);
             redisService.sendPermissionChangeMsg(message);
@@ -218,8 +218,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public List<MenuTreeVO> getSimpleMenuTree(Long nodeId) {
         // 创建根目录节点并将所有数据包裹在其中
         MenuTreeVO root = new MenuTreeVO();
-        root.setId("0"); // 根目录ID通常为0
-        root.setPid("-1"); // 设置一个无效的值作为根目录的PID
+        root.setId(0L); // 根目录ID通常为0
+        root.setPid(-1L); // 设置一个无效的值作为根目录的PID
         root.setTitle("根目录"); // 根目录的标题
 
         QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, "1002003") // 排除按钮
@@ -258,7 +258,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         String generatedContent = "";
         if (Utils.isNotNull(dto.getIds())) {
             // 递归查询下边的子节点id
-            List<Long> list = this.mapper.selectMenuAndChildrenIds((List<Long>) dto.getIds());
+            List<Long> list = this.mapper.selectMenuAndChildrenIds(dto.getIds());
             QueryWrapper queryWrapper = QueryWrapper.create().in(SysMenu::getId, list).orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
             List<SysMenu> sysMenuList = list(queryWrapper);
             if (Utils.isNotNull(sysMenuList)) {
@@ -401,6 +401,73 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .isNotNull(SysMenu::getPermissions).ne(SysMenu::getPermissions, "");
 
         return listAs(queryWrapper, String.class);
+    }
+
+    /**
+     * 全量刷新菜单树的 deep 字段（兼容 MySQL 和 PostgreSQL）。
+     * <p>
+     * 原逻辑：每个节点的 deep = 父节点 deep + 1，根节点（pid=0）不参与更新。 通过 Java 层推导替代 MySQL 专有的
+     * UPDATE...JOIN 语法。
+     */
+    private void syncTreeDeep() {
+        // 查询所有未删除菜单的 id / pid / deep
+        List<SysMenu> allMenus = QueryChain.of(SysMenu.class).select(SYS_MENU.ID, SYS_MENU.PID, SYS_MENU.DEEP).where(SYS_MENU.DEL_FLAG.eq("F")).list();
+        if (allMenus.isEmpty())
+            return;
+
+        // 构建 id -> deep 映射，用于查父节点 deep
+        Map<Long, Integer> deepMap = allMenus.stream().collect(Collectors.toMap(SysMenu::getId, SysMenu::getDeep));
+
+        // 遍历非根节点，计算期望 deep，收集需要更新的行
+        List<SysMenu> toUpdate = new ArrayList<>();
+        for (SysMenu menu : allMenus) {
+            if (menu.getPid() == null || menu.getPid().equals(0L))
+                continue;
+            Integer parentDeep = deepMap.get(menu.getPid());
+            if (parentDeep == null)
+                continue;
+            int expectedDeep = parentDeep + 1;
+            if (menu.getDeep() == null || expectedDeep != menu.getDeep()) {
+                SysMenu update = new SysMenu();
+                update.setId(menu.getId());
+                update.setDeep(expectedDeep);
+                toUpdate.add(update);
+            }
+        }
+        if (!toUpdate.isEmpty()) {
+            updateBatch(toUpdate);
+        }
+    }
+
+    /**
+     * 全量刷新菜单树的 has_children 字段（兼容 MySQL 和 PostgreSQL）。
+     * <p>
+     * 原逻辑：有子节点的菜单标记 'T'，无子节点标记 'F'。 比原 SQL 更完整：原 SQL 只写 'T'，删除子节点后 'F' 不会被还原；此处同时修正
+     * 'F'。
+     */
+    private void syncTreeHasChildren() {
+        // 查询所有未删除菜单的 id / pid / has_children
+        List<SysMenu> allMenus = QueryChain.of(SysMenu.class).select(SYS_MENU.ID, SYS_MENU.PID, SYS_MENU.HAS_CHILDREN).where(SYS_MENU.DEL_FLAG.eq("F")).list();
+        if (allMenus.isEmpty())
+            return;
+
+        // 统计所有作为 pid 出现的 id（即有子节点的菜单 id）
+        Set<Long> parentIds = allMenus.stream().map(SysMenu::getPid).filter(pid -> pid != null && !pid.equals(0L)).collect(Collectors.toSet());
+
+        // 遍历全部菜单，对比期望值与当前值，收集需更新的行
+        List<SysMenu> toUpdate = new ArrayList<>();
+        for (SysMenu menu : allMenus) {
+            String expected = parentIds.contains(menu.getId()) ? "T" : "F";
+            if (!expected.equals(menu.getHasChildren())) {
+                SysMenu update = new SysMenu();
+                update.setId(menu.getId());
+                update.setHasChildren(expected);
+                toUpdate.add(update);
+            }
+        }
+        if (!toUpdate.isEmpty()) {
+            updateBatch(toUpdate);
+        }
     }
 
     @Override

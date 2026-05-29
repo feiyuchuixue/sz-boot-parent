@@ -28,7 +28,7 @@ public interface SysConfigService extends IService<SysConfig> {
 
     void remove(SelectIdsDTO dto);
 
-    SysConfig detail(Object id);
+    SysConfig detail(Long id);
 
     Map<String, String> getConfigVO();
 }

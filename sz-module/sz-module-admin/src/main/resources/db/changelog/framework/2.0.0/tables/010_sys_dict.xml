@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_dict: framework struct + init -->
-<changeSet  id="framework-struct-sys-dict-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-dict-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_dict"/></not>
         </preConditions>
@@ -17,12 +22,12 @@
             <column name="sort" type="INT" remarks="排序(正序)"><constraints nullable="false"/></column>
             <column name="callback_show_style" type="VARCHAR(255)" remarks="回显样式"/>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注"><constraints nullable="false"/></column>
-            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
-            <column name="is_show" type="ENUM('T','F')" defaultValue="T" remarks="是否展示"><constraints nullable="false"/></column>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="是否删除"><constraints nullable="false"/></column>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
-            <column name="delete_time" type="DATETIME" remarks="删除时间"/>
+            <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="is_show" type="${bool.type}" defaultValue="T" remarks="是否展示"><constraints nullable="false"/></column>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="是否删除"><constraints nullable="false"/></column>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
+            <column name="delete_time" type="${datetime.type}" remarks="删除时间"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
             <column name="delete_id" type="BIGINT" remarks="删除人ID"/>
@@ -455,6 +460,45 @@
             <column name="del_flag" value="F"/>
             <column name="create_time" valueDate="2025-07-29 22:49:34"/>
             <column name="update_time" valueDate="2025-07-29 22:49:34"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- yes_no 字典条目：T=是(success) / F=否(danger)，isLock=T，前端通过 alias 匹配 -->
+    <changeSet id="framework-init-yes-no-dict-202605120000" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_dict WHERE sys_dict_type_id = 1010</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1010001"/>
+            <column name="sys_dict_type_id" valueNumeric="1010"/>
+            <column name="code_name" value="是"/>
+            <column name="alias" value="T"/>
+            <column name="sort" valueNumeric="1"/>
+            <column name="callback_show_style" value="success"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2026-05-12 00:00:00"/>
+            <column name="update_time" valueDate="2026-05-12 00:00:00"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="sys_dict">
+            <column name="id" valueNumeric="1010002"/>
+            <column name="sys_dict_type_id" valueNumeric="1010"/>
+            <column name="code_name" value="否"/>
+            <column name="alias" value="F"/>
+            <column name="sort" valueNumeric="2"/>
+            <column name="callback_show_style" value="danger"/>
+            <column name="remark" value=""/>
+            <column name="is_lock" value="T"/>
+            <column name="is_show" value="T"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2026-05-12 00:00:00"/>
+            <column name="update_time" valueDate="2026-05-12 00:00:00"/>
             <column name="create_id" valueNumeric="1"/>
             <column name="update_id" valueNumeric="1"/>
         </insert>

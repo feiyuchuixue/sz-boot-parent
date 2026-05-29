@@ -32,7 +32,7 @@
 
     <!--查询（部门）用户列表-->
     <select id="querySysUserListByDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT su.*
+        SELECT DISTINCT su.*
         FROM sys_user su
         JOIN sys_user_dept sud ON su.id = sud.user_id
         JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
@@ -63,12 +63,11 @@
         <if test="phone != null and phone != ''">
             AND su.phone = #{phone}
         </if>
-        GROUP BY su.id
         ORDER BY su.create_time ASC
     </select>
     <!--查询（未分配部门）用户列表-->
     <select id="querySysUserListNotDept" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT su.*
+        SELECT DISTINCT su.*
         FROM sys_user su
         LEFT JOIN sys_user_dept sud ON su.id = sud.user_id
         LEFT JOIN sys_dept_closure sdc ON sud.dept_id = sdc.ancestor_id
@@ -84,7 +83,6 @@
         <if test="phone != null and phone != ''">
             AND su.phone = #{phone}
         </if>
-        GROUP BY su.id
         ORDER BY su.create_time ASC
     </select>
     <select id="queryAllSysUserList" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
@@ -94,17 +92,6 @@
             <if test="nickname != null and nickname != ''">AND su.nickname like concat('%', #{nickname}, '%')</if>
             <if test="username != null and username != ''">AND su.username = #{username}</if>
             <if test="phone != null and phone != ''">AND su.phone = #{phone}</if>
-        </where>
-        ORDER BY su.create_time ASC
-    </select>
-    <select id="queryAllSysUserNameList" resultType="com.sz.admin.system.pojo.vo.sysuser.SysUserVO">
-        SELECT username FROM sys_user su
-        <where>
-            su.del_flag = 'F'
-            AND id IN
-            <foreach collection="ids" item="id" open="(" separator="," close=")">
-                #{id}
-            </foreach>
         </where>
         ORDER BY su.create_time ASC
     </select>

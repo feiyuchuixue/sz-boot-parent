@@ -4,6 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_config: framework struct + init -->
 <changeSet  id="framework-struct-sys-config-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -14,12 +19,12 @@
             <column name="config_name" type="VARCHAR(50)" remarks="参数名"><constraints nullable="false"/></column>
             <column name="config_key" type="VARCHAR(50)" remarks="参数key"><constraints nullable="false"/></column>
             <column name="config_value" type="VARCHAR(512)" remarks="参数value"><constraints nullable="false"/></column>
-            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"/>
-            <column name="frontend_visible" type="ENUM('T','F')" defaultValue="F" remarks="该参数是否需要前端加载、缓存及使用"/>
+            <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定"/>
+            <column name="frontend_visible" type="${bool.type}" defaultValue="F" remarks="该参数是否需要前端加载、缓存及使用"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
             <column name="remark" type="VARCHAR(255)" remarks="备注"/>
         </createTable>
     </changeSet>

@@ -33,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -135,16 +134,35 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDeptVO> list(SysDeptListDTO dto) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .select(SYS_DEPT.ALL_COLUMNS, QueryMethods.groupConcat(if_(SYS_USER.DEL_FLAG.eq("F"), SYS_DEPT_LEADER.LEADER_ID, null_())).as("leader_ids"))
-                .from(SYS_DEPT).leftJoin(SYS_DEPT_LEADER).on(SYS_DEPT.ID.eq(SYS_DEPT_LEADER.DEPT_ID)).leftJoin(SYS_USER)
-                .on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).groupBy(SYS_DEPT.ID);
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_DEPT.ALL_COLUMNS).from(SYS_DEPT);
 
         List<SysDeptVO> deptVOS = listAs(wrapper, SysDeptVO.class);
+        setDeptLeaderInfo(deptVOS);
         setDeptRoleInfo(deptVOS);
         SysDeptVO root = TreeUtils.getRoot(SysDeptVO.class);
         List<SysDeptVO> trees = TreeUtils.buildTree(deptVOS, root);
         return trees.getFirst().getChildren();
+    }
+
+    /**
+     * 添加部门负责人信息（Java层聚合，兼容 MySQL 和 PostgreSQL）
+     */
+    private void setDeptLeaderInfo(List<SysDeptVO> deptList) {
+        if (deptList.isEmpty()) {
+            return;
+        }
+        List<Long> deptIds = deptList.stream().map(SysDeptVO::getId).collect(Collectors.toList());
+        List<DeptLeaderInfoVO> leaderInfos = QueryChain.of(leaderMapper).select(SYS_DEPT_LEADER.DEPT_ID.as("deptId"), SYS_DEPT_LEADER.LEADER_ID.as("leaderId"))
+                .from(SYS_DEPT_LEADER).leftJoin(SYS_USER).on(SYS_DEPT_LEADER.LEADER_ID.eq(SYS_USER.ID)).where(SYS_DEPT_LEADER.DEPT_ID.in(deptIds))
+                .and(SYS_USER.DEL_FLAG.eq("F")).listAs(DeptLeaderInfoVO.class);
+        Map<Long, List<Long>> leaderMap = leaderInfos.stream()
+                .collect(Collectors.groupingBy(DeptLeaderInfoVO::getDeptId, Collectors.mapping(DeptLeaderInfoVO::getLeaderId, Collectors.toList())));
+        for (SysDeptVO dept : deptList) {
+            List<Long> ids = leaderMap.get(dept.getId());
+            if (ids != null) {
+                dept.setLeaderIds(ids.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            }
+        }
     }
 
     /**
@@ -172,7 +190,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public void remove(SelectIdsDTO dto) {
-        List<Long> ids = (List<Long>) dto.getIds();
+        List<Long> ids = dto.getIds();
         CommonResponseEnum.INVALID_ID.assertTrue(ids.isEmpty());
         // 根据要删除的id，获取所有子集id
         List<Long> descendants = deptClosureService.descendants(ids);
@@ -180,8 +198,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     @Override
-    public SysDeptVO detail(Object id) {
-        SysDept sysDept = getById((Serializable) id);
+    public SysDeptVO detail(Long id) {
+        SysDept sysDept = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(sysDept);
         SysDeptVO deptVO = BeanCopyUtils.copy(sysDept, SysDeptVO.class);
         // 查询指定部门的负责人
@@ -227,7 +245,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     @Override
-    public List<DeptTreeVO> getDeptTree(Integer excludeNodeId, Boolean appendRoot, Boolean needSetTotal) {
+    public List<DeptTreeVO> getDeptTree(Long excludeNodeId, Boolean appendRoot, Boolean needSetTotal) {
         QueryWrapper wrapper = QueryWrapper.create()
                 // .orderBy(SysDept::getDeep).asc()
                 .orderBy(SysDept::getSort).asc();

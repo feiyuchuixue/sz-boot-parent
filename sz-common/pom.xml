@@ -16,6 +16,7 @@
         <module>sz-common-db-mongodb</module>
         <module>sz-common-db-core</module>
         <module>sz-common-db-mysql</module>
+        <module>sz-common-db-postgresql</module>
         <module>sz-common-db-redis</module>
         <module>sz-common-excel</module>
         <module>sz-common-generator</module>

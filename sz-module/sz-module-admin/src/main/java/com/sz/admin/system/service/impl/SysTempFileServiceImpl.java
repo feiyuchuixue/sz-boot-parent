@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 import static com.sz.admin.system.pojo.po.table.SysResourceTableDef.SYS_RESOURCE;
 import static com.sz.admin.system.pojo.po.table.SysTempFileTableDef.SYS_TEMP_FILE;
@@ -105,8 +104,8 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
     }
 
     @Override
-    public SysTempFileVO detail(Object id) {
-        SysTempFile sysTempFile = getById((Serializable) id);
+    public SysTempFileVO detail(Long id) {
+        SysTempFile sysTempFile = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(sysTempFile);
         SysTempFileVO vo = BeanCopyUtils.copy(sysTempFile, SysTempFileVO.class);
         fillAccessUrl(vo);

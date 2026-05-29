@@ -7,7 +7,6 @@ import com.github.pagehelper.PageHelper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryCondition;
-import com.mybatisflex.core.query.QueryMethods;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -233,24 +232,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取所有用户的 ID 列表
         List<Long> userIds = userList.stream().map(SysUserVO::getId).collect(Collectors.toList());
 
-        // 查询用户的部门信息并转换为 Map
-        Map<Long, UserDeptInfoVO> userDeptMap = new HashMap<>();
-        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_DEPT.USER_ID, QueryMethods.groupConcat(SYS_USER_DEPT.DEPT_ID).as("deptIds"))
-                .from(SYS_USER_DEPT).join(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID)).where(SYS_USER_DEPT.USER_ID.in(userIds))
-                .groupBy(SYS_USER_DEPT.USER_ID);
+        // 查询用户的部门明细（不使用 GROUP_CONCAT，兼容 MySQL 和 PostgreSQL）
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_DEPT.USER_ID, SYS_USER_DEPT.DEPT_ID).from(SYS_USER_DEPT).join(SYS_DEPT)
+                .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID)).where(SYS_USER_DEPT.USER_ID.in(userIds));
         List<UserDeptInfoVO> userDeptList = listAs(wrapper, UserDeptInfoVO.class);
 
+        // Java 层按 userId 分组，将多个 deptId 合并为逗号分隔字符串
+        Map<Long, String> userDeptMap = new HashMap<>();
         if (userDeptList != null) {
-            for (UserDeptInfoVO userDeptInfoVO : userDeptList) {
-                userDeptMap.put(userDeptInfoVO.getUserId(), userDeptInfoVO);
-            }
+            userDeptList.stream()
+                    .collect(
+                            Collectors.groupingBy(UserDeptInfoVO::getUserId, Collectors.mapping(vo -> String.valueOf(vo.getDeptId()), Collectors.joining(","))))
+                    .forEach(userDeptMap::put);
         }
         // 遍历用户列表，设置用户的部门信息
         for (SysUserVO user : userList) {
-            // 检查部门信息是否存在
             if (userDeptMap.containsKey(user.getId())) {
-                UserDeptInfoVO infoVO = userDeptMap.get(user.getId());
-                user.setDeptIds(infoVO.getDeptIds());
+                user.setDeptIds(userDeptMap.get(user.getId()));
             }
         }
     }
@@ -262,23 +260,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取所有用户的 ID 列表
         List<Long> userIds = userList.stream().map(SysUserVO::getId).collect(Collectors.toList());
 
-        // 查询用户的部门信息并转换为 Map
-        Map<Long, UserRoleInfoVO> userRoleMap = new HashMap<>();
-        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_ROLE.USER_ID, QueryMethods.groupConcat(SYS_USER_ROLE.ROLE_ID).as("role_ids"))
-                .from(SYS_USER_ROLE).innerJoin(SYS_ROLE).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE.ID)).where(SYS_USER_ROLE.USER_ID.in(userIds))
-                .groupBy(SYS_USER_ROLE.USER_ID);
-        List<UserRoleInfoVO> userDeptList = listAs(wrapper, UserRoleInfoVO.class);
-        if (userDeptList != null) {
-            for (UserRoleInfoVO infoVO : userDeptList) {
-                userRoleMap.put(infoVO.getUserId(), infoVO);
-            }
+        // 查询用户的角色明细（不使用 GROUP_CONCAT，兼容 MySQL 和 PostgreSQL）
+        QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER_ROLE.USER_ID, SYS_USER_ROLE.ROLE_ID).from(SYS_USER_ROLE).innerJoin(SYS_ROLE)
+                .on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE.ID)).where(SYS_USER_ROLE.USER_ID.in(userIds));
+        List<UserRoleInfoVO> userRoleList = listAs(wrapper, UserRoleInfoVO.class);
+
+        // Java 层按 userId 分组，将多个 roleId 合并为逗号分隔字符串
+        Map<Long, String> userRoleMap = new HashMap<>();
+        if (userRoleList != null) {
+            userRoleList.stream()
+                    .collect(
+                            Collectors.groupingBy(UserRoleInfoVO::getUserId, Collectors.mapping(vo -> String.valueOf(vo.getRoleId()), Collectors.joining(","))))
+                    .forEach(userRoleMap::put);
         }
-        // 遍历用户列表，设置用户的部门信息
+        // 遍历用户列表，设置用户的角色信息
         for (SysUserVO user : userList) {
-            // 检查部门信息是否存在
             if (userRoleMap.containsKey(user.getId())) {
-                UserRoleInfoVO infoVO = userRoleMap.get(user.getId());
-                user.setRoleIds(infoVO.getRoleIds());
+                user.setRoleIds(userRoleMap.get(user.getId()));
             }
         }
     }
@@ -305,6 +303,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return sysUserRoleVO;
     }
 
+    @Transactional
     @Override
     public void changeSysUserRole(SysUserRoleDTO dto) {
         // 删除当前用户下的所有角色
@@ -455,16 +454,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             userDeptAndChildrenMap.put(uid, new ArrayList<>(deptAndChildren));
         }
 
-        // 8. 数据权限：收集所有普通用户角色并集，统一查 1 次 getUserScope
-        Map<Long, RoleMenuScopeVO> fullScopeMap = Collections.emptyMap();
-        if (dataScopeProperties.isEnabled()) {
-            Set<String> allRoles = userRolesMap.values().stream().flatMap(List::stream).collect(Collectors.toSet());
-            // getUserScope 内部已按 role IN (...) 过滤，返回结果是所有角色对应的菜单数据权限配置
-            // 该结果按 menuId 维度存储，与具体用户无关，所有普通用户直接共享
-            fullScopeMap = sysRoleMenuService.getUserScope(allRoles);
-        }
-
-        // 9. 按 userId 逐个组装 LoginUser（DB 密集查询均已在上方批量完成）
+        // 8. 按 userId 逐个组装 LoginUser（DB 密集查询均已在上方批量完成）
+        // 数据权限范围必须按"用户各自角色集合"独立计算：getUserScope 的合并逻辑
+        // （1006005 自定义优先 / 取最小 dataScopeCd）依赖入参角色子集，不能跨用户共享，
+        // 否则会导致用户 A 拿到用户 B 的自定义范围。
         for (SysUser user : normalUsers) {
             Long uid = user.getId();
             BaseUserInfo userInfo = BeanCopyUtils.copy(user, BaseUserInfo.class);
@@ -482,7 +475,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             loginUser.setDeptAndChildren(userDeptAndChildrenMap.getOrDefault(uid, Collections.emptyList()));
 
             if (dataScopeProperties.isEnabled()) {
-                loginUser.setDataScope(fullScopeMap);
+                // 按该用户自身的角色集合独立计算数据权限，避免跨用户污染
+                Map<Long, RoleMenuScopeVO> userScope = sysRoleMenuService.getUserScope(new HashSet<>(roles));
+                loginUser.setDataScope(userScope);
                 // getBtnMenuByPermissions 入参是 permissions，按用户自己的 permissions 查（本次不批量化）
                 loginUser.setPermissionAndMenuIds(menuService.getBtnMenuByPermissions(loginUser.getPermissions()));
             }
@@ -504,10 +499,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void unlock(SelectIdsDTO dto) {
         if (dto.getIds() == null || dto.getIds().isEmpty())
             return;
-        String[] ids = dto.getIds().stream().map(Utils::getStringVal).filter(Objects::nonNull).toArray(String[]::new);
-        List<SysUserVO> sysUserVOS = this.mapper.queryAllSysUserNameList(ids);
-        for (SysUserVO sysUserVO : sysUserVOS) {
-            RedisUtils.removeKey(CommonKeyConstants.SYS_PWD_ERR_CNT, Utils.getStringVal(sysUserVO.getUsername()));
+        List<String> usernames = QueryChain.of(SysUser.class).select(SYS_USER.USERNAME).where(SYS_USER.DEL_FLAG.eq("F")).and(SYS_USER.ID.in(dto.getIds()))
+                .listAs(String.class);
+        for (String username : usernames) {
+            RedisUtils.removeKey(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         }
     }
 
@@ -606,11 +601,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public PageResult<UserVO> pageSelector(SelectorQueryDTO dto) {
         String keyword = dto.getKeyword();
-        Object parentId = dto.getParentId();
+        Long parentId = dto.getParentId();
 
         QueryWrapper wrapper = QueryWrapper.create().select(SYS_USER.ID, SYS_USER.USERNAME, SYS_USER.NICKNAME.as("name"), SYS_USER.PHONE).from(SYS_USER);
 
-        if (parentId != null && !("-1").equals(parentId.toString())) {
+        if (parentId != null && parentId != -1L) {
             wrapper.join(SYS_USER_DEPT).on(SYS_USER.ID.eq(SYS_USER_DEPT.USER_ID)).join(SYS_DEPT_CLOSURE)
                     .on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT_CLOSURE.DESCENDANT_ID)).join(SYS_DEPT).on(SYS_USER_DEPT.DEPT_ID.eq(SYS_DEPT.ID))
                     .where(SYS_DEPT_CLOSURE.DESCENDANT_ID.isNotNull()).and(SYS_DEPT_CLOSURE.ANCESTOR_ID.eq(parentId)).groupBy(SYS_USER.ID)

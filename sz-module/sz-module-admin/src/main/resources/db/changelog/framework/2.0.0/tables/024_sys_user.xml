@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_user: framework struct + init -->
-<changeSet  id="framework-struct-sys-user-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-user-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_user"/></not>
         </preConditions>
@@ -23,10 +28,10 @@
             <column name="email" type="VARCHAR(256)" remarks="邮箱地址"/>
             <column name="account_status_cd" type="VARCHAR(10)" remarks="账户状态 (如 冻结；禁言；正常。 关联字典表account_status)"/>
             <column name="user_tag_cd" type="VARCHAR(255)" defaultValue="" remarks="标签（自定义关联到字典表）"/>
-            <column name="last_login_time" type="DATETIME" remarks="最近一次登录时间"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="是否删除"/>
+            <column name="last_login_time" type="${datetime.type}" remarks="最近一次登录时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="是否删除"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
         </createTable>

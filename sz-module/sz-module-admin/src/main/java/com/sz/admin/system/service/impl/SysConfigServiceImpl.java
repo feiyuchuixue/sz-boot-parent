@@ -21,7 +21,6 @@ import com.sz.redis.RedisCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +83,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    public SysConfig detail(Object id) {
-        return getById((Serializable) id);
+    public SysConfig detail(Long id) {
+        return getById(id);
     }
 
     @Override

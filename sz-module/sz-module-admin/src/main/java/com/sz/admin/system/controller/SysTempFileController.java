@@ -65,7 +65,7 @@ public class SysTempFileController {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.temp.file.query_table")
     @GetMapping("/{id}")
-    public ApiResult<SysTempFileVO> detail(@PathVariable Object id) {
+    public ApiResult<SysTempFileVO> detail(@PathVariable Long id) {
         return ApiResult.success(sysTempFileService.detail(id));
     }
 }

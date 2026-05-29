@@ -4,8 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="datetime.type" value="DATETIME"  dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP" dbms="postgresql"/>
+
     <!-- sys_temp_file_history: framework struct + init -->
-<changeSet  id="framework-struct-sys-temp-file-history-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-temp-file-history-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_temp_file_history"/></not>
         </preConditions>
@@ -14,12 +17,12 @@
             <column name="sys_temp_file_id" type="BIGINT" remarks="模版文件ID"/>
             <column name="sys_file_id" type="BIGINT" remarks="文件ID"/>
             <column name="temp_name" type="VARCHAR(255)" defaultValue="" remarks="模版名"/>
-            <column name="url" type="JSON" remarks="地址(JSON数组对象)"/>
+            <column name="url" type="TEXT" remarks="地址(JSON数组对象)"/>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注"/>
             <column name="create_id" type="BIGINT" remarks="创建人"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
             <column name="update_id" type="BIGINT" remarks="更新人"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

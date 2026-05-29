@@ -38,11 +38,11 @@ public interface SysDeptService extends IService<SysDept> {
 
     void remove(SelectIdsDTO dto);
 
-    SysDeptVO detail(Object id);
+    SysDeptVO detail(Long id);
 
     List<DeptTreeVO> getDepartmentTreeWithAdditionalNodes();
 
-    List<DeptTreeVO> getDeptTree(Integer excludeNodeId, Boolean appendRoot, Boolean needSetTotal);
+    List<DeptTreeVO> getDeptTree(Long excludeNodeId, Boolean appendRoot, Boolean needSetTotal);
 
     SysDeptLeaderVO findSysUserDeptLeader();
 

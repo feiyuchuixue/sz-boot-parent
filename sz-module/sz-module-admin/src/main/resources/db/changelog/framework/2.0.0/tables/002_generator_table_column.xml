@@ -37,7 +37,7 @@
             <column name="html_type" type="VARCHAR(255)" remarks="显示类型"/>
             <column name="dict_type" type="VARCHAR(255)" remarks="字典类型"/>
             <column name="is_logic_del" type="CHAR(1)" defaultValue="0" remarks="是否逻辑删除(1 是)"/>
-            <column name="options" type="VARCHAR(255)" remarks="其他设置"/>
+            <column name="options" type="TEXT" remarks="其他设置"/>
             <column name="sort" type="INT" remarks="排序"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>

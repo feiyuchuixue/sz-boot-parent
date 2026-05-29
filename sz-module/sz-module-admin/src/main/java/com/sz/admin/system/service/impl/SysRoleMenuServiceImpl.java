@@ -14,6 +14,7 @@ import com.sz.core.common.entity.RoleMenuScopeVO;
 import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.service.*;
+import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.Utils;
 import com.sz.platform.event.PermissionChangeEvent;
@@ -189,9 +190,15 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         if (roleIds.isEmpty()) {
             return scopeVOMap;
         }
+        // 超管拥有全部权限，无需查询数据权限范围
+        if (roleIds.contains(GlobalConstant.SUPER_ROLE)) {
+            return scopeVOMap;
+        }
+        // roles 中只含数字字符串（role id），转 Long 避免 PG bigint = varchar 类型不匹配
+        List<Long> numericRoleIds = roleIds.stream().map(Long::valueOf).toList();
         List<Long> customMenuIds = new ArrayList<>();
         Map<Long, List<SysRoleMenu>> roleScopeMap = new HashMap<>();
-        QueryWrapper wrapper = QueryWrapper.create().where(SYS_ROLE_MENU.ROLE_ID.in(roleIds)).where(SYS_ROLE_MENU.PERMISSION_TYPE.eq("scope"));
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_ROLE_MENU.ROLE_ID.in(numericRoleIds)).where(SYS_ROLE_MENU.PERMISSION_TYPE.eq("scope"));
         List<SysRoleMenu> list = list(wrapper);
         for (SysRoleMenu roleMenu : list) {
             Long menuId = roleMenu.getMenuId();

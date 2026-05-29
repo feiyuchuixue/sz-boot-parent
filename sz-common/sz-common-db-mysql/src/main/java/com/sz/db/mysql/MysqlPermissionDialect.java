@@ -4,6 +4,7 @@ import com.mybatisflex.core.dialect.DbType;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.db.DataScopeProperties;
 import com.sz.db.permission.AbstractPermissionDialect;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * @since Phase B
  */
 @Configuration
+@ConditionalOnProperty(name = "spring.datasource.driver-class-name", havingValue = "com.mysql.cj.jdbc.Driver", matchIfMissing = true)
 public class MysqlPermissionDialect extends AbstractPermissionDialect {
 
     @Override

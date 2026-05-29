@@ -4,6 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_client: framework struct + init -->
 <changeSet  id="framework-struct-sys-client-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -18,14 +23,14 @@
             <column name="active_timeout" type="INT" defaultValueNumeric="1800" remarks="token活跃超时时间"/>
             <column name="timeout" type="INT" defaultValueNumeric="604800" remarks="token固定超时"/>
             <column name="client_status_cd" type="VARCHAR(10)" defaultValue="0" remarks="状态（正常 禁用）"/>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标志"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除标志"/>
             <column name="create_dept" type="BIGINT" remarks="创建部门"/>
             <column name="create_id" type="BIGINT" remarks="创建者"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
             <column name="update_id" type="BIGINT" remarks="更新者"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
             <column name="remark" type="VARCHAR(250)" remarks="备注"/>
-            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"/>
+            <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定"/>
         </createTable>
     </changeSet>
 

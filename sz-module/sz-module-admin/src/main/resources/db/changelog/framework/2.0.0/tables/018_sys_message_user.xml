@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_message_user: framework struct + init -->
-<changeSet  id="framework-struct-sys-message-user-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-message-user-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_message_user"/></not>
         </preConditions>
@@ -13,9 +18,9 @@
             <column name="id" type="BIGINT" remarks="ID"><constraints primaryKey="true"/></column>
             <column name="message_id" type="BIGINT" remarks="消息ID"><constraints nullable="false"/></column>
             <column name="receiver_id" type="BIGINT" remarks="接收人ID"><constraints nullable="false"/></column>
-            <column name="is_read" type="ENUM('T','F')" defaultValue="F" remarks="是否已读"><constraints nullable="false"/></column>
-            <column name="read_time" type="DATETIME" remarks="阅读时间"/>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="is_read" type="${bool.type}" defaultValue="F" remarks="是否已读"><constraints nullable="false"/></column>
+            <column name="read_time" type="${datetime.type}" remarks="阅读时间"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

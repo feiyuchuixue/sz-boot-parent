@@ -1,5 +1,6 @@
 package com.sz.core.common.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.mybatisflex.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public enum YesNoEnum {
     private final String desc;
 
     @EnumValue
+    @JsonValue
     public String getCode() {
         return code;
     }

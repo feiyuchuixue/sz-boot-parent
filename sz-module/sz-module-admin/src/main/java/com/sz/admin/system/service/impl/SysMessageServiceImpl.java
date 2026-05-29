@@ -64,7 +64,9 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
 
     @Override
     public PageResult<SysMessageVO> page(SysMessageListDTO dto) {
-        Page<SysMessageVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysMessageVO.class);
+        QueryWrapper queryWrapper = buildQueryWrapper(dto);
+        queryWrapper.orderBy(SYS_MESSAGE.CREATE_TIME.desc());
+        Page<SysMessageVO> page = pageAs(PageUtils.getPage(dto), queryWrapper, SysMessageVO.class);
         return PageUtils.getPageResult(page);
     }
 
@@ -72,6 +74,7 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
     public List<SysMessageVO> list(SysMessageListDTO dto) {
         QueryWrapper queryWrapper = buildQueryWrapper(dto);
         queryWrapper.where(SYS_MESSAGE_USER.IS_READ.eq("F"));
+        queryWrapper.orderBy(SYS_MESSAGE.CREATE_TIME.desc());
         return listAs(queryWrapper, SysMessageVO.class);
     }
 
@@ -114,7 +117,6 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
                 wrapper.where(SYS_MESSAGE_USER.IS_READ.eq("F"));
             }
         }
-        wrapper.orderBy(SYS_MESSAGE.CREATE_TIME.desc());
         return wrapper;
     }
 

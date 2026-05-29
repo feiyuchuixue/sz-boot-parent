@@ -4,6 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_dept: framework struct + init -->
 <changeSet  id="framework-struct-sys-dept-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -15,14 +20,14 @@
             <column name="pid" type="BIGINT" remarks="父级ID"><constraints nullable="false"/></column>
             <column name="deep" type="INT" remarks="层级"/>
             <column name="sort" type="INT" remarks="排序"/>
-            <column name="has_children" type="ENUM('T','F')" defaultValue="F" remarks="是否有子级"/>
-            <column name="is_lock" type="ENUM('T','F')" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="has_children" type="${bool.type}" defaultValue="F" remarks="是否有子级"/>
+            <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定"><constraints nullable="false"/></column>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
             <column name="remark" type="VARCHAR(64)" remarks="备注"/>
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

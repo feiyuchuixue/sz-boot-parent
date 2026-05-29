@@ -31,7 +31,7 @@ public interface SysTempFileService extends IService<SysTempFile> {
 
     void remove(SelectIdsDTO dto);
 
-    SysTempFileVO detail(Object id);
+    SysTempFileVO detail(Long id);
 
     SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias);
 }

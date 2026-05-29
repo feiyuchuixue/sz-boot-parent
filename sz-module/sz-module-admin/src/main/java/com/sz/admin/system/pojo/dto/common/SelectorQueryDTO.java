@@ -25,6 +25,6 @@ public class SelectorQueryDTO extends PageQuery {
     private String keyword;
 
     @Schema(description = "父级维度 ID，用于 user 时代表 deptId，department 时代表上级部门 ID")
-    private Object parentId;
+    private Long parentId;
 
 }

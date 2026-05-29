@@ -187,6 +187,13 @@
                 <artifactId>ip2region</artifactId>
                 <version>${ip2region.version}</version>
             </dependency>
+
+            <!-- PostgreSQL JDBC 驱动 -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.5</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>

@@ -4,9 +4,10 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.core.common.enums.TrueFalseEnum;
+import com.sz.core.common.enums.YesNoEnum;
 import com.sz.db.EntityChangeListener;
 import com.sz.db.LogicDeleteFill;
+import com.sz.platform.enums.DictCategoryEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -42,14 +43,14 @@ public class SysDictType implements Serializable {
     private String typeCode;
 
     @Schema(description = "是否锁定，锁定的属性无法在页面进行修改")
-    private TrueFalseEnum isLock;
+    private YesNoEnum isLock;
 
     @Schema(description = "显示与否")
-    private TrueFalseEnum isShow;
+    private YesNoEnum isShow;
 
     @Schema(description = "是否删除")
     @Column(isLogicDelete = true)
-    private TrueFalseEnum delFlag;
+    private YesNoEnum delFlag;
 
     @Schema(description = "描述")
     private String remark;
@@ -73,5 +74,5 @@ public class SysDictType implements Serializable {
     private Long deleteId;
 
     @Schema(description = "字典类型: system 系统, business 业务")
-    private String type;
+    private DictCategoryEnum type;
 }

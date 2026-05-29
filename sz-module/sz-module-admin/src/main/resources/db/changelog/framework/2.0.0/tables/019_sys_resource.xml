@@ -4,8 +4,13 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_resource: framework struct + init -->
-<changeSet  id="framework-struct-sys-resource-202605100838" author="升职哦（sz）">
+    <changeSet id="framework-struct-sys-resource-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="sys_resource"/></not>
         </preConditions>
@@ -19,10 +24,10 @@
             <column name="content_type" type="VARCHAR(128)" remarks="MIME 类型"/>
             <column name="storage_type" type="VARCHAR(16)" remarks="存储类型：LOCAL / OSS"><constraints nullable="false"/></column>
             <column name="biz_key" type="VARCHAR(255)" remarks="业务标识，如 providerKey"/>
-            <column name="del_flag" type="CHAR(1)" defaultValue="F" remarks="逻辑删除：T=已删除 F=正常"><constraints nullable="false"/></column>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="逻辑删除：T=已删除 F=正常"><constraints nullable="false"/></column>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
             <column name="create_id" type="BIGINT" remarks="创建人"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
             <column name="update_id" type="BIGINT" remarks="更新人"/>
         </createTable>
         <createIndex tableName="sys_resource" indexName="idx_scene_code">

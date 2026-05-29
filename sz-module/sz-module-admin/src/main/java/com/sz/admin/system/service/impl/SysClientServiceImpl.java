@@ -22,7 +22,6 @@ import com.sz.security.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,8 +82,8 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     }
 
     @Override
-    public ClientVO detail(Object id) {
-        SysClient sysClient = getById((Serializable) id);
+    public ClientVO detail(Long id) {
+        SysClient sysClient = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(sysClient);
         ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);
         clientVO.setGrantTypeCdList(Arrays.asList(sysClient.getGrantTypeCd().split(",")));
@@ -93,7 +92,13 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
 
     @Override
     public ClientVO getClientByClientId(Object id) {
-        return detail(id);
+        SysClient sysClient = getOne(QueryWrapper.create().eq(SysClient::getClientId, id));
+        if (sysClient == null) {
+            return null;
+        }
+        ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);
+        clientVO.setGrantTypeCdList(Arrays.asList(sysClient.getGrantTypeCd().split(",")));
+        return clientVO;
     }
 
     private static QueryWrapper buildQueryWrapper(SysClientListDTO dto) {

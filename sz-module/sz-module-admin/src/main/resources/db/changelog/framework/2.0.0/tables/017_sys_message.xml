@@ -4,6 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_message: framework struct + init -->
 <changeSet  id="framework-struct-sys-message-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -15,9 +20,9 @@
             <column name="sender_id" type="BIGINT" remarks="发送人ID"><constraints nullable="false"/></column>
             <column name="title" type="VARCHAR(255)" remarks="消息标题"><constraints nullable="false"/></column>
             <column name="content" type="TEXT" remarks="消息内容"><constraints nullable="false"/></column>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
-            <column name="create_time" type="DATETIME" remarks="创建时间"/>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
             <column name="create_id" type="BIGINT" remarks="创建人 ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人 ID"/>
             <column name="menu_router" type="VARCHAR(255)" remarks="菜单路由地址，冗余"/>

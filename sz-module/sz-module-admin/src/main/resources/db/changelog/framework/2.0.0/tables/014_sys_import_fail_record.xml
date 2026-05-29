@@ -4,6 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_import_fail_record: framework struct + init -->
 <changeSet  id="framework-struct-sys-import-fail-record-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -19,9 +22,9 @@
             <column name="error_code" type="VARCHAR(64)" remarks="错误码"/>
             <column name="error_msg" type="VARCHAR(500)" remarks="错误信息"><constraints nullable="false"/></column>
             <column name="handle_status" type="VARCHAR(32)" remarks="处理状态"><constraints nullable="false"/></column>
-            <column name="row_data" type="JSON" remarks="当前失败行原始快照(JSON)"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"><constraints nullable="false"/></column>
-            <column name="update_time" type="DATETIME" remarks="更新时间"/>
+            <column name="row_data" type="TEXT" remarks="当前失败行原始快照(JSON)"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"><constraints nullable="false"/></column>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
         </createTable>
         <createIndex tableName="sys_import_fail_record" indexName="idx_batch_id">
             <column name="batch_id"/>

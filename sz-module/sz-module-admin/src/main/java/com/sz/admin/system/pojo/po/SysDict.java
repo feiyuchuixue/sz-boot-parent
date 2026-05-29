@@ -4,7 +4,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import com.sz.core.common.enums.TrueFalseEnum;
+import com.sz.core.common.enums.YesNoEnum;
 import com.sz.db.EntityChangeListener;
 import com.sz.db.LogicDeleteFill;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,14 +54,14 @@ public class SysDict implements Serializable {
     private String remark;
 
     @Schema(description = "是否锁定")
-    private TrueFalseEnum isLock;
+    private YesNoEnum isLock;
 
     @Schema(description = "是否展示")
-    private TrueFalseEnum isShow;
+    private YesNoEnum isShow;
 
     @Schema(description = "是否删除")
     @Column(isLogicDelete = true)
-    private TrueFalseEnum delFlag;
+    private YesNoEnum delFlag;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

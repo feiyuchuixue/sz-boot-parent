@@ -4,6 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_import_batch: framework struct + init -->
 <changeSet  id="framework-struct-sys-import-batch-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -21,8 +24,8 @@
             <column name="fail_count" type="INT" defaultValueNumeric="0" remarks="失败条数"><constraints nullable="false"/></column>
             <column name="status" type="VARCHAR(32)" remarks="批次状态"><constraints nullable="false"/></column>
             <column name="remark" type="VARCHAR(500)" remarks="备注"/>
-            <column name="create_time" type="DATETIME" remarks="创建时间"><constraints nullable="false"/></column>
-            <column name="finish_time" type="DATETIME" remarks="完成时间"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"><constraints nullable="false"/></column>
+            <column name="finish_time" type="${datetime.type}" remarks="完成时间"/>
         </createTable>
         <createIndex tableName="sys_import_batch" indexName="idx_biz_type_create_time">
             <column name="biz_type"/>

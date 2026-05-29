@@ -19,16 +19,6 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<Long> getMenuAndChildrenIds(@Param("menuId") Long menuId, @Param("isShowButton") boolean isShowButton);
 
     /**
-     * 更新has_children
-     */
-    void syncTreeHasChildren();
-
-    /**
-     * 更新deep
-     */
-    void syncTreeDeep();
-
-    /**
      * 删除自己及子节点
      */
     void removeTree(@Param("nodeId") Long nodeId);

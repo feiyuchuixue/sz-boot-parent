@@ -75,26 +75,6 @@
     </select>
 
 
-    <update id="syncTreeHasChildren">
-        UPDATE sys_menu AS m
-            JOIN (
-            SELECT id,
-            IF(EXISTS (SELECT 1 FROM sys_menu WHERE pid = sub_m.id), 'T', 'F') AS has_children
-            FROM sys_menu AS sub_m
-            WHERE 1=1 and sub_m.del_flag = 'F'
-            ) AS subquery
-        ON m.id = subquery.id
-            SET m.has_children = 'T'
-        WHERE subquery.has_children = 'T';
-    </update>
-    <update id="syncTreeDeep">
-        UPDATE sys_menu AS m
-            JOIN sys_menu AS parent
-        ON m.pid = parent.id
-            SET m.deep = parent.deep + 1
-        WHERE 1=1 and m.del_flag = 'F';
-    </update>
-
     <update id="removeTree">
         UPDATE sys_menu AS m
         SET del_flag = 'T'

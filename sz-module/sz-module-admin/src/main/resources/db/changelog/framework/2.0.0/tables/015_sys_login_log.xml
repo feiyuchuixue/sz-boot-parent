@@ -4,6 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+
     <!-- sys_login_log: framework struct + init -->
 <changeSet  id="framework-struct-sys-login-log-202605100838" author="升职哦（sz）">
         <preConditions onFail="MARK_RAN">
@@ -11,10 +16,10 @@
         </preConditions>
         <createTable tableName="sys_login_log" remarks="登陆日志表">
             <column name="id" type="BIGINT" remarks="登陆ID"><constraints primaryKey="true"/></column>
-            <column name="del_flag" type="ENUM('T','F')" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
+            <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除标识"><constraints nullable="false"/></column>
             <column name="user_name" type="VARCHAR(32)" remarks="用户名"/>
             <column name="login_status" type="VARCHAR(10)" remarks="登陆状态"/>
-            <column name="login_time" type="DATETIME" remarks="登陆时间"/>
+            <column name="login_time" type="${datetime.type}" remarks="登陆时间"/>
             <column name="ip_address" type="VARCHAR(50)" remarks="登陆ip地址"/>
             <column name="login_location" type="VARCHAR(50)" remarks="登陆地点"/>
             <column name="browser" type="VARCHAR(50)" remarks="浏览器类型"/>

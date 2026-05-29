@@ -3,6 +3,7 @@ package com.sz.admin.teacher.pojo.po;
 import com.mybatisflex.annotation.*;
 
 import com.mybatisflex.core.handler.JacksonTypeHandler;
+import com.sz.db.handler.LongListTypeHandler;
 import com.sz.core.common.enums.YesNoEnum;
 import com.sz.resource.model.ResourceRef;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -87,7 +88,7 @@ public class TeacherStatistics implements Serializable {
     private LocalDateTime updateTime;
 
     @Schema(description = "部门范围id")
-    @Column(typeHandler = JacksonTypeHandler.class)
+    @Column(typeHandler = LongListTypeHandler.class)
     private List<Long> deptScope;
 
     @Schema(description = "文件地址(JSON)")

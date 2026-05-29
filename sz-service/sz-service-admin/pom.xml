@@ -35,6 +35,11 @@
             <artifactId>sz-module-admin</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- knife4j swagger文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>

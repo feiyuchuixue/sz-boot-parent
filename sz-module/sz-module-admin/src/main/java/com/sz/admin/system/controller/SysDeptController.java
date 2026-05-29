@@ -73,13 +73,13 @@ public class SysDeptController {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.dept.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<SysDeptVO> detail(@PathVariable Object id) {
+    public ApiResult<SysDeptVO> detail(@PathVariable Long id) {
         return ApiResult.success(sysDeptService.detail(id));
     }
 
     @Operation(summary = "树形列表")
     @GetMapping("/tree")
-    public ApiResult<List<DeptTreeVO>> tree(@Parameter(description = "需要排除的节点ID") @RequestParam(required = false) Integer excludeNodeId,
+    public ApiResult<List<DeptTreeVO>> tree(@Parameter(description = "需要排除的节点ID") @RequestParam(required = false) Long excludeNodeId,
             @Parameter(description = "是否添加根节点") @RequestParam(required = false) Boolean appendRoot) {
         return ApiResult.success(sysDeptService.getDeptTree(excludeNodeId, appendRoot, false));
     }

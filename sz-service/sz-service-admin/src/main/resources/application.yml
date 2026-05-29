@@ -10,7 +10,7 @@ spring:
       - file:config/${spring.profiles.active}/knife4j.yml
       - file:config/${spring.profiles.active}/oss.yml
       - file:config/${spring.profiles.active}/mybatis-flex.yml
-      - file:config/${spring.profiles.active}/mysql.yml
+      - file:config/${spring.profiles.active}/${DB_TYPE:mysql}.yml
       - file:config/${spring.profiles.active}/page-helper.yml
       - file:config/${spring.profiles.active}/redis.yml
       - file:config/${spring.profiles.active}/sa-token.yml
@@ -31,6 +31,8 @@ sz:
     enabled: true
     # 数据逻辑实现最小验证（查询）单位：dept 部门（dept_scope字段）、user 用户 (create_id 字段),默认user。
     logic-min-unit: user
+    # 是否允许查看管理员创建的数据, 默认false; 如果为false 只有数据权限范围为[全部]的角色才能查看到管理员记录；如果为true 则管理员创建的数据会被所有角色看到[仅本人]除外。
+    allow-admin-view: false
   debounce:
     # 是否启用防抖功能
     enabled: true
