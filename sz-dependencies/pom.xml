@@ -130,6 +130,12 @@
                 <artifactId>hutool-jwt</artifactId>
                 <version>5.8.39</version>
             </dependency>
+            <!-- hutool-core 显式锁版本，防止其他依赖引入不同版本 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>5.8.39</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>

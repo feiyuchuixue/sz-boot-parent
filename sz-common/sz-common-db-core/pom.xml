@@ -51,6 +51,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- hutool-core：Snowflake ID 生成 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+        </dependency>
+
         <!-- 内部工具 -->
         <dependency>
             <groupId>com.sz</groupId>
