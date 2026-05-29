@@ -1473,5 +1473,93 @@
             <column name="del_flag" value="F"/>
             <column name="use_data_scope" value="F"/>
         </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="2057282200826679296"/>
+            <column name="pid" valueNumeric="705327582647816248"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="查询字典来源"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="900"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.dict.source.query_table"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="2057282288739291136"/>
+            <column name="pid" valueNumeric="705327582647816248"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="新增字典来源"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="1000"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.dict.source.add_btn"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="2057282974524772352"/>
+            <column name="pid" valueNumeric="705327582647816248"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="修改字典来源"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="1100"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.dict.source.update_btn"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="2057304306469703680"/>
+            <column name="pid" valueNumeric="705327582647816248"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="删除字典来源"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="1200"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.dict.source.delete_btn"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

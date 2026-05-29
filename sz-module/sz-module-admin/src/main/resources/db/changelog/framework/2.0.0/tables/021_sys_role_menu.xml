@@ -412,5 +412,29 @@
             <column name="permission_type" value="menu"/>
             <column name="data_scope_cd" value=""/>
         </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="2057282200826679296"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="2057282288739291136"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="2057282974524772352"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="2057304306469703680"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

@@ -16,6 +16,7 @@
             <column name="is_lock" type="${bool.type}" defaultValue="F" remarks="是否锁定，锁定的属性无法在页面进行修改"/>
             <column name="is_show" type="${bool.type}" defaultValue="T" remarks="显示与否"/>
             <column name="del_flag" type="${bool.type}" defaultValue="F" remarks="删除与否"/>
+            <column name="source_code" type="VARCHAR(64)" defaultValue="" remarks="所属来源"/>
             <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="描述"/>
             <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
             <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
@@ -23,7 +24,6 @@
             <column name="create_id" type="BIGINT" remarks="创建人ID"/>
             <column name="update_id" type="BIGINT" remarks="更新人ID"/>
             <column name="delete_id" type="BIGINT" remarks="删除人ID"/>
-            <column name="type" type="VARCHAR(16)" defaultValue="business" remarks="字典类型: system 系统, business 业务"><constraints nullable="false"/></column>
         </createTable>
     </changeSet>
 
@@ -38,10 +38,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2023-08-20 11:09:46"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1001"/>
@@ -50,10 +50,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2023-08-20 14:22:40"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1002"/>
@@ -62,10 +62,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2023-08-21 11:20:47"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1003"/>
@@ -74,10 +74,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value="client授权状态"/>
             <column name="create_time" valueDate="2023-08-22 09:44:27"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1004"/>
@@ -86,10 +86,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2023-08-22 10:02:11"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1005"/>
@@ -98,10 +98,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2023-08-22 10:15:58"/>
             <column name="update_time" valueDate="2025-04-24 15:45:52"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1006"/>
@@ -110,10 +110,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2024-06-25 18:54:21"/>
             <column name="update_time" valueDate="2024-06-25 19:12:46"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1007"/>
@@ -122,10 +122,10 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value="自定义数据权限的关联类型"/>
             <column name="create_time" valueDate="2024-06-25 18:55:37"/>
             <column name="update_time" valueDate="2024-06-25 19:12:48"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1008"/>
@@ -134,9 +134,9 @@
             <column name="is_lock" value="F"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value="系统消息的类型（待办、通知等）"/>
             <column name="create_time" valueDate="2025-04-21 15:22:15"/>
-            <column name="type" value="system"/>
         </insert>
         <insert tableName="sys_dict_type">
             <column name="id" valueNumeric="1009"/>
@@ -145,12 +145,12 @@
             <column name="is_lock" value="F"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value=""/>
             <column name="create_time" valueDate="2025-07-29 22:49:03"/>
             <column name="update_time" valueDate="2025-07-29 22:49:03"/>
             <column name="create_id" valueNumeric="1"/>
             <column name="update_id" valueNumeric="1"/>
-            <column name="type" value="system"/>
         </insert>
         <!-- yes_no 系统内置字典类型（isLock=T，前端 T/F 字段通用） -->
         <insert tableName="sys_dict_type">
@@ -160,12 +160,12 @@
             <column name="is_lock" value="T"/>
             <column name="is_show" value="T"/>
             <column name="del_flag" value="F"/>
+            <column name="source_code" value="framework"/>
             <column name="remark" value="通用是/否字典，用于所有 T/F 二值字段的前端回显"/>
             <column name="create_time" valueDate="2026-05-12 00:00:00"/>
             <column name="update_time" valueDate="2026-05-12 00:00:00"/>
             <column name="create_id" valueNumeric="1"/>
             <column name="update_id" valueNumeric="1"/>
-            <column name="type" value="system"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

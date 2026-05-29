@@ -28,4 +28,5 @@
     <include file="tables/022_sys_temp_file.xml" relativeToChangelogFile="true"/>
     <include file="tables/023_sys_temp_file_history.xml" relativeToChangelogFile="true"/>
     <include file="tables/024_sys_user.xml" relativeToChangelogFile="true"/>
+    <include file="tables/025_sys_dict_source.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
