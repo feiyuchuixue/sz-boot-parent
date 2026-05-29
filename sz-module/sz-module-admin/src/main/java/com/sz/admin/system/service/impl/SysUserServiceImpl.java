@@ -30,6 +30,10 @@ import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.*;
 import com.sz.db.DataScopeProperties;
+import com.sz.platform.constant.config.AdminConfigKeyConstant;
+import com.sz.platform.constant.config.UserConfigKeyConstant;
+import com.sz.platform.constant.dict.AccountStatusConstant;
+import com.sz.platform.constant.dict.UserTagConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.platform.socket.SocketService;
@@ -145,8 +149,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         CommonResponseEnum.USERNAME_EXISTS.assertTrue(count(wrapper) > 0);
         String encodePwd = BcryptUtils.hashPwd(getInitPassword());
         user.setPwd(encodePwd);
-        user.setAccountStatusCd("1000001");
-        user.setUserTagCd("1001003");
+        user.setAccountStatusCd(AccountStatusConstant.NORMAL);
+        user.setUserTagCd(UserTagConstant.NORMAL_USER);
         save(user);
 
         if (dto.getDeptId() <= 0)
@@ -285,7 +289,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUserRoleVO findSysUserRole(Long userId) {
         List<SysRole> sysRoleList = QueryChain.of(this.sysRoleMapper).list();
         List<SysUserRoleVO.RoleInfoVO> roleInfoVOS = BeanCopyUtils.copyList(sysRoleList, SysUserRoleVO.RoleInfoVO.class);
-        String superAdminRoleId = SysConfigUtils.getConfValue("sys.admin.superAdminRoleId");
+        String superAdminRoleId = SysConfigUtils.getConfValue(AdminConfigKeyConstant.SUPER_ADMIN_ROLE_ID);
         for (SysUserRoleVO.RoleInfoVO roleInfoVO : roleInfoVOS) {
             if (superAdminRoleId.equals(Utils.getStringVal(roleInfoVO.getId()))) {
                 roleInfoVO.setDisabled(true);
@@ -356,7 +360,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     private String getInitPassword() {
-        return SysConfigUtils.getConfValue("sys.user.initPwd");
+        return SysConfigUtils.getConfValue(UserConfigKeyConstant.INIT_PWD);
     }
 
     @Override
@@ -387,7 +391,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Object value = RedisUtils.getValue(CommonKeyConstants.SYS_PWD_ERR_CNT, username);
         long count = hasKey ? Long.parseLong(String.valueOf(value)) : 0;
         if (!"preview".equals(activeProfile)) { // 预览环境不做账号锁定
-            String maxErrCnt = SysConfigUtils.getConfValue("sys.pwd.errCnt");
+            String maxErrCnt = SysConfigUtils.getConfValue(UserConfigKeyConstant.PWD_ERR_CNT);
             CommonResponseEnum.CNT_PASSWORD_ERR.assertTrue(hasKey && (count >= Utils.getIntVal(maxErrCnt)));
         }
         SysUserVO userVo = getSysUserByUsername(username);
@@ -489,10 +493,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 判断是否为超级管理员（userTagCd = 1001002）
+     * 判断是否为超级管理员（userTagCd = UserTagConstant.SUPER_ADMIN）
      */
     private boolean isSuperAdminUser(SysUser sysUser) {
-        return sysUser != null && "1001002".equals(sysUser.getUserTagCd());
+        return sysUser != null && UserTagConstant.SUPER_ADMIN.equals(sysUser.getUserTagCd());
     }
 
     @Override
@@ -533,11 +537,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     private void validateUserStatus(SysUserVO user) {
-        CommonResponseEnum.BAD_USERNAME_STATUS_INVALID.assertFalse(("1000001").equals(user.getAccountStatusCd()));
+        CommonResponseEnum.BAD_USERNAME_STATUS_INVALID.assertFalse(AccountStatusConstant.NORMAL.equals(user.getAccountStatusCd()));
     }
 
     private void validatePassword(String password, String hashedPassword, String username) {
-        String timeout = SysConfigUtils.getConfValue("sys_pwd.lockTime");
+        String timeout = SysConfigUtils.getConfValue(UserConfigKeyConstant.PWD_LOCK_TIME);
         boolean checkpwd = BcryptUtils.matchEncoderPwd(password, hashedPassword);
         if (!checkpwd)
             redisCache.countPwdErr(username, Utils.getLongVal(timeout));
@@ -627,7 +631,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void changeUserTag(SysUserTagDTO dto) {
         String userTagCd = dto.getUserTagCd();
         List<Long> userIds = dto.getUserIds();
-        String superAdminRoleId = SysConfigUtils.getConfValue("sys.admin.superAdminRoleId");
+        String superAdminRoleId = SysConfigUtils.getConfValue(AdminConfigKeyConstant.SUPER_ADMIN_ROLE_ID);
         if (userIds.isEmpty()) {
             return;
         }
@@ -635,7 +639,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         UpdateChain.of(SysUserRole.class).where(SYS_USER_ROLE.USER_ID.in(userIds)).where(SYS_USER_ROLE.ROLE_ID.eq(Utils.getLongVal(superAdminRoleId))).remove(); // 删除超管角色
         List<SysUserRole> userRoles = new ArrayList<>();
         SysUserRole userRole;
-        if ("1001002".equals(userTagCd)) { // 超管角色用户
+        if (UserTagConstant.SUPER_ADMIN.equals(userTagCd)) { // 超管角色用户
             for (Long userId : userIds) {
                 userRole = new SysUserRole();
                 userRole.setUserId(userId);

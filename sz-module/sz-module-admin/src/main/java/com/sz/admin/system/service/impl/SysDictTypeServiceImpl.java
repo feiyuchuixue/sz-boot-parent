@@ -22,6 +22,8 @@ import com.sz.core.util.PageUtils;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
 import com.sz.core.common.dict.DictLoaderFactory;
+import com.sz.platform.constant.config.DictConfigKeyConstant;
+import com.sz.platform.enums.DictCategoryEnum;
 import com.sz.platform.socket.SocketService;
 import com.sz.redis.RedisCache;
 
@@ -53,10 +55,10 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     public void create(SysDictTypeAddDTO dto) {
-        String confValue = SysConfigUtils.getConfValue("sys.dict.startNo");
+        String confValue = SysConfigUtils.getConfValue(DictConfigKeyConstant.START_NO);
         SysDictType sysDictType = BeanCopyUtils.copy(dto, SysDictType.class);
         String type = dto.getType();
-        if ("system".equals(type)) { // 系统字典
+        if (type.equals(DictCategoryEnum.SYSTEM.getCode())) { // 系统字典
             AtomicReference<Long> maxId = new AtomicReference<>(0L);
             LogicDeleteManager.execWithoutLogicDelete(() -> {
                 Long count = QueryChain.of(SysDictType.class).select(QueryMethods.max(SYS_DICT_TYPE.ID)).from(SYS_DICT_TYPE)

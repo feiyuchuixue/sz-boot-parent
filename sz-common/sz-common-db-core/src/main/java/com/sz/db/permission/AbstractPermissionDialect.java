@@ -192,9 +192,9 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
     private void applyScope(QueryWrapper queryWrapper, OperateType operateType, RoleMenuScopeVO scope, String tableName, LoginUser loginUser) {
         String dataScopeCd = scope.getDataScopeCd();
         switch (dataScopeCd) {
-            case "1006001", "1006002", "1006003", "1006004" ->
+            case DataScopeConstant.ALL, DataScopeConstant.DEPT_AND_BELOW, DataScopeConstant.DEPT_ONLY, DataScopeConstant.SELF_ONLY ->
                 applyDataScopeRules(queryWrapper, operateType, dataScopeCd, tableName, SimpleDataScopeHelper.get());
-            case "1006005" -> { // 自定义
+            case DataScopeConstant.CUSTOM -> { // 自定义
                 RoleMenuScopeVO.CustomScope customScope = scope.getCustomScope();
                 Set<Long> deptIds = new HashSet<>();
                 Set<Long> userIds = new HashSet<>();
@@ -281,16 +281,16 @@ public abstract class AbstractPermissionDialect extends CommonsDialectImpl {
         LoginUser loginUser = LoginUtils.getLoginUser();
         assert loginUser != null;
         // 全部数据，直接放行
-        if ("1006001".equals(rule)) {
+        if (DataScopeConstant.ALL.equals(rule)) {
             super.prepareAuth(queryWrapper, operateType);
             return;
         }
         Set<Long> deptList = new HashSet<>();
         Set<Long> userList = new HashSet<>();
         switch (rule) {
-            case "1006002" -> deptList.addAll(loginUser.getDeptAndChildren()); // 本部门及以下
-            case "1006003" -> deptList.addAll(loginUser.getDepts()); // 仅本部门
-            // 1006004（仅本人）：不加部门，只加当前用户
+            case DataScopeConstant.DEPT_AND_BELOW -> deptList.addAll(loginUser.getDeptAndChildren()); // 本部门及以下
+            case DataScopeConstant.DEPT_ONLY -> deptList.addAll(loginUser.getDepts()); // 仅本部门
+            // DataScopeConstant.SELF_ONLY（仅本人）：不加部门，只加当前用户
         }
         userList.add(loginUser.getUserInfo().getId());
         buildSql(queryWrapper, table, deptList, userList, tableClazz);

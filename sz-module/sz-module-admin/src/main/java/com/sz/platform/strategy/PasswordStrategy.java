@@ -14,6 +14,7 @@ import com.sz.security.pojo.ClientVO;
 import com.sz.security.pojo.LoginInfo;
 import com.sz.security.pojo.LoginVO;
 import com.sz.security.service.IAuthStrategy;
+import com.sz.platform.constant.dict.LoginStatusConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -62,12 +63,12 @@ public class PasswordStrategy implements IAuthStrategy {
             // 执行登录
             LoginUtils.performLogin(loginUser, model, extraData);
             loginVO = createLoginVO(loginUser.getUserInfo());
-            sysLoginLogService.recordLoginLog(info.getUsername(), "1009001", "登陆成功");
+            sysLoginLogService.recordLoginLog(info.getUsername(), LoginStatusConstant.SUCCESS, "登陆成功");
         } catch (BaseException e) {
-            sysLoginLogService.recordLoginLog(username, "1009002", e.getMessage());
+            sysLoginLogService.recordLoginLog(username, LoginStatusConstant.FAIL, e.getMessage());
             throw e;
         } catch (Exception e) {
-            sysLoginLogService.recordLoginLog(username, "1009002", "系统异常:" + e.getMessage());
+            sysLoginLogService.recordLoginLog(username, LoginStatusConstant.FAIL, "系统异常:" + e.getMessage());
             throw e;
         }
         return loginVO;

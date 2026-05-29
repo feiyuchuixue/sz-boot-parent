@@ -9,6 +9,7 @@ import com.sz.core.util.AESUtil;
 import com.sz.core.util.SlidePuzzleUtil;
 import com.sz.core.util.SysConfigUtils;
 import com.sz.core.util.Utils;
+import com.sz.platform.constant.config.CaptchaConfigKeyConstant;
 import com.sz.redis.RedisCache;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +46,8 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public SliderPuzzle getImageCode(HttpServletRequest request) {
         String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request)); // 根据request标识生成Sha256Id
-        int limit = Utils.getIntVal(SysConfigUtils.getConfValue("sys.captcha.requestLimit"));
-        String requestCycle = SysConfigUtils.getConfValue("sys.captcha.requestCycle");
+        int limit = Utils.getIntVal(SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.REQUEST_LIMIT));
+        String requestCycle = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.REQUEST_CYCLE);
         if (Utils.getIntVal(limit) != 0) {
             redisCache.initializeCaptchaRequestLimit(requestId, Utils.getLongVal(requestCycle));
             Long cacheLimit = redisCache.countCaptchaRequestLimit(requestId);
@@ -57,14 +58,17 @@ public class CaptchaServiceImpl implements CaptchaService {
         Resource[] resources = resolver.getResources("classpath:/templates/background/*.png"); // 读取背景图片库
         CommonResponseEnum.BACKGROUND_NOT_EXISTS.assertTrue(resources.length == 0);
         Resource resource = resources[random.nextInt(resources.length)]; // 从背景库中随机获取一张
-        SliderPuzzle sliderPuzzle = SlidePuzzleUtil.createImage(resource.getInputStream(), request); // 生成验证码
+        SlidePuzzleUtil.WatermarkConfig watermarkConfig = new SlidePuzzleUtil.WatermarkConfig(
+                "true".equals(SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_ENABLE)),
+                SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_TEXT), SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_FONT));
+        SliderPuzzle sliderPuzzle = SlidePuzzleUtil.createImage(resource.getInputStream(), request, watermarkConfig); // 生成验证码
         CommonResponseEnum.FILE_NOT_EXISTS.assertNull(sliderPuzzle);
 
         if (limit != 0) {
             redisCache.limitCaptcha(requestId);
         }
 
-        String expireTime = SysConfigUtils.getConfValue("sys.captcha.expire");
+        String expireTime = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.EXPIRE);
         assert sliderPuzzle != null;
         PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey());
 

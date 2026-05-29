@@ -7,6 +7,7 @@ import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SliderPuzzle;
 import com.sz.core.common.entity.CheckPuzzle;
 import com.sz.core.util.SysConfigUtils;
+import com.sz.platform.constant.config.CaptchaConfigKeyConstant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ public class CaptchaController {
     @GetMapping("status")
     @Operation(summary = "验证码是否启用")
     public ApiResult<Boolean> captchaStatus() {
-        String value = SysConfigUtils.getConfValue("sys.captcha.state");
+        String value = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.STATE);
         return ApiResult.success(Boolean.parseBoolean(value));
     }
 

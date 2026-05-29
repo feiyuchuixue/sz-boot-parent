@@ -27,7 +27,7 @@ import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.service.GeneratorTableService;
 import com.sz.platform.enums.AdminResponseEnum;
-
+import com.sz.platform.constant.dict.MenuTypeConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.platform.redis.RedisService;
@@ -83,7 +83,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public void create(SysMenuCreateDTO dto) {
         SysMenu menu = BeanCopyUtils.copy(dto, SysMenu.class);
         QueryWrapper wrapper;
-        if (!("1002003").equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
+        if (!(MenuTypeConstant.BUTTON).equals(dto.getMenuTypeCd())) { // 对非按钮进行唯一性校验
             wrapper = QueryWrapper.create().eq(SysMenu::getName, dto.getName()).eq(SysMenu::getDelFlag, "F");
             AdminResponseEnum.MENU_NAME_EXISTS.assertTrue(count(wrapper) > 0);
 
@@ -173,7 +173,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
 
         if (!dto.isShowButton()) {
-            wrapper.ne(SysMenu::getMenuTypeCd, "1002003");
+            wrapper.ne(SysMenu::getMenuTypeCd, MenuTypeConstant.BUTTON);
         }
         // 菜单全部数据
         List<SysMenu> list = list(wrapper);
@@ -199,7 +199,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                         SYS_MENU.IS_LINK, SYS_MENU.IS_FULL, SYS_MENU.IS_AFFIX, SYS_MENU.IS_KEEP_ALIVE, SYS_MENU.CREATE_TIME, SYS_MENU.UPDATE_TIME,
                         SYS_MENU.CREATE_ID, SYS_MENU.UPDATE_ID, SYS_MENU.DEL_FLAG, SYS_MENU.USE_DATA_SCOPE, SYS_MENU.DELETE_ID, SYS_MENU.DELETE_TIME))
                 .from(SYS_USER_ROLE).leftJoin(SYS_ROLE_MENU).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE_MENU.ROLE_ID)).leftJoin(SYS_MENU)
-                .on(SYS_ROLE_MENU.MENU_ID.eq(SYS_MENU.ID)).where(SYS_MENU.MENU_TYPE_CD.ne("1002003")).where(SYS_USER_ROLE.USER_ID.eq(userId))
+                .on(SYS_ROLE_MENU.MENU_ID.eq(SYS_MENU.ID)).where(SYS_MENU.MENU_TYPE_CD.ne(MenuTypeConstant.BUTTON)).where(SYS_USER_ROLE.USER_ID.eq(userId))
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SYS_MENU.SORT.asc());
         List<SysMenu> list = list(wrapper);
         // 构建树形
@@ -222,7 +222,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         root.setPid(-1L); // 设置一个无效的值作为根目录的PID
         root.setTitle("根目录"); // 根目录的标题
 
-        QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, "1002003") // 排除按钮
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysMenu::getDelFlag, "F").ne(SysMenu::getMenuTypeCd, MenuTypeConstant.BUTTON) // 排除按钮
                 .orderBy(SYS_MENU.DEEP.asc()).orderBy(SysMenuTableDef.SYS_MENU.SORT.asc());
         List<SysMenu> list = list(wrapper);
         List<MenuTreeVO> menuTreeVOS = BeanCopyUtils.copyList(list, MenuTreeVO.class);
@@ -477,8 +477,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return btnMenuMap;
         }
         try {
-            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(
-                    SYS_MENU.PID.in(select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq("1002002"))));
+            QueryWrapper wrapper = QueryWrapper.create().from(SYS_MENU).where(SYS_MENU.PID
+                    .in(select(SYS_MENU.ID).from(SYS_MENU).where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq(MenuTypeConstant.MENU))));
             List<SysMenu> list = list(wrapper);
             if (list.isEmpty()) {
                 return btnMenuMap;
@@ -490,7 +490,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 if (existsMenuIds.contains(menu.getPid()) || existsMenuIds.contains(menu.getId())) { // 过滤脏数据
                     String key = menu.getPermissions();
                     Long value;
-                    if (("1002002").equals(menu.getMenuTypeCd())) {
+                    if (MenuTypeConstant.MENU.equals(menu.getMenuTypeCd())) {
                         value = menu.getId();
                     } else {
                         value = menu.getPid();
@@ -506,7 +506,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<MenuTreeVO> queryDataRoleMenu() {
-        QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq("1002002"));
+        QueryWrapper wrapper = QueryWrapper.create().where(SYS_MENU.USE_DATA_SCOPE.eq("T")).where(SYS_MENU.MENU_TYPE_CD.eq(MenuTypeConstant.MENU));
         List<SysMenu> list = list(wrapper);
         return BeanCopyUtils.copyList(list, MenuTreeVO.class);
     }

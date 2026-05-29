@@ -7,6 +7,7 @@ import com.sz.admin.system.pojo.vo.systempfile.SysTempFileInfoVO;
 import com.sz.admin.system.service.*;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.*;
+import com.sz.platform.constant.config.LoginConfigKeyConstant;
 import com.sz.excel.core.ExcelTemplateScanRegistry;
 import com.sz.excel.utils.ExcelUtils;
 import com.sz.oss.OssClient;
@@ -133,8 +134,8 @@ public class CommonServiceImpl implements CommonService {
     public ChallengeVO challenge() {
         HttpServletRequest request = HttpReqResUtil.getRequest();
         String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request));
-        int limit = Utils.getIntVal(SysConfigUtils.getConfValue("sys.login.requestLimit"));
-        Long requestCycle = Utils.getLongVal(SysConfigUtils.getConfValue("sys.login.requestCycle"));
+        int limit = Utils.getIntVal(SysConfigUtils.getConfValue(LoginConfigKeyConstant.REQUEST_LIMIT));
+        Long requestCycle = Utils.getLongVal(SysConfigUtils.getConfValue(LoginConfigKeyConstant.REQUEST_CYCLE));
 
         if (limit != 0) {
             // 初始化请求限制

@@ -10,6 +10,7 @@
     <artifactId>sz-module</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>sz-module-common</module>
         <module>sz-module-admin</module>
     </modules>
 </project>

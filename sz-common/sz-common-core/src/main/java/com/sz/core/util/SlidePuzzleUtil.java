@@ -4,6 +4,7 @@ import com.sz.core.common.entity.PointVO;
 import com.sz.core.common.entity.SliderPuzzle;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,6 +20,22 @@ public class SlidePuzzleUtil {
 
     private SlidePuzzleUtil() {
         throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * 水印配置参数，由调用方从业务配置中读取后传入，工具类本身不感知配置来源。
+     */
+    @AllArgsConstructor
+    public static class WatermarkConfig {
+
+        /** 是否启用水印 */
+        public final boolean enabled;
+
+        /** 水印文字 */
+        public final String text;
+
+        /** 水印字体 */
+        public final String font;
     }
 
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -37,7 +54,7 @@ public class SlidePuzzleUtil {
     // 凸起边界缓冲
     private static final int SMALL_CIRCLE_R1 = 2;
 
-    public static SliderPuzzle createImage(InputStream input, HttpServletRequest request) {
+    public static SliderPuzzle createImage(InputStream input, HttpServletRequest request, WatermarkConfig watermark) {
         SliderPuzzle sliderPuzzle = new SliderPuzzle();
         try {
             String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request));
@@ -45,19 +62,15 @@ public class SlidePuzzleUtil {
             BufferedImage originalImage = ImageIO.read(input);
             BufferedImage bigImage = resizeImage(originalImage, BIG_WIDTH, BIG_HEIGHT, true);
 
-            String watermark = SysConfigUtils.getConfValue("sys.captcha.waterText"); // 水印文字
-            String waterState = SysConfigUtils.getConfValue("sys.captcha.waterEnable"); // 是否启用水印
-            String waterFont = SysConfigUtils.getConfValue("sys.captcha.waterFont"); // 是否启用水印
-
-            if ("true".equals(waterState)) {
+            if (watermark != null && watermark.enabled) {
                 Graphics2D g2d = bigImage.createGraphics();
-                Font font = new Font(waterFont, Font.BOLD, 16);
+                Font font = new Font(watermark.font, Font.BOLD, 16);
                 g2d.setFont(font);
                 g2d.setColor(new Color(255, 255, 255, 160));
                 FontMetrics fontMetrics = g2d.getFontMetrics();
-                int x = bigImage.getWidth() - fontMetrics.stringWidth(watermark) - 8;
+                int x = bigImage.getWidth() - fontMetrics.stringWidth(watermark.text) - 8;
                 int y = bigImage.getHeight() - fontMetrics.getDescent() - 6;
-                g2d.drawString(watermark, x, y);
+                g2d.drawString(watermark.text, x, y);
                 g2d.dispose();
             }
 

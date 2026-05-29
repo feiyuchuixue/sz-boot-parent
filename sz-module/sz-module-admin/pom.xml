@@ -10,6 +10,12 @@
     <artifactId>sz-module-admin</artifactId>
 
     <dependencies>
+        <!-- 跨业务模块共享的业务契约模块 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-core</artifactId>

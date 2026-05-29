@@ -97,7 +97,7 @@
     </select>
     <select id="countSysUserListNotDept" resultType="java.lang.Integer">
         SELECT
-            COUNT(DISTINCT su.id  )
+            COUNT(DISTINCT su.id)
         FROM
             sys_user su
                 LEFT JOIN sys_user_dept sud ON su.id = sud.user_id

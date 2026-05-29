@@ -17,6 +17,9 @@ import com.sz.admin.system.service.*;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.Utils;
+
+import com.sz.db.permission.DataScopeConstant;
+import com.sz.platform.constant.dict.DataScopeRelationTypeConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import lombok.RequiredArgsConstructor;
@@ -95,9 +98,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             roleMenu.setDataScopeCd(dataScope);
             scopeRoleMenus.add(roleMenu);
 
-            if ("1006005".equals(dataScope)) { // 自定义数据权限
-                sysDataRoleRelationService.batchSave(roleId, menuId, "1007001", scope.getUserIds());
-                sysDataRoleRelationService.batchSave(roleId, menuId, "1007002", scope.getDeptIds());
+            if (DataScopeConstant.CUSTOM.equals(dataScope)) { // 自定义数据权限
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.DEPT, scope.getUserIds());
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.USER, scope.getDeptIds());
             }
         }
         saveBatch(scopeRoleMenus);
@@ -132,7 +135,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         List<Long> customMenuIds = new ArrayList<>();
         Map<Long, SysRoleMenu> customMenuMap = new HashMap<>();
         for (SysRoleMenu menu : scopeRoleMenus) {
-            if ("1006005".equals(menu.getDataScopeCd())) { // 自定义数据权限
+            if (DataScopeConstant.CUSTOM.equals(menu.getDataScopeCd())) { // 自定义数据权限
                 customMenuIds.add(menu.getMenuId());
                 customMenuMap.put(menu.getMenuId(), menu);
             } else { // 非自定义数据权限
@@ -151,13 +154,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                 List<SysDataRoleRelation> group = relationMap.getOrDefault(menuId, Collections.emptyList());
                 SysRoleMenuVO.Scope scope = new SysRoleMenuVO.Scope();
                 scope.setMenuId(menuId);
-                scope.setDataScope("1006005");
+                scope.setDataScope(DataScopeConstant.CUSTOM);
                 List<Long> deptIds = new ArrayList<>();
                 List<Long> userIds = new ArrayList<>();
                 for (SysDataRoleRelation relation : group) {
-                    if ("1007001".equals(relation.getRelationTypeCd())) { // 用户维度
+                    if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 用户维度
                         userIds.add(relation.getRelationId());
-                    } else if ("1007002".equals(relation.getRelationTypeCd())) { // 部门维度
+                    } else if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 部门维度
                         deptIds.add(relation.getRelationId());
                     }
                 }
@@ -202,7 +205,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         List<SysRoleMenu> list = list(wrapper);
         for (SysRoleMenu roleMenu : list) {
             Long menuId = roleMenu.getMenuId();
-            if (roleMenu.getDataScopeCd().equals("1006005")) {
+            if (roleMenu.getDataScopeCd().equals(DataScopeConstant.CUSTOM)) {
                 customMenuIds.add(menuId);
             }
             List<SysRoleMenu> roleMenus;
@@ -225,9 +228,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                 Set<Long> deptIds = new HashSet<>();
                 Set<Long> userIds = new HashSet<>();
                 for (SysDataRoleRelation relation : group) {
-                    if ("1007001".equals(relation.getRelationTypeCd())) { // 用户维度
+                    if (DataScopeRelationTypeConstant.DEPT.equals(relation.getRelationTypeCd())) { // 用户维度
                         userIds.add(relation.getRelationId());
-                    } else if ("1007002".equals(relation.getRelationTypeCd())) { // 部门维度
+                    } else if (DataScopeRelationTypeConstant.USER.equals(relation.getRelationTypeCd())) { // 部门维度
                         deptIds.add(relation.getRelationId());
                     }
                 }
@@ -245,21 +248,21 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             RoleMenuScopeVO scopeVO = new RoleMenuScopeVO();
             scopeVO.setMenuId(menuId);
 
-            // 1. 找出最高优先权 dataScopeCd=1006005 的所有菜单（可有多个角色）
+            // 1. 找出最高优先权 dataScopeCd=DataScopeConstant.CUSTOM 的所有菜单（可有多个角色）
             boolean hasCustom = false;
             for (SysRoleMenu menu : menus) {
-                if ("1006005".equals(menu.getDataScopeCd())) {
+                if (DataScopeConstant.CUSTOM.equals(menu.getDataScopeCd())) {
                     hasCustom = true;
                     break;
                 }
             }
 
             if (hasCustom) {
-                scopeVO.setDataScopeCd("1006005");
+                scopeVO.setDataScopeCd(DataScopeConstant.CUSTOM);
                 scopeVO.setCustomScope(customScopeMap.get(menuId));
             } else {
                 // 没有自定义范围时，取dataScopeCd的最小值（字符串比较即可，通常1006001<..2<..3...）
-                String minScope = menus.stream().map(SysRoleMenu::getDataScopeCd).min(String::compareTo).orElse("1006004"); // 默认取最小范围 仅本人
+                String minScope = menus.stream().map(SysRoleMenu::getDataScopeCd).min(String::compareTo).orElse(DataScopeConstant.SELF_ONLY); // 默认取最小范围 仅本人
                 scopeVO.setDataScopeCd(minScope);
                 // 无自定义权限
                 scopeVO.setCustomScope(null);

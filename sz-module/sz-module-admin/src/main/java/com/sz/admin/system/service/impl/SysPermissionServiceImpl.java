@@ -10,6 +10,7 @@ import com.sz.admin.system.service.SysPermissionService;
 import com.sz.admin.system.service.SysUserRoleService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.enums.CommonResponseEnum;
+import com.sz.platform.constant.dict.UserTagConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -102,15 +103,15 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     }
 
     /**
-     * 验证用户是否是【管理员身份】 验证方式：sys_user.user_tag_cd 字段； [1001001 测试用户; 1001002 超级管理员;
-     * 1001003 普通用户] 。 详见字典：用户标签（user_tag）
+     * 验证用户是否是【管理员身份】 验证方式：sys_user.user_tag_cd 字段； 详见字典：用户标签（user_tag），常量
+     * UserTagConstant
      *
      * @param sysUser
      *            用户信息
      * @return 是否是超级管理员
      */
     private boolean isSuperAdmin(SysUser sysUser) {
-        return sysUser != null && ("1001002").equals(sysUser.getUserTagCd());
+        return sysUser != null && UserTagConstant.SUPER_ADMIN.equals(sysUser.getUserTagCd());
     }
 
 }
