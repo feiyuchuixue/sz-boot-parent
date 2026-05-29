@@ -25,21 +25,20 @@ import com.sz.core.common.event.EventPublisher;
 import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.TreeUtils;
 import com.sz.core.util.Utils;
-import com.sz.generator.service.GeneratorTableService;
+import com.sz.generator.core.script.ScriptExportService;
+import com.sz.generator.pojo.dto.ScriptExportDTO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 import com.sz.platform.constant.dict.MenuTypeConstant;
 import com.sz.platform.event.PermissionChangeEvent;
 import com.sz.platform.event.PermissionMeta;
 import com.sz.platform.redis.RedisService;
 import com.sz.security.core.util.LoginUtils;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,7 +66,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private final RedisService redisService;
 
-    private final GeneratorTableService generatorTableService;
+    private final ScriptExportService scriptExportService;
 
     private final EventPublisher eventPublisher;
 
@@ -240,26 +239,36 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return BeanCopyUtils.copyList(sysMenuVOS, MenuTreeVO.class);
     }
 
+    @Override
     public String exportMenuSql(SelectIdsDTO dto) {
-        String generatedContent = "";
+        try {
+            return scriptExportService.renderMenuSql(buildMenuScriptModel(dto), null);
+        } catch (IOException e) {
+            log.error("exportMenuSql error", e);
+            return "";
+        }
+    }
+
+    @Override
+    public ScriptExportVO exportMenuScript(ScriptExportDTO dto) {
+        try {
+            return scriptExportService.renderMenuExport(buildMenuScriptModel(dto), dto.getSqlDialect());
+        } catch (IOException e) {
+            log.error("exportMenuScript error", e);
+            return new ScriptExportVO();
+        }
+    }
+
+    private Map<String, Object> buildMenuScriptModel(SelectIdsDTO dto) {
+        Map<String, Object> dataModel = new HashMap<>();
+        List<SysMenu> sysMenuList = new ArrayList<>();
         if (Utils.isNotNull(dto.getIds())) {
-            // 递归查询下边的子节点id
             List<Long> list = this.mapper.selectMenuAndChildrenIds(dto.getIds());
             QueryWrapper queryWrapper = QueryWrapper.create().in(SysMenu::getId, list).orderBy(SysMenu::getDeep).asc().orderBy(SysMenu::getSort).asc();
-            List<SysMenu> sysMenuList = list(queryWrapper);
-            if (Utils.isNotNull(sysMenuList)) {
-                Map<String, Object> dataModel = new HashMap<>();
-                dataModel.put("sysMenuList", sysMenuList);
-                try (StringWriter writer = new StringWriter()) {
-                    Template template = generatorTableService.getMenuSqlTemplate();
-                    template.process(dataModel, writer);
-                    generatedContent = writer.toString();
-                } catch (IOException | TemplateException e) {
-                    log.error("exportMenuSql error", e);
-                }
-            }
+            sysMenuList = list(queryWrapper);
         }
-        return generatedContent;
+        dataModel.put("sysMenuList", sysMenuList);
+        return dataModel;
     }
 
     /**

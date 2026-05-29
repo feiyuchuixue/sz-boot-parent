@@ -12,6 +12,7 @@ import com.sz.generator.pojo.dto.SelectTablesDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.vo.GenCheckedInfoVO;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import com.sz.generator.pojo.vo.GeneratorPathOptionsVO;
 import com.sz.generator.pojo.vo.GeneratorPreviewVO;
 import com.sz.generator.service.GeneratorTableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,6 +109,13 @@ public class GeneratorTableController {
     @GetMapping("preview/{tableName}")
     public ApiResult<List<GeneratorPreviewVO>> preview(@PathVariable String tableName) throws IOException {
         return ApiResult.success(generatorTableService.preview(tableName));
+    }
+
+    @SaCheckPermission(value = "generator.update", orRole = GlobalConstant.SUPER_ROLE)
+    @Operation(summary = "代码生成路径候选")
+    @GetMapping("path/options")
+    public ApiResult<GeneratorPathOptionsVO> pathOptions() {
+        return ApiResult.success(generatorTableService.pathOptions());
     }
 
     @SaCheckPermission(value = "generator.generator", orRole = GlobalConstant.SUPER_ROLE)

@@ -38,7 +38,7 @@ import lombok.SneakyThrows;
 import lombok.SneakyThrows;
 </#if>
 <#if GeneratorInfo.btnDataScopeType == "1">
-import com.sz.core.datascope.SimpleDataScopeHelper;
+import com.sz.core.datascope.DataScopeSession;
 </#if>
 <#if hasResourceRef == true>
 import com.sz.resource.service.ResourceService;
@@ -116,15 +116,12 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     @Override
     public PageResult<${voClassName}> page(${dtoListClassName} dto){
 <#if GeneratorInfo.btnDataScopeType == "1">
-        try {
-            SimpleDataScopeHelper.start(${poClassName}.class);
+        try (var ignored = new DataScopeSession(${poClassName}.class)) {
             Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto),  ${voClassName}.class);
 <#if hasResourceRef == true>
             page.getRecords().forEach(this::fillAccessUrl);
 </#if>
             return PageUtils.getPageResult(page);
-        } finally {
-            SimpleDataScopeHelper.clearDataScope();
         }
 <#else>
         Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
@@ -138,15 +135,12 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     @Override
     public List<${voClassName}> list(${dtoListClassName} dto){
 <#if GeneratorInfo.btnDataScopeType == "1">
-        try {
-            SimpleDataScopeHelper.start(${poClassName}.class);
+        try (var ignored = new DataScopeSession(${poClassName}.class)) {
             List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
 <#if hasResourceRef == true>
             list.forEach(this::fillAccessUrl);
 </#if>
             return list;
-        } finally {
-            SimpleDataScopeHelper.clearDataScope();
         }
 <#else>
         List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);

@@ -15,6 +15,8 @@ import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.ApiResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.generator.pojo.dto.ScriptExportDTO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -115,6 +117,13 @@ public class SysMenuController {
     @PostMapping("sql/export")
     public ApiResult<String> exportMenuSql(@RequestBody SelectIdsDTO dto) {
         return ApiResult.success(sysMenuService.exportMenuSql(dto));
+    }
+
+    @Operation(summary = "瀵煎嚭鑿滃崟鑴氭湰")
+    @SaCheckPermission(value = "sys.menu.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("script/export")
+    public ApiResult<ScriptExportVO> exportMenuScript(@RequestBody ScriptExportDTO dto) {
+        return ApiResult.success(sysMenuService.exportMenuScript(dto));
     }
 
     @DebounceIgnore

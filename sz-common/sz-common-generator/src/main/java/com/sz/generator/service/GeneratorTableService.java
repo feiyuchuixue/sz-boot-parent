@@ -8,6 +8,7 @@ import com.sz.generator.pojo.dto.SelectTablesDTO;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.vo.GenCheckedInfoVO;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import com.sz.generator.pojo.vo.GeneratorPathOptionsVO;
 import com.sz.generator.pojo.vo.GeneratorPreviewVO;
 import freemarker.template.Template;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,8 @@ public interface GeneratorTableService extends IService<GeneratorTable> {
     byte[] downloadZip(SelectTablesDTO dto) throws IOException;
 
     List<GeneratorPreviewVO> preview(String tableName) throws IOException;
+
+    GeneratorPathOptionsVO pathOptions();
 
     Template getMenuSqlTemplate() throws IOException;
 

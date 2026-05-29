@@ -20,10 +20,10 @@ public class GeneratorProperties {
     private GlobalProperties global;
 
     // 模块名
-    private String moduleName = "sz-service";
+    private String moduleName = "sz-module";
 
     // service 名
-    private String serviceName = "sz-service-admin";
+    private String serviceName = "sz-module-admin";
 
     @Data
     public static class GlobalProperties {

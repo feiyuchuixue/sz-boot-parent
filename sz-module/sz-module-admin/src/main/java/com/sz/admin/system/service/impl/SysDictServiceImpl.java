@@ -26,16 +26,16 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.StreamUtils;
 import com.sz.core.util.Utils;
-import com.sz.generator.service.GeneratorTableService;
+import com.sz.generator.core.script.ScriptExportService;
+import com.sz.generator.pojo.dto.ScriptExportDTO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 import com.sz.platform.socket.SocketService;
 import com.sz.redis.RedisCache;
-import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,7 +63,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     private final RedisCache redisCache;
 
-    private final GeneratorTableService generatorTableService;
+    private final ScriptExportService scriptExportService;
 
     private final DictLoaderFactory dictLoaderFactory;
 
@@ -203,29 +203,40 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         return dictLoaderFactory.loadAllDict();
     }
 
-    @SneakyThrows
     @Override
     public String exportDictSql(SelectIdsDTO dto) {
-        String generatedContent = "";
+        try {
+            return scriptExportService.renderDictSql(buildDictScriptModel(dto), null);
+        } catch (IOException e) {
+            log.error("exportDictSql err", e);
+            return "";
+        }
+    }
+
+    @Override
+    public ScriptExportVO exportDictScript(ScriptExportDTO dto) {
+        try {
+            return scriptExportService.renderDictExport(buildDictScriptModel(dto), dto.getSqlDialect());
+        } catch (IOException e) {
+            log.error("exportDictScript err", e);
+            return new ScriptExportVO();
+        }
+    }
+
+    private Map<String, Object> buildDictScriptModel(SelectIdsDTO dto) {
+        Map<String, Object> dataModel = new HashMap<>();
+        List<SysDictType> dictTypeList = List.of();
+        List<SysDict> dictList = List.of();
         if (Utils.isNotNull(dto.getIds())) {
-            List<SysDictType> dictTypeList = QueryChain.of(SysDictType.class).where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
+            dictTypeList = QueryChain.of(SysDictType.class).where(SYS_DICT_TYPE.ID.in(dto.getIds())).list();
 
             QueryWrapper queryWrapper = QueryWrapper.create().in(SysDict::getSysDictTypeId, dto.getIds()).orderBy(SysDict::getSysDictTypeId).asc()
                     .orderBy(SysDict::getSort).asc();
-            List<SysDict> dictList = list(queryWrapper);
-            Map<String, Object> dataModel = new HashMap<>();
-            dataModel.put("dictTypeList", dictTypeList);
-            dataModel.put("dictList", dictList);
-            Template template = generatorTableService.getDictSqlTemplate();
-            try (StringWriter writer = new StringWriter()) {
-                template.process(dataModel, writer);
-                generatedContent = writer.toString();
-            } catch (Exception e) {
-                log.error("exportDictSql err", e);
-            }
-
+            dictList = list(queryWrapper);
         }
-        return generatedContent;
+        dataModel.put("dictTypeList", dictTypeList);
+        dataModel.put("dictList", dictList);
+        return dataModel;
     }
 
     @Override

@@ -10,7 +10,7 @@
             <not><tableExists tableName="generator_table_column"/></not>
         </preConditions>
         <createTable tableName="generator_table_column" remarks="Generator Table Column">
-            <column name="column_id" type="BIGINT" autoIncrement="true" remarks="编号"><constraints primaryKey="true"/></column>
+            <column name="column_id" type="BIGINT" remarks="编号"><constraints primaryKey="true"/></column>
             <column name="table_id" type="BIGINT" remarks="归属表编号"/>
             <column name="column_name" type="VARCHAR(255)" remarks="列名称"/>
             <column name="column_comment" type="VARCHAR(255)" remarks="列描述"/>

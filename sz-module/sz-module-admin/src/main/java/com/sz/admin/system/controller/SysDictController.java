@@ -9,6 +9,8 @@ import com.sz.admin.system.service.SysDictService;
 import com.sz.core.common.annotation.DebounceIgnore;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
+import com.sz.generator.pojo.dto.ScriptExportDTO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -83,6 +85,13 @@ public class SysDictController {
     @PostMapping("sql/export")
     public ApiResult<String> exportDictSql(@RequestBody SelectIdsDTO dto) {
         return ApiResult.success(sysDictService.exportDictSql(dto));
+    }
+
+    @Operation(summary = "瀵煎嚭瀛楀吀鑴氭湰")
+    @SaCheckPermission(value = "sys.dict.sql_btn", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("script/export")
+    public ApiResult<ScriptExportVO> exportDictScript(@RequestBody ScriptExportDTO dto) {
+        return ApiResult.success(sysDictService.exportDictScript(dto));
     }
 
     @DebounceIgnore

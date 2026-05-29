@@ -10,8 +10,8 @@ import com.sz.core.util.*;
 import com.sz.db.id.SzIdUtil;
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.CodeModelBuilder;
-import com.sz.generator.core.builder.sql.MenuSqlCodeBuilder;
 import com.sz.generator.core.metadata.GeneratorDbMetadataService;
+import com.sz.generator.core.script.ScriptExportService;
 import com.sz.generator.core.util.BuildTemplateUtils;
 import com.sz.generator.core.util.GeneratorUtils;
 import com.sz.generator.mapper.GeneratorTableMapper;
@@ -28,7 +28,10 @@ import com.sz.generator.pojo.result.TableResult;
 import com.sz.generator.pojo.vo.CodeGenTempResult;
 import com.sz.generator.pojo.vo.GenCheckedInfoVO;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import com.sz.generator.pojo.vo.GeneratorPathOptionsVO;
 import com.sz.generator.pojo.vo.GeneratorPreviewVO;
+import com.sz.generator.pojo.vo.ScriptExportItemVO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 import com.sz.generator.service.GeneratorTableColumnService;
 import com.sz.generator.service.GeneratorTableService;
 import freemarker.template.Template;
@@ -42,6 +45,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -72,6 +76,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private final GeneratorDbMetadataService metadataService;
 
+    private final ScriptExportService scriptExportService;
+
     /**
      * 导入表
      * 
@@ -95,9 +101,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (SpringApplicationContextUtils.getInstance().isLocalEnv()) {
             String moduleName = generatorProperties.getModuleName();
             String serviceName = generatorProperties.getServiceName();
-            String projectRootPath = System.getProperty("user.dir");
-            pathApi = projectRootPath + File.separator + moduleName + File.separator + serviceName;
-            pathWeb = generatorProperties.getPath().getWeb();
+            Path projectRoot = resolveProjectRoot();
+            String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
+            String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
+            pathApi = configuredApiPath == null || configuredApiPath.isBlank()
+                    ? projectRoot.resolve(moduleName).resolve(serviceName).normalize().toString()
+                    : configuredApiPath;
+            pathWeb = configuredWebPath == null ? "" : configuredWebPath;
         }
 
         boolean enableIgnoreTablePrefix = generatorProperties.getGlobal().getIgnoreTablePrefix().getEnabled();
@@ -293,9 +303,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                     List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false);
                     if (!menuCreateDTOS.isEmpty()) {
                         model.put("sysMenuList", menuCreateDTOS);
-                        MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
-                        CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
-                        addFileToZip(zip, sqlTmpRes, model);
+                        ScriptExportVO scriptExport = scriptExportService.renderMenuInit(model, null);
+                        for (ScriptExportItemVO item : scriptExport.getItems()) {
+                            addContentToZip(zip, item.getFileName(), item.getContent());
+                        }
                     }
                 }
             }
@@ -319,22 +330,12 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         handleTemplates(BuildTemplateUtils.getApiTemplates(configurer, rootPathApi, detailVO, model), previews, model);
         // 处理 Web 模板
         handleTemplates(BuildTemplateUtils.getWebTemplates(configurer, rootPathWeb, detailVO, model), previews, model);
-        // 处理 Sql模板
+        // 处理脚本模板
         if (shouldInitializeMenu(detailVO)) {
-            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false); // 预览仅生成sql，不插入sql
+            List<MenuCreateDTO> menuCreateDTOS = initMenu(detailVO, model, false); // 预览仅生成脚本，不插入菜单
             if (!menuCreateDTOS.isEmpty()) {
                 model.put("sysMenuList", menuCreateDTOS);
-                MenuSqlCodeBuilder menuSqlCodeBuilder = new MenuSqlCodeBuilder(configurer, "", detailVO, model);
-                CodeGenTempResult sqlTmpRes = menuSqlCodeBuilder.buildTemplate(false);
-                String relativePath = sqlTmpRes.getRelativePath();
-                String templateProcess = renderTemplateString(sqlTmpRes, model);
-                String fileName = Paths.get(relativePath).getFileName().toString();
-                GeneratorPreviewVO previewVO = new GeneratorPreviewVO();
-                previewVO.setCode(templateProcess);
-                previewVO.setName(fileName);
-                previewVO.setLanguage(sqlTmpRes.getLanguage());
-                previewVO.setAlias(sqlTmpRes.getAlias());
-                previews.add(previewVO);
+                addScriptPreviews(previews, scriptExportService.renderMenuInit(model, null));
             }
         }
 
@@ -342,8 +343,31 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     @Override
+    public GeneratorPathOptionsVO pathOptions() {
+        GeneratorPathOptionsVO vo = new GeneratorPathOptionsVO();
+        Path projectRoot = resolveProjectRoot();
+        String defaultApiPath = projectRoot.resolve(generatorProperties.getModuleName()).resolve(generatorProperties.getServiceName()).normalize().toString();
+        String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
+        String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
+        Path siblingWebPath = projectRoot.getParent() == null ? null : projectRoot.getParent().resolve("sz-admin").normalize();
+
+        addPathOption(vo.getApiOptions(), "默认后端模块", defaultApiPath);
+        addPathOption(vo.getApiOptions(), "当前配置后端路径", configuredApiPath);
+        addPathOption(vo.getApiOptions(), "旧版 service-admin 路径", projectRoot.resolve("sz-service").resolve("sz-service-admin").normalize().toString());
+
+        addPathOption(vo.getWebOptions(), "当前配置前端路径", configuredWebPath);
+        if (siblingWebPath != null) {
+            addPathOption(vo.getWebOptions(), "同级 sz-admin 前端路径", siblingWebPath.toString());
+        }
+
+        vo.setDefaultApiPath(firstPath(vo.getApiOptions()));
+        vo.setDefaultWebPath(firstPath(vo.getWebOptions()));
+        return vo;
+    }
+
+    @Override
     public Template getMenuSqlTemplate() throws IOException {
-        return configurer.getConfiguration().getTemplate(File.separator + "liquibase" + File.separator + "menuImport.xml.ftl");
+        return configurer.getConfiguration().getTemplate(File.separator + "sql" + File.separator + "menuImport.sql.ftl");
     }
 
     private void handleTemplates(List<AbstractCodeGenerationTemplate> templates, List<GeneratorPreviewVO> previews, Map<String, Object> model)
@@ -371,6 +395,49 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             IOUtils.copy(inputStream, zip);
             zip.closeEntry();
         }
+    }
+
+    private void addContentToZip(ZipOutputStream zip, String relativePath, String content) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+            ZipEntry zipEntry = new ZipEntry(relativePath);
+            zip.putNextEntry(zipEntry);
+            IOUtils.copy(inputStream, zip);
+            zip.closeEntry();
+        }
+    }
+
+    private static void addScriptPreviews(List<GeneratorPreviewVO> previews, ScriptExportVO scriptExport) {
+        for (ScriptExportItemVO item : scriptExport.getItems()) {
+            GeneratorPreviewVO previewVO = new GeneratorPreviewVO();
+            previewVO.setCode(item.getContent());
+            previewVO.setName(Paths.get(item.getFileName()).getFileName().toString());
+            previewVO.setLanguage(item.getLanguage());
+            previewVO.setAlias(item.getTitle());
+            previews.add(previewVO);
+        }
+    }
+
+    private static void addPathOption(List<GeneratorPathOptionsVO.PathOption> options, String label, String path) {
+        if (path == null || path.isBlank()) {
+            return;
+        }
+        boolean exists = options.stream().anyMatch(option -> path.equals(option.getPath()));
+        if (!exists) {
+            options.add(new GeneratorPathOptionsVO.PathOption(label, path));
+        }
+    }
+
+    private static String firstPath(List<GeneratorPathOptionsVO.PathOption> options) {
+        return options.isEmpty() ? "" : options.get(0).getPath();
+    }
+
+    private static Path resolveProjectRoot() {
+        Path path = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
+        if (path.getFileName() != null && path.getFileName().toString().startsWith("sz-service-") && path.getParent() != null
+                && path.getParent().getParent() != null) {
+            return path.getParent().getParent();
+        }
+        return path;
     }
 
     private byte[] renderTemplate(CodeGenTempResult tempResult, Map<String, Object> model) throws IOException {

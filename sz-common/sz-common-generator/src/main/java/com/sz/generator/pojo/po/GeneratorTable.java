@@ -1,7 +1,6 @@
 package com.sz.generator.pojo.po;
 
 import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.sz.db.EntityChangeListener;
 import lombok.Data;
@@ -24,7 +23,7 @@ public class GeneratorTable implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.Auto)
+    @Id
     private Long tableId;
 
     /**

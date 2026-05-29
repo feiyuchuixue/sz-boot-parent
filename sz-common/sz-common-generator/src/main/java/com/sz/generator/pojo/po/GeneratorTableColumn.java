@@ -2,7 +2,6 @@ package com.sz.generator.pojo.po;
 
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.handler.JacksonTypeHandler;
 import com.sz.db.EntityChangeListener;
@@ -31,7 +30,7 @@ public class GeneratorTableColumn implements Serializable {
     /**
      * 编号
      */
-    @Id(keyType = KeyType.Auto)
+    @Id
     private Long columnId;
 
     /**

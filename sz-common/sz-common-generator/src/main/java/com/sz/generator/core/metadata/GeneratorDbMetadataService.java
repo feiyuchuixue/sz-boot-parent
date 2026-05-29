@@ -82,7 +82,7 @@ public class GeneratorDbMetadataService {
                                CASE WHEN k.column_name IS NOT NULL THEN '1' ELSE '0' END AS is_pk,
                                c.ordinal_position AS sort,
                                COALESCE(pgd.description, '') AS column_comment,
-                               CASE WHEN c.is_identity = 'YES' OR c.column_default LIKE 'nextval(%%' THEN '1' ELSE '0' END AS is_increment,
+                               CASE WHEN c.is_identity = 'YES' OR c.column_default LIKE 'nextval(%' THEN '1' ELSE '0' END AS is_increment,
                                CASE
                                    WHEN c.data_type = 'character varying' THEN 'varchar(' || c.character_maximum_length || ')'
                                    WHEN c.data_type = 'character' THEN 'char(' || c.character_maximum_length || ')'

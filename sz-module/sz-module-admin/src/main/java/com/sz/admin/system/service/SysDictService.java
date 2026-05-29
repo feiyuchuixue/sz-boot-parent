@@ -8,6 +8,8 @@ import com.sz.admin.system.pojo.po.SysDict;
 import com.sz.core.common.entity.DictVO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
+import com.sz.generator.pojo.dto.ScriptExportDTO;
+import com.sz.generator.pojo.vo.ScriptExportVO;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,8 @@ public interface SysDictService extends IService<SysDict> {
     List<DictVO> getDictByType(String typeCode);
 
     String exportDictSql(SelectIdsDTO dto);
+
+    ScriptExportVO exportDictScript(ScriptExportDTO dto);
 
     Map<String, List<DictVO>> getDictByCode(List<String> typeCode);
 }

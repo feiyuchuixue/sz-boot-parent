@@ -216,6 +216,8 @@ public class GeneratorUtils {
             case "TINYTEXT" :
             case "MEDIUMTEXT" :
             case "LONGTEXT" :
+            case "JSON" :
+            case "JSONB" :
                 setStringTypeAttributes(columnType, tableColumn);
                 tableColumn.setSearchType("input");
                 break;
