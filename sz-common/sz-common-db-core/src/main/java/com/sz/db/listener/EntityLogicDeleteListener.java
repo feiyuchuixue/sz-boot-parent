@@ -34,7 +34,7 @@ public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
 
         List<String> columns = Arrays.asList(tableInfo.getAllColumns());
         if (!deleteTimeCol.isEmpty() && columns.contains(deleteTimeCol)) {
-            sqlBuilder.append(", ").append(iDialect.wrap(deleteTimeCol)).append(EQUALS).append(" now()");
+            sqlBuilder.append(", ").append(iDialect.wrap(deleteTimeCol)).append(EQUALS).append(" CURRENT_TIMESTAMP");
         }
         if (!deleteByCol.isEmpty() && isLogin() && columns.contains(deleteByCol)) {
             Object loginId = StpUtil.getStpLogic().getLoginId();
@@ -44,7 +44,10 @@ public class EntityLogicDeleteListener extends DefaultLogicDeleteProcessor {
     }
 
     private static Object prepareValue(Object value) {
-        return (!(value instanceof Number) && !(value instanceof Boolean)) ? "'" + value + "'" : value;
+        if (value == null) {
+            return "NULL";
+        }
+        return (!(value instanceof Number) && !(value instanceof Boolean)) ? "'" + value.toString().replace("'", "''") + "'" : value;
     }
 
     private boolean isLogin() {
