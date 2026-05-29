@@ -71,10 +71,7 @@ public class DebounceAspect {
 
         String lockKey = Utils.generateDebounceRequestId(request);
         boolean lockAcquired = debounceService.acquireLock(lockKey, lockTime);
-        if (!lockAcquired) {
-            // 防抖命中：抛出业务异常，由 GlobalExceptionHandler 统一映射为 HTTP 429
-            CommonResponseEnum.DEBOUNCE.assertFalse(false);
-        }
+        CommonResponseEnum.DEBOUNCE.assertFalse(lockAcquired);
         return point.proceed();
     }
 
