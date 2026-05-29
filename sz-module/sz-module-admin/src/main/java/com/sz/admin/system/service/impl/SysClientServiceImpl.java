@@ -82,7 +82,7 @@ public class SysClientServiceImpl extends ServiceImpl<SysClientMapper, SysClient
     }
 
     @Override
-    public ClientVO detail(Long id) {
+    public ClientVO detail(String id) {
         SysClient sysClient = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(sysClient);
         ClientVO clientVO = BeanCopyUtils.copy(sysClient, ClientVO.class);

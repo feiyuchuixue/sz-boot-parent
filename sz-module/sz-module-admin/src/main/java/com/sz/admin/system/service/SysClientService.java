@@ -32,6 +32,6 @@ public interface SysClientService extends IService<SysClient> {
 
     void remove(SelectIdsDTO dto);
 
-    ClientVO detail(Long id);
+    ClientVO detail(String id);
 
 }

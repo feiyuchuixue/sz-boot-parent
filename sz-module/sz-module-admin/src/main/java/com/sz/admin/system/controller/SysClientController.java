@@ -67,7 +67,7 @@ public class SysClientController {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "sys.client.query_table", orRole = GlobalConstant.SUPER_ROLE)
     @GetMapping("/{id}")
-    public ApiResult<ClientVO> detail(@PathVariable Long id) {
+    public ApiResult<ClientVO> detail(@PathVariable String id) {
         return ApiResult.success(sysClientService.detail(id));
     }
 

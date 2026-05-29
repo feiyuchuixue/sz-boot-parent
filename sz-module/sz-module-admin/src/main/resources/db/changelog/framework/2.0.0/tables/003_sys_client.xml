@@ -43,7 +43,7 @@
             <column name="client_key" value="sz-admin"/>
             <column name="client_secret" value="839ce050d3814949af9b2e1f815bc620"/>
             <column name="grant_type_cd" value="password"/>
-            <column name="device_type_cd" value="1004001"/>
+            <column name="device_type_cd" value="PC"/>
             <column name="active_timeout" valueNumeric="86400"/>
             <column name="timeout" valueNumeric="604800"/>
             <column name="client_status_cd" value="1003001"/>
