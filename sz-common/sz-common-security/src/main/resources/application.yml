@@ -4,7 +4,6 @@ router:
     - "/auth/login"
     - "/register"
     - "/sys-dict/dict"
-    - "/doc.html"
     - "/webjars/**"
     - "/swagger-resources"
     - "/favicon.ico"

@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <artifactId>sa-token-spring-boot4-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
@@ -55,9 +55,10 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
+        <!-- springdoc OpenAPI 支持（provided，由 service 模块引入） -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

@@ -7,11 +7,8 @@ import jakarta.validation.ConstraintValidatorContext;
 /**
  * 身份证号校验器（中国大陆 18 位居民身份证）
  * <p>
- * 校验逻辑：
- * 1. 格式正则：前6位地区码 + 8位出生日期 + 3位顺序码 + 1位校验码
- * 2. 出生日期合法（年1900-2099，月01-12，日01-31，简单范围校验）
- * 3. ISO 7064 MOD 11-2 校验码算法
- * <br>
+ * 校验逻辑： 1. 格式正则：前6位地区码 + 8位出生日期 + 3位顺序码 + 1位校验码 2.
+ * 出生日期合法（年1900-2099，月01-12，日01-31，简单范围校验） 3. ISO 7064 MOD 11-2 校验码算法 <br>
  * null 和空字符串视为合法（不做必填校验）
  * </p>
  *
@@ -53,9 +50,7 @@ public class IdCardValidator implements ConstraintValidator<IdCard, String> {
         int y = Integer.parseInt(year);
         int m = Integer.parseInt(month);
         int d = Integer.parseInt(day);
-        return y >= 1900 && y <= 2099
-                && m >= 1 && m <= 12
-                && d >= 1 && d <= 31;
+        return y >= 1900 && y <= 2099 && m >= 1 && m <= 12 && d >= 1 && d <= 31;
     }
 
     private boolean isValidCheckCode(String id) {

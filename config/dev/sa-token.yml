@@ -35,7 +35,6 @@ sa-token:
 router:
   whitelist:
     - "/v3/api-docs/**"
-    - "/doc.html"
     - "/webjars/**"
     - "/swagger-resources"
     - "/favicon.ico"

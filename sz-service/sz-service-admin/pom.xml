@@ -10,11 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sz-service-admin</artifactId>
 
-    <!-- 全局公用dependency版本管理 -->
-    <properties>
-        <liquibase.version>4.31.1</liquibase.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -26,9 +21,8 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${liquibase.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sz</groupId>
@@ -36,28 +30,18 @@
             <version>${project.version}</version>
         </dependency>
         <!-- Mysql 数据库-->
-        <dependency>
+<!--        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-mysql</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- Postgresql 数据库-->
-<!--        <dependency>
+        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-postgresql</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
-        <!-- knife4j swagger文档 -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springdoc</groupId>
-                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+        <!-- springdoc OpenAPI 文档 -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
  * 异常枚举类
  */
 public enum CommonResponseEnum implements ResponseEnumTemplate<CommonResponseEnum> {
+
     // @formatter:off
     // ---------- 参数校验 ----------
     VALID_ERROR(100, "参数校验异常", HttpStatus.BAD_REQUEST),

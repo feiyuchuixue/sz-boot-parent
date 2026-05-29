@@ -1,28 +1,23 @@
 package com.sz.core.common.configuration;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
-import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.*;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.BeanPropertyWriter;
+import tools.jackson.databind.ser.ValueSerializerModifier;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import com.sz.core.common.entity.MultipartFileSerializer;
 import com.sz.core.common.jackson.EmptySerializer;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,9 +35,8 @@ import java.util.TimeZone;
  * @since 2022/8/26
  */
 @Configuration
-@JsonComponent
 @Slf4j
-public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
+public class JacksonConfiguration {
 
     private static final String TIME_ZONE = "GMT+8";
 
@@ -90,69 +84,64 @@ public class JacksonConfiguration extends JsonSerializer<LocalDateTime> {
         };
     }
 
+    /**
+     * 通过 JsonMapperBuilderCustomizer 将自定义序列化规则注入 SB4 自动配置的 ObjectMapper， 避免注册额外
+     * ObjectMapper bean 导致 primary 冲突。
+     */
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
-        return builder -> {
-            builder.modules(javaTimeModule);
-            builder.simpleDateFormat(DATE_TIME_PATTERN);
-            builder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_PATTERN)));
-            builder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
-        };
-    }
+    public JsonMapperBuilderCustomizer szJacksonCustomizer() {
+        return (JsonMapper.Builder builder) -> {
+            // 时间序列化/反序列化
+            SimpleModule javaTimeModule = new SimpleModule();
+            javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
+            javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
+            javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_PATTERN)));
 
-    @Bean
-    @Primary
-    @ConditionalOnMissingBean(ObjectMapper.class)
-    public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
-        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
-        objectMapper.setTimeZone(TimeZone.getTimeZone(TIME_ZONE)); // 指定时区为：中国时
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 针对实体映射时不匹配类型或序列化的处理配置：即找不到、不可用也不抛出异常。
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.setSerializerFactory(objectMapper.getSerializerFactory().withSerializerModifier(new BeanSerializerModifier() {
+            // MultipartFile 序列化支持
+            javaTimeModule.addSerializer(MultipartFile.class, new MultipartFileSerializer());
 
-            @Override
-            public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
-                for (BeanPropertyWriter writer : beanProperties) {
-                    JavaType type = writer.getType();
+            // Long 类型防 JS 精度丢失
+            javaTimeModule.addSerializer(Long.class, new ValueSerializer<Long>() {
 
-                    if (type.isTypeOrSubTypeOf(String.class)) {
-                        writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
-                    } else if (type.isCollectionLikeType()) {
-                        writer.assignNullSerializer(EmptySerializer.EmptyArraySerializer.INSTANCE);
-                    } else if (type.isMapLikeType()) {
-                        writer.assignNullSerializer(EmptySerializer.EmptyObjectSerializer.INSTANCE);
+                @Override
+                public void serialize(Long value, JsonGenerator gen, SerializationContext serializers) {
+                    if (value > JS_SAFE_INTEGER_MAX || value < JS_SAFE_INTEGER_MIN) {
+                        gen.writeString(value.toString());
                     } else {
-                        // default fallback
-                        writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
+                        gen.writeNumber(value);
                     }
                 }
-                return beanProperties;
-            }
-        }));
-        // 对MultipleFile序列化的支持
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(MultipartFile.class, new MultipartFileSerializer());
-        // 添加Long类型的自定义序列化器
-        module.addSerializer(Long.class, new JsonSerializer<>() {
+            });
 
-            @Override
-            public void serialize(Long value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                if (value > JS_SAFE_INTEGER_MAX || value < JS_SAFE_INTEGER_MIN) {
-                    gen.writeString(value.toString());
-                } else {
-                    gen.writeNumber(value);
+            // Null 字段序列化规则：String→""，集合→[]，Map→{}，其他→""
+            SimpleModule nullHandlerModule = new SimpleModule();
+            nullHandlerModule.setSerializerModifier(new ValueSerializerModifier() {
+
+                @Override
+                public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription.Supplier beanDesc,
+                        List<BeanPropertyWriter> beanProperties) {
+                    for (BeanPropertyWriter writer : beanProperties) {
+                        JavaType type = writer.getType();
+                        if (type.isTypeOrSubTypeOf(String.class)) {
+                            writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
+                        } else if (type.isCollectionLikeType()) {
+                            writer.assignNullSerializer(EmptySerializer.EmptyArraySerializer.INSTANCE);
+                        } else if (type.isMapLikeType()) {
+                            writer.assignNullSerializer(EmptySerializer.EmptyObjectSerializer.INSTANCE);
+                        } else if (type.isTypeOrSubTypeOf(Number.class)) {
+                            writer.assignNullSerializer(EmptySerializer.ZeroNumberSerializer.INSTANCE);
+                        } else if (type.isTypeOrSubTypeOf(Boolean.class)) {
+                            writer.assignNullSerializer(EmptySerializer.FalseBooleanSerializer.INSTANCE);
+                        } else {
+                            writer.assignNullSerializer(EmptySerializer.EmptyStringSerializer.INSTANCE);
+                        }
+                    }
+                    return beanProperties;
                 }
-            }
-        });
-        objectMapper.registerModule(module);
-        return objectMapper;
-    }
+            });
 
-    @Override
-    public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        String formattedValue = value.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-        gen.writeString(formattedValue);
+            builder.addModule(javaTimeModule).addModule(nullHandlerModule).defaultTimeZone(TimeZone.getTimeZone(TIME_ZONE))
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        };
     }
 }

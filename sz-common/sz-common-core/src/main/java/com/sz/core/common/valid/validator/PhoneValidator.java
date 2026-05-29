@@ -7,8 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 /**
  * 手机号校验器
  * <p>
- * 规则：1开头，第二位3-9，共11位数字（中国大陆手机号）
- * null 和空字符串视为合法（不做必填校验）
+ * 规则：1开头，第二位3-9，共11位数字（中国大陆手机号） null 和空字符串视为合法（不做必填校验）
  * </p>
  *
  * @author sz

@@ -1,8 +1,3 @@
-# swagger文档配置
-knife4j:
-  enable: false
-  setting:
-    language: zh_cn
 springdoc:
   default-flat-param-object: true
   swagger-ui:

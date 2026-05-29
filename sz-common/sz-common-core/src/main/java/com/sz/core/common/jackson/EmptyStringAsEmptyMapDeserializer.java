@@ -1,10 +1,9 @@
 package com.sz.core.common.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 /**
@@ -31,11 +30,11 @@ import java.util.Map;
  * @author sz
  * @since 2025/7/14
  */
-public class EmptyStringAsEmptyMapDeserializer extends JsonDeserializer<Map<?, ?>> {
+public class EmptyStringAsEmptyMapDeserializer extends ValueDeserializer<Map<?, ?>> {
 
     @Override
-    public Map<?, ?> deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
-        if (parser.getCurrentToken().isScalarValue() && "".equals(parser.getText())) {
+    public Map<?, ?> deserialize(JsonParser parser, DeserializationContext ctx) {
+        if (parser.currentToken().isScalarValue() && "".equals(parser.getText())) {
             return new HashMap<>();
         }
         // 其他情况下走默认处理
