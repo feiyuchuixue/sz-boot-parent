@@ -1,3 +1,5 @@
+# 数据库类型，默认为mysql，可选项：mysql、postgresql，根据实际使用的数据库类型进行配置。
+DB_TYPE: mysql
 spring:
   threads:
     virtual:
@@ -10,7 +12,7 @@ spring:
       - file:config/${spring.profiles.active}/knife4j.yml
       - file:config/${spring.profiles.active}/oss.yml
       - file:config/${spring.profiles.active}/mybatis-flex.yml
-      - file:config/${spring.profiles.active}/${DB_TYPE:mysql}.yml
+      - file:config/${spring.profiles.active}/${DB_TYPE}.yml
       - file:config/${spring.profiles.active}/page-helper.yml
       - file:config/${spring.profiles.active}/redis.yml
       - file:config/${spring.profiles.active}/sa-token.yml

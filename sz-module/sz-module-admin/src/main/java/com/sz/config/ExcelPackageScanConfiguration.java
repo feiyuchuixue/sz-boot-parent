@@ -1,4 +1,4 @@
-package com.sz.configuration;
+package com.sz.config;
 
 import com.sz.excel.annotation.EnableExcelTemplateScan;
 import lombok.extern.slf4j.Slf4j;
@@ -11,5 +11,5 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 @EnableExcelTemplateScan(basePackages = {"com.sz.admin"})
-public class PackageScanConfiguration {
+public class ExcelPackageScanConfiguration {
 }

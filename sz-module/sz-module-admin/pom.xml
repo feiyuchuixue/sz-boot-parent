@@ -21,10 +21,10 @@
             <artifactId>sz-common-core</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!-- mysql数据库模块 -->
+        <!-- 数据库模块 -->
         <dependency>
             <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-mysql</artifactId>
+            <artifactId>sz-common-db-core</artifactId>
             <version>${revision}</version>
         </dependency>
         <!--鉴权模块-->

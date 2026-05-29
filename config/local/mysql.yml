@@ -6,7 +6,7 @@ spring:
     password: Yanfa2023@
     hikari:
       #连接池名
-      pool-name: HikariCP-MYSQL
+      pool-name: HikariCP_MYSQL
       #最小空闲连接数
       minimum-idle: 5
       # 空闲连接存活最大时间，默认10分钟

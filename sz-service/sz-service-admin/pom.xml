@@ -35,11 +35,18 @@
             <artifactId>sz-module-admin</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Mysql 数据库-->
         <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-db-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Postgresql 数据库-->
+<!--        <dependency>
             <groupId>com.sz</groupId>
             <artifactId>sz-common-db-postgresql</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- knife4j swagger文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
