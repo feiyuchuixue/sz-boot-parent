@@ -246,7 +246,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
     @Override
     public Map<String, List<DictVO>> getDictByCode(List<String> typeCode) {
-        return typeCode.stream().collect(Collectors.toMap(code -> code, this::getDictByType));
+        if (typeCode == null || typeCode.isEmpty()) {
+            return Map.of();
+        }
+        return typeCode.stream().filter(code -> code != null && !code.trim().isEmpty()).map(String::trim).distinct()
+                .collect(Collectors.toMap(code -> code, this::getDictByType, (first, second) -> first, LinkedHashMap::new));
     }
 
     private Long getNextSuffix(Long dictTypeId) {

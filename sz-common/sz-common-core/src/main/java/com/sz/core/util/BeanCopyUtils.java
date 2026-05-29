@@ -18,7 +18,7 @@ public class BeanCopyUtils {
 
     static {
         modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT); // 设置严格模式
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT).setFullTypeMatchingRequired(true); // 设置严格模式
     }
 
     private BeanCopyUtils() {

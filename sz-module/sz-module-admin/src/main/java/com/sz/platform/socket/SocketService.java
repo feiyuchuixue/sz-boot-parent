@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +39,9 @@ public class SocketService {
      *            用户id
      */
     public void syncPermission(Long userId) {
+        if (userId == null) {
+            return;
+        }
         websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.SYNC_PERMISSIONS), List.of(String.valueOf(userId))));
     }
 
@@ -48,6 +52,9 @@ public class SocketService {
      *            用户id
      */
     public void kickOff(Long userId) {
+        if (userId == null) {
+            return;
+        }
         websocketRedisService
                 .sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.KICK_OFF), Collections.singletonList(String.valueOf(userId))));
     }
@@ -63,13 +70,21 @@ public class SocketService {
      *            接收者ID列表
      */
     public void sendMessage(PayloadBody body, Long senderId, List<Long> receiverIds) {
-        List<String> toUsers = receiverIds == null ? Collections.emptyList() : receiverIds.stream().map(String::valueOf).toList();
-        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.MESSAGE, body), toUsers, String.valueOf(senderId)));
+        List<String> toUsers = normalizeUserIds(receiverIds);
+        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.MESSAGE, body), toUsers, normalizeUserId(senderId)));
     }
 
     public void readMessage(Long fromUserId, List<Long> toUsers) {
-        List<String> normalized = toUsers == null ? Collections.emptyList() : toUsers.stream().map(String::valueOf).toList();
-        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.READ), normalized, String.valueOf(fromUserId)));
+        List<String> normalized = normalizeUserIds(toUsers);
+        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.READ), normalized, normalizeUserId(fromUserId)));
+    }
+
+    private static List<String> normalizeUserIds(List<Long> userIds) {
+        return userIds == null ? Collections.emptyList() : userIds.stream().filter(Objects::nonNull).map(String::valueOf).toList();
+    }
+
+    private static String normalizeUserId(Long userId) {
+        return userId == null ? null : String.valueOf(userId);
     }
 
 }

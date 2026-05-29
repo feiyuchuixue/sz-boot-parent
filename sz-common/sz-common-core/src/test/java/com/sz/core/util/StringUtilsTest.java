@@ -2,6 +2,7 @@ package com.sz.core.util;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -26,6 +27,14 @@ class StringUtilsTest {
         assertEquals("teacherStatics", StringUtils.toCamelCase("teacher__Statics"));
         assertEquals("teacherStatics", StringUtils.toCamelCase("teacher_Statics"));
         assertEquals("teacherStatics", StringUtils.toCamelCase("TEACHER_STATICS"));
+    }
+
+    @Test
+    void containsAnyIgnoreCaseMatchesRegularCharSequenceWithoutClassCast() {
+        assertThat(StringUtils.containsAnyIgnoreCase("sys.user.create_btn", "USER", "role")).isTrue();
+        assertThat(StringUtils.containsAnyIgnoreCase("sys.user.create_btn", "dept", "role")).isFalse();
+        assertThat(StringUtils.containsAnyIgnoreCase("", "sys")).isFalse();
+        assertThat(StringUtils.containsAnyIgnoreCase(null, "sys")).isFalse();
     }
 
 }

@@ -41,16 +41,6 @@
             <groupId>com.sz</groupId>
             <artifactId>sz-module-generator</artifactId>
         </dependency>
-        <!-- Mysql 数据库-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-mysql</artifactId>
-        </dependency>
-        <!-- Postgresql 数据库-->
-<!--        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-postgresql</artifactId>
-        </dependency>-->
         <!-- springdoc OpenAPI 文档 -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -64,6 +54,35 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-mysql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>postgresql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-postgresql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

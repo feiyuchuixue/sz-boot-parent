@@ -12,7 +12,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 
@@ -50,22 +52,23 @@ public class DebounceAspect {
     @Around("methodArgs()")
     public Object debounceInterceptor(ProceedingJoinPoint point) throws Throwable {
         Method method = ((MethodSignature) point.getSignature()).getMethod();
+        Class<?> targetClass = point.getTarget() == null ? method.getDeclaringClass() : point.getTarget().getClass();
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
         String httpMethod = request.getMethod();
-        boolean isDebounceAnno = method.isAnnotationPresent(Debounce.class);
+        Debounce debounce = findDebounce(specificMethod, targetClass);
 
         // 检查：是否开启了防抖、是否标注了 @DebounceIgnore 注解
-        if (!debounceProperties.isEnabled() || method.isAnnotationPresent(DebounceIgnore.class)) {
+        if (!debounceProperties.isEnabled() || hasDebounceIgnore(specificMethod, targetClass)) {
             return point.proceed();
         }
 
         // 忽略 GET 请求
-        if (debounceProperties.isIgnoreGetMethod() && !isDebounceAnno && "GET".equalsIgnoreCase(httpMethod)) {
+        if (debounceProperties.isIgnoreGetMethod() && debounce == null && "GET".equalsIgnoreCase(httpMethod)) {
             return point.proceed();
         }
 
         long lockTime = debounceProperties.getGlobalLockTime();
-        if (isDebounceAnno) {
-            Debounce debounce = method.getAnnotation(Debounce.class);
+        if (debounce != null) {
             lockTime = debounce.time();
         }
 
@@ -73,6 +76,16 @@ public class DebounceAspect {
         boolean lockAcquired = debounceService.acquireLock(lockKey, lockTime);
         CommonResponseEnum.DEBOUNCE.assertFalse(lockAcquired);
         return point.proceed();
+    }
+
+    private static Debounce findDebounce(Method method, Class<?> targetClass) {
+        Debounce methodDebounce = AnnotationUtils.findAnnotation(method, Debounce.class);
+        return methodDebounce == null ? AnnotationUtils.findAnnotation(targetClass, Debounce.class) : methodDebounce;
+    }
+
+    private static boolean hasDebounceIgnore(Method method, Class<?> targetClass) {
+        return AnnotationUtils.findAnnotation(method, DebounceIgnore.class) != null
+                || AnnotationUtils.findAnnotation(targetClass, DebounceIgnore.class) != null;
     }
 
 }

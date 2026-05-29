@@ -7,11 +7,12 @@ RUN set -eux; \
     apt-get update && \
     apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /config /logs
+    mkdir -p /config /logs /data
 
-ARG SPRING_PROFILES_ACTIVE
+ARG SPRING_PROFILES_ACTIVE=prod
+ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 
 # 声明挂载点（配置/日志）
 VOLUME ["/config", "/logs", "/data"]
 
-ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Shanghai","-Dfile.encoding=UTF-8", "app.jar", "--spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+ENTRYPOINT ["sh", "-c", "java -Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 -jar app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]

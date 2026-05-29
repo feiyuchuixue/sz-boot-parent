@@ -451,7 +451,7 @@ public class StringUtils {
      * @return 是否包含任意一个字符串
      */
     public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences) {
-        if (isEmpty((Collection<?>) cs) || isEmpty(searchCharSequences)) {
+        if (cs == null || cs.isEmpty() || isEmpty(searchCharSequences)) {
             return false;
         }
         for (CharSequence testStr : searchCharSequences) {

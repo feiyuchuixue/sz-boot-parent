@@ -78,8 +78,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         QueryWrapper wrapper = QueryWrapper.create().eq(SysRoleMenu::getRoleId, roleId);
         remove(wrapper); // 移除角色-菜单关联记录
         sysDataRoleRelationService.deleteByRoleId(roleId); // 移除角色-数据权限关联记录
-        if (Utils.isNotNull(dto.getMenu().getMenuIds())) {
-            List<SysRoleMenu> menuRoles = dto.getMenu().getMenuIds().stream().map(menuId -> {
+        List<Long> menuIds = dto.getMenu() == null ? Collections.emptyList() : dto.getMenu().getMenuIds();
+        if (Utils.isNotNull(menuIds)) {
+            List<SysRoleMenu> menuRoles = menuIds.stream().map(menuId -> {
                 SysRoleMenu rm = new SysRoleMenu();
                 rm.setRoleId(roleId);
                 rm.setMenuId(menuId);
@@ -91,7 +92,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         }
 
         // 2. 数据权限的修改
-        List<SysRoleMenuDTO.Scope> scopeList = dto.getScope();
+        List<SysRoleMenuDTO.Scope> scopeList = dto.getScope() == null ? Collections.emptyList() : dto.getScope();
         List<SysRoleMenu> scopeRoleMenus = new ArrayList<>();
         SysRoleMenu roleMenu;
         for (SysRoleMenuDTO.Scope scope : scopeList) {
@@ -105,11 +106,15 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             scopeRoleMenus.add(roleMenu);
 
             if (DataScopeConstant.CUSTOM.equals(dataScope)) { // 自定义数据权限
-                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.USER, scope.getUserIds());
-                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.DEPT, scope.getDeptIds());
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.USER,
+                        scope.getUserIds() == null ? Collections.emptyList() : scope.getUserIds());
+                sysDataRoleRelationService.batchSave(roleId, menuId, DataScopeRelationTypeConstant.DEPT,
+                        scope.getDeptIds() == null ? Collections.emptyList() : scope.getDeptIds());
             }
         }
-        saveBatch(scopeRoleMenus);
+        if (!scopeRoleMenus.isEmpty()) {
+            saveBatch(scopeRoleMenus);
+        }
 
         // 3. 发布权限变更事件
         eventPublisher.publish(new PermissionChangeEvent(this, new PermissionMeta(userIds)));
@@ -232,7 +237,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Override
     public Map<Long, RoleMenuScopeVO> getUserScope(Collection<String> roleIds) {
         Map<Long, RoleMenuScopeVO> scopeVOMap = new HashMap<>();
-        if (roleIds.isEmpty()) {
+        if (roleIds == null || roleIds.isEmpty()) {
             return scopeVOMap;
         }
         // 超管拥有全部权限，无需查询数据权限范围
@@ -240,7 +245,11 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             return scopeVOMap;
         }
         // roles 中只含数字字符串（role id），转 Long 避免 PG bigint = varchar 类型不匹配
-        List<Long> numericRoleIds = roleIds.stream().map(Long::valueOf).toList();
+        List<Long> numericRoleIds = roleIds.stream().filter(Objects::nonNull).map(String::trim).filter(roleId -> roleId.matches("\\d+")).map(Long::valueOf)
+                .toList();
+        if (numericRoleIds.isEmpty()) {
+            return scopeVOMap;
+        }
         List<Long> customMenuIds = new ArrayList<>();
         Map<Long, List<SysRoleMenu>> roleScopeMap = new HashMap<>();
         QueryWrapper wrapper = QueryWrapper.create().where(SYS_ROLE_MENU.ROLE_ID.in(numericRoleIds)).where(SYS_ROLE_MENU.PERMISSION_TYPE.eq("scope"));
@@ -263,7 +272,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         Map<Long, RoleMenuScopeVO.CustomScope> customScopeMap = new HashMap<>();
         // 根据 角色 和 菜单 获取 自定义权限
         if (!customMenuIds.isEmpty()) {
-            List<SysDataRoleRelation> relations = sysDataRoleRelationService.listByRoleIdsAndMenuIds(roleIds, customMenuIds);
+            List<String> numericRoleIdTexts = numericRoleIds.stream().map(String::valueOf).toList();
+            List<SysDataRoleRelation> relations = sysDataRoleRelationService.listByRoleIdsAndMenuIds(numericRoleIdTexts, customMenuIds);
             Map<Long, List<SysDataRoleRelation>> relationMap = relations.stream().collect(Collectors.groupingBy(SysDataRoleRelation::getMenuId));
             for (Long menuId : customMenuIds) {
                 List<SysDataRoleRelation> group = relationMap.getOrDefault(menuId, Collections.emptyList());

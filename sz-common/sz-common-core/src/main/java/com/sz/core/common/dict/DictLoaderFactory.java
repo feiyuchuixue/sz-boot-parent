@@ -37,9 +37,13 @@ public class DictLoaderFactory {
     }
 
     private void registerDynamicLoader(DynamicDictLoader dynamicLoader) {
+        String rawTypeCode = dynamicLoader.getTypeCode();
+        if (!Utils.isNotNull(rawTypeCode)) {
+            throw new IllegalStateException("动态字典加载器 typeCode 不能为空: " + dynamicLoader.getClass().getName());
+        }
         String typeCode = dynamicLoader.getDynamicTypeCode();
         if (!Utils.isNotNull(typeCode)) {
-            throw new IllegalStateException("动态字典加载器 typeCode 不能为空: " + dynamicLoader.getClass().getName());
+            throw new IllegalStateException("动态字典加载器 full typeCode 不能为空: " + dynamicLoader.getClass().getName());
         }
         DynamicDictLoader exists = dynamicLoaderMap.putIfAbsent(typeCode, dynamicLoader);
         if (exists != null) {
