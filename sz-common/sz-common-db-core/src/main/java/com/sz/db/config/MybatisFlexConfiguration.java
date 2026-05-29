@@ -58,7 +58,7 @@ public class MybatisFlexConfiguration implements MyBatisFlexCustomizer {
 
     @PostConstruct
     public void initSqlAudit() {
-        PrintSQL.print(auditProperties.getSql());
+        PrintSQL.print(auditProperties.resolveSql());
     }
 
     @Bean

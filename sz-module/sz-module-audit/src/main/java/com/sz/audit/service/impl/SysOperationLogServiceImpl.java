@@ -170,7 +170,7 @@ public class SysOperationLogServiceImpl extends ServiceImpl<SysOperationLogMappe
     }
 
     private boolean shouldSaveDetail(AuditEvent event) {
-        AuditProperties.Diagnostic diagnostic = auditProperties.getDiagnostic() == null ? new AuditProperties.Diagnostic() : auditProperties.getDiagnostic();
+        AuditProperties.Diagnostic diagnostic = auditProperties.resolveDiagnostic();
         if (!diagnostic.isEnabled()) {
             return false;
         }

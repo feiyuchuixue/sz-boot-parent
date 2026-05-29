@@ -19,6 +19,56 @@ import java.util.Set;
 public class AuditProperties {
 
     /**
+     * 是否启用操作审计。
+     */
+    private boolean enabled = true;
+
+    /**
+     * 审计模式。standard 用于生产常规审计，debug 用于本地/测试排障，off 关闭审计。
+     */
+    private AuditMode mode = AuditMode.STANDARD;
+
+    /**
+     * 审计写入模式。统一控制主记录、诊断明细和事件发布的同步/异步投递。
+     */
+    private WriteMode writeMode = WriteMode.SYNC;
+
+    /**
+     * 自动采集的 HTTP 方法。为空时默认采集 POST、PUT、DELETE。
+     */
+    private Set<String> methods = new LinkedHashSet<>(Set.of("POST", "PUT", "DELETE"));
+
+    /**
+     * 慢操作阈值，单位毫秒。
+     */
+    private long slowThresholdMs = 2000L;
+
+    /**
+     * 是否记录请求参数。记录前会统一脱敏和截断。
+     */
+    private boolean recordParams = true;
+
+    /**
+     * 是否记录响应体。默认关闭，避免敏感数据和大字段入库。
+     */
+    private boolean recordResponseBody = false;
+
+    /**
+     * SQL 审计模式。
+     */
+    private SqlMode sqlMode = SqlMode.OFF;
+
+    /**
+     * 是否启用 traceId。
+     */
+    private boolean traceEnabled = true;
+
+    /**
+     * traceId 请求/响应头名称。
+     */
+    private String traceHeaderName = "X-Trace-Id";
+
+    /**
      * SQL 审计日志配置。
      */
     private Sql sql = new Sql();
@@ -49,6 +99,24 @@ public class AuditProperties {
      * 该配置只控制 Spring 事件扩展，不影响核心操作审计入库和文件兜底。
      */
     private Event event = new Event();
+
+    /**
+     * 审计模式。
+     */
+    public enum AuditMode {
+        /**
+         * 标准审计模式，推荐生产使用。
+         */
+        STANDARD,
+        /**
+         * 排障审计模式，推荐本地/测试临时使用。
+         */
+        DEBUG,
+        /**
+         * 关闭审计模式。
+         */
+        OFF
+    }
 
     /**
      * SQL 审计输出模式。
@@ -98,6 +166,114 @@ public class AuditProperties {
          * 异步写入主审计记录。当前默认不使用，保留给高吞吐场景。
          */
         ASYNC
+    }
+
+    public Sql resolveSql() {
+        Sql resolved = copySql(sql == null ? new Sql() : sql);
+        resolved.setMode(resolveMode() == AuditMode.OFF ? SqlMode.OFF : sqlMode);
+        return resolved;
+    }
+
+    public Access resolveAccess() {
+        Access resolved = copyAccess(access == null ? new Access() : access);
+        resolved.setMode(switch (resolveMode()) {
+            case OFF -> AccessMode.OFF;
+            case DEBUG -> AccessMode.FULL;
+            case STANDARD -> AccessMode.SLOW;
+        });
+        return resolved;
+    }
+
+    public Operation resolveOperation() {
+        Operation resolved = copyOperation(operation == null ? new Operation() : operation);
+        resolved.setEnabled(enabled && resolveMode() != AuditMode.OFF);
+        resolved.setWriteMode(writeMode);
+        resolved.setMethods(methods == null || methods.isEmpty() ? new LinkedHashSet<>(Set.of("POST", "PUT", "DELETE")) : methods);
+        resolved.setSlowThresholdMs(slowThresholdMs);
+        resolved.setParamsEnabled(recordParams);
+        resolved.setResponseBodyEnabled(recordResponseBody);
+        return resolved;
+    }
+
+    public Diagnostic resolveDiagnostic() {
+        Diagnostic resolved = copyDiagnostic(diagnostic == null ? new Diagnostic() : diagnostic);
+        resolved.setEnabled(enabled && resolveMode() != AuditMode.OFF && resolved.isEnabled());
+        return resolved;
+    }
+
+    public Trace resolveTrace() {
+        Trace resolved = copyTrace(trace == null ? new Trace() : trace);
+        resolved.setEnabled(traceEnabled);
+        resolved.setHeaderName(traceHeaderName);
+        return resolved;
+    }
+
+    public Event resolveEvent() {
+        Event resolved = copyEvent(event == null ? new Event() : event);
+        resolved.setPublishMode(writeMode);
+        return resolved;
+    }
+
+    private AuditMode resolveMode() {
+        return mode == null ? AuditMode.STANDARD : mode;
+    }
+
+    private Sql copySql(Sql source) {
+        Sql target = new Sql();
+        target.setMode(source.getMode());
+        target.setSlowThresholdMs(source.getSlowThresholdMs());
+        target.setFullSqlEnabled(source.isFullSqlEnabled());
+        return target;
+    }
+
+    private Access copyAccess(Access source) {
+        Access target = new Access();
+        target.setMode(source.getMode());
+        target.setSlowThresholdMs(source.getSlowThresholdMs());
+        target.setBodyEnabled(source.isBodyEnabled());
+        return target;
+    }
+
+    private Operation copyOperation(Operation source) {
+        Operation target = new Operation();
+        target.setEnabled(source.isEnabled());
+        target.setWriteMode(source.getWriteMode());
+        target.setMethods(source.getMethods() == null ? null : new LinkedHashSet<>(source.getMethods()));
+        target.setSlowThresholdMs(source.getSlowThresholdMs());
+        target.setParamsEnabled(source.isParamsEnabled());
+        target.setResponseBodyEnabled(source.isResponseBodyEnabled());
+        target.setRequestParamsMaxLength(source.getRequestParamsMaxLength());
+        target.setResponseBodyMaxLength(source.getResponseBodyMaxLength());
+        target.setMaxFieldLength(source.getMaxFieldLength());
+        return target;
+    }
+
+    private Diagnostic copyDiagnostic(Diagnostic source) {
+        Diagnostic target = new Diagnostic();
+        target.setEnabled(source.isEnabled());
+        target.setPerformanceEnabled(source.isPerformanceEnabled());
+        target.setExceptionEnabled(source.isExceptionEnabled());
+        target.setAsyncQueueCapacity(source.getAsyncQueueCapacity());
+        target.setAsyncCoreSize(source.getAsyncCoreSize());
+        target.setAsyncMaxSize(source.getAsyncMaxSize());
+        return target;
+    }
+
+    private Trace copyTrace(Trace source) {
+        Trace target = new Trace();
+        target.setEnabled(source.isEnabled());
+        target.setHeaderName(source.getHeaderName());
+        target.setResponseHeaderEnabled(source.isResponseHeaderEnabled());
+        target.setTraceparentCompatible(source.isTraceparentCompatible());
+        return target;
+    }
+
+    private Event copyEvent(Event source) {
+        Event target = new Event();
+        target.setEnabled(source.isEnabled());
+        target.setPublishMode(source.getPublishMode());
+        target.setIncludeDetail(source.isIncludeDetail());
+        return target;
     }
 
     /**

@@ -171,7 +171,7 @@ public class AccessLogAspect {
     }
 
     private Access resolveAccessProperties() {
-        return auditProperties.getAccess() == null ? new Access() : auditProperties.getAccess();
+        return auditProperties.resolveAccess();
     }
 
     private AccessMode resolveAccessMode(Access access) {

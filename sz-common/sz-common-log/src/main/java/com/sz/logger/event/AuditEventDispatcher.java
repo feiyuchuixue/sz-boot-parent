@@ -35,7 +35,7 @@ public class AuditEventDispatcher {
 
     @PostConstruct
     public void init() {
-        AuditProperties.Diagnostic diagnostic = auditProperties.getDiagnostic() == null ? new AuditProperties.Diagnostic() : auditProperties.getDiagnostic();
+        AuditProperties.Diagnostic diagnostic = auditProperties.resolveDiagnostic();
         int coreSize = Math.max(1, diagnostic.getAsyncCoreSize());
         int maxSize = Math.max(coreSize, diagnostic.getAsyncMaxSize());
         int queueCapacity = Math.max(1, diagnostic.getAsyncQueueCapacity());
@@ -100,7 +100,7 @@ public class AuditEventDispatcher {
     }
 
     private void writeDiagnosticFallback(AuditEvent event, Exception cause) {
-        AuditProperties.Diagnostic diagnostic = auditProperties.getDiagnostic() == null ? new AuditProperties.Diagnostic() : auditProperties.getDiagnostic();
+        AuditProperties.Diagnostic diagnostic = auditProperties.resolveDiagnostic();
         AuditEvent fallbackEvent = event.toBuilder().errorType(cause.getClass().getName()).errorMessage(cause.getMessage()).build();
         String payload = logDesensitizer.desensitize(JsonUtils.toJsonString(fallbackEvent));
         if (Boolean.TRUE.equals(event.getSlow()) && diagnostic.isPerformanceEnabled()) {

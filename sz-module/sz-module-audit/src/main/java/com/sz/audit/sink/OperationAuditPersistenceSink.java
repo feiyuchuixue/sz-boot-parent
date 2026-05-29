@@ -34,7 +34,7 @@ public class OperationAuditPersistenceSink implements AuditEventSink {
 
     @Override
     public boolean async() {
-        AuditProperties.Operation operation = auditProperties.getOperation() == null ? new AuditProperties.Operation() : auditProperties.getOperation();
+        AuditProperties.Operation operation = auditProperties.resolveOperation();
         return operation.getWriteMode() == AuditProperties.WriteMode.ASYNC;
     }
 

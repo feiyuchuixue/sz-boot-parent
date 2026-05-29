@@ -29,7 +29,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        AuditProperties.Trace trace = auditProperties.getTrace() == null ? new AuditProperties.Trace() : auditProperties.getTrace();
+        AuditProperties.Trace trace = auditProperties.resolveTrace();
         if (!trace.isEnabled()) {
             filterChain.doFilter(request, response);
             return;

@@ -317,6 +317,6 @@ public class OperationAuditAspect {
     }
 
     private AuditProperties.Operation resolveOperationProperties() {
-        return auditProperties.getOperation() == null ? new AuditProperties.Operation() : auditProperties.getOperation();
+        return auditProperties.resolveOperation();
     }
 }

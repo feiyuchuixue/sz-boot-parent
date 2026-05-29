@@ -38,6 +38,6 @@ public class SpringAuditEventPublisher implements AuditEventSink {
     }
 
     private AuditProperties.Event resolveEventProperties() {
-        return auditProperties.getEvent() == null ? new AuditProperties.Event() : auditProperties.getEvent();
+        return auditProperties.resolveEvent();
     }
 }
