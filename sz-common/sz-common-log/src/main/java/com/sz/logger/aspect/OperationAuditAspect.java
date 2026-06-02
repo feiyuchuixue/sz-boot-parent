@@ -85,21 +85,26 @@ public class OperationAuditAspect {
         Class<?> targetClass = AopUtils.getTargetClass(joinPoint.getTarget());
         Method method = AopUtils.getMostSpecificMethod(signatureMethod, targetClass);
         OperationAudit audit = resolveOperationAudit(method, targetClass);
-        if (!shouldAudit(method, targetClass, audit, operation)) {
+        if (isAuditIgnored(method, targetClass)) {
             return joinPoint.proceed();
         }
+        boolean shouldAudit = shouldAudit(method, targetClass, audit, operation);
 
         long start = System.currentTimeMillis();
         try {
             Object returnValue = joinPoint.proceed();
             long costMs = System.currentTimeMillis() - start;
-            AuditEvent event = buildEvent(joinPoint, method, targetClass, audit, returnValue, null, costMs, operation);
-            auditEventDispatcher.dispatch(event);
+            if (shouldDispatchEvent(shouldAudit, null, costMs, operation)) {
+                AuditEvent event = buildEvent(joinPoint, method, targetClass, audit, returnValue, null, costMs, operation);
+                auditEventDispatcher.dispatch(event);
+            }
             return returnValue;
         } catch (Throwable ex) {
             long costMs = System.currentTimeMillis() - start;
-            AuditEvent event = buildEvent(joinPoint, method, targetClass, audit, null, ex, costMs, operation);
-            auditEventDispatcher.dispatch(event);
+            if (shouldDispatchEvent(shouldAudit, ex, costMs, operation)) {
+                AuditEvent event = buildEvent(joinPoint, method, targetClass, audit, null, ex, costMs, operation);
+                auditEventDispatcher.dispatch(event);
+            }
             throw ex;
         }
     }
@@ -132,9 +137,6 @@ public class OperationAuditAspect {
     }
 
     private boolean shouldAudit(Method method, Class<?> targetClass, OperationAudit audit, AuditProperties.Operation operation) {
-        if (method.isAnnotationPresent(OperationAuditIgnore.class) || targetClass.isAnnotationPresent(OperationAuditIgnore.class)) {
-            return false;
-        }
         if (audit != null) {
             return true;
         }
@@ -143,6 +145,24 @@ public class OperationAuditAspect {
         }
         HttpServletRequest request = HttpReqResUtil.getRequest();
         return operation.containsMethod(request.getMethod());
+    }
+
+    private boolean isAuditIgnored(Method method, Class<?> targetClass) {
+        return method.isAnnotationPresent(OperationAuditIgnore.class) || targetClass.isAnnotationPresent(OperationAuditIgnore.class);
+    }
+
+    private boolean shouldDispatchEvent(boolean shouldAudit, Throwable throwable, long costMs, AuditProperties.Operation operation) {
+        if (shouldAudit) {
+            return true;
+        }
+        AuditProperties.Diagnostic diagnostic = auditProperties.resolveDiagnostic();
+        if (!diagnostic.isEnabled()) {
+            return false;
+        }
+        if (throwable != null) {
+            return diagnostic.isExceptionEnabled();
+        }
+        return diagnostic.isPerformanceEnabled() && costMs >= operation.getSlowThresholdMs();
     }
 
     private OperationAudit resolveOperationAudit(Method method, Class<?> targetClass) {

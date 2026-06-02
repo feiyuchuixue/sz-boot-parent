@@ -34,9 +34,9 @@ public class AuditProperties {
     private WriteMode writeMode = WriteMode.SYNC;
 
     /**
-     * 自动采集的 HTTP 方法。为空时默认采集 POST、PUT、DELETE。
+     * 自动采集的 HTTP 方法。为空时不进行自动操作审计。
      */
-    private Set<String> methods = new LinkedHashSet<>(Set.of("POST", "PUT", "DELETE"));
+    private Set<String> methods = new LinkedHashSet<>();
 
     /**
      * 慢操作阈值，单位毫秒。
@@ -188,7 +188,7 @@ public class AuditProperties {
         Operation resolved = copyOperation(operation == null ? new Operation() : operation);
         resolved.setEnabled(enabled && resolveMode() != AuditMode.OFF);
         resolved.setWriteMode(writeMode);
-        resolved.setMethods(methods == null || methods.isEmpty() ? new LinkedHashSet<>(Set.of("POST", "PUT", "DELETE")) : methods);
+        resolved.setMethods(methods == null ? new LinkedHashSet<>() : methods);
         resolved.setSlowThresholdMs(slowThresholdMs);
         resolved.setParamsEnabled(recordParams);
         resolved.setResponseBodyEnabled(recordResponseBody);
@@ -337,9 +337,9 @@ public class AuditProperties {
         private WriteMode writeMode = WriteMode.SYNC;
 
         /**
-         * 默认自动采集的 HTTP 方法。显式 {@code @OperationAudit} 不受该列表限制。
+         * 自动采集的 HTTP 方法。显式 {@code @OperationAudit} 不受该列表限制。
          */
-        private Set<String> methods = new LinkedHashSet<>(Set.of("POST", "PUT", "DELETE", "PATCH"));
+        private Set<String> methods = new LinkedHashSet<>();
 
         /**
          * 慢操作阈值，单位毫秒。超过该阈值会标记为慢操作，并触发性能诊断明细。

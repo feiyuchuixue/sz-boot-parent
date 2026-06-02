@@ -41,15 +41,15 @@ class AuditPropertiesTest {
     }
 
     @Test
-    void resolveMethodsFallsBackWhenTopLevelMethodsAreEmpty() {
+    void resolveMethodsDoesNotFallbackWhenTopLevelMethodsAreEmpty() {
         AuditProperties properties = new AuditProperties();
         properties.setMethods(new LinkedHashSet<>());
 
         AuditProperties.Operation operation = properties.resolveOperation();
 
-        assertThat(operation.containsMethod("POST")).isTrue();
-        assertThat(operation.containsMethod("PUT")).isTrue();
-        assertThat(operation.containsMethod("DELETE")).isTrue();
+        assertThat(operation.containsMethod("POST")).isFalse();
+        assertThat(operation.containsMethod("PUT")).isFalse();
+        assertThat(operation.containsMethod("DELETE")).isFalse();
     }
 
     @Test

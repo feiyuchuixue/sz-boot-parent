@@ -106,6 +106,49 @@ class OperationAuditAspectTest {
     }
 
     @Test
+    void normalGetWithoutExplicitAuditIsIgnoredWhenItIsNotSlow() throws Throwable {
+        setRequest("GET", "/api/demo/7", "127.0.0.1");
+        CapturingSink sink = new CapturingSink();
+
+        aspect(new AuditProperties(), sink).around(joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0],
+                ApiResult.success(new DemoDTO(8L, "secret"))));
+
+        assertThat(sink.publishCount).hasValue(0);
+    }
+
+    @Test
+    void getExceptionWithoutExplicitAuditStillDispatchesDiagnosticFailure() throws NoSuchMethodException {
+        setRequest("GET", "/api/demo/7", "127.0.0.1");
+        CapturingSink sink = new CapturingSink();
+        OperationAuditAspect aspect = aspect(new AuditProperties(), sink);
+        IllegalStateException failure = new IllegalStateException("password=secret");
+
+        assertThatThrownBy(() -> aspect.around(joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0], failure)))
+                .isSameAs(failure);
+
+        assertThat(sink.event.getEventType()).isEqualTo(AuditEventType.OPERATION_FAIL);
+        assertThat(sink.event.getOperationType()).isEqualTo(OperationType.QUERY.name());
+        assertThat(sink.event.getErrorType()).isEqualTo(IllegalStateException.class.getName());
+        assertThat(sink.event.getExceptionStack()).contains("password=******");
+    }
+
+    @Test
+    void slowGetWithoutExplicitAuditStillDispatchesPerformanceEvent() throws Throwable {
+        setRequest("GET", "/api/demo/7", "127.0.0.1");
+        AuditProperties properties = new AuditProperties();
+        properties.setSlowThresholdMs(0);
+        CapturingSink sink = new CapturingSink();
+
+        aspect(properties, sink).around(joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0],
+                ApiResult.success(new DemoDTO(8L, "secret"))));
+
+        assertThat(sink.event).isNotNull();
+        assertThat(sink.event.getEventType()).isEqualTo(AuditEventType.OPERATION_SUCCESS);
+        assertThat(sink.event.getOperationType()).isEqualTo(OperationType.QUERY.name());
+        assertThat(sink.event.getSlow()).isTrue();
+    }
+
+    @Test
     void ignoreAnnotationsAndSaIgnoreBypassAudit() throws Throwable {
         setRequest("POST", "/api/demo", "127.0.0.1");
         CapturingSink sink = new CapturingSink();
@@ -229,6 +272,10 @@ class OperationAuditAspectTest {
 
         @OperationAudit(responseBody = BodyRecordMode.NEVER)
         public ApiResult<DemoDTO> neverRecordResponse() {
+            return ApiResult.success(new DemoDTO(8L, "secret"));
+        }
+
+        public ApiResult<DemoDTO> plainGet() {
             return ApiResult.success(new DemoDTO(8L, "secret"));
         }
 
