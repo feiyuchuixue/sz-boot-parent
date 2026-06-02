@@ -7,5 +7,4 @@
     <include file="framework/2.0.0/001_framework_init.xml" relativeToChangelogFile="true"/>
     <!-- 演示/测试数据：生产环境不需要时，可注释下一行。 -->
     <include file="demo/2.0.0/001_demo_init.xml" relativeToChangelogFile="true"/>
-    <include file="admin/unreleased/001_test_gen_business_order.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

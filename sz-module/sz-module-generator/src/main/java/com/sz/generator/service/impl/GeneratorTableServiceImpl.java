@@ -54,6 +54,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -84,6 +86,18 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     private static final String OP_SCRIPT = "SCRIPT";
 
     private static final String DEFAULT_CHANGELOG_VERSION = "unreleased";
+
+    private static final Pattern JAVA_PACKAGE_PATTERN = Pattern.compile("(?m)^\\s*package\\s+([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)\\s*;");
+
+    private static final Pattern SPRING_BOOT_SCAN_BASE_PACKAGES_PATTERN = Pattern
+            .compile("@SpringBootApplication\\s*\\([^)]*scanBasePackages\\s*=\\s*(\\{[^}]*}|\"[^\"]+\")", Pattern.DOTALL);
+
+    private static final Pattern COMPONENT_SCAN_BASE_PACKAGES_PATTERN = Pattern
+            .compile("@ComponentScan\\s*\\([^)]*(?:basePackages|value)\\s*=\\s*(\\{[^}]*}|\"[^\"]+\")", Pattern.DOTALL);
+
+    private static final Pattern COMPONENT_SCAN_VALUE_PATTERN = Pattern.compile("@ComponentScan\\s*\\(\\s*(\\{[^}]*}|\"[^\"]+\")");
+
+    private static final Pattern STRING_LITERAL_PATTERN = Pattern.compile("\"([^\"]+)\"");
 
     private final GeneratorTableColumnService generatorTableColumnService;
 
@@ -411,7 +425,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String apiPrefix = info.getApiPrefix() == null || info.getApiPrefix().isBlank() ? option.getApiPrefix() : info.getApiPrefix();
         Path modulePath = Paths.get(option.getPath());
         Path serviceRoot = resolveServiceRoot(projectRoot);
-        String changelogVersion = DEFAULT_CHANGELOG_VERSION;
         if (newTarget) {
             Optional<String> conflict = findNewBackendModuleConflict(projectRoot, option.getModuleName(), moduleCode, modulePath);
             CommonResponseEnum.EXISTS.message(conflict.orElse("新建模块已存在，请切换为现有模块或更换模块名")).assertTrue(conflict.isPresent());
@@ -428,9 +441,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"),
                 buildModuleChangelog(moduleCode));
         writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/changelog-master.xml"),
-                buildSubChangelogMaster(moduleCode, changelogVersion));
-        writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/" + changelogVersion + "/001_" + moduleCode + "_init.xml"),
-                buildEmptyInitChangelog(moduleCode));
+                buildSubChangelogMaster(List.of()));
 
         insertIfMissing(projectRoot.resolve(generatorProperties.getModuleName()).resolve("pom.xml"), "<module>" + option.getModuleName() + "</module>",
                 "        <module>" + option.getModuleName() + "</module>\n", "    </modules>");
@@ -462,13 +473,16 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (target.moduleCode().isBlank() || target.modulePath().toString().isBlank()) {
             return;
         }
-        Path changelogRoot = target.modulePath().resolve("src/main/resources/db/changelog");
-        Path moduleChangelog = changelogRoot.resolve("module-" + target.moduleCode() + "-changelog.xml");
+        Path masterChangelog = subChangelogMasterPath(target);
         Path tableChangelog = businessTableChangelogPath(target, detailVO.getBaseInfo().getTableName());
-        String tableInclude = moduleTableInclude(target, tableChangelog);
+        String tableInclude = masterTableInclude(target, tableChangelog);
 
         writeIfMissing(tableChangelog, buildBusinessTableChangelog(detailVO, target.moduleCode()));
-        insertIfMissing(moduleChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>");
+        if (!Files.isRegularFile(masterChangelog)) {
+            writeIfMissing(masterChangelog, buildSubChangelogMaster(List.of(tableInclude)));
+        } else {
+            insertIfMissing(masterChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>");
+        }
         messages.add("Prepared business table changelog: " + tableChangelog.normalize());
     }
 
@@ -522,6 +536,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         validateNewBackendModule(detailVO, checkedInfo);
         validateBackendModule(detailVO, checkedInfo);
+        validateStartupScanPackage(detailVO, checkedInfo);
         validateDataScope(detailVO, checkedInfo);
         return checkedInfo;
     }
@@ -686,7 +701,6 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         String apiPrefix = info.getApiPrefix() == null || info.getApiPrefix().isBlank() ? option.getApiPrefix() : info.getApiPrefix();
         Path modulePath = Paths.get(option.getPath()).normalize();
         Path serviceRoot = resolveServiceRoot(projectRoot);
-        String changelogVersion = DEFAULT_CHANGELOG_VERSION;
         String classPrefix = upperCamel(moduleCode);
         List<GeneratorPreviewVO> previews = new ArrayList<>();
 
@@ -700,9 +714,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"), buildModuleChangelog(moduleCode),
                 "xml", "模块 Liquibase 入口。");
         addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/changelog-master.xml"),
-                buildSubChangelogMaster(moduleCode, changelogVersion), "xml", "模块 Liquibase master。");
-        addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/" + changelogVersion + "/001_" + moduleCode + "_init.xml"),
-                buildEmptyInitChangelog(moduleCode), "xml", "模块初始化 changelog。");
+                buildSubChangelogMaster(List.of()), "xml", "模块 Liquibase master。");
 
         addInsertPreview(previews, projectRoot.resolve(generatorProperties.getModuleName()).resolve("pom.xml"), "<module>" + option.getModuleName() + "</module>",
                 "    <module>" + option.getModuleName() + "</module>\n", "</modules>", true, "xml", "接入 sz-module 聚合 POM。");
@@ -728,13 +740,15 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             return;
         }
         String tableName = detailVO.getBaseInfo().getTableName();
-        Path changelogRoot = target.modulePath().resolve("src/main/resources/db/changelog");
-        Path moduleChangelog = changelogRoot.resolve("module-" + target.moduleCode() + "-changelog.xml");
+        Path masterChangelog = subChangelogMasterPath(target);
         Path tableChangelog = businessTableChangelogPath(target, tableName);
-        String tableInclude = moduleTableInclude(target, tableChangelog);
+        String tableInclude = masterTableInclude(target, tableChangelog);
 
-        addInsertPreview(previews, moduleChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>", true, "xml", "接入业务表结构 changelog。");
         addCreatePreview(previews, tableChangelog, buildBusinessTableChangelog(detailVO, target.moduleCode()), "xml", "业务表结构 changelog。");
+        if (!mergeCreatePreview(previews, masterChangelog, buildSubChangelogMaster(List.of(tableInclude)), "模块 Liquibase master。")) {
+            addInsertPreview(previews, masterChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>", true, "xml",
+                    "接入业务表结构 changelog。");
+        }
     }
 
     private void addFrontendComponentRegistrationPreviewItems(List<GeneratorPreviewVO> previews, GeneratorDetailVO.GeneratorInfo info,
@@ -772,6 +786,21 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         boolean exists = Files.exists(fullPath);
         previews.add(buildPreviewItem(fullPath.getFileName().toString(), relativePath, fullPath.toString(), firstPathSegment(relativePath),
                 exists ? OP_SKIP_EXISTS : OP_CREATE_FILE, language, content, null, fullPath.getFileName().toString(), exists ? "目标文件已存在，生成器不会覆盖。" : message));
+    }
+
+    private static boolean mergeCreatePreview(List<GeneratorPreviewVO> previews, Path path, String content, String message) {
+        Path fullPath = path.toAbsolutePath().normalize();
+        Optional<GeneratorPreviewVO> preview = previews.stream()
+                .filter(item -> OP_CREATE_FILE.equals(item.getOperationType()))
+                .filter(item -> samePath(item.getFullPath(), fullPath.toString()))
+                .findFirst();
+        if (preview.isEmpty()) {
+            return false;
+        }
+        preview.get().setContent(content);
+        preview.get().setCode(content);
+        preview.get().setMessage(message);
+        return true;
     }
 
     private void addInsertPreview(List<GeneratorPreviewVO> previews, Path path, String existsToken, String insertion, String marker, boolean insertBefore,
@@ -982,6 +1011,51 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (!GeneratorBackendModuleScanner.STATUS_READY.equals(option.get().getStatus())) {
             checkedInfo.getWarnings().add("后端模块将自动补齐接入项：" + String.join("、", option.get().getMissingItems()));
         }
+    }
+
+    private void validateStartupScanPackage(GeneratorDetailVO detailVO, GenCheckedInfoVO checkedInfo) {
+        GeneratorDetailVO.GeneratorInfo info = detailVO.getGeneratorInfo();
+        if (!needsBackendTemplates(info)) {
+            return;
+        }
+        String packageName = resolveGeneratorPackageName(info);
+        if (packageName.isBlank()) {
+            return;
+        }
+        Path serviceRoot = resolveServiceRoot(resolveProjectRoot());
+        List<String> scanPackages = resolveStartupScanPackages(serviceRoot);
+        if (scanPackages.isEmpty()) {
+            checkedInfo.getWarnings().add("未识别到启动类扫描范围，无法确认包名 " + packageName + " 是否会被 Spring Boot 扫描。");
+            return;
+        }
+        if (!isPackageCoveredByScanPackages(packageName, scanPackages)) {
+            checkedInfo.setCheckedBackendModule(false);
+            checkedInfo.getErrors().add("后端包名 " + packageName + " 不在启动服务扫描范围内（" + String.join("、", scanPackages)
+                    + "）。生成的 API 前缀、MapperScan、Excel 扫描配置不会被 Spring Boot 加载；请将包名调整到扫描包下，或在启动类配置 scanBasePackages。");
+        }
+    }
+
+    private String resolveGeneratorPackageName(GeneratorDetailVO.GeneratorInfo info) {
+        if (info.getPackageName() != null && !info.getPackageName().isBlank()) {
+            return info.getPackageName().trim();
+        }
+        Path projectRoot = resolveProjectRoot();
+        if ("new".equals(info.getBackendTargetType())) {
+            String moduleName = normalizeModuleName(info.getBackendModuleName());
+            String moduleCode = normalizeModuleCode(moduleName);
+            if (moduleCode.isBlank()) {
+                return "";
+            }
+            return backendModuleScanner.buildNewModuleOption(projectRoot, moduleName, moduleCode, info.getPathApi()).getPackageName();
+        }
+        if (info.getBackendModuleName() == null || info.getBackendModuleName().isBlank()) {
+            return "";
+        }
+        return backendModuleScanner.findByModuleName(projectRoot, info.getBackendModuleName()).map(GeneratorBackendModuleOptionVO::getPackageName).orElse("");
+    }
+
+    private static boolean needsBackendTemplates(GeneratorDetailVO.GeneratorInfo info) {
+        return info.getGenerateType() == null || Set.of("all", "server", "service", "db").contains(info.getGenerateType());
     }
 
     private void validateNewBackendModule(GeneratorDetailVO detailVO, GenCheckedInfoVO checkedInfo) {
@@ -1423,29 +1497,19 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 """.formatted(moduleCode);
     }
 
-    private static String buildSubChangelogMaster(String moduleCode, String changelogVersion) {
-        return """
+    private static String buildSubChangelogMaster(List<String> includes) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-                    <include file="%s/001_%s_init.xml" relativeToChangelogFile="true"/>
                 </databaseChangeLog>
-                """.formatted(changelogVersion, moduleCode);
-    }
-
-    private static String buildEmptyInitChangelog(String moduleCode) {
-        return """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
-                    <!-- %s module changelog entry. Add table/data includes here as the module evolves. -->
-                </databaseChangeLog>
-                """.formatted(moduleCode);
+                """);
+        int insertIndex = builder.lastIndexOf("</databaseChangeLog>");
+        includes.forEach(include -> builder.insert(insertIndex, "    " + include + "\n"));
+        return builder.toString();
     }
 
     private BackendModuleTarget resolveBackendModuleTarget(GeneratorDetailVO.GeneratorInfo info) {
@@ -1467,9 +1531,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 + nextBusinessTableChangelogFileName(target, tableName));
     }
 
-    private static String moduleTableInclude(BackendModuleTarget target, Path tableChangelog) {
-        Path changelogRoot = target.modulePath().resolve("src/main/resources/db/changelog").normalize();
-        String relativePath = changelogRoot.relativize(tableChangelog.normalize()).toString().replace('\\', '/');
+    private static Path subChangelogMasterPath(BackendModuleTarget target) {
+        return target.modulePath().resolve("src/main/resources/db/changelog/" + target.moduleCode() + "/changelog-master.xml");
+    }
+
+    private static String masterTableInclude(BackendModuleTarget target, Path tableChangelog) {
+        Path masterRoot = subChangelogMasterPath(target).getParent().normalize();
+        String relativePath = masterRoot.relativize(tableChangelog.normalize()).toString().replace('\\', '/');
         return "<include file=\"" + relativePath + "\" relativeToChangelogFile=\"true\"/>";
     }
 
@@ -1719,6 +1787,69 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         } catch (IOException ignored) {
             return defaultService;
         }
+    }
+
+    private static List<String> resolveStartupScanPackages(Path serviceRoot) {
+        Path javaRoot = serviceRoot.resolve("src/main/java");
+        if (!Files.isDirectory(javaRoot)) {
+            return List.of();
+        }
+        try (var stream = Files.walk(javaRoot)) {
+            Optional<Path> application = stream.filter(path -> path.getFileName().toString().endsWith(".java")).filter(path -> {
+                try {
+                    return Files.readString(path, StandardCharsets.UTF_8).contains("@SpringBootApplication");
+                } catch (IOException ignored) {
+                    return false;
+                }
+            }).findFirst();
+            if (application.isEmpty()) {
+                return List.of();
+            }
+            String source = Files.readString(application.get(), StandardCharsets.UTF_8);
+            List<String> configuredPackages = extractConfiguredScanPackages(source);
+            if (!configuredPackages.isEmpty()) {
+                return configuredPackages;
+            }
+            return extractJavaPackage(source).map(List::of).orElseGet(List::of);
+        } catch (IOException ignored) {
+            return List.of();
+        }
+    }
+
+    private static List<String> extractConfiguredScanPackages(String source) {
+        List<String> scanPackages = new ArrayList<>();
+        Matcher springBootMatcher = SPRING_BOOT_SCAN_BASE_PACKAGES_PATTERN.matcher(source);
+        while (springBootMatcher.find()) {
+            addStringLiterals(scanPackages, springBootMatcher.group(1));
+        }
+        Matcher componentScanBaseMatcher = COMPONENT_SCAN_BASE_PACKAGES_PATTERN.matcher(source);
+        while (componentScanBaseMatcher.find()) {
+            addStringLiterals(scanPackages, componentScanBaseMatcher.group(1));
+        }
+        Matcher componentScanValueMatcher = COMPONENT_SCAN_VALUE_PATTERN.matcher(source);
+        while (componentScanValueMatcher.find()) {
+            addStringLiterals(scanPackages, componentScanValueMatcher.group(1));
+        }
+        return scanPackages.stream().distinct().toList();
+    }
+
+    private static Optional<String> extractJavaPackage(String source) {
+        Matcher matcher = JAVA_PACKAGE_PATTERN.matcher(source);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+
+    private static void addStringLiterals(List<String> values, String source) {
+        Matcher matcher = STRING_LITERAL_PATTERN.matcher(source);
+        while (matcher.find()) {
+            String value = matcher.group(1).trim();
+            if (!value.isBlank()) {
+                values.add(value);
+            }
+        }
+    }
+
+    private static boolean isPackageCoveredByScanPackages(String packageName, List<String> scanPackages) {
+        return scanPackages.stream().anyMatch(scanPackage -> packageName.equals(scanPackage) || packageName.startsWith(scanPackage + "."));
     }
 
     private byte[] renderTemplate(CodeGenTempResult tempResult, Map<String, Object> model) throws IOException {

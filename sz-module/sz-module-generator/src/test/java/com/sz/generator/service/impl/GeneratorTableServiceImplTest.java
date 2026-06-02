@@ -178,6 +178,39 @@ class GeneratorTableServiceImplTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    void startupScanPackagesShouldFallbackToSpringBootApplicationPackage() throws Exception {
+        Path application = tempDir.resolve("src/main/java/com/sz/AdminApplication.java");
+        Files.createDirectories(application.getParent());
+        Files.writeString(application, """
+                package com.sz;
+
+                import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+                @SpringBootApplication
+                public class AdminApplication {
+                }
+                """, StandardCharsets.UTF_8);
+
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("resolveStartupScanPackages", Path.class);
+        method.setAccessible(true);
+
+        List<String> scanPackages = (List<String>) method.invoke(null, tempDir);
+
+        assertThat(scanPackages).containsExactly("com.sz");
+    }
+
+    @Test
+    void packageScanCoverageShouldRejectPackagesOutsideStartupScan() throws Exception {
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("isPackageCoveredByScanPackages", String.class, List.class);
+        method.setAccessible(true);
+
+        assertThat((Boolean) method.invoke(null, "com.sz.app", List.of("com.sz"))).isTrue();
+        assertThat((Boolean) method.invoke(null, "com.sz", List.of("com.sz"))).isTrue();
+        assertThat((Boolean) method.invoke(null, "com.example.app", List.of("com.sz"))).isFalse();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     void newModuleConflictShouldIgnoreTheSameExistingModuleTarget() throws Exception {
         Path modulePath = tempDir.resolve("sz-module").resolve("sz-module-business");
         Files.createDirectories(modulePath);
@@ -236,6 +269,30 @@ class GeneratorTableServiceImplTest {
         assertThat(changelog).contains("<column name=\"expect_time\" type=\"${datetime.type}\"");
         assertThat(changelog).contains("<column name=\"extend_json\" type=\"${json.type}\"");
         assertThat(changelog).contains("<createIndex tableName=\"test_gen_work_order\" indexName=\"uk_test_gen_work_order_order_no\" unique=\"true\">");
+    }
+
+    @Test
+    void subChangelogMasterShouldIncludeBusinessTableWithoutEmptyInitFile() throws Exception {
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("buildSubChangelogMaster", List.class);
+        method.setAccessible(true);
+
+        String master = (String) method.invoke(null, List.of("<include file=\"unreleased/001_test_gen_work_order.xml\" relativeToChangelogFile=\"true\"/>"));
+
+        assertThat(master).contains("<include file=\"unreleased/001_test_gen_work_order.xml\" relativeToChangelogFile=\"true\"/>");
+        assertThat(master).doesNotContain("_init.xml");
+    }
+
+    @Test
+    void businessTableIncludeShouldBeRelativeToSubChangelogMaster() throws Exception {
+        Path modulePath = tempDir.resolve("sz-module-app");
+        Path tableChangelog = modulePath.resolve("src/main/resources/db/changelog/app/unreleased/001_test_gen_work_order.xml");
+        Object target = newBackendModuleTarget("sz-module-app", "app", modulePath, "unreleased");
+
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("masterTableInclude", target.getClass(), Path.class);
+        method.setAccessible(true);
+        String include = (String) method.invoke(null, target, tableChangelog);
+
+        assertThat(include).isEqualTo("<include file=\"unreleased/001_test_gen_work_order.xml\" relativeToChangelogFile=\"true\"/>");
     }
 
     @Test
