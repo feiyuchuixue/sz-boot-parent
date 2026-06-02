@@ -1,5 +1,78 @@
 # 更新日志
 
+## v2.0.1 （20260602）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2.0.1)
+>
+> 本版本为 v2.0.0 之后的功能增强和修复版本，升级前建议先阅读升级指南。
+
+### sz-boot-parent
+
+#### 新增
+
+- [代码生成器] 支持生成到已有后端模块或新建后端模块，并联动 API 前缀、前端模块和 Liquibase 接入。
+- [代码生成器] 支持新模块骨架生成、前端模块注册和生成前磁盘检查增强。
+- 新增 main 分支 `sz-dev` 官方镜像打包 CI。
+- README 增加英文版。
+
+#### 优化
+
+- [代码生成器] 重构编辑配置、字段配置和代码预览流程，提升生成前确认体验。
+- [代码生成器] 优化字段智能推断、模板输出和生成结果预览。
+- 优化 Excel 中 `LocalDate`、`LocalDateTime`、`LocalTime` 的导入导出转换。
+- 优化审计日志诊断记录逻辑：性能日志、异常日志不再受 request请求method 节制。
+- 优化 admin API 前缀扫描范围，减少子包遗漏。
+
+#### 修复
+
+- 修复 FastExcel 导出 `LocalDate`、`LocalDateTime`、`LocalTime` 等 Java Time 类型时可能出现的格式异常。
+- 修复代码生成器部分模板格式问题。
+- 修复角色管理 SQL 导出按钮初始化缺口。
+- 修正“登陆日志”为“登录日志”。
+
+#### 数据库变更
+
+- `generator_table` 增加代码生成目标相关字段。
+- 初始化脚本补充角色管理 SQL 导出按钮和默认角色授权。
+
+### sz-admin
+
+#### 新增
+
+- [代码生成器] 支持后端模块、API 前缀、前端模块等新生成配置。
+- 新增前端模块自动发现能力。
+- 新增动态模块 API 上下文配置 `VITE_API_CONTEXT_PATH`。
+- 新增 main 分支 `sz-dev` 官方镜像打包 CI。
+
+#### 重构与优化
+
+- [代码生成器] 重构编辑页、字段配置页和代码预览交互。
+- [代码生成器] 优化生成配置提示、字段风险提示和预览展示。
+- 优化动态模块 API base 拼接和 Vite proxy 配置。
+- 优化 `HighCode` 代码预览样式。
+
+#### 升级影响
+
+- 升级后建议重新确认已导入表的生成器配置，并执行预览和磁盘检查。
+- 使用自动模块发现时，需要确认 `register.ts` 中的模块名唯一。
+
+### AI 支持
+
+#### 新增
+
+- 新增 Sz 体系通用知识库 `docs/project-knowledge-conventions.md`。
+- 新增 Codex skill：`sz-code-generator-workflow`，用于代码生成器相关生成、检查、清理和回滚。
+- 新增 Codex skill：`sz-liquibase-db-compat`，用于 Liquibase 与 MySQL/PostgreSQL 双库兼容迁移。
+- 新增 Codex skills 使用说明。
+
+#### 说明
+
+- AI 协作资料不参与 Maven 构建，也不改变后端启动方式或前端运行方式。
+
+---
+
 ## v2.0.0 （20260529）
 
 > [!NOTE]
