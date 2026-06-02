@@ -108,7 +108,6 @@ public class CommonServiceImpl implements CommonService {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
         response.setHeader("X-Biz-Code", bizCode);
-        response.setHeader("X-Biz-Message", FILE_NOT_EXISTS.getMessage());
         OutputStream out = response.getOutputStream();
         out.write(FILE_NOT_EXISTS.getMessage().getBytes(StandardCharsets.UTF_8));
         out.flush();

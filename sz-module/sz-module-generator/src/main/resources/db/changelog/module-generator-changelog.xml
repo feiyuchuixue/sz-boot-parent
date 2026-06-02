@@ -5,4 +5,5 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!-- 代码生成器表结构：不需要代码生成器功能时，可注释下一行。 -->
     <include file="generator/2.0.0/001_generator_init.xml" relativeToChangelogFile="true"/>
+    <include file="generator/2.0.1/001_generator_module_target_fields.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

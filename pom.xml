@@ -127,7 +127,7 @@
                 <artifactId>sz-service-websocket</artifactId>
                 <version>${project.version}</version>
             </dependency>
-        </dependencies>
+</dependencies>
     </dependencyManagement>
 
     <!--maven仓库加速，按需引用-->

@@ -6,13 +6,13 @@ import lombok.Data;
 import ${pkg};
 </#list>
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.ExcelIgnore;
 import com.sz.excel.annotation.ExcelTemplate;
 import com.sz.excel.annotation.ImportColumn;
 <#if hasDict == true>
 import com.sz.excel.annotation.DictFormat;
 </#if>
 <#if hasDateFormat == true>
-import cn.idev.excel.annotation.ExcelIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 </#if>
 
@@ -31,7 +31,12 @@ public class ${dtoImportClassName} {
 
 <#list columns as field>
 <#if field.isImport == "1">
-  <#if field.javaType == "LocalDateTime">
+  <#if field.javaType?starts_with("List")>
+    @ExcelIgnore
+    @Schema(description = "${field.columnComment}")
+    private ${field.javaType} ${field.javaField};
+
+  <#elseif field.javaType == "LocalDateTime">
     @ExcelIgnore
     @Schema(description = "${field.columnComment}")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

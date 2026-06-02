@@ -65,6 +65,24 @@ public class GeneratorDetailVO {
         @Schema(description = "模块名")
         private String moduleName;
 
+        @Schema(description = "后端模块目标类型（existing 已有模块；new 新建模块）")
+        private String backendTargetType;
+
+        @Schema(description = "后端模块名，如 sz-module-admin")
+        private String backendModuleName;
+
+        @Schema(description = "API前缀模块编码，如 admin")
+        private String apiPrefixModule;
+
+        @Schema(description = "API前缀，如 /admin")
+        private String apiPrefix;
+
+        @Schema(description = "前端生成布局（module 模块目录；legacy 旧目录）")
+        private String frontendLayout;
+
+        @Schema(description = "前端模块名")
+        private String frontendModuleName;
+
         @Schema(description = "业务名")
         private String businessName;
 

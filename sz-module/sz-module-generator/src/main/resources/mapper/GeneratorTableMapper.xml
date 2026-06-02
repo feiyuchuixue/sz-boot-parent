@@ -7,9 +7,16 @@
         <result column="table_name" property="tableName"/>
         <result column="table_comment" property="tableComment"/>
         <result column="class_name" property="className"/>
+        <result column="camel_class_name" property="camelClassName"/>
         <result column="tpl_category" property="tplCategory"/>
         <result column="package_name" property="packageName"/>
         <result column="module_name" property="moduleName"/>
+        <result column="backend_target_type" property="backendTargetType"/>
+        <result column="backend_module_name" property="backendModuleName"/>
+        <result column="api_prefix_module" property="apiPrefixModule"/>
+        <result column="api_prefix" property="apiPrefix"/>
+        <result column="frontend_layout" property="frontendLayout"/>
+        <result column="frontend_module_name" property="frontendModuleName"/>
         <result column="business_name" property="businessName"/>
         <result column="function_name" property="functionName"/>
         <result column="function_author" property="functionAuthor"/>
@@ -17,6 +24,11 @@
         <result column="path" property="path"/>
         <result column="path_api" property="pathApi"/>
         <result column="path_web" property="pathWeb"/>
+        <result column="parent_menu_id" property="parentMenuId"/>
+        <result column="menu_init_type" property="menuInitType"/>
+        <result column="btn_permission_type" property="btnPermissionType"/>
+        <result column="generate_type" property="generateType"/>
+        <result column="window_show_type" property="windowShowType"/>
         <result column="create_id" property="createId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_id" property="updateId"/>
@@ -29,9 +41,11 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        table_id, table_name, table_comment, class_name, tpl_category, package_name, module_name, business_name,
+        table_id, table_name, table_comment, class_name, camel_class_name, tpl_category, package_name, module_name,
+        backend_target_type, backend_module_name, api_prefix_module, api_prefix, frontend_layout, frontend_module_name, business_name,
         function_name, function_author, type, path, path_api, path_web, create_id, create_time, update_id,
-        update_time, options, has_import, has_export, is_autofill, btn_data_scope_type
+        update_time, options, parent_menu_id, menu_init_type, btn_permission_type, has_import, has_export, generate_type,
+        is_autofill, btn_data_scope_type, window_show_type
     </sql>
 
     <sql id="Sys_Menu_Column">

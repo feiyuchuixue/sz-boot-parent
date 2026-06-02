@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="generator-table-module-target-fields-202605300930" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="generator_table"/>
+            <not><columnExists tableName="generator_table" columnName="backend_target_type"/></not>
+        </preConditions>
+        <addColumn tableName="generator_table">
+            <column name="backend_target_type" type="VARCHAR(32)" defaultValue="existing" remarks="后端模块目标类型(existing/new)"/>
+            <column name="backend_module_name" type="VARCHAR(255)" remarks="后端模块名"/>
+            <column name="api_prefix_module" type="VARCHAR(100)" remarks="API前缀模块编码"/>
+            <column name="api_prefix" type="VARCHAR(100)" remarks="API前缀"/>
+            <column name="frontend_layout" type="VARCHAR(32)" defaultValue="module" remarks="前端生成布局(module/legacy)"/>
+            <column name="frontend_module_name" type="VARCHAR(255)" remarks="前端模块名"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="generator-table-module-target-fields-backfill-202605300931" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="generator_table"/>
+            <columnExists tableName="generator_table" columnName="backend_target_type"/>
+        </preConditions>
+        <update tableName="generator_table">
+            <column name="backend_target_type" value="existing"/>
+            <where>backend_target_type IS NULL OR backend_target_type = ''</where>
+        </update>
+        <update tableName="generator_table">
+            <column name="backend_module_name" value="sz-module-admin"/>
+            <where>backend_module_name IS NULL OR backend_module_name = ''</where>
+        </update>
+        <update tableName="generator_table">
+            <column name="api_prefix_module" value="admin"/>
+            <where>api_prefix_module IS NULL OR api_prefix_module = ''</where>
+        </update>
+        <update tableName="generator_table">
+            <column name="api_prefix" value="/admin"/>
+            <where>api_prefix IS NULL OR api_prefix = ''</where>
+        </update>
+        <update tableName="generator_table">
+            <column name="frontend_layout" value="module"/>
+            <where>frontend_layout IS NULL OR frontend_layout = ''</where>
+        </update>
+        <sql>
+            UPDATE generator_table
+            SET frontend_module_name = module_name
+            WHERE frontend_module_name IS NULL OR frontend_module_name = ''
+        </sql>
+    </changeSet>
+</databaseChangeLog>

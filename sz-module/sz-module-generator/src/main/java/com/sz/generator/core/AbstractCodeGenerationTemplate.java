@@ -66,19 +66,29 @@ public abstract class AbstractCodeGenerationTemplate {
         Template template = configurer.getConfiguration().getTemplate(getTemplateFileName());
         String outputPackage = getOutputPackage(model);
         String outputClassName = getOutputFileName(model);
-        String zipPath = buildRelativeOutputFilePath(outputPackage, outputClassName, getExtension());
+        String outputRelativePath = buildRelativeOutputFilePath(outputPackage, outputClassName, getExtension());
+        String zipPath = outputRelativePath;
+        String fullOutputPath = buildAbsoluteOutputFilePath(rootPath, getProjectPrefix(), outputRelativePath);
 
         String outputMsg = "";
         // 本地环境，保存代码到指定目录下
         if (isSaveToLocal) {
-            String outputPath = buildAbsoluteOutputFilePath(rootPath, getProjectPrefix(), zipPath);
-            outputMsg = saveToFile(outputPath, template, model);
+            outputMsg = saveToFile(fullOutputPath, template, model);
         } else {
             if (getZipParentPackage() != null && !getZipParentPackage().trim().isEmpty()) {
-                zipPath = Paths.get(getZipParentPackage(), zipPath).toString();
+                zipPath = Paths.get(getZipParentPackage(), outputRelativePath).toString();
             }
         }
-        return new CodeGenTempResult(template, zipPath, getExtension(), alias(), language(), outputMsg);
+        CodeGenTempResult result = new CodeGenTempResult(template, zipPath, getExtension(), alias(), language(), outputMsg);
+        result.setOutputRelativePath(Paths.get(getProjectPrefix(), outputRelativePath).toString());
+        result.setFullPath(fullOutputPath);
+        result.setProjectName(resolveProjectName(rootPath));
+        return result;
+    }
+
+    private static String resolveProjectName(String rootPath) {
+        Path path = Paths.get(rootPath).normalize();
+        return path.getFileName() == null ? rootPath : path.getFileName().toString();
     }
 
     /**

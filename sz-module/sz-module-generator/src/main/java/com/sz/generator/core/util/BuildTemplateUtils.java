@@ -81,6 +81,9 @@ public class BuildTemplateUtils {
         List<AbstractCodeGenerationTemplate> list = new ArrayList<>(
                 Arrays.asList(new IndexCodeBuilder(configurer, rootPath, detailVO, model), new FormCodeBuilder(configurer, rootPath, detailVO, model),
                         new ModulesCodeBuilder(configurer, rootPath, detailVO, model), new TypeCodeBuilder(configurer, rootPath, detailVO, model)));
+        if (!"legacy".equals(detailVO.getGeneratorInfo().getFrontendLayout())) {
+            list.add(new RegisterCodeBuilder(configurer, rootPath, detailVO, model));
+        }
         return switch (detailVO.getGeneratorInfo().getGenerateType()) {
             case "all" -> list;
             default -> Collections.emptyList();

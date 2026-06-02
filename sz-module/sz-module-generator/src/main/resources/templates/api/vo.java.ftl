@@ -31,7 +31,9 @@ public class ${voClassName} {
 
 <#list columns as field>
 <#if field.isList == "1" >
-  <#if field.isExport == "1" && hasExcel == true>
+  <#if field.javaType?starts_with("List") && hasExcel == true>
+    @ExcelIgnore
+  <#elseif field.isExport == "1" && hasExcel == true>
     <#if field.dictType != "">
     @ExcelProperty(value = "${field.columnComment}")
       <#if field.dictShowWay == "0">

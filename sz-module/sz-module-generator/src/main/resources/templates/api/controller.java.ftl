@@ -89,7 +89,7 @@ public class ${controllerClassName}  {
     @Operation(summary = "详情")
     @SaCheckPermission(value = "${listPermission}")
     @GetMapping("/{id}")
-    public ApiResult<${voClassName}> detail(@PathVariable Object id) {
+    public ApiResult<${voClassName}> detail(@PathVariable ${idJavaType} id) {
         return ApiResult.success(${serviceName}.detail(id));
     }
 <#if GeneratorInfo.hasImport == "1">

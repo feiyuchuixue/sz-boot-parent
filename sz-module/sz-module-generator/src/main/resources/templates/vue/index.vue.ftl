@@ -60,9 +60,13 @@
           </#if>
       </template>
   <#list columns as field>
-    <#if field.htmlType == "fileUpload">
-      <template #url="{ row }">
-        <file-download-list :files="row?.${field.javaField}" :align="'${field.options['file-download-list.align']!''}'" :max-rows="${field.options['file-download-list.maxRows']!2}" />
+    <#if field.htmlType == "fileUpload" || field.htmlType == "imageUpload">
+      <#assign downloadAlign = (field.options['file-download-list.align']!'left')?string>
+      <#if downloadAlign != "left" && downloadAlign != "center" && downloadAlign != "right">
+        <#assign downloadAlign = "left">
+      </#if>
+      <template #${field.javaField}="{ row }">
+        <file-download-list :files="row?.${field.javaField}" align="${downloadAlign}" :max-rows="${field.options['file-download-list.maxRows']!2}" />
       </template>
     </#if>
   </#list>
@@ -143,7 +147,7 @@ import { useDownload } from "@/hooks/useDownload";
 import { useDict } from '@/hooks/useDict';
 </#if>
 <#list columns as field>
-<#if field.htmlType == "fileUpload">
+<#if field.htmlType == "fileUpload" || field.htmlType == "imageUpload">
 <#assign hasFileUpload = true>
 </#if>
 </#list>
@@ -198,8 +202,24 @@ const searchColumns: SearchProps[] = [
     el: '${field.searchType}',
     span: 2,
     props: {
+      <#if field.javaType == "LocalDate">
+      type: 'daterange',
+      valueFormat: 'YYYY-MM-DD'
+      <#else>
       type: 'datetimerange',
       valueFormat: 'YYYY-MM-DD HH:mm:ss'
+      </#if>
+    }
+  },
+  <#elseif field.searchType == "time-picker">
+  {
+    prop: '${field.javaField}',
+    label: '${field.columnComment}',
+    el: '${field.searchType}',
+    span: 2,
+    props: {
+      isRange: true,
+      valueFormat: 'HH:mm:ss'
     }
   },
   <#elseif field.dictType != "">
@@ -210,7 +230,11 @@ const searchColumns: SearchProps[] = [
     enum: useDictOptions('${field.dictType}'),
     fieldNames: {
       label: 'codeName',
+      <#if field.dictShowWay == "0" >
       value: 'id',
+      <#else>
+      value: 'alias',
+      </#if>
       tagType: 'callbackShowStyle'
     },
   },

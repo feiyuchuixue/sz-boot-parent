@@ -27,6 +27,9 @@ public class GeneratorPathOptionsVO {
     @Schema(description = "前端路径候选")
     private List<PathOption> webOptions = new ArrayList<>();
 
+    @Schema(description = "后端模块候选")
+    private List<GeneratorBackendModuleOptionVO> backendModuleOptions = new ArrayList<>();
+
     @Data
     @Schema(description = "路径候选项")
     public static class PathOption {

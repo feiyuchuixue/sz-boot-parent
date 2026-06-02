@@ -17,7 +17,6 @@ import com.sz.core.util.BeanCopyUtils;
 import com.sz.core.util.Utils;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
-import java.io.Serializable;
 import java.util.List;
 import ${dtoPkg}.${dtoCreateClassName};
 import ${dtoPkg}.${dtoUpdateClassName};
@@ -158,8 +157,8 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     }
 
     @Override
-    public ${voClassName} detail(Object id){
-        ${poClassName} ${camelClassName} = getById((Serializable) id);
+    public ${voClassName} detail(${idJavaType} id){
+        ${poClassName} ${camelClassName} = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(${camelClassName});
         ${voClassName} vo = BeanCopyUtils.copy(${camelClassName}, ${voClassName}.class);
 <#if hasResourceRef == true>

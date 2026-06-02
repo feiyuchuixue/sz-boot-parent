@@ -17,6 +17,27 @@ public class GeneratorPreviewVO {
     @Schema(description = "代码", example = "public class TeacherStatisticsController  {}")
     private String code;
 
+    @Schema(description = "生成计划项内容")
+    private String content;
+
+    @Schema(description = "diff 内容")
+    private String diff;
+
+    @Schema(description = "目标项目内相对路径")
+    private String relativePath;
+
+    @Schema(description = "完整目标路径")
+    private String fullPath;
+
+    @Schema(description = "目标项目名")
+    private String projectName;
+
+    @Schema(description = "操作类型：CREATE_FILE/MODIFY_FILE/SKIP_EXISTS/SCRIPT")
+    private String operationType;
+
+    @Schema(description = "操作说明")
+    private String message;
+
     @Schema(description = "语言", example = "java")
     private String language;
 

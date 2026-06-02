@@ -25,6 +25,15 @@ public class CodeGenTempResult {
     @Schema(description = " zip path （zip存储路径）")
     private String relativePath;
 
+    @Schema(description = "目标项目内相对路径")
+    private String outputRelativePath;
+
+    @Schema(description = "完整生成路径")
+    private String fullPath;
+
+    @Schema(description = "目标项目名")
+    private String projectName;
+
     @Schema(description = "扩展名")
     private String extension;
 

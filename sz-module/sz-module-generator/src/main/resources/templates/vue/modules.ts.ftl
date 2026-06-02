@@ -1,4 +1,4 @@
-import { adminHttp } from '@/api/client';
+import { ${httpClientImportName} } from '@/api/client';
 import type { IPage } from '@/api/types';
 import type {
   ${interfaceNamespace}Query,
@@ -9,6 +9,10 @@ import type {
 import type { UploadRawFile } from "element-plus/es/components/upload/src/upload";
 import type { AxiosRequestConfig } from 'axios';
 </#if>
+<#if builtinHttpClient == false>
+
+const ${httpClientName} = ${httpClientImportName}('${apiPrefixModule}', '${apiPrefix}');
+</#if>
 
 /**
 * 查询列表
@@ -16,7 +20,7 @@ import type { AxiosRequestConfig } from 'axios';
 * @returns {*}
 */
 export const ${funGetList} = (params: ${interfaceNamespace}Query) => {
-  return adminHttp.get<IPage<${interfaceNamespace}Row>>(`/${router}`, params);
+  return ${httpClientName}.get<IPage<${interfaceNamespace}Row>>(`/${router}`, params);
 };
 
 /**
@@ -25,7 +29,7 @@ export const ${funGetList} = (params: ${interfaceNamespace}Query) => {
 * @returns {*}
 */
 export const ${funCreate} = (params: ${interfaceNamespace}Form) => {
-  return adminHttp.post(`/${router}`, params);
+  return ${httpClientName}.post(`/${router}`, params);
 };
 
 /**
@@ -34,7 +38,7 @@ export const ${funCreate} = (params: ${interfaceNamespace}Form) => {
 * @returns {*}
 */
 export const ${funUpdate} = (params: ${interfaceNamespace}Form) => {
-  return adminHttp.put(`/${router}`, params);
+  return ${httpClientName}.put(`/${router}`, params);
 };
 
 /**
@@ -43,7 +47,7 @@ export const ${funUpdate} = (params: ${interfaceNamespace}Form) => {
 * @returns {*}
 */
 export const ${funRemove} = (params: { ids: (string | number)[] }) => {
- return adminHttp.delete(`/${router}`, params);
+ return ${httpClientName}.delete(`/${router}`, params);
 };
 
 /**
@@ -53,7 +57,7 @@ export const ${funRemove} = (params: { ids: (string | number)[] }) => {
 */
 export const ${funDetail} = (params: { id: ${idType} }) => {
   const { id } = params;
-  return adminHttp.get<${interfaceNamespace}Row>(`/${router}/<#noparse>${id}</#noparse>`);
+  return ${httpClientName}.get<${interfaceNamespace}Row>(`/${router}/<#noparse>${id}</#noparse>`);
 };
 <#if GeneratorInfo.hasImport == "1">
 
@@ -62,7 +66,7 @@ export const ${funDetail} = (params: { id: ${idType} }) => {
 * @param params
 */
 export const ${funImport} = (params : UploadRawFile, config?: AxiosRequestConfig<any> | undefined) => {
-  return adminHttp.upload(`/${router}/import`, params, config);
+  return ${httpClientName}.upload(`/${router}/import`, params, config);
 };
 </#if>
 
@@ -73,7 +77,7 @@ export const ${funImport} = (params : UploadRawFile, config?: AxiosRequestConfig
 * @returns {*}
 */
 export const ${funExport}  = (params: ${interfaceNamespace}Query) => {
-  return adminHttp.download(`/${router}/export`, params);
+  return ${httpClientName}.download(`/${router}/export`, params);
 <#compress>
 };
 </#compress>

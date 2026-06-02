@@ -313,7 +313,9 @@ public class GeneratorUtils {
 
     private static void setHtmlType(String columnName, GeneratorTableColumn tableColumn) {
         String lowerCaseColumnName = columnName.toLowerCase();
-        tableColumn.setSearchType("input");
+        if (isBlank(tableColumn.getSearchType())) {
+            tableColumn.setSearchType("input");
+        }
         if (lowerCaseColumnName.contains("status")) {
             tableColumn.setHtmlType(GeneratorConstants.HTML_RADIO);
             tableColumn.setSearchType("select");
@@ -326,7 +328,7 @@ public class GeneratorUtils {
             tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
         } else if (lowerCaseColumnName.contains("content")) {
             tableColumn.setHtmlType(GeneratorConstants.HTML_EDITOR);
-        } else if (lowerCaseColumnName.contains("time")) {
+        } else if (lowerCaseColumnName.contains("time") && "input".equals(tableColumn.getSearchType())) {
             tableColumn.setSearchType("date-picker");
         }
     }
@@ -342,16 +344,22 @@ public class GeneratorUtils {
 
     private static void setImportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
         String htmlType = tableColumn.getHtmlType();
-        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
+        if (!arraysContains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)
+                && !isUploadHtmlType(htmlType)) {
             tableColumn.setIsImport(GeneratorConstants.REQUIRE);
         }
     }
 
     private static void setExportAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
         String htmlType = tableColumn.getHtmlType();
-        if (!arraysContains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)) {
+        if (!arraysContains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName) && notPk && !GeneratorConstants.HTML_EDITOR.equals(htmlType)
+                && !isUploadHtmlType(htmlType)) {
             tableColumn.setIsExport(GeneratorConstants.REQUIRE);
         }
+    }
+
+    private static boolean isUploadHtmlType(String htmlType) {
+        return GeneratorConstants.HTML_FILE_UPLOAD.equals(htmlType) || GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType);
     }
 
     private static void setQueryAttribute(boolean notPk, String columnName, GeneratorTableColumn tableColumn) {
@@ -399,16 +407,21 @@ public class GeneratorUtils {
 
     private static void setFileUploadOptions(String columnName, GeneratorTableColumn tableColumn) {
         String javaType = tableColumn.getJavaType();
-        if (arraysContains(GeneratorConstants.AUTO_FILE_UPLOAD_COLUMNS, columnName) || GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(javaType)) {
+        String htmlType = tableColumn.getHtmlType();
+        boolean isUpload = arraysContains(GeneratorConstants.AUTO_FILE_UPLOAD_COLUMNS, columnName) || GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(javaType)
+                || GeneratorConstants.HTML_FILE_UPLOAD.equals(htmlType) || GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType);
+        if (isUpload) {
             tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
             tableColumn.setJavaTypePackage(
                     "com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
-            tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
+            if (!GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType)) {
+                tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
+            }
             Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
             options.put("upload-files.sceneCode", "system.temp"); // 多文件上传组件：文件上传目录
             options.put("upload-file.pathSegments", "your_biz_path");
-            options.put("upload-files.accept", ""); // 多文件上传组件：允许上传的文件类型, doc,pdf,jpg等,空表示不限制
-            options.put("upload-files.limit", 5); // 多文件上传组件：最多上传5个文件
+            options.put("upload-files.accept", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType) ? "image/*" : ""); // 多文件上传组件：允许上传的文件类型, doc,pdf,jpg等,空表示不限制
+            options.put("upload-files.limit", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType) ? 1 : 5); // 多文件上传组件：最多上传5个文件
             options.put("upload-files.fileSize", 3); // 多文件上传组件：单个文件最大3MB
 
             options.put("file-download-list.align", "left"); // 列表文件回显组件：对齐方式left/center/right

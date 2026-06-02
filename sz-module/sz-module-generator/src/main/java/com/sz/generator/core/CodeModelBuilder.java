@@ -56,7 +56,10 @@ public class CodeModelBuilder {
             String javaTypePackage = column.getJavaTypePackage();
             if (Utils.isNotNull(javaTypePackage)) {
                 String[] split = javaTypePackage.split(",");
-                Collections.addAll(importPackages, split);
+                Arrays.stream(split)
+                        .map(String::trim)
+                        .filter(item -> !item.isBlank())
+                        .forEach(importPackages::add);
                 // importPackages.add(javaTypePackage);
             }
             if (("LocalDateTime").equals(column.getJavaType())) {
@@ -68,6 +71,11 @@ public class CodeModelBuilder {
             if (column.getJavaType().startsWith("List")) {
                 importPackages.add("java.util.List");
             }
+            if (GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(column.getJavaType())) {
+                importPackages.add("com.mybatisflex.annotation.Column");
+                importPackages.add("com.sz.db.handler.Jackson3TypeHandler");
+                importPackages.add("com.sz.resource.model.ResourceRef");
+            }
         }
         model.put("importPackages", importPackages);
         model.put("hasUniqueValidField", hasUniqueValidField);
@@ -77,11 +85,13 @@ public class CodeModelBuilder {
 
     public CodeModelBuilder builderDynamicsParam(GeneratorDetailVO detailVO) {
         String idType = "";
+        String idJavaType = "Long";
         String pkName = "";
         boolean hasDict = false;
         boolean hasSelect = false;
         boolean hasExcel = false;
         boolean hasResourceRef = false;
+        GeneratorDetailVO.Column importBizKeyColumn = null;
         List<GeneratorDetailVO.Column> pkColumns = new ArrayList<>();
         List<GeneratorDetailVO.Column> columns = detailVO.getColumns();
 
@@ -94,12 +104,14 @@ public class CodeModelBuilder {
 
             if (("1").equals(column.getIsPk())) {
                 idType = column.getTsType();
+                idJavaType = defaultString(column.getJavaType(), idJavaType);
                 pkName = column.getJavaField();
             }
             if (Utils.isNotNull(column.getDictType())) {
                 hasDict = true;
             }
-            if (("select").equals(column.getHtmlType()) || ("radio").equals(column.getHtmlType())) {
+            if (("select").equals(column.getHtmlType()) || ("radio").equals(column.getHtmlType()) || ("radio-group").equals(column.getHtmlType())
+                    || ("checkbox").equals(column.getHtmlType())) {
                 hasSelect = true;
             }
             if (column.getIsPk().equals("1")) {
@@ -109,15 +121,30 @@ public class CodeModelBuilder {
             if (GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(column.getJavaType())) {
                 hasResourceRef = true;
             }
+            if (("1").equals(column.getIsImport()) && shouldUseImportBizKey(importBizKeyColumn, column)) {
+                importBizKeyColumn = column;
+            }
         }
         model.put("pkName", pkName);
+        model.put("idJavaType", idJavaType);
         model.put("hasDict", hasDict);
         model.put("hasSelect", hasSelect);
         model.put("hasExcel", hasExcel);
         model.put("idType", idType);
         model.put("pkColumns", pkColumns);
         model.put("hasResourceRef", hasResourceRef);
+        model.put("importBizKeyColumn", importBizKeyColumn);
         return this;
+    }
+
+    private static boolean shouldUseImportBizKey(GeneratorDetailVO.Column current, GeneratorDetailVO.Column candidate) {
+        if (current == null) {
+            return true;
+        }
+        if (("1").equals(candidate.getIsUniqueValid()) && !("1").equals(current.getIsUniqueValid())) {
+            return true;
+        }
+        return !("1").equals(current.getIsUniqueValid()) && ("1").equals(candidate.getIsRequired()) && !("1").equals(current.getIsRequired());
     }
 
     public CodeModelBuilder builderPojo(GeneratorDetailVO detailVO) {
@@ -161,21 +188,32 @@ public class CodeModelBuilder {
 
     public CodeModelBuilder builderVue(GeneratorDetailVO detailVO) {
         String className = detailVO.getBaseInfo().getClassName();
-        String interfacePkg = SEPARATOR + "api" + SEPARATOR + "interface" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
+        GeneratorDetailVO.GeneratorInfo generatorInfo = detailVO.getGeneratorInfo();
+        String frontendLayout = defaultString(generatorInfo.getFrontendLayout(), "module");
+        String frontendModuleName = resolveFrontendModuleName(generatorInfo, frontendLayout);
+        String frontendModuleVarName = toModuleVarName(frontendModuleName);
+        String apiPrefixModule = defaultString(generatorInfo.getApiPrefixModule(), "admin");
+        String apiPrefix = defaultString(generatorInfo.getApiPrefix(), "/" + apiPrefixModule);
+        String httpClientName = apiPrefixModule + "Http";
+        boolean builtinHttpClient = Set.of("admin", "audit", "generator").contains(apiPrefixModule);
+        String interfacePkg = SEPARATOR + "api" + SEPARATOR + "interface" + SEPARATOR + generatorInfo.getModuleName();
         model.put("interfacePkg", interfacePkg);
-        model.put("interfaceClassName", detailVO.getGeneratorInfo().getBusinessName());
+        model.put("interfaceClassName", generatorInfo.getBusinessName());
         model.put("interfaceNamespace", detailVO.getBaseInfo().getClassName());
 
-        String typePkg = SEPARATOR + "api" + SEPARATOR + "types" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
+        String typePkg = "legacy".equals(frontendLayout) ? SEPARATOR + "api" + SEPARATOR + "types" + SEPARATOR + generatorInfo.getModuleName()
+                : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "types";
         model.put("typePkg", typePkg);
-        model.put("typeClassName", detailVO.getGeneratorInfo().getBusinessName());
+        model.put("typeClassName", generatorInfo.getBusinessName());
 
-        String modulesPkg = SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName();
+        String modulesPkg = "legacy".equals(frontendLayout) ? SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + generatorInfo.getModuleName()
+                : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "api";
         model.put("modulesPkg", modulesPkg);
-        model.put("modulesClassName", detailVO.getGeneratorInfo().getBusinessName());
+        model.put("modulesClassName", generatorInfo.getBusinessName());
 
-        String indexPkg = SEPARATOR + "views" + SEPARATOR + detailVO.getGeneratorInfo().getModuleName() + SEPARATOR
-                + detailVO.getGeneratorInfo().getBusinessName();
+        String indexPkg = "legacy".equals(frontendLayout) ? SEPARATOR + "views" + SEPARATOR + generatorInfo.getModuleName() + SEPARATOR
+                + generatorInfo.getBusinessName()
+                : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "views" + SEPARATOR + generatorInfo.getBusinessName();
         model.put("indexPkg", indexPkg);
         model.put("indexClassName", "index");
 
@@ -190,6 +228,17 @@ public class CodeModelBuilder {
         model.put("funRemove", "remove" + className + "Api");
         model.put("funImport", "import" + className + "ExcelApi");
         model.put("funExport", "export" + className + "ExcelApi");
+        model.put("frontendLayout", frontendLayout);
+        model.put("frontendModuleName", frontendModuleName);
+        model.put("frontendModuleVarName", frontendModuleVarName);
+        model.put("registerPkg", SEPARATOR + "modules" + SEPARATOR + frontendModuleName);
+        model.put("registerClassName", "register");
+        model.put("registeredComponent", SEPARATOR + frontendModuleName + SEPARATOR + generatorInfo.getBusinessName() + SEPARATOR + "index");
+        model.put("httpClientName", builtinHttpClient ? httpClientName : "moduleHttp");
+        model.put("httpClientImportName", builtinHttpClient ? httpClientName : "createModuleHttp");
+        model.put("builtinHttpClient", builtinHttpClient);
+        model.put("apiPrefixModule", apiPrefixModule);
+        model.put("apiPrefix", apiPrefix);
 
         // permission标识
         String permissionHeader = getRouter(detailVO).replace("-", ".");
@@ -208,6 +257,59 @@ public class CodeModelBuilder {
         model.put("listPermission", listPermission);
         model.put("indexDefineOptionsName", className + "View"); // vue index DefineOptionsName
         return this;
+    }
+
+    private static String defaultString(String value, String defaultValue) {
+        return value == null || value.isBlank() ? defaultValue : value;
+    }
+
+    private static String resolveFrontendModuleName(GeneratorDetailVO.GeneratorInfo generatorInfo, String frontendLayout) {
+        if (!"legacy".equals(frontendLayout)) {
+            String frontendModuleName = generatorInfo.getFrontendModuleName();
+            if (frontendModuleName != null && !frontendModuleName.isBlank()) {
+                return normalizeFrontendModuleCode(frontendModuleName);
+            }
+            String moduleCode = normalizeFrontendModuleCode(generatorInfo.getBackendModuleName());
+            if (!moduleCode.isBlank()) {
+                return moduleCode;
+            }
+        }
+        return defaultString(generatorInfo.getFrontendModuleName(), generatorInfo.getModuleName());
+    }
+
+    private static String normalizeFrontendModuleCode(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        return value.trim().replaceFirst("^sz-module-", "").replace("_", "-").toLowerCase(Locale.ROOT);
+    }
+
+    private static String toModuleVarName(String moduleName) {
+        String normalized = moduleName == null ? "" : moduleName.trim();
+        StringBuilder builder = new StringBuilder();
+        boolean upperNext = false;
+        for (char c : normalized.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                upperNext = builder.length() > 0;
+                continue;
+            }
+            if (builder.isEmpty()) {
+                if (Character.isDigit(c)) {
+                    builder.append("module");
+                    builder.append(c);
+                } else {
+                    builder.append(Character.toLowerCase(c));
+                }
+            } else {
+                builder.append(upperNext ? Character.toUpperCase(c) : c);
+            }
+            upperNext = false;
+        }
+        if (builder.isEmpty()) {
+            builder.append("demo");
+        }
+        builder.append("Module");
+        return builder.toString();
     }
 
     private static String buildPackagePath(GeneratorDetailVO detailVO, String packageGroup, String subPackage) {

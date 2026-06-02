@@ -44,7 +44,7 @@ public interface ${serviceClassName} extends IService<${poClassName}> {
 
     void remove(SelectIdsDTO dto);
 
-    ${voClassName} detail(Object id);
+    ${voClassName} detail(${idJavaType} id);
     <#if GeneratorInfo.hasImport == "1">
 
     ExcelImportResultVO importExcel(ImportExcelDTO dto);

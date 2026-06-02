@@ -1,7 +1,5 @@
 package ${excelImporterPkg};
 
-import com.sz.admin.system.service.SysImportBatchService;
-import com.sz.admin.system.service.SysImportFailRecordService;
 import ${mapperPkg}.${mapperClassName};
 import ${dtoPkg}.${dtoImportClassName};
 import ${poPkg}.${poClassName};
@@ -12,6 +10,8 @@ import com.sz.excel.core.ExcelFailRow;
 import com.sz.excel.imports.model.ExcelImportBizResult;
 import com.sz.excel.imports.model.ExcelImportFailItem;
 import com.sz.excel.imports.model.ExcelImportResultVO;
+import com.sz.excel.imports.spi.ImportBatchTracker;
+import com.sz.excel.imports.spi.ImportFailRecordWriter;
 import com.sz.excel.imports.template.AbstractExcelImportTemplate;
 import org.springframework.stereotype.Component;
 
@@ -33,9 +33,9 @@ public class ${excelImporterClassName} extends AbstractExcelImportTemplate<${dto
     private final ${mapperClassName} mapper;
 
     public ${excelImporterClassName}(${mapperClassName} mapper,
-            SysImportBatchService sysImportBatchService,
-            SysImportFailRecordService sysImportFailRecordService) {
-        super(sysImportBatchService, sysImportFailRecordService);
+            ImportBatchTracker importBatchTracker,
+            ImportFailRecordWriter importFailRecordWriter) {
+        super(importBatchTracker, importFailRecordWriter);
         this.mapper = mapper;
     }
 
@@ -82,9 +82,11 @@ public class ${excelImporterClassName} extends AbstractExcelImportTemplate<${dto
         if (failRows == null || failRows.isEmpty()) {
             return new ArrayList<>();
         }
-<#if pkColumns?has_content>
+<#if importBizKeyColumn??>
         return failRows.stream()
-                .map(row -> buildExcelFailItem(row, ${dtoImportClassName}::get${pkColumns[0].upCamelField}, "${pkColumns[0].columnComment}"))
+                .map(row -> buildExcelFailItem(row,
+                        dto -> dto.get${importBizKeyColumn.upCamelField}() == null ? null : String.valueOf(dto.get${importBizKeyColumn.upCamelField}()),
+                        "${importBizKeyColumn.columnComment}"))
                 .toList();
 <#else>
         return failRows.stream()

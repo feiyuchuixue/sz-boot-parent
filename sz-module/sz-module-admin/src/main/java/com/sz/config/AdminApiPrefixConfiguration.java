@@ -26,7 +26,7 @@ public class AdminApiPrefixConfiguration {
 
             @Override
             public String[] basePackages() {
-                return new String[]{"com.sz.admin.system", "com.sz.admin.teacher", "com.sz.applet", "com.sz.security.controller", "com.sz.www"};
+                return new String[]{"com.sz.admin", "com.sz.applet", "com.sz.security.controller", "com.sz.www"};
             }
         };
     }
