@@ -2,7 +2,6 @@ package ${voPkg};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.experimental.Accessors;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -53,7 +52,7 @@ public class ${voClassName} {
     <#if field.javaType?starts_with("List")>
     @Column(typeHandler = Jackson3TypeHandler.class)
     </#if>
-    @Schema(description =  "${field.columnComment}")
+    @Schema(description = "${field.columnComment}")
     private ${field.javaType} ${field.javaField};
 
 </#if>

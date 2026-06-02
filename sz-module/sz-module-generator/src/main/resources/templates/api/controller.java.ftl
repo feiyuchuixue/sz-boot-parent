@@ -2,11 +2,12 @@ package ${controllerPkg};
 
 <#compress>
 import io.swagger.v3.oas.annotations.Operation;
+<#if GeneratorInfo.hasImport == "1">
 import io.swagger.v3.oas.annotations.media.Schema;
+</#if>
 import io.swagger.v3.oas.annotations.tags.Tag;
 <#if GeneratorInfo.hasImport == "1">
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 </#if>
 import lombok.RequiredArgsConstructor;
 import cn.dev33.satoken.annotation.SaCheckPermission;
@@ -14,7 +15,6 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.sz.core.common.entity.ApiPageResult;
 import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.constant.GlobalConstant;
 
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -23,8 +23,11 @@ import ${dtoPkg}.${dtoCreateClassName};
 import ${dtoPkg}.${dtoUpdateClassName};
 import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
 <#if GeneratorInfo.hasImport == "1">
 import com.sz.core.common.entity.ImportExcelDTO;
+import com.sz.excel.imports.model.ExcelImportResultVO;
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,16 +43,17 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author ${author}
  * @since ${datetime}
  */
-@Tag(name =  "${tableComment}")
+@Tag(name = "${tableComment}")
 @RestController
 @RequestMapping("${router}")
 @RequiredArgsConstructor
-public class ${controllerClassName}  {
+public class ${controllerClassName} {
 
 <#assign serviceName = lower_case_first_letter(serviceClassName)>
     private final ${serviceClassName} ${serviceName};
 
-    @Operation(summary = "新增")
+    @Operation(summary = "新增${tableComment}")
+    @OperationAudit(operationType = OperationType.CREATE)
 <#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${createPermission}")
 </#if>
@@ -59,7 +63,8 @@ public class ${controllerClassName}  {
         return ApiResult.success();
     }
 
-    @Operation(summary = "修改")
+    @Operation(summary = "修改${tableComment}")
+    @OperationAudit(operationType = OperationType.UPDATE<#if pkName?has_content>, bizId = "#dto.${pkName}"</#if>)
 <#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${updatePermission}")
 </#if>
@@ -69,7 +74,8 @@ public class ${controllerClassName}  {
         return ApiResult.success();
     }
 
-    @Operation(summary = "删除")
+    @Operation(summary = "删除${tableComment}")
+    @OperationAudit(operationType = OperationType.DELETE, bizId = "#dto.ids")
 <#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${removePermission}")
 </#if>
@@ -79,14 +85,14 @@ public class ${controllerClassName}  {
         return ApiResult.success();
     }
 
-    @Operation(summary = "列表查询")
+    @Operation(summary = "查询${tableComment}列表")
     @SaCheckPermission(value = "${listPermission}")
     @GetMapping
     public ApiResult<PageResult<${voClassName}>> list(${dtoListClassName} dto) {
         return ApiPageResult.success(${serviceName}.page(dto));
     }
 
-    @Operation(summary = "详情")
+    @Operation(summary = "查询${tableComment}详情")
     @SaCheckPermission(value = "${listPermission}")
     @GetMapping("/{id}")
     public ApiResult<${voClassName}> detail(@PathVariable ${idJavaType} id) {
@@ -94,24 +100,24 @@ public class ${controllerClassName}  {
     }
 <#if GeneratorInfo.hasImport == "1">
 
-    @Operation(summary = "导入")
-    @Parameters({
-      @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true),
-    })
-    <#if GeneratorInfo.btnPermissionType == "1">
+    @Operation(summary = "导入${tableComment}", parameters = {
+            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true)})
+    @OperationAudit(operationType = OperationType.IMPORT)
+<#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${importPermission}")
-    </#if>
+</#if>
     @PostMapping("/import")
-    public void importExcel(@ModelAttribute ImportExcelDTO dto) {
-        ${serviceName}.importExcel(dto);
+    public ApiResult<ExcelImportResultVO> importExcel(@ModelAttribute ImportExcelDTO dto) {
+        return ApiResult.success(${serviceName}.importExcel(dto));
     }
 </#if>
 <#if GeneratorInfo.hasExport == "1">
 
-    @Operation(summary = "导出")
-  <#if GeneratorInfo.btnPermissionType == "1">
+    @Operation(summary = "导出${tableComment}")
+    @OperationAudit(operationType = OperationType.EXPORT)
+<#if GeneratorInfo.btnPermissionType == "1">
     @SaCheckPermission(value = "${exportPermission}")
-  </#if>
+</#if>
     @PostMapping("/export")
     public void exportExcel(@RequestBody ${dtoListClassName} dto, HttpServletResponse response) {
         ${serviceName}.exportExcel(dto, response);

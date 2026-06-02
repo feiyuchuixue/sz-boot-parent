@@ -141,7 +141,7 @@ import ImportExcel from '@/components/ImportExcel/index.vue';
 import { downloadTemplate } from '@/api/modules/system/common';
 </#if>
 <#if GeneratorInfo.hasExport == "1">
-import { useDownload } from "@/hooks/useDownload";
+import { useDownload } from '@/hooks/useDownload';
 </#if>
 <#if dictTypes?? && dictTypes?size gt 0>
 import { useDict } from '@/hooks/useDict';
@@ -156,7 +156,7 @@ import FileDownloadList from '@/components/Upload/FileDownloadList.vue';
 </#if>
 
 defineOptions({
-  name: '${indexDefineOptionsName}'
+  name: '${indexDefineOptionsName}',
 });
 <#if dictTypes?? && dictTypes?size gt 0>
 // 使用useDict Hook 主动加载字典
@@ -246,14 +246,14 @@ const searchColumns: SearchProps[] = [
 ];
 // 获取table列表
 const getTableList = (params: ${interfaceNamespace}Query) => {
-  let newParams = formatParams(params);
+  const newParams = formatParams(params);
   return ${funGetList}(newParams);
 };
-const formatParams = (params: ${interfaceNamespace}Query) =>{
+const formatParams = (params: ${interfaceNamespace}Query) => {
   let newParams = JSON.parse(JSON.stringify(params));
   <#list columns as field>
   <#if field.queryType == "BETWEEN">
-  if(newParams.${field.javaField}) {
+  if (newParams.${field.javaField}) {
     newParams.${field.javaField}Start = newParams.${field.javaField}[0];
     newParams.${field.javaField}End = newParams.${field.javaField}[1];
     delete newParams.${field.javaField};
@@ -265,7 +265,7 @@ const formatParams = (params: ${interfaceNamespace}Query) =>{
 };
 // 打开 drawer(新增、查看、编辑)
 const ${businessName}Ref = ref<InstanceType<typeof ${formClassName}>>();
-const openAddEdit = async(title: string, row: any = {}, isAdd = true) => {
+const openAddEdit = async (title: string, row: any = {}, isAdd = true) => {
   if (!isAdd) {
     const record = await ${funDetail}({ id: row?.${pkName} });
     row = record?.data;
@@ -277,18 +277,18 @@ const openAddEdit = async(title: string, row: any = {}, isAdd = true) => {
     getTableList: proTableRef.value?.getTableList
   };
   ${businessName}Ref.value?.acceptParams(params);
-}
+};
 // 删除信息
 const deleteInfo = async (params: ${interfaceNamespace}Row) => {
   await useHandleData(${funRemove}, { ids: [params.${pkName}] }, `删除【<#noparse>${params.</#noparse>${pkName}}】${functionName}`);
   proTableRef.value?.getTableList();
-}
+};
 // 批量删除信息
 const batchDelete = async (ids: (string | number)[]) => {
   await useHandleData(${funRemove}, { ids }, '删除所选${functionName}');
   proTableRef.value?.clearSelection();
   proTableRef.value?.getTableList();
-}
+};
 <#if GeneratorInfo.hasImport == "1">
 // 导入
 const ImportExcelRef = ref<InstanceType<typeof ImportExcel>>();
@@ -308,8 +308,8 @@ const importData = () => {
 <#if GeneratorInfo.hasExport == "1">
 // 导出
 const downloadFile = async () => {
-  let newParams = formatParams(proTableRef.value?.searchParam as ${interfaceNamespace}Query);
-  useDownload(${funExport}, "${functionName}", newParams);
+  const newParams = formatParams(proTableRef.value?.searchParam as ${interfaceNamespace}Query);
+  useDownload(${funExport}, '${functionName}', newParams);
 };
 </#if>
 </script>

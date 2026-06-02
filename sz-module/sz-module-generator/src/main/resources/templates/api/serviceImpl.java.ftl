@@ -70,7 +70,7 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 </#if>
 
     @Override
-    public void create(${dtoCreateClassName} dto){
+    public void create(${dtoCreateClassName} dto) {
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
 <#if hasUniqueValidField == true>
         long count;
@@ -86,7 +86,7 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     }
 
     @Override
-    public void update(${dtoUpdateClassName} dto){
+    public void update(${dtoUpdateClassName} dto) {
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
         QueryWrapper wrapper;
 <#list columns as field>
@@ -113,10 +113,10 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     }
 
     @Override
-    public PageResult<${voClassName}> page(${dtoListClassName} dto){
+    public PageResult<${voClassName}> page(${dtoListClassName} dto) {
 <#if GeneratorInfo.btnDataScopeType == "1">
         try (var ignored = new DataScopeSession(${poClassName}.class)) {
-            Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto),  ${voClassName}.class);
+            Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
 <#if hasResourceRef == true>
             page.getRecords().forEach(this::fillAccessUrl);
 </#if>
@@ -132,7 +132,7 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     }
 
     @Override
-    public List<${voClassName}> list(${dtoListClassName} dto){
+    public List<${voClassName}> list(${dtoListClassName} dto) {
 <#if GeneratorInfo.btnDataScopeType == "1">
         try (var ignored = new DataScopeSession(${poClassName}.class)) {
             List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
@@ -151,13 +151,13 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
     }
 
     @Override
-    public void remove(SelectIdsDTO dto){
+    public void remove(SelectIdsDTO dto) {
         CommonResponseEnum.INVALID_ID.assertTrue(dto.getIds().isEmpty());
         removeByIds(dto.getIds());
     }
 
     @Override
-    public ${voClassName} detail(${idJavaType} id){
+    public ${voClassName} detail(${idJavaType} id) {
         ${poClassName} ${camelClassName} = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(${camelClassName});
         ${voClassName} vo = BeanCopyUtils.copy(${camelClassName}, ${voClassName}.class);

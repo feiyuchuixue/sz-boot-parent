@@ -5,7 +5,6 @@ import com.mybatisflex.annotation.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.io.Serial;
@@ -18,13 +17,13 @@ import ${pkg};
 
 
 /**
-* <p>
-* ${tableComment}
-* </p>
-*
-* @author ${author}
-* @since ${datetime}
-*/
+ * <p>
+ * ${tableComment}
+ * </p>
+ *
+ * @author ${author}
+ * @since ${datetime}
+ */
 @Data
 <#if GeneratorInfo.isAutofill == "1">
 @Table(value = "${tableName}", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
@@ -54,9 +53,9 @@ public class ${poClassName} implements Serializable {
     <#if field.javaType?starts_with("List")>
     @Column(typeHandler = Jackson3TypeHandler.class)
     </#if>
-    @Schema(description ="${field.columnComment}")
+    @Schema(description = "${field.columnComment}")
     private ${field.javaType} ${field.javaField};
 
 </#list>
-<#-- ----------  BEGIN 字段循环遍历  ---------->
+<#-- ----------  END 字段循环遍历  ---------->
 }

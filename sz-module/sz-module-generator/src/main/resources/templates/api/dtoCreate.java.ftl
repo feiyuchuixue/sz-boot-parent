@@ -2,7 +2,6 @@ package ${dtoPkg};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.experimental.Accessors;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -51,30 +50,30 @@ public class ${dtoCreateClassName} {
 
 <#list columns as field>
     <#if field.isInsert == "1" >
- <#if field.javaType == "LocalDateTime" >
-   @Schema(description =  "${field.columnComment}")
-   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-   private ${field.javaType} ${field.javaField};
- <#else>
+        <#if field.javaType == "LocalDateTime" >
+    @Schema(description = "${field.columnComment}")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private ${field.javaType} ${field.javaField};
+        <#else>
 <#if field.javaType?starts_with("List")>
-   @Column(typeHandler = Jackson3TypeHandler.class)
+    @Column(typeHandler = Jackson3TypeHandler.class)
 </#if>
 <#-- 必填校验注解 -->
 <#if field.isRequired == "1">
   <#if field.javaType == "String">
-   @NotBlank(message = "${field.columnComment}不能为空")
+    @NotBlank(message = "${field.columnComment}不能为空")
   <#else>
-   @NotNull(message = "${field.columnComment}不能为空")
+    @NotNull(message = "${field.columnComment}不能为空")
   </#if>
 </#if>
 <#-- varchar 长度校验 -->
 <#if field.javaType == "String" && field.columnType?contains("varchar")>
   <#assign varcharLength = field.columnType?replace("varchar(", "")?replace(")", "")?trim>
-   @Size(max = ${varcharLength}, message = "${field.columnComment}长度不能超过${varcharLength}个字符")
+    @Size(max = ${varcharLength}, message = "${field.columnComment}长度不能超过${varcharLength}个字符")
 </#if>
-   @Schema(description =  "${field.columnComment}")
-   private ${field.javaType} ${field.javaField};
- </#if>
+    @Schema(description = "${field.columnComment}")
+    private ${field.javaType} ${field.javaField};
+        </#if>
 
     </#if>
 </#list>

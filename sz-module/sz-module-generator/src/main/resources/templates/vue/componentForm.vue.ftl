@@ -171,15 +171,15 @@ import { useOptionsStore } from '@/stores/modules/options';
 </#if>
 </#list>
 <#if hasFileUpload?? && hasFileUpload>
-import type { IResourceUploadResult } from "@/api/types/system/upload";
-import UploadFiles from "@/components/Upload/UploadFiles.vue";
+import type { IResourceUploadResult } from '@/api/types/system/upload';
+import UploadFiles from '@/components/Upload/UploadFiles.vue';
 </#if>
 <#if hasJoditEditor?? && hasJoditEditor>
 import JoditEditor from '@/components/JoditEditor/index.vue';
 </#if>
 import { useDialogWidth } from '@/hooks/useDialogWidth';
 defineOptions({
-  name: '${formClassName}'
+  name: '${formClassName}',
 });
 const dialogWidth = useDialogWidth('');
 <#if hasSelect == true>
@@ -285,7 +285,7 @@ const rules = reactive({
 
 // 接收父组件传过来的参数
 const acceptParams = (params: View.DefaultParams) => {
-  paramsProps.value = params
+  paramsProps.value = params;
 <#list columns as field>
 <#if field.htmlType == "checkbox">
   ${field.javaField}CheckedValues.value = normalizeCheckboxValue(params.row.${field.javaField}<#if field.javaType == "Integer" || field.javaType == "Long">, true</#if>);
@@ -296,14 +296,14 @@ const acceptParams = (params: View.DefaultParams) => {
   syncUploadValue('${field.javaField}', ${field.javaField}UploadResult.value, false);
 </#if>
 </#list>
-  visible.value = true
+  visible.value = true;
 };
 
 // 提交数据（新增/编辑）
 const ruleFormRef = ref<InstanceType<typeof ElForm>>();
 const handleSubmit = () => {
   ruleFormRef.value!.validate(async (valid) => {
-    if (!valid) return
+    if (!valid) return;
     try {
 <#list columns as field>
   <#if field.htmlType == "checkbox">
@@ -321,10 +321,10 @@ const handleSubmit = () => {
       console.log(error);
     }
   });
-}
+};
 
 defineExpose({
-  acceptParams
+  acceptParams,
 });
 </script>
 

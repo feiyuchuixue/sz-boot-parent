@@ -2,7 +2,6 @@ package ${dtoPkg};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.experimental.Accessors;
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -46,13 +45,13 @@ public class ${dtoUpdateClassName} {
 <#list columns as field>
   <#if field.isPk =="1">
     @NotNull(message = "ID不能为空")
-    @Schema(description =  "${field.columnComment}", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "${field.columnComment}", requiredMode = Schema.RequiredMode.REQUIRED)
     private ${field.javaType} ${field.javaField};
 
   </#if>
   <#if field.isEdit == "1" && field.isPk == "0" >
     <#if field.javaType == "LocalDateTime">
-    @Schema(description =  "${field.columnComment}")
+    @Schema(description = "${field.columnComment}")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private ${field.javaType} ${field.javaField};
     <#else>
@@ -72,7 +71,7 @@ public class ${dtoUpdateClassName} {
   <#assign varcharLength = field.columnType?replace("varchar(", "")?replace(")", "")?trim>
     @Size(max = ${varcharLength}, message = "${field.columnComment}长度不能超过${varcharLength}个字符")
 </#if>
-    @Schema(description =  "${field.columnComment}")
+    @Schema(description = "${field.columnComment}")
     private ${field.javaType} ${field.javaField};
     </#if>
 
