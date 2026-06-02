@@ -1,0 +1,71 @@
+﻿name: Docker Sz Services Official CI
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: Build & Push ${{ matrix.app_name }}:${{ matrix.image_tag }}
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        include:
+          - app_name: sz-service-admin
+            module_dir: sz-service/sz-service-admin
+            maven_profile: mysql
+            image_tag: latest
+          - app_name: sz-service-admin
+            module_dir: sz-service/sz-service-admin
+            maven_profile: postgresql
+            image_tag: latest-postgresql
+          - app_name: sz-service-websocket
+            module_dir: sz-service/sz-service-websocket
+            maven_profile: ""
+            image_tag: latest
+
+    env:
+      ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
+      ACR_ZONE: sz-dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Zulu)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Set up Maven 3.9.6
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.6
+
+      - name: Resolve image metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          image_ref="${ACR_DOMAIN}/${ACR_ZONE}/${{ matrix.app_name }}:${{ matrix.image_tag }}"
+          echo "image_ref=${image_ref}" >> "$GITHUB_OUTPUT"
+          echo "本次构建官方镜像: ${image_ref}"
+          echo "Maven Profile: ${{ matrix.maven_profile || 'none' }}"
+
+      - name: Build Docker image
+        env:
+          APP_NAME: ${{ matrix.app_name }}
+          MODULE_DIR: ${{ matrix.module_dir }}
+          MAVEN_PROFILE: ${{ matrix.maven_profile }}
+          IMAGE_REF: ${{ steps.meta.outputs.image_ref }}
+        run: bash .github/scripts/build-sz-service-image.sh
+
+      - name: Login to ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
+
+      - name: Push Docker image to ACR
+        run: docker push ${{ steps.meta.outputs.image_ref }}
