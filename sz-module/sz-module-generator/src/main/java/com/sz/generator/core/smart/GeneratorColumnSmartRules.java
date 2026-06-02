@@ -28,6 +28,7 @@ public final class GeneratorColumnSmartRules {
     private static final String[] DICTIONARY_KEYWORDS = {"status", "type", "sex", "_cd"};
     private static final String[] UPLOAD_KEYWORDS = {"file", "image", "avatar", "photo", "icon", "cover", "attachment", "attachments", "url", "urls"};
     private static final String[] AUDIT_AND_SCOPE_COLUMNS = {"create_id", "create_time", "update_id", "update_time", "delete_id", "delete_time", "dept_scope"};
+    private static final String[] LOGIC_DELETE_COLUMNS = {"del_flag", "is_deleted"};
 
     private GeneratorColumnSmartRules() {
         throw new IllegalStateException("Utility class");
@@ -156,6 +157,9 @@ public final class GeneratorColumnSmartRules {
         List<GeneratorDetailVO.SmartHint> hints = new ArrayList<>();
         if (GeneratorConstants.REQUIRE.equals(column.getIsLogicDel())) {
             hints.add(hint("info", "逻辑删除", "逻辑删除字段通常不参与页面展示、查询、导入和导出。"));
+            if (!isStringCompatibleDbType(column.getColumnType())) {
+                hints.add(hint("danger", "类型不匹配", "当前项目逻辑删除配置使用 T/F，数据库字段建议改为 varchar/char；数字类型会导致逻辑删除值不匹配。"));
+            }
         }
         if (isDictionaryDisplayHtmlType(column.getHtmlType()) && StringUtils.isBlank(column.getDictType())) {
             hints.add(hint("danger", "字典缺失", "当前显示类型依赖字典数据，请选择字典类型后再进入下一步。"));
@@ -295,9 +299,16 @@ public final class GeneratorColumnSmartRules {
     }
 
     private static void setLogicDelete(String columnName, GeneratorTableColumn column) {
-        if ("del_flag".equals(columnName) || "is_deleted".equals(columnName)) {
-            column.setIsLogicDel(GeneratorConstants.REQUIRE);
+        if (!isLogicDeleteColumn(columnName)) {
+            return;
         }
+        column.setIsLogicDel(GeneratorConstants.REQUIRE);
+        column.setJavaType(GeneratorConstants.TYPE_STRING);
+        column.setTsType(GeneratorConstants.TS_TYPE_STRING);
+        column.setJavaTypePackage("");
+        column.setHtmlType(GeneratorConstants.HTML_INPUT);
+        column.setSearchType(GeneratorConstants.HTML_INPUT);
+        column.setQueryType(GeneratorConstants.QUERY_EQ);
     }
 
     private static void setDictionaryHtmlTypeByMatchedDict(String columnName, GeneratorTableColumn column) {
@@ -329,13 +340,14 @@ public final class GeneratorColumnSmartRules {
 
     private static void setOperationDefaults(String columnName, GeneratorTableColumn column) {
         boolean notPk = !isPrimaryKey(column);
-        if (notPk && !contains(GeneratorConstants.NON_INSERTABLE_COLUMNS, columnName) && !isAutofillColumn(columnName)) {
+        boolean notLogicDelete = !GeneratorConstants.REQUIRE.equals(column.getIsLogicDel());
+        if (notPk && notLogicDelete && !contains(GeneratorConstants.NON_INSERTABLE_COLUMNS, columnName) && !isAutofillColumn(columnName)) {
             column.setIsInsert(GeneratorConstants.REQUIRE);
         }
-        if (notPk && !contains(GeneratorConstants.NON_EDITABLE_COLUMNS, columnName) && !isAutofillColumn(columnName)) {
+        if (notPk && notLogicDelete && !contains(GeneratorConstants.NON_EDITABLE_COLUMNS, columnName) && !isAutofillColumn(columnName)) {
             column.setIsEdit(GeneratorConstants.REQUIRE);
         }
-        if (!contains(GeneratorConstants.NON_DISPLAYABLE_COLUMNS, columnName)) {
+        if (notLogicDelete && !contains(GeneratorConstants.NON_DISPLAYABLE_COLUMNS, columnName)) {
             column.setIsList(GeneratorConstants.REQUIRE);
         }
         if (shouldQuery(columnName, column)) {
@@ -370,12 +382,13 @@ public final class GeneratorColumnSmartRules {
     private static boolean shouldImport(String columnName, GeneratorTableColumn column) {
         return !isPrimaryKey(column) && !contains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName)
                 && !GeneratorConstants.HTML_EDITOR.equals(column.getHtmlType()) && !isUploadHtmlType(column.getHtmlType())
-                && !isAutofillColumn(columnName);
+                && !isAutofillColumn(columnName) && !GeneratorConstants.REQUIRE.equals(column.getIsLogicDel());
     }
 
     private static boolean shouldExport(String columnName, GeneratorTableColumn column) {
         return !isPrimaryKey(column) && !contains(GeneratorConstants.NON_EXPORTABLE_COLUMNS, columnName)
-                && !GeneratorConstants.HTML_EDITOR.equals(column.getHtmlType()) && !isUploadHtmlType(column.getHtmlType());
+                && !GeneratorConstants.HTML_EDITOR.equals(column.getHtmlType()) && !isUploadHtmlType(column.getHtmlType())
+                && !GeneratorConstants.REQUIRE.equals(column.getIsLogicDel());
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn column) {
@@ -462,6 +475,16 @@ public final class GeneratorColumnSmartRules {
 
     private static boolean isPrimaryKey(GeneratorTableColumn column) {
         return GeneratorConstants.REQUIRE.equals(column.getIsPk());
+    }
+
+    private static boolean isLogicDeleteColumn(String columnName) {
+        return contains(LOGIC_DELETE_COLUMNS, StringUtils.defaultString(columnName).toLowerCase());
+    }
+
+    private static boolean isStringCompatibleDbType(String columnType) {
+        String dbType = getDbType(columnType).toUpperCase();
+        return "VARCHAR".equals(dbType) || "CHAR".equals(dbType) || "NVARCHAR".equals(dbType) || "VARCHAR2".equals(dbType)
+                || "TEXT".equals(dbType) || "CHARACTER".equals(dbType) || "CHARACTER VARYING".equals(dbType);
     }
 
     private static String getDbType(String columnType) {

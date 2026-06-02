@@ -276,6 +276,20 @@ class CodeModelBuilderTest {
     }
 
     @Test
+    void poTemplateShouldGenerateLogicDeleteFillWhenDeleteAuditColumnsExist() throws IOException {
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream("templates/api/po.java.ftl")) {
+            assertThat(stream).isNotNull();
+            String template = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+
+            assertThat(template).contains("import com.sz.db.LogicDeleteFill;");
+            assertThat(template).contains("@LogicDeleteFill");
+            assertThat(template).contains("@LogicDeleteFill(deleteByColumn = \"\")");
+            assertThat(template).contains("@LogicDeleteFill(deleteTimeColumn = \"\")");
+            assertThat(template).contains("<#assign hasLogicDeleteFill = hasLogicDelete && (hasDeleteTimeColumn || hasDeleteByColumn)>");
+        }
+    }
+
+    @Test
     void excelImporterTemplateShouldDependOnExcelImportSpiInsteadOfAdminModule() throws IOException {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream("templates/api/excelImporter.java.ftl")) {
             assertThat(stream).isNotNull();

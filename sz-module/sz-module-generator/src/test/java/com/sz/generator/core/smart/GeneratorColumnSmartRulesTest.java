@@ -117,6 +117,39 @@ class GeneratorColumnSmartRulesTest {
         assertThat(orderDate.getIsQuery()).isEqualTo(GeneratorConstants.REQUIRE);
     }
 
+    @Test
+    void logicDeleteFieldShouldMatchTfStringConfigAndDisablePageOperations() {
+        GeneratorTableColumn delFlag = column("del_flag", "varchar(1)", "0", "0");
+        GeneratorColumnSmartRules.applyImportDefaults(delFlag);
+
+        assertThat(delFlag.getIsLogicDel()).isEqualTo(GeneratorConstants.REQUIRE);
+        assertThat(delFlag.getJavaType()).isEqualTo(GeneratorConstants.TYPE_STRING);
+        assertThat(delFlag.getTsType()).isEqualTo(GeneratorConstants.TS_TYPE_STRING);
+        assertThat(delFlag.getIsInsert()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(delFlag.getIsEdit()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(delFlag.getIsList()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(delFlag.getIsQuery()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(delFlag.getIsImport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(delFlag.getIsExport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+    }
+
+    @Test
+    void numericLogicDeleteFieldShouldExposeBlockingHint() {
+        GeneratorTableColumn isDeleted = column("is_deleted", "smallint", "0", "0");
+        GeneratorColumnSmartRules.applyImportDefaults(isDeleted);
+
+        assertThat(isDeleted.getIsLogicDel()).isEqualTo(GeneratorConstants.REQUIRE);
+        assertThat(isDeleted.getJavaType()).isEqualTo(GeneratorConstants.TYPE_STRING);
+
+        GeneratorDetailVO.Column detailColumn = detailColumn(isDeleted);
+        List<GeneratorDetailVO.SmartHint> hints = GeneratorColumnSmartRules.buildSmartHints(detailColumn);
+
+        assertThat(hints).anySatisfy(hint -> {
+            assertThat(hint.getType()).isEqualTo("danger");
+            assertThat(hint.getLabel()).isEqualTo("类型不匹配");
+        });
+    }
+
     private static GeneratorTableColumn column(String columnName, String columnType, String isPk, String isRequired) {
         GeneratorTableColumn column = new GeneratorTableColumn();
         column.setColumnName(columnName);

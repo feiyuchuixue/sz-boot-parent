@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!-- 框架结构：不建议直接修改，如需修改请创建新的module或版本管理-->
-    <include file="framework/2.0.0/001_framework_init.xml" relativeToChangelogFile="true"/>
+    <include file="framework/changelog-master.xml" relativeToChangelogFile="true"/>
     <!-- 演示/测试数据：生产环境不需要时，可注释下一行。 -->
-    <include file="demo/2.0.0/001_demo_init.xml" relativeToChangelogFile="true"/>
+    <include file="demo/changelog-master.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

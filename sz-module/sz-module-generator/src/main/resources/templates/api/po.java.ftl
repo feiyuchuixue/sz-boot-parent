@@ -1,5 +1,20 @@
 package ${poPkg};
 
+<#assign hasLogicDelete = false>
+<#assign hasDeleteTimeColumn = false>
+<#assign hasDeleteByColumn = false>
+<#list columns as field>
+    <#if field.isLogicDel == "1">
+        <#assign hasLogicDelete = true>
+    </#if>
+    <#if field.columnName == "delete_time">
+        <#assign hasDeleteTimeColumn = true>
+    </#if>
+    <#if field.columnName == "delete_id">
+        <#assign hasDeleteByColumn = true>
+    </#if>
+</#list>
+<#assign hasLogicDeleteFill = hasLogicDelete && (hasDeleteTimeColumn || hasDeleteByColumn)>
 <#compress>
 import com.mybatisflex.annotation.*;
 
@@ -10,6 +25,9 @@ import java.io.Serializable;
 import java.io.Serial;
 import com.sz.db.EntityChangeListener;
 import com.sz.db.id.SzIdGenerator;
+<#if hasLogicDeleteFill>
+import com.sz.db.LogicDeleteFill;
+</#if>
 <#list importPackages as pkg>
 import ${pkg};
 </#list>
@@ -25,6 +43,15 @@ import ${pkg};
  * @since ${datetime}
  */
 @Data
+<#if hasLogicDeleteFill>
+    <#if hasDeleteTimeColumn && hasDeleteByColumn>
+@LogicDeleteFill
+    <#elseif hasDeleteTimeColumn>
+@LogicDeleteFill(deleteByColumn = "")
+    <#else>
+@LogicDeleteFill(deleteTimeColumn = "")
+    </#if>
+</#if>
 <#if GeneratorInfo.isAutofill == "1">
 @Table(value = "${tableName}", onInsert = EntityChangeListener.class, onUpdate = EntityChangeListener.class)
 <#else>
