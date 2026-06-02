@@ -3,6 +3,7 @@ package com.sz.generator.core.util;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.core.util.Utils;
 import com.sz.generator.core.GeneratorConstants;
+import com.sz.generator.core.smart.GeneratorColumnSmartRules;
 import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.property.GeneratorProperties;
@@ -68,7 +69,6 @@ public class GeneratorUtils {
 
     public static GeneratorTableColumn initColumnField(TableColumResult column, Long tableId, int i) {
         GeneratorTableColumn tableColumn = new GeneratorTableColumn();
-        String dataType = getDbType(column.getColumnType());
         String columnName = column.getColumnName();
         tableColumn.setTableId(tableId);
         tableColumn.setColumnName(columnName);
@@ -84,31 +84,7 @@ public class GeneratorUtils {
         tableColumn.setSort(i);
         tableColumn.setDictType("");
         setRequiredValue(column, tableColumn);
-        setHtmlAndJavaType(dataType, column.getColumnType(), tableColumn);
-        setColumnAttributes(columnName, tableColumn);
-
-        // 如果是主键并且是int行，将java类型设置为Long
-        if (!isNotPrimaryKey(tableColumn.getIsPk()) && (("int").equals(tableColumn.getColumnType()) || ("bigint").equals(tableColumn.getColumnType()))) {
-            tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
-        }
-        // 将bigint类型映射成long
-        if (("bigint").equals(tableColumn.getColumnType())) {
-            tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
-        }
-        // 【约定】： 使用create_id, update_id, delete_id change更新时，强制类型Long
-        if (("create_id").equals(columnName) || ("update_id").equals(columnName) || ("delete_id").equals(columnName)) {
-            tableColumn.setJavaType(GeneratorConstants.TYPE_LONG);
-        }
-        // 【约定】： 使用del_flag 作为逻辑删除标识字段
-        if ("del_flag".equals(columnName)) {
-            tableColumn.setIsLogicDel(GeneratorConstants.REQUIRE);
-        }
-
-        // 【约定】： 使用attachments 或 url 作为 附件字段，数据库类型json， java 类型使用List<ResourceRef>
-        if ("attachments".equals(columnName) || "url".equals(columnName)) {
-            tableColumn.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-        }
-
+        GeneratorColumnSmartRules.applyImportDefaults(tableColumn);
         if (tableColumn.getHtmlType() == null) {
             tableColumn.setHtmlType("");
         }
@@ -290,19 +266,8 @@ public class GeneratorUtils {
     }
 
     private static void setColumnAttributes(String columnName, GeneratorTableColumn tableColumn) {
-        boolean notPk = isNotPrimaryKey(tableColumn.getIsPk());
-        setInsertAttribute(notPk, columnName, tableColumn);
-        setEditAttribute(notPk, columnName, tableColumn);
-        setListAttribute(notPk, columnName, tableColumn);
-        setQueryAttribute(notPk, columnName, tableColumn);
-        setQueryType(columnName, tableColumn);
-        setAutofillType(columnName, tableColumn);
-        setHtmlType(columnName, tableColumn);
-        setFillOptions(columnName, tableColumn);
-        setFileUploadOptions(columnName, tableColumn);
-        setJoditEditorOptions(columnName, tableColumn);
-        setImportAttribute(notPk, columnName, tableColumn);
-        setExportAttribute(notPk, columnName, tableColumn);
+        tableColumn.setColumnName(columnName);
+        GeneratorColumnSmartRules.applyImportDefaults(tableColumn);
     }
 
     private static void setQueryType(String columnName, GeneratorTableColumn tableColumn) {

@@ -13,6 +13,7 @@ class GeneratorUtilsTest {
     @Test
     void uploadResourceColumnsShouldNotBeEnabledForExcelImportOrExportByDefault() throws Exception {
         GeneratorTableColumn column = new GeneratorTableColumn();
+        column.setColumnType("varchar(512)");
         column.setJavaType("String");
         column.setIsPk("0");
 
@@ -22,7 +23,7 @@ class GeneratorUtilsTest {
 
         assertThat(column.getHtmlType()).isEqualTo(GeneratorConstants.HTML_IMAGE_UPLOAD);
         assertThat(column.getJavaType()).isEqualTo(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-        assertThat(column.getIsImport()).isNull();
-        assertThat(column.getIsExport()).isNull();
+        assertThat(column.getIsImport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(column.getIsExport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
     }
 }

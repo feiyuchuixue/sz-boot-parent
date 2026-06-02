@@ -222,6 +222,22 @@ public class GeneratorDetailVO {
 
         @Schema(description = "字典展示方式（0 唯一标识；1 别名）")
         private String dictShowWay;
+
+        @Schema(description = "字段智能提示，仅用于前端展示，不持久化")
+        private List<SmartHint> smartHints;
+    }
+
+    @Data
+    public static class SmartHint {
+
+        @Schema(description = "提示类型：info/warning/danger")
+        private String type;
+
+        @Schema(description = "提示标签")
+        private String label;
+
+        @Schema(description = "提示内容")
+        private String message;
     }
 
 }

@@ -15,6 +15,7 @@ import com.sz.generator.core.GeneratorConstants;
 import com.sz.generator.core.metadata.GeneratorDbMetadataService;
 import com.sz.generator.core.module.GeneratorBackendModuleScanner;
 import com.sz.generator.core.script.ScriptExportService;
+import com.sz.generator.core.smart.GeneratorColumnSmartRules;
 import com.sz.generator.core.util.BuildTemplateUtils;
 import com.sz.generator.core.util.GeneratorUtils;
 import com.sz.generator.mapper.GeneratorTableMapper;
@@ -215,6 +216,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Set<String> dictTypes = new HashSet<>();
         for (GeneratorDetailVO.Column column : columns) {
             normalizeColumnByHtmlType(column);
+            column.setSmartHints(GeneratorColumnSmartRules.buildSmartHints(column));
             if (column.getDictType() != null && !column.getDictType().isEmpty()) {
                 dictTypes.add(column.getDictType());
             }
@@ -260,95 +262,11 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private static void normalizeColumnByHtmlType(GeneratorTableColumn column) {
-        String htmlType = column.getHtmlType();
-        if ("radio-group".equals(htmlType)) {
-            column.setHtmlType(GeneratorConstants.HTML_RADIO);
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_RADIO.equals(htmlType)) {
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_SELECT.equals(htmlType) || GeneratorConstants.HTML_CHECKBOX.equals(htmlType)) {
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_FILE_UPLOAD.equals(htmlType) || GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-            column.setJavaTypePackage("com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
-            column.setSearchType("input");
-            return;
-        }
-        if (GeneratorConstants.HTML_DATE.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCAL_DATE);
-            column.setJavaTypePackage("java.time.LocalDate");
-            column.setSearchType(GeneratorConstants.HTML_DATE_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-            return;
-        }
-        if (GeneratorConstants.HTML_TIME.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCALTIME);
-            column.setJavaTypePackage("java.time.LocalTime");
-            column.setSearchType(GeneratorConstants.HTML_TIME_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-            return;
-        }
-        if (GeneratorConstants.HTML_DATETIME.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCAL_DATETIME);
-            column.setJavaTypePackage("java.time.LocalDateTime");
-            column.setSearchType(GeneratorConstants.HTML_DATE_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-        }
+        GeneratorColumnSmartRules.normalizeByHtmlType(column);
     }
 
     private static void normalizeColumnByHtmlType(GeneratorDetailVO.Column column) {
-        String htmlType = column.getHtmlType();
-        if ("radio-group".equals(htmlType)) {
-            column.setHtmlType(GeneratorConstants.HTML_RADIO);
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_RADIO.equals(htmlType)) {
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_SELECT.equals(htmlType) || GeneratorConstants.HTML_CHECKBOX.equals(htmlType)) {
-            column.setSearchType("select");
-            defaultDictShowWay(column);
-            return;
-        }
-        if (GeneratorConstants.HTML_FILE_UPLOAD.equals(htmlType) || GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-            column.setJavaTypePackage("com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
-            column.setSearchType("input");
-            return;
-        }
-        if (GeneratorConstants.HTML_DATE.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCAL_DATE);
-            column.setJavaTypePackage("java.time.LocalDate");
-            column.setSearchType(GeneratorConstants.HTML_DATE_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-            return;
-        }
-        if (GeneratorConstants.HTML_TIME.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCALTIME);
-            column.setJavaTypePackage("java.time.LocalTime");
-            column.setSearchType(GeneratorConstants.HTML_TIME_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-            return;
-        }
-        if (GeneratorConstants.HTML_DATETIME.equals(htmlType)) {
-            column.setJavaType(GeneratorConstants.TYPE_LOCAL_DATETIME);
-            column.setJavaTypePackage("java.time.LocalDateTime");
-            column.setSearchType(GeneratorConstants.HTML_DATE_PICKER);
-            column.setQueryType(GeneratorConstants.QUERY_BETWEEN);
-        }
+        GeneratorColumnSmartRules.normalizeByHtmlType(column);
     }
 
     private static void validateDictionaryDisplayColumn(GeneratorTableColumn column) {
@@ -361,22 +279,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private static boolean isDictionaryDisplayHtmlType(String htmlType) {
-        return GeneratorConstants.HTML_SELECT.equals(htmlType) || GeneratorConstants.HTML_RADIO.equals(htmlType)
-                || GeneratorConstants.HTML_CHECKBOX.equals(htmlType) || "radio-group".equals(htmlType);
-    }
-
-    private static void defaultDictShowWay(GeneratorTableColumn column) {
-        if (column.getDictType() != null && !column.getDictType().isBlank()
-                && (column.getDictShowWay() == null || column.getDictShowWay().isBlank())) {
-            column.setDictShowWay("0");
-        }
-    }
-
-    private static void defaultDictShowWay(GeneratorDetailVO.Column column) {
-        if (column.getDictType() != null && !column.getDictType().isBlank()
-                && (column.getDictShowWay() == null || column.getDictShowWay().isBlank())) {
-            column.setDictShowWay("0");
-        }
+        return GeneratorColumnSmartRules.isDictionaryDisplayHtmlType(htmlType);
     }
 
     @Override
