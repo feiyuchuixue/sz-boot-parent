@@ -88,6 +88,14 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private static final String DEFAULT_CHANGELOG_VERSION = "unreleased";
 
+    private static final String DEFAULT_PROJECT_NAME = "sz-boot-parent";
+
+    private static final String DEFAULT_BACKEND_MODULE_NAME = "sz-module-admin";
+
+    private static final String DEFAULT_BACKEND_MODULE_CODE = "admin";
+
+    private static final String DEFAULT_PACKAGE_NAME = "com.sz.admin";
+
     private static final Pattern JAVA_PACKAGE_PATTERN = Pattern.compile("(?m)^\\s*package\\s+([A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)\\s*;");
 
     private static final Pattern SPRING_BOOT_SCAN_BASE_PACKAGES_PATTERN = Pattern
@@ -132,18 +140,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorTableColumn generatorTableColumn;
         List<GeneratorTableColumn> tableColumns = new ArrayList<>();
 
-        String pathApi = "";
-        String pathWeb = "";
-        if (SpringApplicationContextUtils.getInstance().isLocalEnv()) {
-            String moduleName = generatorProperties.getModuleName();
-            String serviceName = generatorProperties.getServiceName();
-            Path projectRoot = resolveProjectRoot();
-            String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
-            String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
-            pathApi = configuredApiPath == null || configuredApiPath.isBlank() ? resolveDefaultBackendModulePath(projectRoot, moduleName, serviceName)
-                    : configuredApiPath;
-            pathWeb = configuredWebPath == null ? "" : configuredWebPath;
-        }
+        Path projectRoot = resolveProjectRoot();
+        String pathApi = resolveInitialApiPath(projectRoot);
+        String pathWeb = resolveInitialWebPath(projectRoot);
 
         boolean enableIgnoreTablePrefix = generatorProperties.getGlobal().getIgnoreTablePrefix().getEnabled();
         String[] prefixes = generatorProperties.getGlobal().getIgnoreTablePrefix().getPrefixes();
@@ -210,6 +209,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         List<GeneratorDetailVO.Column> columns = BeanCopyUtils.copyList(tableColumns, GeneratorDetailVO.Column.class);
         GeneratorDetailVO.BaseInfo baseInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.BaseInfo.class);
         GeneratorDetailVO.GeneratorInfo generatorInfo = BeanCopyUtils.copy(one, GeneratorDetailVO.GeneratorInfo.class);
+        applyDefaultModuleInfo(generatorInfo);
         detailVO.setBaseInfo(baseInfo);
         detailVO.setGeneratorInfo(generatorInfo);
         detailVO.setColumns(columns);
@@ -512,11 +512,18 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     public GeneratorPathOptionsVO pathOptions() {
         GeneratorPathOptionsVO vo = new GeneratorPathOptionsVO();
         Path projectRoot = resolveProjectRoot();
-        String defaultApiPath = resolveDefaultBackendModulePath(projectRoot, generatorProperties.getModuleName(), generatorProperties.getServiceName());
+        List<GeneratorBackendModuleOptionVO> backendModuleOptions = new ArrayList<>(backendModuleScanner.scan(projectRoot));
+        if (backendModuleOptions.isEmpty()) {
+            backendModuleOptions.add(defaultBackendModuleOption(projectRoot));
+        }
+        String defaultApiPath = backendModuleOptions.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended()))
+                .findFirst()
+                .map(GeneratorBackendModuleOptionVO::getPath)
+                .orElseGet(() -> firstBackendModulePath(backendModuleOptions));
+        String defaultWebPath = resolveDefaultWebPath(projectRoot);
         String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
         String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
         Path siblingWebPath = projectRoot.getParent() == null ? null : projectRoot.getParent().resolve("sz-admin").normalize();
-        List<GeneratorBackendModuleOptionVO> backendModuleOptions = backendModuleScanner.scan(projectRoot);
 
         for (GeneratorBackendModuleOptionVO option : backendModuleOptions) {
             addPathOption(vo.getApiOptions(), option.getModuleName() + moduleStatusLabel(option), option.getPath());
@@ -529,6 +536,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (siblingWebPath != null) {
             addPathOption(vo.getWebOptions(), "同级 sz-admin 前端路径", siblingWebPath.toString());
         }
+        addPathOption(vo.getWebOptions(), "默认前端路径", defaultWebPath);
 
         vo.setBackendModuleOptions(backendModuleOptions);
         vo.setDefaultApiPath(firstPath(vo.getApiOptions()));
@@ -751,7 +759,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Path normalized = fullPath.toAbsolutePath().normalize();
         Path projectRoot = resolveProjectRoot().toAbsolutePath().normalize();
         if (normalized.startsWith(projectRoot)) {
-            return Paths.get(projectRoot.getFileName().toString(), projectRoot.relativize(normalized).toString()).toString();
+            String projectName = projectRoot.getFileName() == null ? DEFAULT_PROJECT_NAME : projectRoot.getFileName().toString();
+            return Paths.get(projectName, projectRoot.relativize(normalized).toString()).toString();
         }
         Path webRoot = projectRoot.getParent() == null ? null : projectRoot.getParent().resolve("sz-admin").toAbsolutePath().normalize();
         if (webRoot != null && normalized.startsWith(webRoot)) {
@@ -871,10 +880,39 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return options.isEmpty() ? "" : options.get(0).getPath();
     }
 
+    private static String firstBackendModulePath(List<GeneratorBackendModuleOptionVO> options) {
+        return options.isEmpty() ? "" : options.getFirst().getPath();
+    }
+
+    private String resolveInitialApiPath(Path projectRoot) {
+        String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
+        if (hasText(configuredApiPath)) {
+            return configuredApiPath;
+        }
+        if (SpringApplicationContextUtils.getInstance().isLocalEnv()) {
+            return resolveDefaultBackendModulePath(projectRoot, generatorProperties.getModuleName(), generatorProperties.getServiceName());
+        }
+        return defaultBackendModuleOption(projectRoot).getPath();
+    }
+
+    private String resolveInitialWebPath(Path projectRoot) {
+        String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
+        return hasText(configuredWebPath) ? configuredWebPath : resolveDefaultWebPath(projectRoot);
+    }
+
+    private String resolveDefaultWebPath(Path projectRoot) {
+        String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
+        if (hasText(configuredWebPath)) {
+            return configuredWebPath;
+        }
+        Path siblingWebPath = projectRoot.getParent() == null ? projectRoot.resolve("sz-admin") : projectRoot.getParent().resolve("sz-admin");
+        return siblingWebPath.normalize().toString();
+    }
+
     private String resolveDefaultBackendModulePath(Path projectRoot, String moduleName, String serviceName) {
         List<GeneratorBackendModuleOptionVO> options = backendModuleScanner.scan(projectRoot);
         return options.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended())).findFirst().map(GeneratorBackendModuleOptionVO::getPath)
-                .orElse(projectRoot.resolve(moduleName).resolve(serviceName).normalize().toString());
+                .orElseGet(() -> defaultBackendModuleOption(projectRoot).getPath());
     }
 
     private void applyDefaultModuleInfo(GeneratorTable generatorTable) {
@@ -885,15 +923,94 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (selected.isEmpty()) {
             selected = options.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended())).findFirst();
         }
-        selected.ifPresent(option -> {
-            generatorTable.setBackendTargetType("existing");
-            generatorTable.setBackendModuleName(option.getModuleName());
-            generatorTable.setPackageName(option.getPackageName());
-            generatorTable.setApiPrefixModule(option.getApiPrefixModule());
-            generatorTable.setApiPrefix(option.getApiPrefix());
-            generatorTable.setFrontendLayout("module");
-            generatorTable.setFrontendModuleName(option.getModuleCode());
-        });
+        GeneratorBackendModuleOptionVO option = selected.orElseGet(() -> defaultBackendModuleOption(projectRoot));
+        generatorTable.setBackendTargetType("existing");
+        generatorTable.setBackendModuleName(option.getModuleName());
+        generatorTable.setPackageName(option.getPackageName());
+        generatorTable.setApiPrefixModule(option.getApiPrefixModule());
+        generatorTable.setApiPrefix(option.getApiPrefix());
+        generatorTable.setFrontendLayout("module");
+        generatorTable.setFrontendModuleName(option.getModuleCode());
+        if (!hasText(generatorTable.getPathApi())) {
+            generatorTable.setPathApi(option.getPath());
+        }
+        if (!hasText(generatorTable.getPathWeb())) {
+            generatorTable.setPathWeb(resolveDefaultWebPath(projectRoot));
+        }
+    }
+
+    private void applyDefaultModuleInfo(GeneratorDetailVO.GeneratorInfo info) {
+        Path projectRoot = resolveProjectRoot();
+        Optional<GeneratorBackendModuleOptionVO> selected = backendModuleScanner.findByModuleName(projectRoot, info.getBackendModuleName());
+        if (selected.isEmpty()) {
+            selected = backendModuleScanner.scan(projectRoot).stream()
+                    .filter(option -> hasText(info.getPathApi())
+                            && Paths.get(info.getPathApi()).normalize().toString().equals(Paths.get(option.getPath()).normalize().toString()))
+                    .findFirst();
+        }
+        GeneratorBackendModuleOptionVO option = selected.orElseGet(() -> defaultBackendModuleOption(projectRoot));
+        if (!hasText(info.getBackendTargetType())) {
+            info.setBackendTargetType("existing");
+        }
+        if (!hasText(info.getBackendModuleName())) {
+            info.setBackendModuleName(option.getModuleName());
+        }
+        if (!hasText(info.getPackageName())) {
+            info.setPackageName(option.getPackageName());
+        }
+        if (!hasText(info.getApiPrefixModule())) {
+            info.setApiPrefixModule(option.getApiPrefixModule());
+        }
+        if (!hasText(info.getApiPrefix())) {
+            info.setApiPrefix(option.getApiPrefix());
+        }
+        if (!hasText(info.getFrontendLayout())) {
+            info.setFrontendLayout("module");
+        }
+        if (!hasText(info.getFrontendModuleName())) {
+            info.setFrontendModuleName(option.getModuleCode());
+        }
+        if (!hasText(info.getPathApi())) {
+            info.setPathApi(option.getPath());
+        }
+        if (!hasText(info.getPathWeb())) {
+            info.setPathWeb(resolveDefaultWebPath(projectRoot));
+        }
+    }
+
+    private GeneratorBackendModuleOptionVO defaultBackendModuleOption(Path projectRoot) {
+        String moduleName = hasText(generatorProperties.getServiceName()) ? generatorProperties.getServiceName() : DEFAULT_BACKEND_MODULE_NAME;
+        String moduleCode = normalizeModuleCode(moduleName);
+        if (!hasText(moduleCode)) {
+            moduleCode = DEFAULT_BACKEND_MODULE_CODE;
+        }
+        String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
+        GeneratorBackendModuleOptionVO option = new GeneratorBackendModuleOptionVO();
+        option.setModuleName(moduleName);
+        option.setModuleCode(moduleCode);
+        option.setPath(hasText(configuredApiPath) ? Paths.get(configuredApiPath).normalize().toString()
+                : projectRoot.resolve(generatorProperties.getModuleName()).resolve(moduleName).normalize().toString());
+        option.setPackageName(resolveDefaultPackageName());
+        option.setApiPrefixModule(moduleCode);
+        option.setApiPrefix(resolveDefaultApiPrefix(moduleCode));
+        option.setStatus(GeneratorBackendModuleScanner.STATUS_READY);
+        option.setRecommended(true);
+        return option;
+    }
+
+    private String resolveDefaultPackageName() {
+        if (generatorProperties.getGlobal() != null && hasText(generatorProperties.getGlobal().getPackages())) {
+            return generatorProperties.getGlobal().getPackages();
+        }
+        return DEFAULT_PACKAGE_NAME;
+    }
+
+    private String resolveDefaultApiPrefix(String moduleCode) {
+        String configured = environment == null ? null : environment.getProperty("sz.api-prefix.modules." + moduleCode + ".prefix");
+        if (hasText(configured)) {
+            return configured.startsWith("/") ? configured : "/" + configured;
+        }
+        return "/" + moduleCode;
     }
 
     private void validateBackendModule(GeneratorDetailVO detailVO, GenCheckedInfoVO checkedInfo) {
@@ -1425,7 +1542,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 : existingOption.map(GeneratorBackendModuleOptionVO::getModuleCode).orElse(normalizeModuleCode(moduleName));
         if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getApiPrefixModule());
         if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getFrontendModuleName());
-        Path modulePath = info.getPathApi() == null || info.getPathApi().isBlank() ? Path.of("") : Paths.get(info.getPathApi()).normalize();
+        Path modulePath = !newTarget && existingOption.isPresent() ? Paths.get(existingOption.get().getPath()).normalize()
+                : info.getPathApi() == null || info.getPathApi().isBlank() ? Path.of("") : Paths.get(info.getPathApi()).normalize();
         return new BackendModuleTarget(moduleName, moduleCode, modulePath, DEFAULT_CHANGELOG_VERSION);
     }
 
@@ -1590,6 +1708,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private static String normalizeModuleName(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private record BackendModuleTarget(String moduleName, String moduleCode, Path modulePath, String changelogDirectory) {

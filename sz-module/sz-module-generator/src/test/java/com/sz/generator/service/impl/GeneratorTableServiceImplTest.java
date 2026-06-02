@@ -3,12 +3,15 @@ package com.sz.generator.service.impl;
 import cn.hutool.core.lang.Snowflake;
 import com.sz.db.id.SzIdUtil;
 import com.sz.generator.core.GeneratorConstants;
+import com.sz.generator.core.module.GeneratorBackendModuleScanner;
 import com.sz.generator.mapper.GeneratorTableMapper;
 import com.sz.generator.pojo.dto.MenuCreateDTO;
+import com.sz.generator.pojo.po.GeneratorTable;
 import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.property.GeneratorProperties;
 import com.sz.generator.pojo.result.SysMenuResult;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
+import com.sz.generator.pojo.vo.GeneratorPathOptionsVO;
 import com.sz.generator.pojo.vo.GeneratorPreviewVO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -222,6 +225,102 @@ class GeneratorTableServiceImplTest {
         Optional<String> conflict = (Optional<String>) method.invoke(service, tempDir, "sz-module-business", "business", modulePath);
 
         assertThat(conflict).isEmpty();
+    }
+
+    @Test
+    void treeRelativePathShouldHandleRootProjectDirectory() throws Exception {
+        Path root = tempDir.toAbsolutePath().getRoot();
+        Path fullPath = root.resolve("sz-module").resolve("sz-module-admin").resolve("src/main/resources/db/changelog/admin/unreleased")
+                .resolve("001_teacher_statistics.xml");
+        String originalUserDir = System.getProperty("user.dir");
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, new GeneratorProperties(), null, null, null, null);
+
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("toTreeRelativePath", Path.class, String.class, String.class);
+        method.setAccessible(true);
+        try {
+            System.setProperty("user.dir", root.toString());
+            String relativePath = (String) method.invoke(service, fullPath, "001_teacher_statistics.xml", fullPath.toString());
+
+            assertThat(relativePath.replace('\\', '/')).isEqualTo(
+                    "sz-boot-parent/sz-module/sz-module-admin/src/main/resources/db/changelog/admin/unreleased/001_teacher_statistics.xml");
+        } finally {
+            System.setProperty("user.dir", originalUserDir);
+        }
+    }
+
+    @Test
+    void existingBackendModuleTargetShouldPreferScannedModulePath() throws Exception {
+        Path moduleRoot = tempDir.resolve("sz-module");
+        Path modulePath = moduleRoot.resolve("sz-module-admin");
+        Files.createDirectories(modulePath);
+        Files.writeString(moduleRoot.resolve("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+        Files.writeString(modulePath.resolve("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+        String originalUserDir = System.getProperty("user.dir");
+        GeneratorProperties properties = new GeneratorProperties();
+        GeneratorBackendModuleScanner scanner = new GeneratorBackendModuleScanner(properties);
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, scanner, null);
+        GeneratorDetailVO.GeneratorInfo info = new GeneratorDetailVO.GeneratorInfo();
+        info.setBackendTargetType("existing");
+        info.setBackendModuleName("sz-module-admin");
+        info.setPathApi("E:\\dev\\Code\\Github\\sz-boot-parent\\sz-service\\sz-service-admin");
+
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("resolveBackendModuleTarget", GeneratorDetailVO.GeneratorInfo.class);
+        method.setAccessible(true);
+        try {
+            System.setProperty("user.dir", tempDir.toString());
+            Object target = method.invoke(service, info);
+            Method modulePathMethod = target.getClass().getDeclaredMethod("modulePath");
+            modulePathMethod.setAccessible(true);
+
+            assertThat((Path) modulePathMethod.invoke(target)).isEqualTo(modulePath.normalize());
+        } finally {
+            System.setProperty("user.dir", originalUserDir);
+        }
+    }
+
+    @Test
+    void pathOptionsShouldReturnDefaultAdminModuleWhenSourceTreeIsUnavailable() {
+        String originalUserDir = System.getProperty("user.dir");
+        GeneratorProperties properties = new GeneratorProperties();
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties), null);
+
+        try {
+            System.setProperty("user.dir", tempDir.toString());
+            GeneratorPathOptionsVO options = service.pathOptions();
+
+            assertThat(options.getBackendModuleOptions()).hasSize(1);
+            assertThat(options.getBackendModuleOptions().getFirst().getModuleName()).isEqualTo("sz-module-admin");
+            assertThat(options.getBackendModuleOptions().getFirst().getApiPrefixModule()).isEqualTo("admin");
+            assertThat(options.getDefaultApiPath()).contains("sz-module-admin");
+            assertThat(options.getDefaultWebPath()).contains("sz-admin");
+        } finally {
+            System.setProperty("user.dir", originalUserDir);
+        }
+    }
+
+    @Test
+    void defaultModuleInfoShouldBackfillImportedTableWhenSourceTreeIsUnavailable() throws Exception {
+        String originalUserDir = System.getProperty("user.dir");
+        GeneratorProperties properties = new GeneratorProperties();
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties), null);
+        GeneratorTable table = new GeneratorTable();
+
+        Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("applyDefaultModuleInfo", GeneratorTable.class);
+        method.setAccessible(true);
+        try {
+            System.setProperty("user.dir", tempDir.toString());
+            method.invoke(service, table);
+
+            assertThat(table.getBackendTargetType()).isEqualTo("existing");
+            assertThat(table.getBackendModuleName()).isEqualTo("sz-module-admin");
+            assertThat(table.getApiPrefixModule()).isEqualTo("admin");
+            assertThat(table.getApiPrefix()).isEqualTo("/admin");
+            assertThat(table.getFrontendModuleName()).isEqualTo("admin");
+            assertThat(table.getPathApi()).contains("sz-module-admin");
+            assertThat(table.getPathWeb()).contains("sz-admin");
+        } finally {
+            System.setProperty("user.dir", originalUserDir);
+        }
     }
 
     @Test
