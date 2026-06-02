@@ -11,6 +11,9 @@ import com.sz.excel.annotation.DictFormat;
 import com.sz.excel.annotation.ExcelEnumFormat;
 import com.sz.excel.convert.CustomEnumStringConvert;
 import com.sz.excel.convert.CustomIntegerStringConvert;
+import com.sz.excel.convert.CustomLocalDateStringConvert;
+import com.sz.excel.convert.CustomLocalDateTimeStringConvert;
+import com.sz.excel.convert.CustomLocalTimeStringConvert;
 import com.sz.excel.convert.CustomLongStringConvert;
 import com.sz.excel.convert.CustomStringStringConvert;
 import com.sz.excel.core.*;
@@ -86,7 +89,9 @@ public class ExcelUtils {
         DefaultExcelListener<T> listener = listenerFactory.createListener(validateHeader, clazz);
         InputStream normalizedInputStream = normalizeImportHeader(is);
         var readerBuilder = FastExcelFactory.read(normalizedInputStream, clazz, listener).registerConverter(new CustomStringStringConvert(dictmap))
-                .registerConverter(new CustomIntegerStringConvert(dictmap)).registerConverter(new CustomLongStringConvert(dictmap));
+                .registerConverter(new CustomIntegerStringConvert(dictmap)).registerConverter(new CustomLongStringConvert(dictmap))
+                .registerConverter(new CustomLocalDateStringConvert()).registerConverter(new CustomLocalDateTimeStringConvert())
+                .registerConverter(new CustomLocalTimeStringConvert());
         registerEnumConverters(readerBuilder, clazz);
         readerBuilder.sheet().doRead();
         return listener.getExcelResult();
@@ -104,7 +109,9 @@ public class ExcelUtils {
                 .registerWriteHandler(new DefaultCellStyleStrategy(Arrays.asList(0, 1), new WriteCellStyle(), new WriteCellStyle()))
                 // 自定义cover处理器
                 .registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
-                .registerConverter(new CustomLongStringConvert(dictmap)).excludeColumnFieldNames(excludedColumnFieldNames).sheet(sheetName);
+                .registerConverter(new CustomLongStringConvert(dictmap)).registerConverter(new CustomLocalDateStringConvert())
+                .registerConverter(new CustomLocalDateTimeStringConvert()).registerConverter(new CustomLocalTimeStringConvert())
+                .excludeColumnFieldNames(excludedColumnFieldNames).sheet(sheetName);
         registerEnumConverters(builder, clazz);
         // 添加下拉框操作
         builder.registerWriteHandler(new ExcelDownHandler());
@@ -123,7 +130,9 @@ public class ExcelUtils {
                 .registerWriteHandler(new DefaultCellStyleStrategy(Arrays.asList(0, 1), new WriteCellStyle(), new WriteCellStyle()))
                 // 自定义cover处理器
                 .registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
-                .registerConverter(new CustomLongStringConvert(dictmap)).excludeColumnFieldNames(excludedColumnFieldNames).sheet(sheetName);
+                .registerConverter(new CustomLongStringConvert(dictmap)).registerConverter(new CustomLocalDateStringConvert())
+                .registerConverter(new CustomLocalDateTimeStringConvert()).registerConverter(new CustomLocalTimeStringConvert())
+                .excludeColumnFieldNames(excludedColumnFieldNames).sheet(sheetName);
         registerEnumConverters(builder, clazz);
         if (isMerge) {
             builder.registerWriteHandler(new CellMergeStrategy(safeRows, 1));
@@ -235,7 +244,8 @@ public class ExcelUtils {
                 .registerWriteHandler(new TemplateHeaderStyleStrategy())
                 // 字典转换器（下拉框数据来源）
                 .registerConverter(new CustomStringStringConvert(dictmap)).registerConverter(new CustomIntegerStringConvert(dictmap))
-                .registerConverter(new CustomLongStringConvert(dictmap)).sheet(sheetName);
+                .registerConverter(new CustomLongStringConvert(dictmap)).registerConverter(new CustomLocalDateStringConvert())
+                .registerConverter(new CustomLocalDateTimeStringConvert()).registerConverter(new CustomLocalTimeStringConvert()).sheet(sheetName);
         registerEnumConverters(builder, clazz);
         // 下拉框
         builder.registerWriteHandler(new ExcelDownHandler());
