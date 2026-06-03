@@ -61,7 +61,8 @@ class OperationAuditAspectTest {
         DemoController controller = new DemoController();
         DemoDTO dto = new DemoDTO(7L, "abc");
 
-        Object result = aspect.around(joinPoint(DemoController.class.getMethod("create", DemoDTO.class), controller, new Object[]{dto}, ApiResult.success("ok")));
+        Object result = aspect
+                .around(joinPoint(DemoController.class.getMethod("create", DemoDTO.class), controller, new Object[]{dto}, ApiResult.success("ok")));
 
         assertThat(result).isInstanceOf(ApiResult.class);
         assertThat(sink.event).isNotNull();
@@ -110,8 +111,8 @@ class OperationAuditAspectTest {
         setRequest("GET", "/api/demo/7", "127.0.0.1");
         CapturingSink sink = new CapturingSink();
 
-        aspect(new AuditProperties(), sink).around(joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0],
-                ApiResult.success(new DemoDTO(8L, "secret"))));
+        aspect(new AuditProperties(), sink).around(
+                joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0], ApiResult.success(new DemoDTO(8L, "secret"))));
 
         assertThat(sink.publishCount).hasValue(0);
     }
@@ -139,8 +140,8 @@ class OperationAuditAspectTest {
         properties.setSlowThresholdMs(0);
         CapturingSink sink = new CapturingSink();
 
-        aspect(properties, sink).around(joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0],
-                ApiResult.success(new DemoDTO(8L, "secret"))));
+        aspect(properties, sink).around(
+                joinPoint(DemoController.class.getMethod("plainGet"), new DemoController(), new Object[0], ApiResult.success(new DemoDTO(8L, "secret"))));
 
         assertThat(sink.event).isNotNull();
         assertThat(sink.event.getEventType()).isEqualTo(AuditEventType.OPERATION_SUCCESS);
@@ -204,8 +205,8 @@ class OperationAuditAspectTest {
                     case "getDeclaringTypeName" -> method.getDeclaringClass().getName();
                     default -> defaultValue(invokedMethod.getReturnType());
                 });
-        return (ProceedingJoinPoint) Proxy.newProxyInstance(OperationAuditAspectTest.class.getClassLoader(),
-                new Class<?>[]{ProceedingJoinPoint.class}, (proxy, invokedMethod, invokedArgs) -> switch (invokedMethod.getName()) {
+        return (ProceedingJoinPoint) Proxy.newProxyInstance(OperationAuditAspectTest.class.getClassLoader(), new Class<?>[]{ProceedingJoinPoint.class},
+                (proxy, invokedMethod, invokedArgs) -> switch (invokedMethod.getName()) {
                     case "getSignature" -> signature;
                     case "getTarget", "getThis" -> target;
                     case "getArgs" -> args;

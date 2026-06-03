@@ -149,7 +149,8 @@ class GeneratorTableServiceImplTest {
 
     @Test
     void moduleConfigurationsShouldUseRootPackageForApiPrefixAndMapperSubPackagesForMapperScan() throws Exception {
-        Method apiMethod = GeneratorTableServiceImpl.class.getDeclaredMethod("buildApiPrefixConfiguration", String.class, String.class, String.class, String.class);
+        Method apiMethod = GeneratorTableServiceImpl.class.getDeclaredMethod("buildApiPrefixConfiguration", String.class, String.class, String.class,
+                String.class);
         apiMethod.setAccessible(true);
         Method mapperMethod = GeneratorTableServiceImpl.class.getDeclaredMethod("buildMapperScanConfiguration", String.class, String.class);
         mapperMethod.setAccessible(true);
@@ -241,8 +242,8 @@ class GeneratorTableServiceImplTest {
             System.setProperty("user.dir", root.toString());
             String relativePath = (String) method.invoke(service, fullPath, "001_teacher_statistics.xml", fullPath.toString());
 
-            assertThat(relativePath.replace('\\', '/')).isEqualTo(
-                    "sz-boot-parent/sz-module/sz-module-admin/src/main/resources/db/changelog/admin/unreleased/001_teacher_statistics.xml");
+            assertThat(relativePath.replace('\\', '/'))
+                    .isEqualTo("sz-boot-parent/sz-module/sz-module-admin/src/main/resources/db/changelog/admin/unreleased/001_teacher_statistics.xml");
         } finally {
             System.setProperty("user.dir", originalUserDir);
         }
@@ -282,7 +283,8 @@ class GeneratorTableServiceImplTest {
     void pathOptionsShouldReturnDefaultAdminModuleWhenSourceTreeIsUnavailable() {
         String originalUserDir = System.getProperty("user.dir");
         GeneratorProperties properties = new GeneratorProperties();
-        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties), null);
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties),
+                null);
 
         try {
             System.setProperty("user.dir", tempDir.toString());
@@ -302,7 +304,8 @@ class GeneratorTableServiceImplTest {
     void defaultModuleInfoShouldBackfillImportedTableWhenSourceTreeIsUnavailable() throws Exception {
         String originalUserDir = System.getProperty("user.dir");
         GeneratorProperties properties = new GeneratorProperties();
-        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties), null);
+        GeneratorTableServiceImpl service = new GeneratorTableServiceImpl(null, null, properties, null, null, new GeneratorBackendModuleScanner(properties),
+                null);
         GeneratorTable table = new GeneratorTable();
 
         Method method = GeneratorTableServiceImpl.class.getDeclaredMethod("applyDefaultModuleInfo", GeneratorTable.class);
@@ -521,14 +524,9 @@ class GeneratorTableServiceImplTest {
     }
 
     private static Map<String, Object> generatorModel() {
-        return Map.of(
-                "indexDefineOptionsName", "TestGenBusinessOrderView",
-                "listPermission", "test.gen.business.order.query",
-                "createPermission", "test.gen.business.order.create",
-                "updatePermission", "test.gen.business.order.update",
-                "removePermission", "test.gen.business.order.remove",
-                "importPermission", "test.gen.business.order.import",
-                "exportPermission", "test.gen.business.order.export");
+        return Map.of("indexDefineOptionsName", "TestGenBusinessOrderView", "listPermission", "test.gen.business.order.query", "createPermission",
+                "test.gen.business.order.create", "updatePermission", "test.gen.business.order.update", "removePermission", "test.gen.business.order.remove",
+                "importPermission", "test.gen.business.order.import", "exportPermission", "test.gen.business.order.export");
     }
 
     private static class RecordingGeneratorTableMapper implements InvocationHandler {
@@ -542,7 +540,7 @@ class GeneratorTableServiceImplTest {
         }
 
         private GeneratorTableMapper proxy() {
-            return (GeneratorTableMapper) Proxy.newProxyInstance(GeneratorTableMapper.class.getClassLoader(), new Class<?>[] {GeneratorTableMapper.class}, this);
+            return (GeneratorTableMapper) Proxy.newProxyInstance(GeneratorTableMapper.class.getClassLoader(), new Class<?>[]{GeneratorTableMapper.class}, this);
         }
 
         @Override

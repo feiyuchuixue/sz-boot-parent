@@ -2,7 +2,6 @@ package com.sz.audit.service.impl;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import com.sz.audit.mapper.SysOperationLogDetailMapper;
-import com.sz.audit.mapper.SysOperationLogMapper;
 import com.sz.audit.pojo.dto.SysOperationLogListDTO;
 import com.sz.audit.pojo.po.SysOperationLog;
 import com.sz.audit.pojo.po.SysOperationLogDetail;
@@ -25,10 +24,10 @@ class SysOperationLogServiceImplTest {
         CapturingDetailMapper detailMapper = new CapturingDetailMapper();
         TestableService service = new TestableService(detailMapper.proxy(), new AuditProperties());
         LocalDateTime occurredAt = LocalDateTime.of(2026, 5, 28, 10, 0);
-        AuditEvent event = AuditEvent.builder().eventId("event-1").traceId("trace-1").userId("1001").userName("alice").moduleName("系统管理")
-                .operationName("新增用户").operationType("CREATE").permissionCode("sys.user.create_btn").requestMethod("POST").requestUri("/sys-user")
-                .businessId("7").ipAddress("127.0.0.1").occurredAt(occurredAt).costMs(120L).slow(false).status("SUCCESS").responseCode("0000")
-                .responseMessage("SUCCESS").errorType("").errorMessage("").build();
+        AuditEvent event = AuditEvent.builder().eventId("event-1").traceId("trace-1").userId("1001").userName("alice").moduleName("系统管理").operationName("新增用户")
+                .operationType("CREATE").permissionCode("sys.user.create_btn").requestMethod("POST").requestUri("/sys-user").businessId("7")
+                .ipAddress("127.0.0.1").occurredAt(occurredAt).costMs(120L).slow(false).status("SUCCESS").responseCode("0000").responseMessage("SUCCESS")
+                .errorType("").errorMessage("").build();
 
         Long id = service.saveMainLog(event);
 

@@ -59,12 +59,9 @@ public class GeneratorBackendModuleScanner {
 
         List<GeneratorBackendModuleOptionVO> options = new ArrayList<>();
         try (Stream<Path> stream = Files.list(moduleRoot)) {
-            stream.filter(Files::isDirectory)
-                    .filter(path -> isGeneratableModule(path.getFileName().toString()))
-                    .filter(path -> Files.isRegularFile(path.resolve("pom.xml")))
-                    .sorted(Comparator.comparing(path -> path.getFileName().toString()))
-                    .map(path -> buildOption(projectRoot, path, rootPom, modulePom, servicePom, serviceChangelog, serviceApplication))
-                    .forEach(options::add);
+            stream.filter(Files::isDirectory).filter(path -> isGeneratableModule(path.getFileName().toString()))
+                    .filter(path -> Files.isRegularFile(path.resolve("pom.xml"))).sorted(Comparator.comparing(path -> path.getFileName().toString()))
+                    .map(path -> buildOption(projectRoot, path, rootPom, modulePom, servicePom, serviceChangelog, serviceApplication)).forEach(options::add);
         } catch (IOException ignored) {
             return List.of();
         }
@@ -245,7 +242,8 @@ public class GeneratorBackendModuleScanner {
     }
 
     private static String normalizeModuleCode(String moduleCode) {
-        return moduleCode == null || moduleCode.isBlank() ? "demo"
+        return moduleCode == null || moduleCode.isBlank()
+                ? "demo"
                 : moduleCode.trim().replaceFirst("^sz-module-", "").replace("_", "-").toLowerCase(Locale.ROOT);
     }
 
@@ -270,11 +268,8 @@ public class GeneratorBackendModuleScanner {
             return defaultService;
         }
         try (Stream<Path> stream = Files.list(serviceParent)) {
-            return stream.filter(Files::isDirectory)
-                    .filter(path -> Files.isRegularFile(path.resolve("pom.xml")))
-                    .sorted(Comparator.comparing(path -> path.getFileName().toString()))
-                    .findFirst()
-                    .orElse(defaultService);
+            return stream.filter(Files::isDirectory).filter(path -> Files.isRegularFile(path.resolve("pom.xml")))
+                    .sorted(Comparator.comparing(path -> path.getFileName().toString())).findFirst().orElse(defaultService);
         } catch (IOException ignored) {
             return defaultService;
         }

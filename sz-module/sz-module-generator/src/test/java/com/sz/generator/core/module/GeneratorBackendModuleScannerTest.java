@@ -90,8 +90,7 @@ class GeneratorBackendModuleScannerTest {
 
         List<GeneratorBackendModuleOptionVO> options = scanner().scan(projectRoot);
 
-        assertThat(options).extracting(GeneratorBackendModuleOptionVO::getModuleName)
-                .containsExactly("sz-module-audit", "sz-module-demo")
+        assertThat(options).extracting(GeneratorBackendModuleOptionVO::getModuleName).containsExactly("sz-module-audit", "sz-module-demo")
                 .doesNotContain("sz-module-common", "sz-module-generator");
 
         GeneratorBackendModuleOptionVO audit = find(options, "sz-module-audit");
@@ -115,10 +114,7 @@ class GeneratorBackendModuleScannerTest {
     }
 
     private GeneratorBackendModuleOptionVO find(List<GeneratorBackendModuleOptionVO> options, String moduleName) {
-        return options.stream()
-                .filter(option -> moduleName.equals(option.getModuleName()))
-                .findFirst()
-                .orElseThrow();
+        return options.stream().filter(option -> moduleName.equals(option.getModuleName())).findFirst().orElseThrow();
     }
 
     private void write(String relativePath, String content) throws IOException {

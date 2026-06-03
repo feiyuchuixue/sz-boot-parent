@@ -15,15 +15,13 @@ import java.util.Map;
  * Jackson 3 JSON column TypeHandler.
  * <p>
  * MyBatis-Flex built-in {@code JacksonTypeHandler} depends on the Jackson 2
- * {@code com.fasterxml.jackson.*} package. The project runs on Spring Boot 4 and
- * Jackson 3, so JSON columns should use this handler instead.
+ * {@code com.fasterxml.jackson.*} package. The project runs on Spring Boot 4
+ * and Jackson 3, so JSON columns should use this handler instead.
  */
 public class Jackson3TypeHandler extends BaseJsonTypeHandler<Object> {
 
-    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-            .build();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false).build();
 
     private final JavaType javaType;
 
