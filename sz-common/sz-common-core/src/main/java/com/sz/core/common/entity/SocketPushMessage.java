@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
  * <ul>
  * <li>仅用于推送方向（服务端 → WebSocket 客户端）</li>
  * <li>{@code channel} 由 {@link SocketChannelEnum} 枚举值序列化为字符串，保持强类型约束</li>
- * <li>{@code data} 为任意业务对象，Jackson 直接序列化，前端无需二次 JSON.parse</li>
+ * <li>{@code data} 为可跨服务反序列化的业务数据，建议使用 String、Number、Boolean、List、Map
+ * 等通用类型</li>
  * </ul>
  *
  * <p>
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
  * SocketPushMessage.of(SocketChannelEnum.SYNC_DICT)
  *
  * // 有 data
- * SocketPushMessage.of(SocketChannelEnum.MESSAGE, body)
+ * SocketPushMessage.of(SocketChannelEnum.MESSAGE, Map.of("title", title, "content", content))
  * }</pre>
  *
  * @author sz
@@ -39,7 +40,7 @@ public class SocketPushMessage {
     @Schema(description = "推送频道")
     private String channel;
 
-    @Schema(description = "业务数据（任意对象，直接序列化，前端无需二次 parse）")
+    @Schema(description = "业务数据（建议使用 String、Number、Boolean、List、Map 等可跨服务反序列化类型）")
     private Object data;
 
     /**
@@ -50,7 +51,8 @@ public class SocketPushMessage {
     }
 
     /**
-     * 构建带业务数据的推送消息。
+     * 构建带业务数据的推送消息。跨 Redis Pub/Sub 推送时，data 不应使用业务模块私有 DTO， 否则独立 WebSocket
+     * 服务可能因缺少该类而反序列化失败。
      */
     public static SocketPushMessage of(SocketChannelEnum channel, Object data) {
         return new SocketPushMessage(channel.name(), data);

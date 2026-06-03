@@ -38,10 +38,7 @@ class CodeModelBuilderTest {
         detailVO.setColumns(List.of());
         detailVO.setDictTypes(Set.of());
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderBaseInfo(detailVO)
-                .builderVue(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderBaseInfo(detailVO).builderVue(detailVO).getModel();
 
         assertThat(model.get("frontendModuleName")).isEqualTo("admin");
         assertThat(model.get("frontendModuleVarName")).isEqualTo("adminModule");
@@ -76,10 +73,7 @@ class CodeModelBuilderTest {
         detailVO.setColumns(List.of());
         detailVO.setDictTypes(Set.of());
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderBaseInfo(detailVO)
-                .builderVue(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderBaseInfo(detailVO).builderVue(detailVO).getModel();
 
         assertThat(model.get("frontendModuleName")).isEqualTo("crm");
         assertThat(model.get("frontendModuleVarName")).isEqualTo("crmModule");
@@ -98,17 +92,10 @@ class CodeModelBuilderTest {
         column.setJavaTypePackage("");
         detailVO.setColumns(List.of(column));
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderImportPackage(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderImportPackage(detailVO).getModel();
 
-        assertThat((Set<String>) model.get("importPackages"))
-                .contains(
-                        "java.util.List",
-                        "com.sz.resource.model.ResourceRef",
-                        "com.sz.db.handler.Jackson3TypeHandler",
-                        "com.mybatisflex.annotation.Column"
-                );
+        assertThat((Set<String>) model.get("importPackages")).contains("java.util.List", "com.sz.resource.model.ResourceRef",
+                "com.sz.db.handler.Jackson3TypeHandler", "com.mybatisflex.annotation.Column");
     }
 
     @Test
@@ -145,9 +132,7 @@ class CodeModelBuilderTest {
 
         detailVO.setColumns(List.of(idColumn, nameColumn, orderNoColumn));
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderDynamicsParam(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderDynamicsParam(detailVO).getModel();
 
         assertThat(model.get("importBizKeyColumn")).isSameAs(orderNoColumn);
     }
@@ -167,9 +152,7 @@ class CodeModelBuilderTest {
         idColumn.setIsPk("1");
         detailVO.setColumns(List.of(idColumn));
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderDynamicsParam(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderDynamicsParam(detailVO).getModel();
 
         assertThat(model.get("idJavaType")).isEqualTo("Long");
         assertThat(model.get("idType")).isEqualTo("number");
@@ -215,7 +198,8 @@ class CodeModelBuilderTest {
             assertThat(template).contains("syncCheckboxValue('${field.javaField}', ${field.javaField}CheckedValues.value, false);");
             assertThat(template).contains("paramsProps.value.row.${field.javaField} = formatCheckboxValue(${field.javaField}CheckedValues.value);");
             assertThat(template).contains("const syncCheckboxValue = (fieldName: string, value: unknown, validate = true) => {");
-            assertThat(template).contains("const validate${field.upCamelField}Checked = (_rule: unknown, _value: unknown, callback: (error?: Error) => void) => {");
+            assertThat(template)
+                    .contains("const validate${field.upCamelField}Checked = (_rule: unknown, _value: unknown, callback: (error?: Error) => void) => {");
             assertThat(template).contains("normalizeCheckboxValue(paramsProps.value.row.${field.javaField}");
             assertThat(template).contains("validator: validate${field.upCamelField}Checked, trigger: 'change'");
             assertThat(template).contains("@change=\"syncUploadValue('${field.javaField}', $event)\"");
@@ -253,9 +237,7 @@ class CodeModelBuilderTest {
 
         detailVO.setColumns(List.of(radioGroupColumn, checkboxColumn));
 
-        Map<String, Object> model = new CodeModelBuilder()
-                .builderDynamicsParam(detailVO)
-                .getModel();
+        Map<String, Object> model = new CodeModelBuilder().builderDynamicsParam(detailVO).getModel();
 
         assertThat(model.get("hasSelect")).isEqualTo(true);
     }

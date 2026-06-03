@@ -11,7 +11,6 @@ import com.sz.db.id.SzIdUtil;
 import com.sz.generator.config.ConditionalOnGeneratorEnabled;
 import com.sz.generator.core.AbstractCodeGenerationTemplate;
 import com.sz.generator.core.CodeModelBuilder;
-import com.sz.generator.core.GeneratorConstants;
 import com.sz.generator.core.metadata.GeneratorDbMetadataService;
 import com.sz.generator.core.module.GeneratorBackendModuleScanner;
 import com.sz.generator.core.script.ScriptExportService;
@@ -320,9 +319,12 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         String moduleName = newTarget ? normalizeModuleName(info.getBackendModuleName()) : existingOption.get().getModuleName();
         String moduleCode = newTarget ? normalizeModuleCode(moduleName) : existingOption.get().getModuleCode();
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getApiPrefixModule());
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getFrontendModuleName());
-        GeneratorBackendModuleOptionVO option = newTarget ? backendModuleScanner.buildNewModuleOption(projectRoot, moduleName, moduleCode, info.getPathApi())
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getApiPrefixModule());
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getFrontendModuleName());
+        GeneratorBackendModuleOptionVO option = newTarget
+                ? backendModuleScanner.buildNewModuleOption(projectRoot, moduleName, moduleCode, info.getPathApi())
                 : existingOption.get();
         String packageName = info.getPackageName() == null || info.getPackageName().isBlank() ? option.getPackageName() : info.getPackageName();
         String apiPrefix = info.getApiPrefix() == null || info.getApiPrefix().isBlank() ? option.getApiPrefix() : info.getApiPrefix();
@@ -341,17 +343,13 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 buildMapperScanConfiguration(packageName, upperCamel(moduleCode)));
         writeIfMissing(modulePath.resolve(javaPath(packageName, "config", upperCamel(moduleCode) + "ExcelTemplateScanConfiguration.java")),
                 buildExcelTemplateScanConfiguration(packageName, upperCamel(moduleCode)));
-        writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"),
-                buildModuleChangelog(moduleCode));
-        writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/changelog-master.xml"),
-                buildSubChangelogMaster(List.of()));
+        writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"), buildModuleChangelog(moduleCode));
+        writeIfMissing(modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/changelog-master.xml"), buildSubChangelogMaster(List.of()));
 
         insertIfMissing(projectRoot.resolve(generatorProperties.getModuleName()).resolve("pom.xml"), "<module>" + option.getModuleName() + "</module>",
                 "        <module>" + option.getModuleName() + "</module>\n", "    </modules>");
         insertDependencyManagementIfMissing(projectRoot.resolve("pom.xml"), option.getModuleName());
-        insertIfMissing(serviceRoot.resolve("pom.xml"),
-                "<artifactId>" + option.getModuleName() + "</artifactId>",
-                """
+        insertIfMissing(serviceRoot.resolve("pom.xml"), "<artifactId>" + option.getModuleName() + "</artifactId>", """
                         <dependency>
                             <groupId>com.sz</groupId>
                             <artifactId>%s</artifactId>
@@ -516,10 +514,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         if (backendModuleOptions.isEmpty()) {
             backendModuleOptions.add(defaultBackendModuleOption(projectRoot));
         }
-        String defaultApiPath = backendModuleOptions.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended()))
-                .findFirst()
-                .map(GeneratorBackendModuleOptionVO::getPath)
-                .orElseGet(() -> firstBackendModulePath(backendModuleOptions));
+        String defaultApiPath = backendModuleOptions.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended())).findFirst()
+                .map(GeneratorBackendModuleOptionVO::getPath).orElseGet(() -> firstBackendModulePath(backendModuleOptions));
         String defaultWebPath = resolveDefaultWebPath(projectRoot);
         String configuredApiPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getApi();
         String configuredWebPath = generatorProperties.getPath() == null ? null : generatorProperties.getPath().getWeb();
@@ -558,8 +554,9 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             String templateProcess = renderTemplateString(tmpRes, model);
             boolean exists = Files.exists(Paths.get(tmpRes.getFullPath()));
 
-            previews.add(buildPreviewItem(fileName, relativePath, tmpRes.getFullPath(), firstPathSegment(relativePath), exists ? OP_SKIP_EXISTS : OP_CREATE_FILE,
-                    tmpRes.getLanguage(), templateProcess, null, tmpRes.getAlias(), exists ? "目标文件已存在，生成器不会覆盖。" : "新增业务代码文件。"));
+            previews.add(
+                    buildPreviewItem(fileName, relativePath, tmpRes.getFullPath(), firstPathSegment(relativePath), exists ? OP_SKIP_EXISTS : OP_CREATE_FILE,
+                            tmpRes.getLanguage(), templateProcess, null, tmpRes.getAlias(), exists ? "目标文件已存在，生成器不会覆盖。" : "新增业务代码文件。"));
         }
     }
 
@@ -590,8 +587,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     private static void addScriptPreviews(List<GeneratorPreviewVO> previews, ScriptExportVO scriptExport, String tableName) {
         for (ScriptExportItemVO item : scriptExport.getItems()) {
             String relativePath = Paths.get("scripts", tableName, item.getFileName()).toString();
-            previews.add(buildPreviewItem(Paths.get(item.getFileName()).getFileName().toString(), relativePath, relativePath, "scripts", OP_SCRIPT, item.getLanguage(),
-                    item.getContent(), null, item.getTitle(), "菜单/权限初始化脚本。"));
+            previews.add(buildPreviewItem(Paths.get(item.getFileName()).getFileName().toString(), relativePath, relativePath, "scripts", OP_SCRIPT,
+                    item.getLanguage(), item.getContent(), null, item.getTitle(), "菜单/权限初始化脚本。"));
         }
     }
 
@@ -604,9 +601,12 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         String moduleName = newTarget ? normalizeModuleName(info.getBackendModuleName()) : existingOption.get().getModuleName();
         String moduleCode = newTarget ? normalizeModuleCode(moduleName) : existingOption.get().getModuleCode();
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getApiPrefixModule());
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getFrontendModuleName());
-        GeneratorBackendModuleOptionVO option = newTarget ? backendModuleScanner.buildNewModuleOption(projectRoot, moduleName, moduleCode, info.getPathApi())
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getApiPrefixModule());
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getFrontendModuleName());
+        GeneratorBackendModuleOptionVO option = newTarget
+                ? backendModuleScanner.buildNewModuleOption(projectRoot, moduleName, moduleCode, info.getPathApi())
                 : existingOption.get();
         String packageName = info.getPackageName() == null || info.getPackageName().isBlank() ? option.getPackageName() : info.getPackageName();
         String apiPrefix = info.getApiPrefix() == null || info.getApiPrefix().isBlank() ? option.getApiPrefix() : info.getApiPrefix();
@@ -622,16 +622,16 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                 buildMapperScanConfiguration(packageName, classPrefix), "java", "模块 MapperScan 配置。");
         addCreatePreview(previews, modulePath.resolve(javaPath(packageName, "config", classPrefix + "ExcelTemplateScanConfiguration.java")),
                 buildExcelTemplateScanConfiguration(packageName, classPrefix), "java", "模块 Excel 导入模板扫描配置。");
-        addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"), buildModuleChangelog(moduleCode),
-                "xml", "模块 Liquibase 入口。");
+        addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/module-" + moduleCode + "-changelog.xml"),
+                buildModuleChangelog(moduleCode), "xml", "模块 Liquibase 入口。");
         addCreatePreview(previews, modulePath.resolve("src/main/resources/db/changelog/" + moduleCode + "/changelog-master.xml"),
                 buildSubChangelogMaster(List.of()), "xml", "模块 Liquibase master。");
 
-        addInsertPreview(previews, projectRoot.resolve(generatorProperties.getModuleName()).resolve("pom.xml"), "<module>" + option.getModuleName() + "</module>",
-                "    <module>" + option.getModuleName() + "</module>\n", "</modules>", true, "xml", "接入 sz-module 聚合 POM。");
+        addInsertPreview(previews, projectRoot.resolve(generatorProperties.getModuleName()).resolve("pom.xml"),
+                "<module>" + option.getModuleName() + "</module>", "    <module>" + option.getModuleName() + "</module>\n", "</modules>", true, "xml",
+                "接入 sz-module 聚合 POM。");
         addDependencyManagementPreview(previews, projectRoot.resolve("pom.xml"), option.getModuleName());
-        addInsertPreview(previews, serviceRoot.resolve("pom.xml"), "<artifactId>" + option.getModuleName() + "</artifactId>",
-                """
+        addInsertPreview(previews, serviceRoot.resolve("pom.xml"), "<artifactId>" + option.getModuleName() + "</artifactId>", """
                         <dependency>
                             <groupId>com.sz</groupId>
                             <artifactId>%s</artifactId>
@@ -657,8 +657,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
         addCreatePreview(previews, tableChangelog, buildBusinessTableChangelog(detailVO, target.moduleCode()), "xml", "业务表结构 changelog。");
         if (!mergeCreatePreview(previews, masterChangelog, buildSubChangelogMaster(List.of(tableInclude)), "模块 Liquibase master。")) {
-            addInsertPreview(previews, masterChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>", true, "xml",
-                    "接入业务表结构 changelog。");
+            addInsertPreview(previews, masterChangelog, tableInclude, "    " + tableInclude + "\n", "</databaseChangeLog>", true, "xml", "接入业务表结构 changelog。");
         }
     }
 
@@ -701,10 +700,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
 
     private static boolean mergeCreatePreview(List<GeneratorPreviewVO> previews, Path path, String content, String message) {
         Path fullPath = path.toAbsolutePath().normalize();
-        Optional<GeneratorPreviewVO> preview = previews.stream()
-                .filter(item -> OP_CREATE_FILE.equals(item.getOperationType()))
-                .filter(item -> samePath(item.getFullPath(), fullPath.toString()))
-                .findFirst();
+        Optional<GeneratorPreviewVO> preview = previews.stream().filter(item -> OP_CREATE_FILE.equals(item.getOperationType()))
+                .filter(item -> samePath(item.getFullPath(), fullPath.toString())).findFirst();
         if (preview.isEmpty()) {
             return false;
         }
@@ -779,8 +776,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         return toTreeRelativePath(fullPath, fallbackProjectName, fallbackRelativePath);
     }
 
-    private static GeneratorPreviewVO buildPreviewItem(String name, String relativePath, String fullPath, String projectName, String operationType, String language,
-            String content, String diff, String alias, String message) {
+    private static GeneratorPreviewVO buildPreviewItem(String name, String relativePath, String fullPath, String projectName, String operationType,
+            String language, String content, String diff, String alias, String message) {
         GeneratorPreviewVO previewVO = new GeneratorPreviewVO();
         previewVO.setName(name);
         previewVO.setRelativePath(normalizeZipPath(relativePath));
@@ -810,10 +807,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     }
 
     private static List<GeneratorPreviewVO> buildModificationGuidePreviews(List<GeneratorPreviewVO> planItems) {
-        List<GeneratorPreviewVO> modifyItems = planItems.stream()
-                .filter(item -> OP_MODIFY_FILE.equals(item.getOperationType()))
-                .filter(item -> item.getDiff() != null && !item.getDiff().isBlank())
-                .toList();
+        List<GeneratorPreviewVO> modifyItems = planItems.stream().filter(item -> OP_MODIFY_FILE.equals(item.getOperationType()))
+                .filter(item -> item.getDiff() != null && !item.getDiff().isBlank()).toList();
         if (modifyItems.isEmpty()) {
             return List.of();
         }
@@ -832,8 +827,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             builder.append(item.getDiff()).append('\n');
         }
         String content = builder.toString();
-        return List.of(buildPreviewItem("修改说明.txt", "修改说明.txt", "修改说明.txt", "修改说明.txt", OP_SCRIPT, "text", content, null,
-                "修改说明.txt", "下载包修改项说明，用户按此文件手动调整现有文件。"));
+        return List
+                .of(buildPreviewItem("修改说明.txt", "修改说明.txt", "修改说明.txt", "修改说明.txt", OP_SCRIPT, "text", content, null, "修改说明.txt", "下载包修改项说明，用户按此文件手动调整现有文件。"));
     }
 
     private static String normalizeZipPath(String path) {
@@ -918,8 +913,10 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
     private void applyDefaultModuleInfo(GeneratorTable generatorTable) {
         Path projectRoot = resolveProjectRoot();
         List<GeneratorBackendModuleOptionVO> options = backendModuleScanner.scan(projectRoot);
-        Optional<GeneratorBackendModuleOptionVO> selected = options.stream().filter(option -> generatorTable.getPathApi() != null
-                && Paths.get(generatorTable.getPathApi()).normalize().toString().equals(Paths.get(option.getPath()).normalize().toString())).findFirst();
+        Optional<GeneratorBackendModuleOptionVO> selected = options.stream()
+                .filter(option -> generatorTable.getPathApi() != null
+                        && Paths.get(generatorTable.getPathApi()).normalize().toString().equals(Paths.get(option.getPath()).normalize().toString()))
+                .findFirst();
         if (selected.isEmpty()) {
             selected = options.stream().filter(option -> Boolean.TRUE.equals(option.getRecommended())).findFirst();
         }
@@ -943,10 +940,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Path projectRoot = resolveProjectRoot();
         Optional<GeneratorBackendModuleOptionVO> selected = backendModuleScanner.findByModuleName(projectRoot, info.getBackendModuleName());
         if (selected.isEmpty()) {
-            selected = backendModuleScanner.scan(projectRoot).stream()
-                    .filter(option -> hasText(info.getPathApi())
-                            && Paths.get(info.getPathApi()).normalize().toString().equals(Paths.get(option.getPath()).normalize().toString()))
-                    .findFirst();
+            selected = backendModuleScanner.scan(projectRoot).stream().filter(option -> hasText(info.getPathApi())
+                    && Paths.get(info.getPathApi()).normalize().toString().equals(Paths.get(option.getPath()).normalize().toString())).findFirst();
         }
         GeneratorBackendModuleOptionVO option = selected.orElseGet(() -> defaultBackendModuleOption(projectRoot));
         if (!hasText(info.getBackendTargetType())) {
@@ -988,7 +983,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         GeneratorBackendModuleOptionVO option = new GeneratorBackendModuleOptionVO();
         option.setModuleName(moduleName);
         option.setModuleCode(moduleCode);
-        option.setPath(hasText(configuredApiPath) ? Paths.get(configuredApiPath).normalize().toString()
+        option.setPath(hasText(configuredApiPath)
+                ? Paths.get(configuredApiPath).normalize().toString()
                 : projectRoot.resolve(generatorProperties.getModuleName()).resolve(moduleName).normalize().toString());
         option.setPackageName(resolveDefaultPackageName());
         option.setApiPrefixModule(moduleCode);
@@ -1536,13 +1532,18 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         Path projectRoot = resolveProjectRoot();
         boolean newTarget = "new".equals(info.getBackendTargetType());
         Optional<GeneratorBackendModuleOptionVO> existingOption = backendModuleScanner.findByModuleName(projectRoot, info.getBackendModuleName());
-        String moduleName = newTarget ? normalizeModuleName(info.getBackendModuleName())
+        String moduleName = newTarget
+                ? normalizeModuleName(info.getBackendModuleName())
                 : existingOption.map(GeneratorBackendModuleOptionVO::getModuleName).orElse(info.getBackendModuleName());
-        String moduleCode = newTarget ? normalizeModuleCode(moduleName)
+        String moduleCode = newTarget
+                ? normalizeModuleCode(moduleName)
                 : existingOption.map(GeneratorBackendModuleOptionVO::getModuleCode).orElse(normalizeModuleCode(moduleName));
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getApiPrefixModule());
-        if (moduleCode.isBlank()) moduleCode = normalizeModuleCode(info.getFrontendModuleName());
-        Path modulePath = !newTarget && existingOption.isPresent() ? Paths.get(existingOption.get().getPath()).normalize()
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getApiPrefixModule());
+        if (moduleCode.isBlank())
+            moduleCode = normalizeModuleCode(info.getFrontendModuleName());
+        Path modulePath = !newTarget && existingOption.isPresent()
+                ? Paths.get(existingOption.get().getPath()).normalize()
                 : info.getPathApi() == null || info.getPathApi().isBlank() ? Path.of("") : Paths.get(info.getPathApi()).normalize();
         return new BackendModuleTarget(moduleName, moduleCode, modulePath, DEFAULT_CHANGELOG_VERSION);
     }
@@ -1570,8 +1571,7 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         try (var stream = Files.list(versionRoot)) {
             Optional<String> existing = stream.map(path -> path.getFileName().toString())
-                    .filter(name -> name.matches("\\d{3}_" + java.util.regex.Pattern.quote(tableName) + "\\.xml"))
-                    .findFirst();
+                    .filter(name -> name.matches("\\d{3}_" + java.util.regex.Pattern.quote(tableName) + "\\.xml")).findFirst();
             if (existing.isPresent()) {
                 return existing.get();
             }
@@ -1580,11 +1580,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         int maxIndex = 0;
         try (var stream = Files.list(versionRoot)) {
-            maxIndex = stream.map(path -> path.getFileName().toString())
-                    .filter(name -> name.matches("\\d{3}_.+\\.xml"))
-                    .mapToInt(name -> Integer.parseInt(name.substring(0, 3)))
-                    .max()
-                    .orElse(0);
+            maxIndex = stream.map(path -> path.getFileName().toString()).filter(name -> name.matches("\\d{3}_.+\\.xml"))
+                    .mapToInt(name -> Integer.parseInt(name.substring(0, 3))).max().orElse(0);
         } catch (IOException ignored) {
             return "001" + suffix;
         }
@@ -1610,7 +1607,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
                     <property name="bool.type" value="VARCHAR(1)" dbms="postgresql"/>
 
                 """);
-        builder.append("    <changeSet id=\"").append(xmlEscape(moduleCode)).append("-create-").append(xmlEscape(tableName)).append("\" author=\"generator\">\n");
+        builder.append("    <changeSet id=\"").append(xmlEscape(moduleCode)).append("-create-").append(xmlEscape(tableName))
+                .append("\" author=\"generator\">\n");
         builder.append("        <preConditions onFail=\"MARK_RAN\">\n");
         builder.append("            <not><tableExists tableName=\"").append(xmlEscape(tableName)).append("\"/></not>\n");
         builder.append("        </preConditions>\n");
@@ -1733,21 +1731,19 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
         }
         try (var stream = Files.list(moduleRoot)) {
             return stream.filter(Files::isDirectory).map(path -> {
-                        String existingModuleName = path.getFileName().toString();
-                        String existingModuleCode = normalizeModuleCode(existingModuleName);
-                        boolean sameName = existingModuleName.equalsIgnoreCase(normalizedModuleName);
-                        boolean sameCode = !normalizedModuleCode.isBlank() && existingModuleCode.equals(normalizedModuleCode);
-                        boolean samePath = path.toAbsolutePath().normalize().equals(normalizedModulePath);
-                        if (sameName || sameCode || samePath) {
-                            if (samePath && isSameNewModuleTarget(path.toAbsolutePath().normalize(), normalizedModuleName, normalizedModuleCode)) {
-                                return null;
-                            }
-                            return "新建模块已存在：" + existingModuleName + "，请切换为现有模块或更换模块名。";
-                        }
+                String existingModuleName = path.getFileName().toString();
+                String existingModuleCode = normalizeModuleCode(existingModuleName);
+                boolean sameName = existingModuleName.equalsIgnoreCase(normalizedModuleName);
+                boolean sameCode = !normalizedModuleCode.isBlank() && existingModuleCode.equals(normalizedModuleCode);
+                boolean samePath = path.toAbsolutePath().normalize().equals(normalizedModulePath);
+                if (sameName || sameCode || samePath) {
+                    if (samePath && isSameNewModuleTarget(path.toAbsolutePath().normalize(), normalizedModuleName, normalizedModuleCode)) {
                         return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .findFirst();
+                    }
+                    return "新建模块已存在：" + existingModuleName + "，请切换为现有模块或更换模块名。";
+                }
+                return null;
+            }).filter(Objects::nonNull).findFirst();
         } catch (IOException ignored) {
             return Optional.empty();
         }
@@ -1804,11 +1800,8 @@ public class GeneratorTableServiceImpl extends ServiceImpl<GeneratorTableMapper,
             return defaultService;
         }
         try (var stream = Files.list(serviceParent)) {
-            return stream.filter(Files::isDirectory)
-                    .filter(path -> Files.isRegularFile(path.resolve("pom.xml")))
-                    .sorted(Comparator.comparing(path -> path.getFileName().toString()))
-                    .findFirst()
-                    .orElse(defaultService);
+            return stream.filter(Files::isDirectory).filter(path -> Files.isRegularFile(path.resolve("pom.xml")))
+                    .sorted(Comparator.comparing(path -> path.getFileName().toString())).findFirst().orElse(defaultService);
         } catch (IOException ignored) {
             return defaultService;
         }

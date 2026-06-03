@@ -56,10 +56,7 @@ public class CodeModelBuilder {
             String javaTypePackage = column.getJavaTypePackage();
             if (Utils.isNotNull(javaTypePackage)) {
                 String[] split = javaTypePackage.split(",");
-                Arrays.stream(split)
-                        .map(String::trim)
-                        .filter(item -> !item.isBlank())
-                        .forEach(importPackages::add);
+                Arrays.stream(split).map(String::trim).filter(item -> !item.isBlank()).forEach(importPackages::add);
                 // importPackages.add(javaTypePackage);
             }
             if (("LocalDateTime").equals(column.getJavaType())) {
@@ -201,18 +198,20 @@ public class CodeModelBuilder {
         model.put("interfaceClassName", generatorInfo.getBusinessName());
         model.put("interfaceNamespace", detailVO.getBaseInfo().getClassName());
 
-        String typePkg = "legacy".equals(frontendLayout) ? SEPARATOR + "api" + SEPARATOR + "types" + SEPARATOR + generatorInfo.getModuleName()
+        String typePkg = "legacy".equals(frontendLayout)
+                ? SEPARATOR + "api" + SEPARATOR + "types" + SEPARATOR + generatorInfo.getModuleName()
                 : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "types";
         model.put("typePkg", typePkg);
         model.put("typeClassName", generatorInfo.getBusinessName());
 
-        String modulesPkg = "legacy".equals(frontendLayout) ? SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + generatorInfo.getModuleName()
+        String modulesPkg = "legacy".equals(frontendLayout)
+                ? SEPARATOR + "api" + SEPARATOR + "modules" + SEPARATOR + generatorInfo.getModuleName()
                 : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "api";
         model.put("modulesPkg", modulesPkg);
         model.put("modulesClassName", generatorInfo.getBusinessName());
 
-        String indexPkg = "legacy".equals(frontendLayout) ? SEPARATOR + "views" + SEPARATOR + generatorInfo.getModuleName() + SEPARATOR
-                + generatorInfo.getBusinessName()
+        String indexPkg = "legacy".equals(frontendLayout)
+                ? SEPARATOR + "views" + SEPARATOR + generatorInfo.getModuleName() + SEPARATOR + generatorInfo.getBusinessName()
                 : SEPARATOR + "modules" + SEPARATOR + frontendModuleName + SEPARATOR + "views" + SEPARATOR + generatorInfo.getBusinessName();
         model.put("indexPkg", indexPkg);
         model.put("indexClassName", "index");

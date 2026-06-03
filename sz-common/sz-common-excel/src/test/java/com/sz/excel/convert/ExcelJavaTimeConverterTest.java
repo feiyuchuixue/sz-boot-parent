@@ -23,8 +23,7 @@ class ExcelJavaTimeConverterTest {
         CustomLocalDateTimeStringConvert converter = new CustomLocalDateTimeStringConvert();
 
         assertThat(converter.supportJavaTypeKey()).isEqualTo(LocalDateTime.class);
-        assertThat(converter.convertToExcelData(LocalDateTime.of(2026, 5, 30, 8, 19, 5), null, null).getStringValue())
-                .isEqualTo("2026-05-30 08:19:05");
+        assertThat(converter.convertToExcelData(LocalDateTime.of(2026, 5, 30, 8, 19, 5), null, null).getStringValue()).isEqualTo("2026-05-30 08:19:05");
     }
 
     @Test

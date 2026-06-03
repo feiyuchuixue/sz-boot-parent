@@ -21,13 +21,19 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 public final class GeneratorColumnSmartRules {
 
     private static final String INSERT_FILL = "FieldFill.INSERT";
+
     private static final String UPDATE_FILL = "FieldFill.UPDATE";
+
     private static final String INSERT_UPDATE_FILL = "FieldFill.INSERT_UPDATE";
 
     private static final String[] HIGH_VALUE_QUERY_SUFFIXES = {"name", "title", "no", "code", "status", "type"};
+
     private static final String[] DICTIONARY_KEYWORDS = {"status", "type", "sex", "_cd"};
+
     private static final String[] UPLOAD_KEYWORDS = {"file", "image", "avatar", "photo", "icon", "cover", "attachment", "attachments", "url", "urls"};
+
     private static final String[] AUDIT_AND_SCOPE_COLUMNS = {"create_id", "create_time", "update_id", "update_time", "delete_id", "delete_time", "dept_scope"};
+
     private static final String[] LOGIC_DELETE_COLUMNS = {"del_flag", "is_deleted"};
 
     private GeneratorColumnSmartRules() {
@@ -76,7 +82,8 @@ public final class GeneratorColumnSmartRules {
         }
         if (isUploadHtmlType(htmlType)) {
             column.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-            column.setJavaTypePackage("com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
+            column.setJavaTypePackage(
+                    "com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
             column.setSearchType("input");
             return;
         }
@@ -122,7 +129,8 @@ public final class GeneratorColumnSmartRules {
         }
         if (isUploadHtmlType(htmlType)) {
             column.setJavaType(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
-            column.setJavaTypePackage("com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
+            column.setJavaTypePackage(
+                    "com.sz.db.handler.Jackson3TypeHandler,com.sz.resource.model.ResourceRef,java.util.List,com.mybatisflex.annotation.Column");
             column.setSearchType("input");
             return;
         }
@@ -381,8 +389,8 @@ public final class GeneratorColumnSmartRules {
 
     private static boolean shouldImport(String columnName, GeneratorTableColumn column) {
         return !isPrimaryKey(column) && !contains(GeneratorConstants.NON_DISPLAYABLE_IMPORT_COLUMNS, columnName)
-                && !GeneratorConstants.HTML_EDITOR.equals(column.getHtmlType()) && !isUploadHtmlType(column.getHtmlType())
-                && !isAutofillColumn(columnName) && !GeneratorConstants.REQUIRE.equals(column.getIsLogicDel());
+                && !GeneratorConstants.HTML_EDITOR.equals(column.getHtmlType()) && !isUploadHtmlType(column.getHtmlType()) && !isAutofillColumn(columnName)
+                && !GeneratorConstants.REQUIRE.equals(column.getIsLogicDel());
     }
 
     private static boolean shouldExport(String columnName, GeneratorTableColumn column) {
@@ -483,8 +491,8 @@ public final class GeneratorColumnSmartRules {
 
     private static boolean isStringCompatibleDbType(String columnType) {
         String dbType = getDbType(columnType).toUpperCase();
-        return "VARCHAR".equals(dbType) || "CHAR".equals(dbType) || "NVARCHAR".equals(dbType) || "VARCHAR2".equals(dbType)
-                || "TEXT".equals(dbType) || "CHARACTER".equals(dbType) || "CHARACTER VARYING".equals(dbType);
+        return "VARCHAR".equals(dbType) || "CHAR".equals(dbType) || "NVARCHAR".equals(dbType) || "VARCHAR2".equals(dbType) || "TEXT".equals(dbType)
+                || "CHARACTER".equals(dbType) || "CHARACTER VARYING".equals(dbType);
     }
 
     private static String getDbType(String columnType) {

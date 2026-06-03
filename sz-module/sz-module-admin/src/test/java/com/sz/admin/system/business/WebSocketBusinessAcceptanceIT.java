@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,10 +47,12 @@ class WebSocketBusinessAcceptanceIT {
         CapturingWebsocketRedisService redisService = new CapturingWebsocketRedisService();
         SocketService socketService = new SocketService(redisService);
         PayloadBody body = new PayloadBody();
+        body.setTitle("测试");
+        body.setContent("水电费三");
 
         socketService.sendMessage(body, 1L, List.of(2L, 3L));
 
-        assertMessage(redisService.lastMessage(), false, SocketChannelEnum.MESSAGE.name(), List.of("2", "3"), "1", body);
+        assertMessage(redisService.lastMessage(), false, SocketChannelEnum.MESSAGE.name(), List.of("2", "3"), "1", payload("测试", "水电费三"));
     }
 
     @Test
@@ -56,7 +60,7 @@ class WebSocketBusinessAcceptanceIT {
         CapturingWebsocketRedisService redisService = new CapturingWebsocketRedisService();
         SocketService socketService = new SocketService(redisService);
 
-        socketService.sendMessage(new PayloadBody(), 1L, null);
+        socketService.sendMessage(null, 1L, null);
         socketService.readMessage(2L, null);
 
         assertMessage(redisService.messages.get(0), false, SocketChannelEnum.MESSAGE.name(), List.of(), "1", null);
@@ -75,7 +79,7 @@ class WebSocketBusinessAcceptanceIT {
         socketService.readMessage(null, Arrays.asList(4L, null));
 
         assertThat(redisService.messages).hasSize(2);
-        assertMessage(redisService.messages.get(0), false, SocketChannelEnum.MESSAGE.name(), List.of("2", "3"), null, body);
+        assertMessage(redisService.messages.get(0), false, SocketChannelEnum.MESSAGE.name(), List.of("2", "3"), null, payload(null, null));
         assertMessage(redisService.messages.get(1), false, SocketChannelEnum.READ.name(), List.of("4"), null, null);
     }
 
@@ -86,8 +90,15 @@ class WebSocketBusinessAcceptanceIT {
         assertThat(message.getToUsers()).containsExactlyElementsOf(users);
         assertThat(message.getFromUser()).isEqualTo(fromUser);
         if (payload != null) {
-            assertThat(message.getMessage().getData()).isSameAs(payload);
+            assertThat(message.getMessage().getData()).isEqualTo(payload);
         }
+    }
+
+    private static Map<String, Object> payload(String title, String content) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("title", title);
+        payload.put("content", content);
+        return payload;
     }
 
     private static class CapturingWebsocketRedisService extends WebsocketRedisService {

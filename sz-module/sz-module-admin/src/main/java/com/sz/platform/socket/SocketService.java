@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -71,7 +73,8 @@ public class SocketService {
      */
     public void sendMessage(PayloadBody body, Long senderId, List<Long> receiverIds) {
         List<String> toUsers = normalizeUserIds(receiverIds);
-        websocketRedisService.sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.MESSAGE, body), toUsers, normalizeUserId(senderId)));
+        websocketRedisService.sendServiceToWs(
+                SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.MESSAGE, toMessagePayload(body)), toUsers, normalizeUserId(senderId)));
     }
 
     public void readMessage(Long fromUserId, List<Long> toUsers) {
@@ -85,6 +88,16 @@ public class SocketService {
 
     private static String normalizeUserId(Long userId) {
         return userId == null ? null : String.valueOf(userId);
+    }
+
+    private static Map<String, Object> toMessagePayload(PayloadBody body) {
+        if (body == null) {
+            return null;
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("title", body.getTitle());
+        payload.put("content", body.getContent());
+        return payload;
     }
 
 }
