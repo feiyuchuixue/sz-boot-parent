@@ -70,7 +70,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         String expireTime = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.EXPIRE);
         assert sliderPuzzle != null;
-        PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey());
+        PointVO pointVO = new PointVO(sliderPuzzle.getPosX(), sliderPuzzle.getPosY(), sliderPuzzle.getSecretKey(), System.currentTimeMillis());
 
         redisCache.clearCaptcha(requestId); // 清除
         redisCache.putCaptcha(requestId, pointVO, Utils.getLongVal(expireTime)); // 保存到Redis
@@ -87,9 +87,9 @@ public class CaptchaServiceImpl implements CaptchaService {
         PointVO pointVO = redisCache.getCaptcha(checkPuzzle.getRequestId());
         redisCache.clearCaptcha(requestId);
 
-        // 校验滑动时长，防止机器人极速提交（最短 300ms）
-        if (checkPuzzle.getStartTime() != null) {
-            long elapsed = System.currentTimeMillis() - checkPuzzle.getStartTime();
+        // 校验验证码生成到提交的服务端耗时，防止机器人极速提交（最短 300ms）
+        if (pointVO.getCreateTime() != null) {
+            long elapsed = System.currentTimeMillis() - pointVO.getCreateTime();
             CommonResponseEnum.CAPTCHA_FAILED.message("验证过快").assertTrue(elapsed < 300);
         }
 

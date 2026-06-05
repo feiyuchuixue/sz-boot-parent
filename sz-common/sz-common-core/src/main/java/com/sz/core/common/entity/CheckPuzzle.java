@@ -22,7 +22,4 @@ public class CheckPuzzle {
     @Schema(description = "x轴 iv向量")
     private String iv;
 
-    @Schema(description = "滑动开始时间戳（毫秒）")
-    private Long startTime;
-
 }
