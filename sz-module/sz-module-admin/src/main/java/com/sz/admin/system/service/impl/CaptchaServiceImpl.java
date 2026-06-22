@@ -45,12 +45,13 @@ public class CaptchaServiceImpl implements CaptchaService {
     @SneakyThrows
     @Override
     public SliderPuzzle getImageCode(HttpServletRequest request) {
-        String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request)); // 根据request标识生成Sha256Id
+        String limitId = Utils.generateSha256Id(Utils.generateAgentRequestId(request)); // 根据request标识生成Sha256Id
+        String requestId = Utils.generateSha256Id(limitId + ":" + AESUtil.getRandomString(16) + ":" + System.nanoTime());
         int limit = Utils.getIntVal(SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.REQUEST_LIMIT));
         String requestCycle = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.REQUEST_CYCLE);
-        if (Utils.getIntVal(limit) != 0) {
-            redisCache.initializeCaptchaRequestLimit(requestId, Utils.getLongVal(requestCycle));
-            Long cacheLimit = redisCache.countCaptchaRequestLimit(requestId);
+        if (limit != 0) {
+            redisCache.initializeCaptchaRequestLimit(limitId, Utils.getLongVal(requestCycle));
+            Long cacheLimit = redisCache.countCaptchaRequestLimit(limitId);
             CommonResponseEnum.CAPTCHA_LIMIT.assertTrue(cacheLimit > Utils.getLongVal(limit));
         }
 
@@ -61,11 +62,11 @@ public class CaptchaServiceImpl implements CaptchaService {
         SlidePuzzleUtil.WatermarkConfig watermarkConfig = new SlidePuzzleUtil.WatermarkConfig(
                 "true".equals(SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_ENABLE)),
                 SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_TEXT), SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.WATER_FONT));
-        SliderPuzzle sliderPuzzle = SlidePuzzleUtil.createImage(resource.getInputStream(), request, watermarkConfig); // 生成验证码
+        SliderPuzzle sliderPuzzle = SlidePuzzleUtil.createImage(resource.getInputStream(), requestId, watermarkConfig); // 生成验证码
         CommonResponseEnum.FILE_NOT_EXISTS.assertNull(sliderPuzzle);
 
         if (limit != 0) {
-            redisCache.limitCaptcha(requestId);
+            redisCache.limitCaptcha(limitId);
         }
 
         String expireTime = SysConfigUtils.getConfValue(CaptchaConfigKeyConstant.EXPIRE);
@@ -79,8 +80,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     }
 
     @Override
-    public void checkImageCode(CheckPuzzle checkPuzzle) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void checkImageCode(CheckPuzzle checkPuzzle) {
         String requestId = checkPuzzle.getRequestId();
         CommonResponseEnum.CAPTCHA_LACK.assertNull(checkPuzzle.getMoveEncrypted());
         CommonResponseEnum.CAPTCHA_EXPIRED.assertFalse(redisCache.existCaptcha(requestId));
@@ -94,12 +94,20 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
 
         // 解密并校验 x 轴位移，容差 ±6px
-        String strX = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey(), checkPuzzle.getIv());
-        int posX = 0;
-        if (Utils.isNotNull(strX)) {
-            posX = (int) Math.round(Double.parseDouble(strX));
-        }
+        int posX = decryptMoveX(checkPuzzle, pointVO);
         CommonResponseEnum.CAPTCHA_FAILED.assertTrue(Math.abs(posX - pointVO.getX()) > 6);
+    }
+
+    private int decryptMoveX(CheckPuzzle checkPuzzle, PointVO pointVO) {
+        CommonResponseEnum.CAPTCHA_LACK.assertNull(checkPuzzle.getIv());
+        try {
+            String strX = AESUtil.aesDecrypt(checkPuzzle.getMoveEncrypted(), pointVO.getSecretKey(), checkPuzzle.getIv());
+            CommonResponseEnum.CAPTCHA_FAILED.assertTrue(!Utils.isNotNull(strX));
+            return (int) Math.round(Double.parseDouble(strX));
+        } catch (IllegalArgumentException | InvalidAlgorithmParameterException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException
+                | InvalidKeyException | NoSuchPaddingException e) {
+            throw CommonResponseEnum.CAPTCHA_FAILED.newException(e);
+        }
     }
 
 }

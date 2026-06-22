@@ -4,13 +4,6 @@ import com.sz.core.common.entity.SliderPuzzle;
 import com.sz.core.common.entity.CheckPuzzle;
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 /**
  * CaptchaService
  * 
@@ -22,6 +15,5 @@ public interface CaptchaService {
 
     SliderPuzzle getImageCode(HttpServletRequest request);
 
-    void checkImageCode(CheckPuzzle checkPuzzle) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException;
+    void checkImageCode(CheckPuzzle checkPuzzle);
 }

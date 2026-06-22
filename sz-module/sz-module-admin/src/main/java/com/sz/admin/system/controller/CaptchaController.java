@@ -15,13 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 /**
  * 验证码controller
  *
@@ -59,8 +52,7 @@ public class CaptchaController {
     @Debounce()
     @Operation(summary = "校验滑块拼图验证码")
     @PostMapping(value = "/check")
-    public ApiResult<Void> captchaCheck(@RequestBody CheckPuzzle checkPuzzle) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public ApiResult<Void> captchaCheck(@RequestBody CheckPuzzle checkPuzzle) {
         captchaService.checkImageCode(checkPuzzle);
         return ApiResult.success();
     }
