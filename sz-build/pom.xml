@@ -252,7 +252,7 @@
             <dependency>
                 <groupId>nl.basjes.parse.useragent</groupId>
                 <artifactId>yauaa</artifactId>
-                <version>7.32.0</version>
+                <version>8.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.lionsoul</groupId>
@@ -262,7 +262,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.7.5</version>
+                <version>42.7.11</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

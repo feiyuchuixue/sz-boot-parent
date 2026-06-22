@@ -2,9 +2,8 @@ package com.sz.core.util;
 
 import com.sz.core.common.entity.PointVO;
 import com.sz.core.common.entity.SliderPuzzle;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -54,11 +53,9 @@ public class SlidePuzzleUtil {
     // 凸起边界缓冲
     private static final int SMALL_CIRCLE_R1 = 2;
 
-    public static SliderPuzzle createImage(InputStream input, HttpServletRequest request, WatermarkConfig watermark) {
+    public static SliderPuzzle createImage(InputStream input, String requestId, WatermarkConfig watermark) {
         SliderPuzzle sliderPuzzle = new SliderPuzzle();
         try {
-            String requestId = Utils.generateSha256Id(Utils.generateAgentRequestId(request));
-
             BufferedImage originalImage = ImageIO.read(input);
             BufferedImage bigImage = resizeImage(originalImage, BIG_WIDTH, BIG_HEIGHT, true);
 
