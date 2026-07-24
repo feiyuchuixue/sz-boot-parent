@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -18,10 +18,11 @@
 
     <properties>
         <revision>2.0.1-SNAPSHOT</revision>
-        <spring-boot.version>4.0.6</spring-boot.version>
+        <spring-boot.version>4.1.0</spring-boot.version>
+        <lombok.version>1.18.46</lombok.version>
         <sa-token.version>1.45.0</sa-token.version>
         <jackson.version>3.1.3</jackson.version>
-        <mybatis-flex.version>1.11.7</mybatis-flex.version>
+        <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <aws.s3.version>2.32.29</aws.s3.version>
         <ip2region.version>3.1.0</ip2region.version>
         <skipTests>true</skipTests>
@@ -161,7 +162,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.42</version>
+                <version>${lombok.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
@@ -262,7 +263,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.7.11</version>
+                <version>42.7.12</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -275,6 +276,24 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <useIncrementalCompilation>true</useIncrementalCompilation>
+                    <proc>full</proc>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.mybatis-flex</groupId>
+                            <artifactId>mybatis-flex-processor</artifactId>
+                            <version>${mybatis-flex.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                            <version>${spring-boot.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
