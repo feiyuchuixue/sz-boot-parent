@@ -9,5 +9,8 @@ updates:
     directory: "/sz-build" # Location of package manifests
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
     target-branch: dev    # 指定要检查的目标分支
     open-pull-requests-limit: 20  # 限制同时打开的PR数量
