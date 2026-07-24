@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/sz-dependencies" # Location of package manifests
+    directory: "/sz-build" # Location of package manifests
     schedule:
       interval: "weekly"
     target-branch: dev    # 指定要检查的目标分支
