@@ -7,7 +7,7 @@
 </p>
 
 <h1 align="center">Sz-Admin</h1>
-<h4 align="center">An open-source RBAC admin scaffold built with Spring Boot 4, JDK 21, Vue 3 and Vite 7</h4>
+<h4 align="center">An open-source RBAC admin scaffold built with Spring Boot 4, Java 21/25 LTS, Vue 3 and Vite 7</h4>
 
 <p align="center">
   <a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub" alt="GitHub Stars"></a>
@@ -33,16 +33,18 @@ Sz-Admin is an open-source admin scaffold for enterprise back-office systems, Sa
 
 The project focuses on clear module boundaries, upgrade-friendly architecture and practical admin features instead of simply collecting as many functions as possible.
 
-- **Backend stack**: Spring Boot 4, JDK 21, Sa-Token, MyBatis-Flex, Liquibase and Redis.
+- **Backend stack**: Spring Boot 4, Java 21 LTS (default) / Java 25 LTS (supported), Sa-Token, MyBatis-Flex, Liquibase and Redis.
 - **Frontend stack**: Vue 3, Vite 7, TypeScript, Element Plus and Pinia.
 - **Built-in features**: RBAC permissions, dynamic menus, data scope, code generator, dictionaries, Excel import/export, OSS resources, WebSocket and request debounce.
 - **Use cases**: enterprise admin systems, SaaS admin consoles, secondary development scaffolds, CRUD code generation and MySQL/PostgreSQL projects.
+
+> **Java lifecycle notice:** Dual Java 21 / 25 support remains active through August 31, 2026. Starting September 1, 2026, the planned default and minimum build/runtime baseline is Java 25, and no new Java 21 images will be published. See the [Java LTS compatibility policy](docs/java-lts-compatibility.md) before upgrading.
 
 ## Why Sz-Admin
 
 | Highlight | Description |
 | --- | --- |
-| Modern stack | Spring Boot 4, JDK 21, Vue 3.5, Vite 7.3 and TypeScript 5.2. |
+| Modern stack | Spring Boot 4, Java 21/25 LTS, Vue 3.5, Vite 7.3 and TypeScript 5.2. |
 | Practical admin foundation | Built from real back-office development scenarios, with attention to daily development workflow and maintainability. |
 | Clear module boundaries | Backend modules are split into `sz-common`, `sz-module` and `sz-service`, making official features and custom business modules easier to separate. |
 | Upgrade friendly | Custom business code can live in independent `sz-module-*` modules, reducing conflicts with official core modules during upgrades. |
@@ -112,7 +114,7 @@ admin / sz123456
 | Technology | Description |
 | --- | --- |
 | Spring Boot 4.x | Core backend framework. |
-| JDK 21 | Current runtime baseline. |
+| Java 21 / 25 LTS | Java 21 is the default and minimum baseline; Java 25 is supported. Both produce Java 21 bytecode. |
 | Sa-Token | Lightweight Java authentication and authorization framework. |
 | MyBatis-Flex | MyBatis enhancement framework. |
 | Liquibase | Database version control and migration tool. |
@@ -121,6 +123,8 @@ admin / sz123456
 | Springdoc OpenAPI | API documentation through Swagger UI and OpenAPI JSON. |
 | AWS S3 SDK | S3-compatible object storage integration. |
 | FastExcel | Excel import and export support. |
+
+See the [Java LTS compatibility policy](./docs/java-lts-compatibility.md) for local JDK selection, the CI matrix and Docker tags.
 
 ### Frontend
 
@@ -183,7 +187,7 @@ sz-admin/
 
 | Runtime | Requirement |
 | --- | --- |
-| JDK | 21 |
+| JDK | Java 21 LTS (default/minimum) or Java 25 LTS |
 | Maven | 3.8+, 3.9.x recommended |
 | Database | MySQL 8.0.17+ or PostgreSQL 16+ |
 | Redis | 7.x |

@@ -17,7 +17,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>2.0.1-SNAPSHOT</revision>
+        <revision>2.0.2-SNAPSHOT</revision>
         <spring-boot.version>4.1.0</spring-boot.version>
         <lombok.version>1.18.46</lombok.version>
         <sa-token.version>1.45.0</sa-token.version>

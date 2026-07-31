@@ -7,7 +7,7 @@
 </p>
 
 <h1 align="center">Sz-Admin</h1>
-<h4 align="center">一套开源 RBAC 中后台管理脚手架，基于 Spring Boot 4、JDK 21、Vue 3、Vite 7 构建</h4>
+<h4 align="center">一套开源 RBAC 中后台管理脚手架，基于 Spring Boot 4、Java 21/25 LTS、Vue 3、Vite 7 构建</h4>
 
 <p align="center">
   <a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub" alt="GitHub Stars"></a>
@@ -32,10 +32,12 @@
 
 Sz-Admin 是一套面向企业中后台、管理端系统和二次开发项目的开源脚手架。它由后端 `sz-boot-parent`、前端 `sz-admin` 和官方文档共同组成，目标不是堆砌功能，而是提供一套边界清晰、便于升级、适合扩展的基础工程。
 
-- **后端技术栈**：Spring Boot 4、JDK 21、Sa-Token、MyBatis-Flex、Liquibase、Redis。
+- **后端技术栈**：Spring Boot 4、Java 21 LTS（默认）/ Java 25 LTS（兼容）、Sa-Token、MyBatis-Flex、Liquibase、Redis。
 - **前端技术栈**：Vue 3、Vite 7、TypeScript、Element Plus、Pinia。
 - **内置能力**：RBAC 权限、动态菜单、数据权限、代码生成器、字典、Excel、OSS、WebSocket、接口防抖。
 - **适用场景**：企业后台、SaaS 管理端、二次开发脚手架、代码生成与快速原型、多数据库适配项目。
+
+> **Java 生命周期公告：** Java 21 / 25 双版本兼容政策执行至 2026-08-31。计划自 2026-09-01 起将默认、最低编译与运行基线统一提升到 Java 25，并停止发布新的 Java 21 镜像。迁移前请参阅 [Java LTS 兼容政策](docs/java-lts-compatibility.md)。
 
 v2.0.0 是一次面向兼容性和扩展性的结构性重构：后端形成 `sz-common`、`sz-module`、`sz-service` 三层边界，前端引入 `src/core`、`src/editions`、`src/modules` 等模块化入口，让数据库、业务模块、登录适配、页面组合和派生项目接入都具备更清晰的扩展空间。对于二次开发项目来说，推荐把自有业务放进独立模块，从而减少与官方核心代码的耦合，也更利于后续升级。
 
@@ -45,7 +47,7 @@ Sz-Admin 也可以理解为“升职 Admin”，寓意升职加薪、节节高�
 
 | 亮点 | 说明 |
 | --- | --- |
-| 现代技术栈 | Spring Boot 4.x、JDK 21、Vue 3.5、Vite 7.3、TypeScript 5.2 |
+| 现代技术栈 | Spring Boot 4.x、Java 21/25 LTS、Vue 3.5、Vite 7.3、TypeScript 5.2 |
 | 贴近真实开发 | 来自实际中后台开发场景的持续实践，注重细节和开发体验，尽量降低使用者的心智负担 |
 | 模块边界清晰 | 后端拆分 `sz-common`、`sz-module`、`sz-service`，官方能力和二开业务更容易隔离 |
 | 升级友好 | 推荐自有业务独立成 `sz-module-*`，减少直接改官方核心模块带来的升级冲突 |
@@ -131,7 +133,7 @@ GitHub Actions CI/CD 只负责构建并推送后端镜像，然后通过 SSH 触
 | 技术 | 说明 |
 | --- | --- |
 | Spring Boot 4.x | 核心框架，主线已从历史 Spring Boot 3.x 升级到 4.x |
-| JDK 21 | 当前主线运行时，后续会在生态稳定后持续评估新的 Java LTS |
+| Java 21 / 25 LTS | Java 21 是默认和最低基线，Java 25 可选；两者均编译为 Java 21 字节码 |
 | Sa-Token | 轻量级 Java 权限认证框架 |
 | MyBatis-Flex | MyBatis 增强框架，配合项目内数据库能力使用 |
 | Liquibase | 数据库版本控制工具，替代历史 Flyway 主线 |
@@ -140,6 +142,8 @@ GitHub Actions CI/CD 只负责构建并推送后端镜像，然后通过 SSH 触
 | Springdoc OpenAPI | 当前接口文档主线，使用 Swagger UI / OpenAPI JSON |
 | AWS S3 SDK | 兼容 S3 协议的对象存储接入，支持 MinIO、阿里云 OSS、腾讯云 OSS 等 |
 | FastExcel | Excel 导入导出能力 |
+
+Java 版本选择、验证矩阵和 Docker 标签详见 [Java LTS 兼容政策](./docs/java-lts-compatibility.md)。
 
 ### 前端
 
@@ -208,7 +212,7 @@ sz-admin/
 
 | 环境 | 要求 |
 | --- | --- |
-| JDK | 21 |
+| JDK | Java 21 LTS（默认/最低）或 Java 25 LTS |
 | Maven | 3.8+，推荐 3.9.x |
 | 数据库 | MySQL 8.0.17+ 或 PostgreSQL 16+，二选一启用 |
 | Redis | 7.x |
