@@ -3,11 +3,16 @@
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build-and-push:
-    name: Build & Push ${{ matrix.app_name }}:${{ matrix.image_tag }}
+    name: Build & Verify ${{ matrix.app_name }}:${{ matrix.image_tag }} / ${{ matrix.image_tag_jdk25 }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -17,14 +22,17 @@ jobs:
             module_dir: sz-service/sz-service-admin
             maven_profile: mysql
             image_tag: latest
+            image_tag_jdk25: latest-jdk25
           - app_name: sz-service-admin
             module_dir: sz-service/sz-service-admin
             maven_profile: postgresql
             image_tag: latest-postgresql
+            image_tag_jdk25: latest-postgresql-jdk25
           - app_name: sz-service-websocket
             module_dir: sz-service/sz-service-websocket
             maven_profile: ""
             image_tag: latest
+            image_tag_jdk25: latest-jdk25
 
     env:
       ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
@@ -52,8 +60,11 @@ jobs:
         run: |
           set -euo pipefail
           image_ref="${ACR_DOMAIN}/${ACR_ZONE}/${{ matrix.app_name }}:${{ matrix.image_tag }}"
+          image_ref_jdk25="${ACR_DOMAIN}/${ACR_ZONE}/${{ matrix.app_name }}:${{ matrix.image_tag_jdk25 }}"
           echo "image_ref=${image_ref}" >> "$GITHUB_OUTPUT"
-          echo "本次构建官方镜像: ${image_ref}"
+          echo "image_ref_jdk25=${image_ref_jdk25}" >> "$GITHUB_OUTPUT"
+          echo "本次构建 Java 21 官方镜像: ${image_ref}"
+          echo "本次构建 Java 25 官方镜像: ${image_ref_jdk25}"
           echo "Maven Profile: ${{ matrix.maven_profile || 'none' }}"
 
       - name: Build Docker image
@@ -62,10 +73,15 @@ jobs:
           MODULE_DIR: ${{ matrix.module_dir }}
           MAVEN_PROFILE: ${{ matrix.maven_profile }}
           IMAGE_REF: ${{ steps.meta.outputs.image_ref }}
+          IMAGE_REF_JDK25: ${{ steps.meta.outputs.image_ref_jdk25 }}
         run: bash .github/scripts/build-sz-service-image.sh
 
       - name: Login to ACR
+        if: github.event_name != 'pull_request'
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
 
       - name: Push Docker image to ACR
-        run: docker push ${{ steps.meta.outputs.image_ref }}
+        if: github.event_name != 'pull_request'
+        run: |
+          docker push ${{ steps.meta.outputs.image_ref }}
+          docker push ${{ steps.meta.outputs.image_ref_jdk25 }}

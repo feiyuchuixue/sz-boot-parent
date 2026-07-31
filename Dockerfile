@@ -1,4 +1,5 @@
-FROM azul/zulu-openjdk:21-latest
+ARG JAVA_VERSION=21
+FROM azul/zulu-openjdk:${JAVA_VERSION}-latest
 LABEL authors="sz"
 
 COPY *.jar app.jar

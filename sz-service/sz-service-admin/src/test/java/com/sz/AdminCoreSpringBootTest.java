@@ -7,6 +7,7 @@ import com.sz.resource.enums.ServeModeEnum;
 import com.sz.resource.enums.StorageTypeEnum;
 import com.sz.resource.spi.ResourceSceneProvider;
 import com.sz.resource.spi.ResourceSecurityPolicyProvider;
+import com.sz.security.config.SaTokenConfig;
 import com.sz.security.core.CorsProperties;
 import com.sz.security.core.exception.SaExceptionHandler;
 import com.sz.security.pojo.WhitelistProperties;
@@ -19,7 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = AdminCoreSpringBootTest.TestBootApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
@@ -69,6 +72,14 @@ class AdminCoreSpringBootTest {
     void securityPropertiesAreBoundBySpringBoot() {
         assertThat(whitelistProperties.getWhitelist()).containsExactly("/captcha/**", "/auth/login");
         assertThat(corsProperties.getAllowedOrigins()).containsExactly("http://127.0.0.1:3000");
+    }
+
+    @Test
+    void saTokenInterceptorRegistrationToleratesMissingWhitelist() {
+        WhitelistProperties properties = new WhitelistProperties();
+        SaTokenConfig config = new SaTokenConfig(properties);
+
+        assertThatCode(() -> config.addInterceptors(new InterceptorRegistry())).doesNotThrowAnyException();
     }
 
     @Test
