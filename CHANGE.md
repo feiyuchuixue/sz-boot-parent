@@ -1,5 +1,52 @@
 # 更新日志
 
+## v2.0.2（20260731）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html)
+
+### sz-boot-parent
+
+#### 新增
+
+- 新增 Java 21 / Java 25 LTS 双版本兼容矩阵；Java 21 继续作为默认和最低基线，使用 Java 25 构建时仍通过 `--release 21` 产出 Java 21 字节码。
+
+#### 重构与优化
+
+- Spring Boot 升级至 `4.1.0`，Jackson 升级至 `3.2.1`，MyBatis-Flex 升级至 `1.11.8`。
+- 同步升级 MyBatis Spring、MySQL Connector/J、PostgreSQL JDBC Driver、HikariCP、Apache POI、AWS CRT、Commons IO 等依赖。
+- yauaa 升级至 `8.1.1`，降低 Windows 安全软件对旧依赖的误报干扰。
+- 优化后端 Docker 构建：同一 JAR 分别构建 Java 21 / 25 镜像，校验运行时版本和镜像内 JAR 哈希；PR 仅构建验证，不推送镜像。
+
+#### 修复
+
+- 修复 WebSocket 独立服务无法反序列化后台业务 DTO 导致消息发送失败的问题；消息数据改为可跨服务传输的通用 `Map` 结构。
+- 修复滑块验证码使用前端时间戳导致误报“验证过快”的问题，校验耗时改由服务端生成时间计算。
+- 修复同一终端连续获取验证码时旧校验数据被覆盖的问题；每次生成独立 `requestId`，同时保留 IP + User-Agent 维度的请求限流。
+- 补齐滑块验证码缺失 IV 校验，并将非法密文和 AES-GCM 解密失败统一转换为验证码验证失败，避免加密异常直接暴露为服务端错误。
+- 修复生产配置缺少 `router.whitelist` 时拦截器注册发生空指针异常的问题；白名单属性默认初始化为空集合。
+
+### sz-admin
+
+#### 重构与优化
+
+- 升级前端运行与构建依赖：Axios `1.18.0`、Vite `7.3.5`、TypeScript `5.9.3`、vue-tsc `3.3.8`、ESLint `10.8.0`、VueUse `14.4.0` 等。
+- 更新 pnpm overrides，收口 Babel、form-data、js-yaml、brace-expansion、PostCSS、micromatch、shell-quote、esbuild 等传递依赖版本。
+- 调整 tabs store 中 keep-alive store 的初始化时机，避免在 Pinia 激活前访问 store。
+- 同步适配依赖升级后的组件类型、属性和模板写法。
+
+#### 修复
+
+- WebSocket 消息通知同时兼容对象 payload 和历史字符串 payload，修复后端跨服务消息结构调整后的前端解析问题。
+- 滑块验证码不再提交客户端 `startTime`，与后端服务端计时契约保持一致。
+
+#### 升级影响
+
+- 自定义 WebSocket 客户端应把 `MESSAGE.data` 按对象处理；如需兼容旧后端，可同时支持 JSON 字符串。
+- 自定义验证码前端应始终提交本次 `/captcha/get` 返回的 `requestId`，不要复用旧验证码标识，也不要再依赖客户端 `startTime`。
+- 前端依赖和锁文件变化较大，升级后应使用 pnpm `10.17.1` 重新安装依赖，并执行 `pnpm run type-check` 与 `pnpm run build`。
+
 ## v2.0.1 （20260602）
 
 > [!NOTE]
