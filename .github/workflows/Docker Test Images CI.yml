@@ -39,7 +39,7 @@ jobs:
     env:
       ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
       ACR_ZONE: sz-action
-      VERSION: test
+      ENVIRONMENT_TAG: test
       BUILD_DB_TYPE: ${{ github.event.inputs.db_type || vars.SZ_TEST_DB_TYPE || vars.SZ_DB_TYPE || 'mysql' }}
 
     steps:
@@ -65,17 +65,17 @@ jobs:
           set -euo pipefail
 
           maven_profile=""
-          image_tag="${VERSION}"
+          image_tag="${ENVIRONMENT_TAG}"
 
           if [ "${{ matrix.image_kind }}" = "admin" ]; then
             case "${BUILD_DB_TYPE}" in
               mysql)
                 maven_profile="mysql"
-                image_tag="${VERSION}-mysql"
+                image_tag="${ENVIRONMENT_TAG}"
                 ;;
               postgresql)
                 maven_profile="postgresql"
-                image_tag="${VERSION}-postgresql"
+                image_tag="${ENVIRONMENT_TAG}-postgresql"
                 ;;
               *)
                 echo "不支持的 BUILD_DB_TYPE: ${BUILD_DB_TYPE}，可选值：mysql/postgresql" >&2
