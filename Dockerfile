@@ -1,5 +1,5 @@
-ARG JAVA_VERSION=21
-FROM azul/zulu-openjdk:${JAVA_VERSION}-latest
+# Azul Docker Official Image，OpenJDK25。
+FROM azul-zulu:25-jdk
 LABEL authors="sz"
 
 COPY *.jar app.jar
@@ -16,4 +16,4 @@ ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 # 声明挂载点（配置/日志）
 VOLUME ["/config", "/logs", "/data"]
 
-ENTRYPOINT ["sh", "-c", "java -Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 -jar app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+ENTRYPOINT ["sh", "-c", "java -Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -jar app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]

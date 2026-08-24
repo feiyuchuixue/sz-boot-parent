@@ -1,10 +1,10 @@
-name: Docker Sz Services Test CI
+name: Java 25 Preview Images - Build and Deploy
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "preview" ]
   pull_request:
-    branches: [ "test" ]
+    branches: [ "preview" ]
   workflow_dispatch:
     inputs:
       db_type:
@@ -15,14 +15,9 @@ on:
         options:
           - mysql
           - postgresql
-      deploy:
-        description: "Deploy to test server after image push"
-        required: true
-        default: true
-        type: boolean
 
 jobs:
-  build-and-push:
+  build-and-publish:
     name: Build & Push ${{ matrix.app_name }}
     runs-on: ubuntu-latest
     strategy:
@@ -39,18 +34,18 @@ jobs:
     env:
       ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
       ACR_ZONE: sz-action
-      VERSION: test
-      BUILD_DB_TYPE: ${{ github.event.inputs.db_type || vars.SZ_TEST_DB_TYPE || vars.SZ_DB_TYPE || 'mysql' }}
+      VERSION: latest
+      BUILD_DB_TYPE: ${{ github.event.inputs.db_type || vars.SZ_DB_TYPE || 'mysql' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21 (Zulu)
+      - name: Set up JDK 25 (Zulu)
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '25'
           cache: 'maven'
 
       - name: Set up Maven 3.9.6
@@ -71,7 +66,7 @@ jobs:
             case "${BUILD_DB_TYPE}" in
               mysql)
                 maven_profile="mysql"
-                image_tag="${VERSION}-mysql"
+                image_tag="${VERSION}"
                 ;;
               postgresql)
                 maven_profile="postgresql"
@@ -108,15 +103,15 @@ jobs:
   deploy:
     name: Deploy with sz-deploy-v3 scripts
     runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || github.event.inputs.deploy == 'true')
+    needs: build-and-publish
+    if: github.event_name != 'pull_request'
     steps:
-      - name: Deploy services on test server
+      - name: Deploy services on remote server
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.REMOTE_HOST_TEST }}
-          username: ${{ secrets.REMOTE_USER_TEST }}
-          password: ${{ secrets.REMOTE_PASSWORD_TEST }}
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
           script: |
             set -e
 

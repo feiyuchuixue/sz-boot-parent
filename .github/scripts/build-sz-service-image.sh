@@ -6,7 +6,7 @@ set -euo pipefail
 : "${IMAGE_REF:?缺少 IMAGE_REF}"
 
 MAVEN_PROFILE="${MAVEN_PROFILE:-}"
-IMAGE_REF_JDK25="${IMAGE_REF_JDK25:-}"
+IMAGE_REF_ALIAS="${IMAGE_REF_ALIAS:-}"
 
 log() {
   echo "[ci][build-sz-service-image] $1"
@@ -15,9 +15,9 @@ log() {
 log "应用名称: ${APP_NAME}"
 log "模块目录: ${MODULE_DIR}"
 log "Maven Profile: ${MAVEN_PROFILE:-none}"
-log "Java 21 目标镜像: ${IMAGE_REF}"
-if [ -n "${IMAGE_REF_JDK25}" ]; then
-  log "Java 25 目标镜像: ${IMAGE_REF_JDK25}"
+log "Java 25 目标镜像: ${IMAGE_REF}"
+if [ -n "${IMAGE_REF_ALIAS}" ]; then
+  log "Java 25 镜像别名: ${IMAGE_REF_ALIAS}"
 fi
 
 if [ -n "${MAVEN_PROFILE}" ]; then
@@ -35,46 +35,31 @@ if [ "${jar_count}" -ne 1 ]; then
   exit 1
 fi
 
-build_and_verify_image() {
-  local java_version="$1"
-  local image_ref="$2"
-  local version_output
+log "开始构建 Java 25 Docker 镜像: ${IMAGE_REF}"
+docker build \
+  -f Dockerfile \
+  -t "${IMAGE_REF}" \
+  "${MODULE_DIR}/target"
 
-  log "开始构建 Java ${java_version} Docker 镜像: ${image_ref}"
-  docker build \
-    --build-arg "JAVA_VERSION=${java_version}" \
-    -f Dockerfile \
-    -t "${image_ref}" \
-    "${MODULE_DIR}/target"
+version_output=$(docker run --rm --entrypoint java "${IMAGE_REF}" -version 2>&1)
+echo "${version_output}"
+if ! grep -Eq 'version "25([."-])' <<< "${version_output}"; then
+  echo "[ci][build-sz-service-image] 镜像运行时版本不符合预期 Java 25: ${IMAGE_REF}" >&2
+  exit 1
+fi
 
-  version_output=$(docker run --rm --entrypoint java "${image_ref}" -version 2>&1)
-  echo "${version_output}"
-  if ! grep -Eq "version \"${java_version}([.\"-])" <<< "${version_output}"; then
-    echo "[ci][build-sz-service-image] 镜像运行时版本不符合预期 Java ${java_version}: ${image_ref}" >&2
+docker run --rm --entrypoint java "${IMAGE_REF}" \
+  -Djarmode=tools -jar /app.jar list-layers
+log "Docker 镜像构建及运行时检查完成: ${IMAGE_REF}"
+
+if [ -n "${IMAGE_REF_ALIAS}" ]; then
+  docker tag "${IMAGE_REF}" "${IMAGE_REF_ALIAS}"
+
+  image_id=$(docker image inspect --format '{{.Id}}' "${IMAGE_REF}")
+  image_alias_id=$(docker image inspect --format '{{.Id}}' "${IMAGE_REF_ALIAS}")
+  if [ "${image_id}" != "${image_alias_id}" ]; then
+    echo "[ci][build-sz-service-image] 镜像别名 ID 不一致: ${IMAGE_REF} (${image_id}) != ${IMAGE_REF_ALIAS} (${image_alias_id})" >&2
     exit 1
   fi
-
-  docker run --rm --entrypoint java "${image_ref}" \
-    -Djarmode=tools -jar /app.jar list-layers
-  log "Docker 镜像构建及运行时检查完成: ${image_ref}"
-}
-
-image_jar_hash() {
-  docker run --rm --entrypoint sha256sum "$1" /app.jar | awk '{print $1}'
-}
-
-build_and_verify_image 21 "${IMAGE_REF}"
-
-if [ -n "${IMAGE_REF_JDK25}" ]; then
-  build_and_verify_image 25 "${IMAGE_REF_JDK25}"
-
-  jdk21_jar_hash=$(image_jar_hash "${IMAGE_REF}")
-  jdk25_jar_hash=$(image_jar_hash "${IMAGE_REF_JDK25}")
-  if [ "${jdk21_jar_hash}" != "${jdk25_jar_hash}" ]; then
-    echo "[ci][build-sz-service-image] Java 21/25 镜像内 JAR 哈希不一致" >&2
-    echo "Java 21: ${jdk21_jar_hash}" >&2
-    echo "Java 25: ${jdk25_jar_hash}" >&2
-    exit 1
-  fi
-  log "Java 21/25 镜像复用同一 JAR: sha256=${jdk21_jar_hash}"
+  log "同镜像别名成功: ${IMAGE_REF} -> ${IMAGE_REF_ALIAS} (${image_id})"
 fi
