@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.util.ObjectUtil;
 import com.sz.core.common.constant.GlobalConstant;
-import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

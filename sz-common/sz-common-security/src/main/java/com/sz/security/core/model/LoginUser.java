@@ -1,12 +1,13 @@
-package com.sz.core.common.entity;
+package com.sz.security.core.model;
 
+import cn.dev33.satoken.json.SaJsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.*;
 
 @Data
-public class LoginUser {
+public class LoginUser implements SaJsonType {
 
     @Schema(description = "基础用户信息")
     private BaseUserInfo userInfo;

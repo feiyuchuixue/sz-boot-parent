@@ -20,7 +20,7 @@
         <revision>2.0.2-SNAPSHOT</revision>
         <spring-boot.version>4.1.1</spring-boot.version>
         <lombok.version>1.18.46</lombok.version>
-        <sa-token.version>1.45.0</sa-token.version>
+        <sa-token.version>1.46.0</sa-token.version>
         <jackson.version>3.2.1</jackson.version>
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <aws.s3.version>2.32.29</aws.s3.version>

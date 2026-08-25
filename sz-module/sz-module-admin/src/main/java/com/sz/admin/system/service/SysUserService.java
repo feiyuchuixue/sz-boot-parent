@@ -10,7 +10,7 @@ import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
 import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserProfileVO;
-import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.model.LoginUser;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
 

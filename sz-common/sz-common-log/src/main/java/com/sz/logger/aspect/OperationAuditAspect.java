@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sz.core.common.entity.ApiResult;
-import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.model.LoginUser;
 import com.sz.core.util.HttpReqResUtil;
 import com.sz.core.util.JsonUtils;
 import com.sz.core.util.Utils;

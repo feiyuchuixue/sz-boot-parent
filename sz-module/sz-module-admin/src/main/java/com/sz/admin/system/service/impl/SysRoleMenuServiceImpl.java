@@ -12,7 +12,7 @@ import com.sz.admin.system.pojo.po.SysRoleMenu;
 import com.sz.admin.system.pojo.vo.scriptexport.ScriptExportVO;
 import com.sz.admin.system.pojo.vo.sysdept.DeptTreeVO;
 import com.sz.admin.system.pojo.vo.sysmenu.MenuTreeVO;
-import com.sz.core.common.entity.RoleMenuScopeVO;
+import com.sz.security.core.model.RoleMenuScopeVO;
 import com.sz.admin.system.pojo.vo.sysrolemenu.SysRoleMenuVO;
 import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
 import com.sz.admin.system.script.AdminScriptExportService;

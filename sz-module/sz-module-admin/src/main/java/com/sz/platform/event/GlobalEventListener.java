@@ -1,7 +1,7 @@
 package com.sz.platform.event;
 
 import com.sz.admin.system.service.SysUserService;
-import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.model.LoginUser;
 import com.sz.core.util.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

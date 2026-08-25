@@ -1,7 +1,7 @@
 package com.sz.security.service.impl;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.sz.core.common.entity.LoginUser;
+import com.sz.security.core.model.LoginUser;
 import com.sz.security.core.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;

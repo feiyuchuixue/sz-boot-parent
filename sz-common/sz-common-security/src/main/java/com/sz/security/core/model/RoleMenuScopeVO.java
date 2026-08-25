@@ -1,5 +1,6 @@
-package com.sz.core.common.entity;
+package com.sz.security.core.model;
 
+import cn.dev33.satoken.json.SaJsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import java.util.Collection;
 
 @Schema(description = "用户的数据权限范围汇总信息")
 @Data
-public class RoleMenuScopeVO {
+public class RoleMenuScopeVO implements SaJsonType {
 
     @Schema(description = "sys_menu_id （菜单表）")
     private Long menuId;
@@ -22,7 +23,7 @@ public class RoleMenuScopeVO {
     private CustomScope extraCustomScope;
 
     @Data
-    public static class CustomScope {
+    public static class CustomScope implements SaJsonType {
 
         @Schema(description = "用户ID")
         private Collection<Long> userIds;

@@ -17,7 +17,7 @@ import com.sz.admin.system.service.SysMenuService;
 import com.sz.admin.system.service.impl.SysRoleMenuServiceImpl;
 import com.sz.admin.system.service.impl.SysDataRoleRelationServiceImpl;
 import com.sz.core.common.constant.GlobalConstant;
-import com.sz.core.common.entity.RoleMenuScopeVO;
+import com.sz.security.core.model.RoleMenuScopeVO;
 import com.sz.core.common.event.EventPublisher;
 import com.sz.db.permission.DataScopeConstant;
 import com.sz.platform.constant.dict.DataScopeRelationTypeConstant;

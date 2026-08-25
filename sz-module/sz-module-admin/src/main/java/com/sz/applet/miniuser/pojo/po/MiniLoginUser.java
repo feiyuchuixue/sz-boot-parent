@@ -1,5 +1,6 @@
 package com.sz.applet.miniuser.pojo.po;
 
+import cn.dev33.satoken.json.SaJsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import lombok.Data;
  * @version 1.0
  */
 @Data
-public class MiniLoginUser {
+public class MiniLoginUser implements SaJsonType {
 
     @Schema(description = "用户ID(MiniUser表主键)")
     private Long userId;

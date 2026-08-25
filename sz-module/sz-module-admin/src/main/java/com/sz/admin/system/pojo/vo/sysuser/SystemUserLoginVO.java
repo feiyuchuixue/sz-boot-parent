@@ -1,6 +1,6 @@
 package com.sz.admin.system.pojo.vo.sysuser;
 
-import com.sz.core.common.entity.BaseUserInfo;
+import com.sz.security.core.model.BaseUserInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,6 @@
-package com.sz.core.common.entity;
+package com.sz.security.core.model;
 
+import cn.dev33.satoken.json.SaJsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import lombok.Data;
  * @since 2023-12-12
  */
 @Data
-public class BaseUserInfo {
+public class BaseUserInfo implements SaJsonType {
 
     @Schema(description = "用户id")
     private Long id;
