@@ -63,7 +63,7 @@ if ! grep -Eq 'version "25([."-])' <<< "${version_output}"; then
 fi
 
 docker run --rm --entrypoint sh "${IMAGE_REF}" \
-  -c 'test -f /application/application.jar && test -d /application/lib && test ! -f /app.jar'
+  -c 'test "$(pwd)" = / && test -f /application/application.jar && test -d /application/lib && test ! -f /app.jar'
 log "Docker 镜像构建及运行时检查完成: ${IMAGE_REF}"
 
 if [ -n "${IMAGE_REF_ALIAS}" ]; then
