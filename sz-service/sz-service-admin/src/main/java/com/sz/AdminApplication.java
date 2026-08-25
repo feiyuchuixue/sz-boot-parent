@@ -22,7 +22,7 @@ public class AdminApplication {
                 ------------------%s  (v%s)-------------------
                 """;
         String version = AppVersionUtils.resolve(context.getEnvironment().getProperty("app.version"), AdminApplication.class);
-        String result = String.format(template, "https://szadmin.cn", version);
+        String result = String.format(template, "https://szadmin.cn | jdk25 | sa-token 1.46.0", version);
         System.out.println(result);
     }
 
