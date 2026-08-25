@@ -25,9 +25,12 @@ COPY --from=builder /builder/extracted/spring-boot-loader/ ./
 COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder /builder/extracted/application/ ./
 
+# 保持原镜像的运行目录契约，使 file:config/... 继续解析到 /config/...
+WORKDIR /
+
 ARG SPRING_PROFILES_ACTIVE=prod
 ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 
 VOLUME ["/config", "/logs", "/data"]
 
-ENTRYPOINT ["sh", "-c", "exec java -Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -jar application.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+ENTRYPOINT ["sh", "-c", "exec java -Duser.timezone=Asia/Shanghai -Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -jar /application/application.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
