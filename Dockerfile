@@ -6,7 +6,7 @@ COPY *.jar application.jar
 RUN java -Djarmode=tools -jar application.jar \
     extract --layers --destination extracted
 
-# 第一阶段保持现有 Java 25 JDK 基础镜像不变，单独验证分层收益
+# 运行阶段保持现有 Java 25 JDK 基础镜像不变，单独验证分层收益
 FROM azul-zulu:25-jdk
 LABEL authors="sz"
 
