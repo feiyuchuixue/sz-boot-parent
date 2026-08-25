@@ -35,6 +35,20 @@ if [ "${jar_count}" -ne 1 ]; then
   exit 1
 fi
 
+jar_file=$(find "${MODULE_DIR}/target" -maxdepth 1 -type f \
+  -name '*.jar' ! -name '*sources.jar' ! -name '*javadoc.jar' -print -quit)
+
+log "检查 Spring Boot JAR 分层索引: ${jar_file}"
+layers_output=$(java -Djarmode=tools -jar "${jar_file}" list-layers)
+echo "${layers_output}"
+
+for expected_layer in dependencies spring-boot-loader snapshot-dependencies application; do
+  if ! grep -Fxq "${expected_layer}" <<< "${layers_output}"; then
+    echo "[ci][build-sz-service-image] JAR 缺少 Spring Boot 分层: ${expected_layer}" >&2
+    exit 1
+  fi
+done
+
 log "开始构建 Java 25 Docker 镜像: ${IMAGE_REF}"
 docker build \
   -f Dockerfile \
@@ -48,8 +62,8 @@ if ! grep -Eq 'version "25([."-])' <<< "${version_output}"; then
   exit 1
 fi
 
-docker run --rm --entrypoint java "${IMAGE_REF}" \
-  -Djarmode=tools -jar /app.jar list-layers
+docker run --rm --entrypoint sh "${IMAGE_REF}" \
+  -c 'test -f /application/application.jar && test -d /application/lib && test ! -f /app.jar'
 log "Docker 镜像构建及运行时检查完成: ${IMAGE_REF}"
 
 if [ -n "${IMAGE_REF_ALIAS}" ]; then
