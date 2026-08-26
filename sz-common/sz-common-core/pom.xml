@@ -12,6 +12,11 @@
     <artifactId>sz-common-core</artifactId>
 
     <dependencies>
+        <!-- 通用 HTML 内容净化：用于富文本、CMS、Markdown 转换结果和导入 HTML 片段的 XSS 防护。 -->
+        <dependency>
+            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+            <artifactId>owasp-java-html-sanitizer</artifactId>
+        </dependency>
         <!-- springboot web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

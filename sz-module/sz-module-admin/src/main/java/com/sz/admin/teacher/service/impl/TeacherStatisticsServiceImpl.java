@@ -44,9 +44,12 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     private final ResourceService resourceService;
 
+    private final HtmlContentSanitizer htmlContentSanitizer;
+
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
         TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+        teacherStatistics.setContentHtml(htmlContentSanitizer.sanitize(teacherStatistics.getContentHtml()));
         // 唯一性校验
         save(teacherStatistics);
     }
@@ -54,6 +57,7 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     @Override
     public void update(TeacherStatisticsUpdateDTO dto) {
         TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+        teacherStatistics.setContentHtml(htmlContentSanitizer.sanitize(teacherStatistics.getContentHtml()));
         QueryWrapper wrapper;
         // id有效性校验
         wrapper = QueryWrapper.create().eq(TeacherStatistics::getId, dto.getId());
