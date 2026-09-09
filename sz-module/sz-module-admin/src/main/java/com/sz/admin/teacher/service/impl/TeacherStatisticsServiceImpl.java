@@ -1,5 +1,6 @@
 package com.sz.admin.teacher.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -11,6 +12,8 @@ import com.sz.admin.teacher.pojo.po.TeacherStatistics;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
 import com.sz.admin.teacher.service.support.TeacherStatisticsExcelImporter;
+import com.sz.resource.enums.ResourceAccessResponseEnum;
+import com.sz.admin.system.service.SysResourceService;
 import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.common.entity.SelectIdsDTO;
@@ -19,7 +22,7 @@ import com.sz.core.datascope.DataScopeSession;
 import com.sz.core.util.*;
 import com.sz.excel.imports.model.ExcelImportResultVO;
 import com.sz.excel.utils.ExcelUtils;
-import com.sz.resource.service.ResourceService;
+import com.sz.resource.model.ResourceRef;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * <p>
@@ -42,13 +47,14 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     private final TeacherStatisticsExcelImporter excelImporter;
 
-    private final ResourceService resourceService;
-
     private final HtmlContentSanitizer htmlContentSanitizer;
+
+    private final SysResourceService sysResourceService;
 
     @Override
     public void create(TeacherStatisticsCreateDTO dto) {
         TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+        teacherStatistics.setUrl(sysResourceService.normalizeForCreate(dto.getUrl(), "teacher.attachment", currentUserId(dto.getUrl())));
         teacherStatistics.setContentHtml(htmlContentSanitizer.sanitize(teacherStatistics.getContentHtml()));
         // 唯一性校验
         save(teacherStatistics);
@@ -56,7 +62,10 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public void update(TeacherStatisticsUpdateDTO dto) {
+        TeacherStatistics existing = getById(dto.getId());
+        CommonResponseEnum.INVALID_ID.assertNull(existing);
         TeacherStatistics teacherStatistics = BeanCopyUtils.copy(dto, TeacherStatistics.class);
+        teacherStatistics.setUrl(sysResourceService.normalizeForUpdate(existing.getUrl(), dto.getUrl(), "teacher.attachment", currentUserId(dto.getUrl())));
         teacherStatistics.setContentHtml(htmlContentSanitizer.sanitize(teacherStatistics.getContentHtml()));
         QueryWrapper wrapper;
         // id有效性校验
@@ -70,7 +79,6 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public PageResult<TeacherStatisticsVO> page(TeacherStatisticsListDTO dto) {
         try (var ignored = new DataScopeSession(TeacherStatistics.class)) {
             Page<TeacherStatisticsVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), TeacherStatisticsVO.class); // 调试sql
-            page.getRecords().forEach(this::fillAccessUrl);
             return PageUtils.getPageResult(page);
         }
     }
@@ -79,7 +87,6 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
     public List<TeacherStatisticsVO> list(TeacherStatisticsListDTO dto) {
         try (var ignored = new DataScopeSession(TeacherStatistics.class)) {
             List<TeacherStatisticsVO> list = listAs(buildQueryWrapper(dto), TeacherStatisticsVO.class);
-            list.forEach(this::fillAccessUrl);
             return list;
         }
     }
@@ -92,11 +99,26 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public TeacherStatisticsVO detail(Long id) {
-        TeacherStatistics teacherStatistics = getById(id);
+        TeacherStatistics teacherStatistics = findAccessibleById(id).orElse(null);
         CommonResponseEnum.INVALID_ID.assertNull(teacherStatistics);
-        TeacherStatisticsVO vo = BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
-        fillAccessUrl(vo);
-        return vo;
+        return BeanCopyUtils.copy(teacherStatistics, TeacherStatisticsVO.class);
+    }
+
+    @Override
+    public Optional<TeacherStatistics> findAccessibleById(Long id) {
+        try (var ignored = new DataScopeSession(TeacherStatistics.class)) {
+            QueryWrapper wrapper = QueryWrapper.create().from(TeacherStatistics.class).eq(TeacherStatistics::getId, id);
+            return Optional.ofNullable(getOne(wrapper));
+        }
+    }
+
+    @Override
+    public void validateResourceAccess(Long id, Long resourceId) {
+        TeacherStatistics record = findAccessibleById(id)
+                .orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException());
+        boolean matched = record.getUrl() != null && record.getUrl().stream()
+                .anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
+        ResourceAccessResponseEnum.ACCESS_DENIED.assertFalse(matched);
     }
 
     @SneakyThrows
@@ -152,9 +174,8 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
         return wrapper;
     }
 
-    /** 将 url 列表中每个 ResourceRef 的 accessUrl 填充为当前环境可访问 URL */
-    private void fillAccessUrl(TeacherStatisticsVO vo) {
-        resourceService.fillAccessUrl(vo.getUrl());
+    private Long currentUserId(List<ResourceRef> references) {
+        return references == null || references.isEmpty() ? null : StpUtil.getLoginIdAsLong();
     }
 
     @SneakyThrows

@@ -13,6 +13,7 @@ import com.sz.excel.imports.model.ExcelImportResultVO;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -35,6 +36,10 @@ public interface TeacherStatisticsService extends IService<TeacherStatistics> {
     void remove(SelectIdsDTO dto);
 
     TeacherStatisticsVO detail(Long id);
+
+    Optional<TeacherStatistics> findAccessibleById(Long id);
+
+    void validateResourceAccess(Long id, Long resourceId);
 
     ExcelImportResultVO importExcel(ImportExcelDTO dto);
 

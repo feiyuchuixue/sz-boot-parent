@@ -20,6 +20,7 @@ sz:
     scenes:
       # ========= 账户头像 - 本地模式 =========
       - code: admin.user.logo # 账户头像
+        name: 账户头像
         type: LOCAL
         serve-mode: DIRECT
         # base-url: http://127.0.0.1:7980/providers # nginx 代理
@@ -51,26 +52,27 @@ sz:
       #        max-size: 3
       # ========= 模版文件 - 本地模式 =========
       - code: template.excel
+        name: 模板文件管理 / 导入模板
         type: LOCAL
-        serve-mode: DIRECT
+        serve-mode: PROTECTED
         path: template
-        base-url: http://127.0.0.1:9991/api/admin/resource/file/template
         naming: ORIGINAL
         path-strategy: DATE
         exts: [ xls, xlsx ]
         max-size: 10
       # ========= 教师统计 - 附件 - 本地模式 =========
       - code: teacher.attachment
+        name: 教师统计 / 附件
         type: LOCAL
-        serve-mode: DIRECT
+        serve-mode: PROTECTED
         path: teacher-attachments
-        base-url: http://127.0.0.1:9991/api/admin/resource/file/teacher-attachments
         naming: ORIGINAL
         path-strategy: BIZ_DATE
         exts: [png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx]
         max-size: 10
         # ========= 教师统计 - 富文本编辑器 - 本地模式 =========
       - code: teacher.richtext
+        name: 教师富文本
         type: LOCAL
         serve-mode: DIRECT
         path: teacher-richtext
@@ -81,10 +83,21 @@ sz:
         max-size: 5
       # ========= 未指定时代码生成的临时上传文件 - 本地模式 =========
       - code: system.temp
+        name: 临时公开文件
         type: LOCAL
         serve-mode: DIRECT
         path: temp
         base-url: http://127.0.0.1:9991/api/admin/resource/file/temp
+        naming: ORIGINAL
+        path-strategy: DATE
+        exts: [ png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx ]
+        max-size: 10
+      # ========= 代码生成器默认受保护附件 =========
+      - code: system.protected
+        name: 通用业务附件
+        type: LOCAL
+        serve-mode: PROTECTED
+        path: protected
         naming: ORIGINAL
         path-strategy: DATE
         exts: [ png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx ]

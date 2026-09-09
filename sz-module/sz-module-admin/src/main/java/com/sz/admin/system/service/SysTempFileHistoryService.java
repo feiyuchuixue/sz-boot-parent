@@ -19,4 +19,6 @@ public interface SysTempFileHistoryService extends IService<SysTempFileHistory> 
     void create(SysTempFileHistoryCreateDTO dto);
 
     PageResult<SysTempFileHistory> historyList(SysTempFileHistoryListDTO dto);
+
+    void validateResourceAccess(Long id, Long resourceId);
 }

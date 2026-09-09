@@ -14,6 +14,9 @@ import com.sz.admin.system.pojo.dto.systempfile.SysTempFileCreateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileUpdateDTO;
 import com.sz.admin.system.pojo.dto.systempfile.SysTempFileListDTO;
 import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
+import com.sz.resource.service.ResourceDownloadService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
  * <p>
@@ -30,6 +33,8 @@ import com.sz.admin.system.pojo.vo.systempfile.SysTempFileVO;
 public class SysTempFileController {
 
     private final SysTempFileService sysTempFileService;
+
+    private final ResourceDownloadService resourceDownloadService;
 
     @Operation(summary = "新增模板文件")
     @SaCheckPermission(value = "sys.temp.file.create")
@@ -67,5 +72,21 @@ public class SysTempFileController {
     @GetMapping("/{id}")
     public ApiResult<SysTempFileVO> detail(@PathVariable Long id) {
         return ApiResult.success(sysTempFileService.detail(id));
+    }
+
+    @Operation(summary = "下载模板文件")
+    @SaCheckPermission(value = "sys.temp.file.query_table")
+    @PostMapping("/{id}/resources/{resourceId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        sysTempFileService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.download(resourceId);
+    }
+
+    @Operation(summary = "预览模板文件")
+    @SaCheckPermission(value = "sys.temp.file.query_table")
+    @PostMapping("/{id}/resources/{resourceId}/preview")
+    public ResponseEntity<StreamingResponseBody> previewResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        sysTempFileService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.preview(resourceId);
     }
 }

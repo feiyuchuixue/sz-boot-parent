@@ -6,6 +6,7 @@ import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
 import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
 import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
 import com.sz.admin.teacher.service.TeacherStatisticsService;
+import com.sz.resource.service.ResourceDownloadService;
 import com.sz.core.common.constant.GlobalConstant;
 import com.sz.core.common.entity.*;
 import com.sz.excel.imports.model.ExcelImportResultVO;
@@ -18,7 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 
@@ -38,6 +41,8 @@ import java.util.List;
 public class TeacherStatisticsController {
 
     private final TeacherStatisticsService teacherStatisticsService;
+
+    private final ResourceDownloadService resourceDownloadService;
 
     @Operation(summary = "新增教师统计")
     @SaCheckPermission(value = "teacher.statistics.create", orRole = GlobalConstant.SUPER_ROLE)
@@ -75,6 +80,22 @@ public class TeacherStatisticsController {
     @GetMapping("/{id}")
     public ApiResult<TeacherStatisticsVO> detail(@PathVariable Long id) {
         return ApiResult.success(teacherStatisticsService.detail(id));
+    }
+
+    @Operation(summary = "下载教师统计附件")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/{id}/resources/{resourceId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        teacherStatisticsService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.download(resourceId);
+    }
+
+    @Operation(summary = "预览教师统计附件")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/{id}/resources/{resourceId}/preview")
+    public ResponseEntity<StreamingResponseBody> previewResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        teacherStatisticsService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.preview(resourceId);
     }
 
     @Operation(summary = "导入教师统计", parameters = {

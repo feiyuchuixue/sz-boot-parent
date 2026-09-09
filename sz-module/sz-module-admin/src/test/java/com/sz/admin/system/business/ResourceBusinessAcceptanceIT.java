@@ -24,6 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +37,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ResourceBusinessAcceptanceIT {
+
+    @Test
+    void protectedScenesUseProtectedModeWhileAvatarRemainsBrowserReachableDirectResource() throws IOException {
+        for (String profile : List.of("dev", "local", "preview", "prod")) {
+            String config = readProfileConfig(profile);
+
+            assertThat(sceneBlock(config, "template.excel")).contains("serve-mode: PROTECTED").doesNotContain("base-url:");
+            assertThat(sceneBlock(config, "teacher.attachment")).contains("serve-mode: PROTECTED").doesNotContain("base-url:");
+            assertThat(sceneBlock(config, "system.protected")).contains("serve-mode: PROTECTED").doesNotContain("base-url:");
+            assertThat(sceneBlock(config, "admin.user.logo")).contains("serve-mode: DIRECT");
+        }
+
+        assertThat(sceneBlock(readProfileConfig("local"), "admin.user.logo")).contains("http://127.0.0.1:9991/api/admin/resource/file/logo");
+        assertThat(sceneBlock(readProfileConfig("prod"), "admin.user.logo")).contains("base-url: /api/admin/resource/file/logo").doesNotContain("127.0.0.1");
+    }
 
     @Test
     void uploadSplitsPathSegmentsAndPassesNamingKeyToService() throws IOException {
@@ -117,6 +134,22 @@ class ResourceBusinessAcceptanceIT {
     }
 
     @Test
+    void serveFileDoesNotExposeSceneWithoutExplicitPublicMode() {
+        ResourceSceneConfig scene = new ResourceSceneConfig();
+        scene.setCode("business.file");
+        scene.setPath("files");
+        scene.setBaseUrl("/api/admin/resource/file/files");
+        ResourceProperties properties = new ResourceProperties();
+        properties.setScenes(List.of(scene));
+        properties.validate();
+        SysResourceServiceImpl service = new SysResourceServiceImpl(mock(ResourceService.class), properties, mock(SysResourceMapper.class));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/admin/resource/file/files/report.pdf");
+
+        assertThat(service.findServeFile("files", request).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     void serveFileDecodesSubPathChoosesMediaTypeAndStreamsStorageContent() throws IOException {
         ResourceService resourceService = mock(ResourceService.class);
         SysResourceServiceImpl service = new SysResourceServiceImpl(resourceService, resourceProperties(), mock(SysResourceMapper.class));
@@ -147,5 +180,17 @@ class ResourceBusinessAcceptanceIT {
         properties.setScenes(List.of(avatar));
         properties.validate();
         return properties;
+    }
+
+    private static String readProfileConfig(String profile) throws IOException {
+        return Files.readString(Path.of("..", "..", "config", profile, "oss.yml"));
+    }
+
+    private static String sceneBlock(String config, String sceneCode) {
+        String marker = "      - code: " + sceneCode;
+        int start = config.indexOf(marker);
+        assertThat(start).as("scene %s must exist", sceneCode).isGreaterThanOrEqualTo(0);
+        int end = config.indexOf("\n      - code: ", start + marker.length());
+        return end < 0 ? config.substring(start) : config.substring(start, end);
     }
 }

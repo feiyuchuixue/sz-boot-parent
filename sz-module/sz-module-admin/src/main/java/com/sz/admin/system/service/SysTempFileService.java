@@ -33,5 +33,7 @@ public interface SysTempFileService extends IService<SysTempFile> {
 
     SysTempFileVO detail(Long id);
 
+    void validateResourceAccess(Long id, Long resourceId);
+
     SysTempFileInfoVO detailByNameOrAlias(String tempName, String alias);
 }
