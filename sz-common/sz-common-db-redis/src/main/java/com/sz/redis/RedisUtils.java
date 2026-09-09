@@ -68,7 +68,7 @@ public class RedisUtils {
         return TEMPLATE.opsForValue().get(key);
     }
 
-    public static RedisTemplate<Object, Object> getRestTemplate() {
+    public static RedisTemplate<Object, Object> getRedisTemplate() {
         return TEMPLATE;
     }
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="202606022013" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu WHERE id = 2061630526623715328</sqlCheck>
+        </preConditions>
+        <comment>菜单新增[角色管理-SQL导出]按钮</comment>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="2061630526623715328"/>
+            <column name="pid" valueNumeric="705327582631039028"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="SQL导出"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="600"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.role.sql_btn"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="202606022014" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_role_menu WHERE role_id = 1 AND permission_type = 'menu' AND menu_id = 2061630526623715328 AND data_scope_cd = ''</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_role_menu">
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="menu_id" valueNumeric="2061630526623715328"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+    </changeSet>
+    <changeSet id="202606022015" author="升职哦（sz）">
+        <comment>修正菜单标题：登陆日志 -> 登录日志</comment>
+        <update tableName="sys_menu">
+            <column name="title" value="登录日志"/>
+            <where>
+                id = 705327582446489608
+                AND title = '登陆日志'
+                AND del_flag = 'F'
+            </where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

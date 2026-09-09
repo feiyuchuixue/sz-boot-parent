@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_resource: demo data -->
+
+    <changeSet id="demo-data-sys-resource-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_resource WHERE id IN (407693840624005120)</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005120"/>
+            <column name="scene_code" value="template.excel"/>
+            <column name="object_key" value="template/20260501/教师统计导入模板新.xlsx"/>
+            <column name="origin_name" value="教师统计导入模板新.xlsx"/>
+            <column name="size" valueNumeric="11656"/>
+            <column name="content_type" value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_time" valueDate="2026-05-01 13:30:46"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2026-05-01 13:30:46"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- 代码生成器表结构：如不需要代码生成器功能，可注释 changelog-master.xml 中 generator 入口。 -->
+    <include file="tables/001_generator_table.xml" relativeToChangelogFile="true"/>
+    <include file="tables/002_generator_table_column.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

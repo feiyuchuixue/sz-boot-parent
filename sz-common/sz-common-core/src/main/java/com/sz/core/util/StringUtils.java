@@ -6,7 +6,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import org.apache.commons.lang3.Strings;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -81,10 +82,18 @@ public class StringUtils {
         while (match.find()) {
             matchList.add(match.group(1));
         }
-        for (int i = 0; i < replaceArrValue.length; i++) {
-            str = str.replace(matchList.get(i), replaceArrValue[i]);
+        try {
+            for (int i = 0; i < replaceArrValue.length; i++) {
+                String replacement = replaceArrValue[i] == null ? "" : replaceArrValue[i];
+                str = str.replace(matchList.get(i), replacement);
+            }
+            return str;
+        } catch (Exception e) {
+            System.err.println("getRealKey error, str: " + str + ", pattern: " + pattern + ", matchList: " + matchList + ", replaceArrValue: "
+                    + Arrays.toString(replaceArrValue));
+            e.printStackTrace();
+            throw e;
         }
-        return str;
     }
 
     public static String getRealKey(String sourceKey, String... replaceArrValue) {
@@ -443,11 +452,11 @@ public class StringUtils {
      * @return 是否包含任意一个字符串
      */
     public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences) {
-        if (isEmpty((Collection<?>) cs) || isEmpty(searchCharSequences)) {
+        if (cs == null || cs.isEmpty() || isEmpty(searchCharSequences)) {
             return false;
         }
         for (CharSequence testStr : searchCharSequences) {
-            if (containsIgnoreCase(cs, testStr)) {
+            if (Strings.CI.contains(cs, testStr)) {
                 return true;
             }
         }

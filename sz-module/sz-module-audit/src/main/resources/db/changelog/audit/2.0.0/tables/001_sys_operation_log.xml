@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- 公共类型定义 说明：MySQL/PostgreSQL 兼容的类型属性声明。-->
+    <property name="datetime.type" value="DATETIME"   dbms="mysql"/>
+    <property name="datetime.type" value="TIMESTAMP"  dbms="postgresql"/>
+    <property name="bool.type"     value="CHAR(1)"    dbms="mysql"/>
+    <property name="bool.type"     value="VARCHAR(1)" dbms="postgresql"/>
+
+    <changeSet id="framework-struct-sys-operation-log-202605271920" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_operation_log"/></not>
+        </preConditions>
+        <createTable tableName="sys_operation_log" remarks="操作审计日志主记录">
+            <column name="id" type="BIGINT" remarks="主键ID"><constraints primaryKey="true"/></column>
+            <column name="event_id" type="VARCHAR(64)" remarks="审计事件ID"/>
+            <column name="trace_id" type="VARCHAR(64)" remarks="链路追踪ID"/>
+            <column name="user_id" type="BIGINT" remarks="用户ID"/>
+            <column name="user_name" type="VARCHAR(64)" remarks="用户名"/>
+            <column name="module_name" type="VARCHAR(100)" remarks="模块名称"/>
+            <column name="operation_name" type="VARCHAR(100)" remarks="操作名称"/>
+            <column name="operation_type" type="VARCHAR(32)" remarks="操作类型"/>
+            <column name="permission_code" type="VARCHAR(255)" remarks="权限码"/>
+            <column name="request_method" type="VARCHAR(10)" remarks="请求方法"/>
+            <column name="request_uri" type="VARCHAR(512)" remarks="请求URI"/>
+            <column name="business_id" type="VARCHAR(128)" remarks="业务ID"/>
+            <column name="ip_address" type="VARCHAR(64)" remarks="IP地址"/>
+            <column name="operation_time" type="${datetime.type}" remarks="操作时间"/>
+            <column name="cost_ms" type="BIGINT" remarks="耗时，单位毫秒"/>
+            <column name="slow_flag" type="${bool.type}" defaultValue="F" remarks="是否慢操作"/>
+            <column name="status" type="VARCHAR(16)" remarks="状态：SUCCESS/FAIL"/>
+            <column name="response_code" type="VARCHAR(64)" remarks="响应码"/>
+            <column name="response_message" type="VARCHAR(500)" remarks="响应消息"/>
+            <column name="error_type" type="VARCHAR(255)" remarks="异常类型"/>
+            <column name="error_message" type="VARCHAR(500)" remarks="异常消息"/>
+        </createTable>
+        <createIndex tableName="sys_operation_log" indexName="idx_operation_log_time">
+            <column name="operation_time" descending="true"/>
+        </createIndex>
+        <createIndex tableName="sys_operation_log" indexName="idx_operation_log_trace">
+            <column name="trace_id"/>
+        </createIndex>
+        <createIndex tableName="sys_operation_log" indexName="idx_operation_log_user">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="framework-struct-sys-operation-log-detail-202605271920" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_operation_log_detail"/></not>
+        </preConditions>
+        <createTable tableName="sys_operation_log_detail" remarks="操作审计诊断明细">
+            <column name="id" type="BIGINT" remarks="主键ID"><constraints primaryKey="true"/></column>
+            <column name="operation_log_id" type="BIGINT" remarks="操作审计主记录ID"/>
+            <column name="event_id" type="VARCHAR(64)" remarks="审计事件ID"/>
+            <column name="trace_id" type="VARCHAR(64)" remarks="链路追踪ID"/>
+            <column name="detail_type" type="VARCHAR(32)" remarks="明细类型"/>
+            <column name="request_params" type="TEXT" remarks="请求参数，已脱敏并截断"/>
+            <column name="response_body" type="TEXT" remarks="响应内容，已脱敏并截断"/>
+            <column name="exception_stack" type="TEXT" remarks="异常堆栈，已脱敏并截断"/>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+        </createTable>
+        <createIndex tableName="sys_operation_log_detail" indexName="idx_operation_log_detail_log_id">
+            <column name="operation_log_id"/>
+        </createIndex>
+        <createIndex tableName="sys_operation_log_detail" indexName="idx_operation_log_detail_trace">
+            <column name="trace_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-operation-log-menu-202605271920" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu WHERE id = 705327582790000001</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="705327582790000001"/>
+            <column name="pid" valueNumeric="705327582563930148"/>
+            <column name="path" value="/system/sysOperationLog"/>
+            <column name="name" value="SysOperationLogView"/>
+            <column name="title" value="操作审计"/>
+            <column name="icon" value="DocumentChecked"/>
+            <column name="component" value="/system/sysOperationLog/index"/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="1200"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="menu_type_cd" value="1002002"/>
+            <column name="permissions" value=""/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="T"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="705327582790000002"/>
+            <column name="pid" valueNumeric="705327582790000001"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="查询操作审计"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.operation.log.query_table"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" valueNumeric="705327582790000003"/>
+            <column name="pid" valueNumeric="705327582790000001"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="查看审计详情"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="sys.operation.log.detail"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="framework-init-sys-operation-log-role-menu-202605271520" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_role_menu WHERE menu_id = 705327582790000001 AND role_id = 1</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" valueNumeric="705327582790000001"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" valueNumeric="705327582790000002"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" valueNumeric="705327582790000003"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

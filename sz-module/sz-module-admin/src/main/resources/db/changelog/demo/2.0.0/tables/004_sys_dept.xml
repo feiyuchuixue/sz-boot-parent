@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dept: demo data -->
+
+    <changeSet id="demo-data-sys-dept-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_dept WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="技术部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="has_children" value="T"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:03"/>
+            <column name="update_time" valueDate="2024-05-10 21:40:46"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="运营部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="has_children" value="T"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:13"/>
+            <column name="update_time" valueDate="2024-05-10 21:41:34"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="财务部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="has_children" value="T"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:19"/>
+            <column name="update_time" valueDate="2024-05-10 21:42:03"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="研发团队"/>
+            <column name="pid" valueNumeric="1"/>
+            <column name="deep" valueNumeric="4"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="has_children" value="T"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="remark" value=""/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:29"/>
+            <column name="update_time" valueDate="2024-05-11 14:30:38"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="5"/>
+            <column name="name" value="测试团队"/>
+            <column name="pid" valueNumeric="1"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:36"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="6"/>
+            <column name="name" value="运维团队"/>
+            <column name="pid" valueNumeric="1"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:40:46"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="7"/>
+            <column name="name" value="产品运营"/>
+            <column name="pid" valueNumeric="2"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:41:06"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="8"/>
+            <column name="name" value="用户运营"/>
+            <column name="pid" valueNumeric="2"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:41:34"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="9"/>
+            <column name="name" value="会计团队"/>
+            <column name="pid" valueNumeric="3"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:41:49"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="10"/>
+            <column name="name" value="审计团队"/>
+            <column name="pid" valueNumeric="3"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:42:03"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="11"/>
+            <column name="name" value="人力资源部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="400"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:42:19"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="12"/>
+            <column name="name" value="销售部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="500"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:42:27"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="13"/>
+            <column name="name" value="法务部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="600"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:42:37"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="14"/>
+            <column name="name" value="行政部"/>
+            <column name="pid" valueNumeric="0"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="sort" valueNumeric="700"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:42:43"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="15"/>
+            <column name="name" value="移动组"/>
+            <column name="pid" valueNumeric="4"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:43:28"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="16"/>
+            <column name="name" value="算法组"/>
+            <column name="pid" valueNumeric="4"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:43:36"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="17"/>
+            <column name="name" value="前端组"/>
+            <column name="pid" valueNumeric="4"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:43:44"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="18"/>
+            <column name="name" value="后端组"/>
+            <column name="pid" valueNumeric="4"/>
+            <column name="deep" valueNumeric="4"/>
+            <column name="sort" valueNumeric="400"/>
+            <column name="has_children" value="T"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="remark" value=""/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:43:53"/>
+            <column name="update_time" valueDate="2024-05-10 21:44:12"/>
+        </insert>
+        <insert tableName="sys_dept">
+            <column name="id" valueNumeric="19"/>
+            <column name="name" value="架构组"/>
+            <column name="pid" valueNumeric="4"/>
+            <column name="deep" valueNumeric="3"/>
+            <column name="sort" valueNumeric="500"/>
+            <column name="has_children" value="F"/>
+            <column name="is_lock" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2024-05-10 21:44:04"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

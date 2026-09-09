@@ -1,0 +1,159 @@
+package ${controllerPkg};
+
+<#compress>
+import io.swagger.v3.oas.annotations.Operation;
+<#if GeneratorInfo.hasImport == "1">
+import io.swagger.v3.oas.annotations.media.Schema;
+</#if>
+import io.swagger.v3.oas.annotations.tags.Tag;
+<#if GeneratorInfo.hasImport == "1">
+import io.swagger.v3.oas.annotations.Parameter;
+</#if>
+import lombok.RequiredArgsConstructor;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+import com.sz.core.common.entity.ApiPageResult;
+import com.sz.core.common.entity.ApiResult;
+
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
+import ${servicePkg}.${serviceClassName};
+import ${dtoPkg}.${dtoCreateClassName};
+import ${dtoPkg}.${dtoUpdateClassName};
+import ${dtoPkg}.${dtoListClassName};
+import ${voPkg}.${voClassName};
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
+<#if hasResourceRef == true>
+import com.sz.resource.service.ResourceDownloadService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+</#if>
+<#if GeneratorInfo.hasImport == "1">
+import com.sz.core.common.entity.ImportExcelDTO;
+import com.sz.excel.imports.model.ExcelImportResultVO;
+</#if>
+<#if GeneratorInfo.hasExport == "1">
+import jakarta.servlet.http.HttpServletResponse;
+</#if>
+</#compress>
+
+
+/**
+ * <p>
+ * ${tableComment} Controller
+ * </p>
+ *
+ * @author ${author}
+ * @since ${datetime}
+ */
+@Tag(name = "${tableComment}")
+@RestController
+@RequestMapping("${router}")
+@RequiredArgsConstructor
+public class ${controllerClassName} {
+
+<#assign serviceName = lower_case_first_letter(serviceClassName)>
+    private final ${serviceClassName} ${serviceName};
+<#if hasResourceRef == true>
+
+    private final ResourceDownloadService resourceDownloadService;
+</#if>
+
+    @Operation(summary = "新增${tableComment}")
+    @OperationAudit(operationType = OperationType.CREATE)
+<#if GeneratorInfo.btnPermissionType == "1">
+    @SaCheckPermission(value = "${createPermission}")
+</#if>
+    @PostMapping
+    public ApiResult<Void> create(@Valid @RequestBody ${dtoCreateClassName} dto) {
+        ${serviceName}.create(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "修改${tableComment}")
+    @OperationAudit(operationType = OperationType.UPDATE<#if pkName?has_content>, bizId = "#dto.${pkName}"</#if>)
+<#if GeneratorInfo.btnPermissionType == "1">
+    @SaCheckPermission(value = "${updatePermission}")
+</#if>
+    @PutMapping
+    public ApiResult<Void> update(@Valid @RequestBody ${dtoUpdateClassName} dto) {
+        ${serviceName}.update(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "删除${tableComment}")
+    @OperationAudit(operationType = OperationType.DELETE, bizId = "#dto.ids")
+<#if GeneratorInfo.btnPermissionType == "1">
+    @SaCheckPermission(value = "${removePermission}")
+</#if>
+    @DeleteMapping
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
+        ${serviceName}.remove(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "查询${tableComment}列表")
+    @SaCheckPermission(value = "${listPermission}")
+    @GetMapping
+    public ApiResult<PageResult<${voClassName}>> list(${dtoListClassName} dto) {
+        return ApiPageResult.success(${serviceName}.page(dto));
+    }
+
+    @Operation(summary = "查询${tableComment}详情")
+    @SaCheckPermission(value = "${listPermission}")
+    @GetMapping("/{id}")
+    public ApiResult<${voClassName}> detail(@PathVariable ${idJavaType} id) {
+        return ApiResult.success(${serviceName}.detail(id));
+    }
+<#if hasResourceRef == true>
+
+    @Operation(summary = "下载${tableComment}附件")
+    @SaCheckPermission(value = "${listPermission}")
+    @PostMapping("/{id}/resources/{resourceId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadResource(@PathVariable ${idJavaType} id, @PathVariable Long resourceId) {
+        ${serviceName}.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.download(resourceId);
+    }
+
+    @Operation(summary = "预览${tableComment}附件")
+    @SaCheckPermission(value = "${listPermission}")
+    @PostMapping("/{id}/resources/{resourceId}/preview")
+    public ResponseEntity<StreamingResponseBody> previewResource(@PathVariable ${idJavaType} id, @PathVariable Long resourceId) {
+        ${serviceName}.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.preview(resourceId);
+    }
+</#if>
+<#if GeneratorInfo.hasImport == "1">
+
+    @Operation(summary = "导入${tableComment}", parameters = {
+            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true)})
+    @OperationAudit(operationType = OperationType.IMPORT)
+<#if GeneratorInfo.btnPermissionType == "1">
+    @SaCheckPermission(value = "${importPermission}")
+</#if>
+    @PostMapping("/import")
+    public ApiResult<ExcelImportResultVO> importExcel(@ModelAttribute ImportExcelDTO dto) {
+        return ApiResult.success(${serviceName}.importExcel(dto));
+    }
+</#if>
+<#if GeneratorInfo.hasExport == "1">
+
+    @Operation(summary = "导出${tableComment}")
+    @OperationAudit(operationType = OperationType.EXPORT)
+<#if GeneratorInfo.btnPermissionType == "1">
+    @SaCheckPermission(value = "${exportPermission}")
+</#if>
+    @PostMapping("/export")
+    public void exportExcel(@RequestBody ${dtoListClassName} dto, HttpServletResponse response) {
+        ${serviceName}.exportExcel(dto, response);
+    }
+</#if>
+<#compress>
+}
+<#-- 内建函数，实现首字母小写 -->
+<#function lower_case_first_letter str>
+    <#return str?substring(0, 1)?lower_case + str?substring(1)>
+</#function>
+</#compress>

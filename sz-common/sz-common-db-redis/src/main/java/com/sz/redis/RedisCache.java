@@ -10,9 +10,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static com.sz.core.common.constant.GlobalConstant.DYNAMIC_DICT_PREFIX;
 
 /**
  * @author sz
@@ -25,19 +28,41 @@ public class RedisCache {
 
     private final RedisTemplate<Object, Object> redisTemplate;
 
+    private static final long DICT_CACHE_HOURS = 2;
+
     // ---------------sys_dict相关----------------
     public void setDict(String dictType, List<DictVO> list) {
         redisTemplate.opsForHash().put(CommonKeyConstants.SYS_DICT, dictType, list);
-        redisTemplate.expire(CommonKeyConstants.SYS_DICT, 2, TimeUnit.HOURS);
+        redisTemplate.expire(CommonKeyConstants.SYS_DICT, DICT_CACHE_HOURS, TimeUnit.HOURS);
     }
 
     public void putAllDict(Map<String, List<DictVO>> dictMap) {
         redisTemplate.opsForHash().putAll(CommonKeyConstants.SYS_DICT, dictMap);
-        redisTemplate.expire(CommonKeyConstants.SYS_DICT, 2, TimeUnit.HOURS);
+        redisTemplate.expire(CommonKeyConstants.SYS_DICT, DICT_CACHE_HOURS, TimeUnit.HOURS);
+        markStaticDictLoaded(dictMap);
     }
 
     public Map<String, List<DictVO>> getAllDict() {
         return redisTemplate.<String, List<DictVO>>opsForHash().entries(CommonKeyConstants.SYS_DICT);
+    }
+
+    public Map<String, List<DictVO>> getStaticDict() {
+        Object typeCodeCache = redisTemplate.opsForValue().get(CommonKeyConstants.SYS_DICT_STATIC_TYPES);
+        if (!(typeCodeCache instanceof List<?> typeCodes) || typeCodes.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, List<DictVO>> result = new LinkedHashMap<>();
+        for (Object typeCodeObj : typeCodes) {
+            if (typeCodeObj == null) {
+                continue;
+            }
+            String typeCode = String.valueOf(typeCodeObj);
+            List<DictVO> dictList = getDictByType(typeCode);
+            if (!dictList.isEmpty()) {
+                result.put(typeCode, dictList);
+            }
+        }
+        return result;
     }
 
     public List<DictVO> getDictByType(String dictType) {
@@ -61,16 +86,44 @@ public class RedisCache {
         return Boolean.TRUE.equals(hasKey);
     }
 
+    public boolean hasStaticDictLoaded() {
+        if (redisTemplate == null) {
+            log.error("RedisTemplate is null, cannot check static dict cache");
+            return false;
+        }
+        Boolean hasStaticLoaded = redisTemplate.hasKey(CommonKeyConstants.SYS_DICT_STATIC_LOADED);
+        Boolean hasStaticTypes = redisTemplate.hasKey(CommonKeyConstants.SYS_DICT_STATIC_TYPES);
+        return hasKey() && Boolean.TRUE.equals(hasStaticLoaded) && Boolean.TRUE.equals(hasStaticTypes);
+    }
+
     public boolean hasHashKey(String dictType) {
         return redisTemplate.opsForHash().hasKey(CommonKeyConstants.SYS_DICT, dictType);
     }
 
     public void clearDict(String dictType) {
         redisTemplate.opsForHash().delete(CommonKeyConstants.SYS_DICT, dictType);
+        if (!isDynamicDictType(dictType)) {
+            clearStaticDictLoaded();
+        }
     }
 
     public void clearDictAll() {
         redisTemplate.delete(CommonKeyConstants.SYS_DICT);
+        clearStaticDictLoaded();
+    }
+
+    private void markStaticDictLoaded(Map<String, List<DictVO>> dictMap) {
+        redisTemplate.opsForValue().set(CommonKeyConstants.SYS_DICT_STATIC_TYPES, new ArrayList<>(dictMap.keySet()), DICT_CACHE_HOURS, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(CommonKeyConstants.SYS_DICT_STATIC_LOADED, "T", DICT_CACHE_HOURS, TimeUnit.HOURS);
+    }
+
+    private void clearStaticDictLoaded() {
+        redisTemplate.delete(CommonKeyConstants.SYS_DICT_STATIC_LOADED);
+        redisTemplate.delete(CommonKeyConstants.SYS_DICT_STATIC_TYPES);
+    }
+
+    private static boolean isDynamicDictType(String dictType) {
+        return dictType != null && dictType.startsWith(DYNAMIC_DICT_PREFIX);
     }
 
     // ---------------sys_config相关----------------
@@ -164,6 +217,88 @@ public class RedisCache {
     public Long limitCaptcha(String requestId) {
         String key = StringUtils.getRealKey(CommonKeyConstants.CAPTCHA_REQUEST_LIMIT, requestId);
         return redisTemplate.opsForValue().increment(key);
+    }
+
+    /**
+     * 初始化登录次数请求限制
+     */
+    public void initializeLoginRequestLimit(String requestId, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        redisTemplate.opsForValue().setIfAbsent(key, 0, timeout, TimeUnit.MINUTES);
+    }
+
+    public Long countLoginRequestLimit(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        Object o = redisTemplate.opsForValue().get(key);
+        return Utils.getLongVal(o);
+    }
+
+    public Long limitLoginRequest(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_LIMIT, requestId);
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    public void clearLoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().getOperations().delete(key);
+    }
+
+    public void putLoginSecret(String requestId, String secretKey, long timeout) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+        redisTemplate.opsForValue().set(key, secretKey);
+        redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+    }
+
+    public String getLoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+
+        if (LoginSecret(requestId)) {
+            return (String) redisTemplate.opsForValue().get(key);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean LoginSecret(String requestId) {
+        String key = StringUtils.getRealKey(CommonKeyConstants.LOGIN_REQUEST_ID, requestId);
+
+        // 检查 redisTemplate 是否为 null
+        if (redisTemplate == null) {
+            log.error("RedisTemplate is null, cannot check key existence");
+            return false;
+        }
+
+        Boolean hasKey = redisTemplate.hasKey(key);
+        // 检查 hasKey 是否为 null
+        return Boolean.TRUE.equals(hasKey);
+    }
+
+    // ---------------FRONTEND_CONFIG相关----------------
+
+    public Map<String, String> getFrontendConfig() {
+        return redisTemplate.<String, String>opsForHash().entries(CommonKeyConstants.FRONTEND_CONFIG);
+    }
+
+    public boolean hasFrontendKey() {
+        if (redisTemplate == null) {
+            return false;
+        }
+        return redisTemplate.hasKey(CommonKeyConstants.FRONTEND_CONFIG);
+    }
+
+    public void putFrontendConfig(String key, String value) {
+        redisTemplate.opsForHash().put(CommonKeyConstants.FRONTEND_CONFIG, key, value);
+        redisTemplate.expire(CommonKeyConstants.FRONTEND_CONFIG, 2, TimeUnit.HOURS);
+
+    }
+
+    public void putAllFrontendConfig(Map<String, String> configMap) {
+        redisTemplate.opsForHash().putAll(CommonKeyConstants.FRONTEND_CONFIG, configMap);
+        redisTemplate.expire(CommonKeyConstants.FRONTEND_CONFIG, 2, TimeUnit.HOURS);
+    }
+
+    public void deleteFrontendConfig(String key) {
+        redisTemplate.opsForHash().delete(CommonKeyConstants.FRONTEND_CONFIG, key);
     }
 
 }

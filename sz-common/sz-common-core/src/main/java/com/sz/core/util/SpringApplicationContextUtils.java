@@ -11,7 +11,6 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -49,17 +48,22 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
     }
 
     @Override
-    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         SpringApplicationContextUtils.getInstance().beanFactory = beanFactory;
     }
 
     @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         SpringApplicationContextUtils.getInstance().applicationContext = applicationContext;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getBean(String name) throws BeansException {
         return (T) beanFactory.getBean(name);
+    }
+
+    public <T> T getBean(String name, Class<T> clz) throws BeansException {
+        return beanFactory.getBean(name, clz);
     }
 
     public <T> T getBean(Class<T> clz) throws BeansException {
@@ -82,6 +86,7 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
         return beanFactory.getAliases(name);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getAopProxy(T invoker) {
         return (T) AopContext.currentProxy();
     }
@@ -96,10 +101,10 @@ public class SpringApplicationContextUtils implements BeanFactoryPostProcessor, 
         BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) this.beanFactory;
         if (isNotBlank(beanName) && !containsBean(beanName)) {
             beanDefinitionRegistry.registerBeanDefinition(beanName, beanDefinition);
-            return getBean(beanName);
+            return getBean(beanName, clazz);
         } else {
             String name = BeanDefinitionReaderUtils.registerWithGeneratedName(beanDefinition, beanDefinitionRegistry);
-            return getBean(name);
+            return getBean(name, clazz);
         }
     }
 

@@ -13,4 +13,10 @@ public class PointVO {
 
     private String secretKey;
 
+    private Long createTime;
+
+    public PointVO(int x, int y, String secretKey) {
+        this(x, y, secretKey, System.currentTimeMillis());
+    }
+
 }

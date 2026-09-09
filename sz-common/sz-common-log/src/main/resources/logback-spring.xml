@@ -22,10 +22,10 @@
                     class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
     <!-- 控制台输出格式（彩色）pattern-->
     <property name="CONSOLE_LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%clr(%t){cyan}] %clr(${PID:- }){magenta} [%clr(${APP_NAME:-}){blue}] %highlight(%-5level) %magenta(%logger{30}:%-3L) - %m%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%clr(%t){cyan}] %clr(${PID:- }){magenta} [%clr(${APP_NAME:-}){blue}] [%X{traceId:-}] %highlight(%-5level) %magenta(%logger{30}:%-3L) - %m%n"/>
     <!-- 日志文件输出格式pattern-->
     <property name="CONSOLE_LOG_PATTERN_SIMPLE"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] ${PID:- } [${APP_NAME:-}] %-5level %logger{30}:%-3L - %m%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] ${PID:- } [${APP_NAME:-}] [%X{traceId:-}] %-5level %logger{30}:%-3L - %m%n"/>
 
 
     <!-- =========滚动日志输出========= -->
@@ -120,30 +120,96 @@
             <charset>utf8</charset>
         </encoder>
     </appender>
-    <!-- 定义指定类topic的appender -->
-    <appender name="HTTP-TOPIC" class="com.sz.logger.logbackadvice.SzRollingFileAppender">
-        <file>${LOG_PATH}/http-topic.log</file>
+    <!-- HTTP访问审计日志。仅在有日志写入时创建文件，文件名按日期割接。 -->
+    <appender name="AUDIT-ACCESS" class="com.sz.logger.logbackadvice.SzLazyRollingFileAppender">
         <encoder>
-            <!-- 使用默认的输出格式打印 -->
             <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
             <charset>utf8</charset>
         </encoder>
-        <!-- 设置 RollingPolicy 属性，用于配置文件大小限制，保留天数、文件名格式 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- 文件命名格式 -->
-            <fileNamePattern>${LOG_PATH}/http-topic.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- 文件保留最大天数 -->
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <!-- 文件大小限制 -->
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <!-- 文件总大小 -->
-            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+            <fileNamePattern>${LOG_PATH}/audit/access.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
-    <!-- 配置扫描包路径，追加日志到HTTP-TOPIC的appender中 -->
-    <!--若是additivity设为true，则子Logger不止会在自己的appender里输出，还会在root的logger的appender里输出-->
-    <logger name="http-log" level="INFO" additivity="false">
-        <appender-ref ref="HTTP-TOPIC"/>
+
+    <!-- SQL审计日志。仅在有日志写入时创建文件，文件名按日期割接。 -->
+    <appender name="AUDIT-SQL" class="com.sz.logger.logbackadvice.SzLazyRollingFileAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/audit/sql.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 操作审计主记录入库失败兜底日志。仅在有日志写入时创建文件，文件名按日期割接。 -->
+    <appender name="AUDIT-OPERATION-FALLBACK" class="com.sz.logger.logbackadvice.SzLazyRollingFileAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/audit/operation-fallback.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 性能诊断兜底日志。仅在有日志写入时创建文件，文件名按日期割接。 -->
+    <appender name="DIAGNOSTIC-PERFORMANCE" class="com.sz.logger.logbackadvice.SzLazyRollingFileAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/diagnostic/performance.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异常诊断兜底日志。仅在有日志写入时创建文件，文件名按日期割接。 -->
+    <appender name="DIAGNOSTIC-EXCEPTION" class="com.sz.logger.logbackadvice.SzLazyRollingFileAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_SIMPLE}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/diagnostic/exception.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="audit-access-log" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT-ACCESS"/>
+    </logger>
+    <logger name="audit-sql-log" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT-SQL"/>
+    </logger>
+    <springProfile name="local,dev">
+        <logger name="audit-sql-log" level="INFO" additivity="false">
+            <appender-ref ref="AUDIT-SQL"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+    <logger name="audit-operation-fallback-log" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT-OPERATION-FALLBACK"/>
+    </logger>
+    <logger name="diagnostic-performance-log" level="INFO" additivity="false">
+        <appender-ref ref="DIAGNOSTIC-PERFORMANCE"/>
+    </logger>
+    <logger name="diagnostic-exception-log" level="INFO" additivity="false">
+        <appender-ref ref="DIAGNOSTIC-EXCEPTION"/>
     </logger>
 
 

@@ -8,3 +8,10 @@ mybatis-flex:
   global-config:
     deleted-value-of-logic-delete: "T"
     normal-value-of-logic-delete: "F"
+
+sz:
+  id:
+    # 生产环境必须通过环境变量显式指定，防止多节点 workerId 碰撞
+    worker-id: ${SZ_WORKER_ID:1}
+    datacenter-id: ${SZ_DATACENTER_ID:1}
+

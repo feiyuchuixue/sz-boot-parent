@@ -1,0 +1,7 @@
+interface:
+  display_name: "Sz 代码生成器工作流"
+  short_description: "指导 Sz 代码生成、检查、清理和验证"
+  default_prompt: "使用 $sz-code-generator-workflow 分析并安全处理 Sz 代码生成器相关任务。"
+
+policy:
+  allow_implicit_invocation: true

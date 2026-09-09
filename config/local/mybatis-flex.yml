@@ -9,3 +9,8 @@ mybatis-flex:
     deleted-value-of-logic-delete: "T"
     normal-value-of-logic-delete: "F"
 
+sz:
+  id:
+    worker-id: ${SZ_WORKER_ID:1}
+    datacenter-id: ${SZ_DATACENTER_ID:1}
+

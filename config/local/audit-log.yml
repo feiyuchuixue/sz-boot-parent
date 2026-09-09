@@ -1,0 +1,48 @@
+sz:
+  # 审计日志配置。修改后重启服务生效。
+  audit:
+    # 是否启用操作审计。开启后自动记录写操作。
+    enabled: true
+
+    # 审计模式：
+    # standard = 标准审计模式，推荐生产使用。
+    #            记录操作审计入库；SQL 审计按 sql-mode 配置执行；
+    #            不额外打印完整访问日志，不自动记录响应体。
+    #
+    # debug    = 排障审计模式，推荐本地/测试临时使用。
+    #            在 standard 基础上，额外打印接口访问摘要和慢响应日志；
+    #            SQL 审计仍按 sql-mode 配置执行；
+    #            是否记录响应体仍由 record-response-body 控制。
+    #
+    # off      = 关闭审计模式。
+    #            不记录操作审计入库；不打印审计访问日志；不启用 SQL 审计；
+    #            traceId 可继续保留，用于普通日志链路定位。
+    mode: standard
+
+    # 审计日志写入模式：sync=同步写入；async=异步写入。
+    # 该模式统一控制操作审计主记录、诊断明细和审计事件发布。
+    write-mode: sync
+
+    # 自动采集的 HTTP 方法。为空时后台默认使用 POST、PUT、DELETE。
+    methods: [POST, PUT, DELETE]
+
+    # 慢操作阈值，超过后会标记为慢操作。
+    slow-threshold-ms: 2000
+
+    # 是否记录请求参数。会自动脱敏和截断。
+    record-params: true
+
+    # 是否记录响应体。默认关闭，避免敏感数据和大字段入库。
+    record-response-body: false
+
+    # SQL 审计：
+    # off  = 关闭 SQL 审计。推荐生产默认，避免日志量过大和 SQL 参数暴露。
+    # slow = 仅记录慢 SQL。适合生产排查菜单加载慢、列表查询慢等性能问题。
+    # all  = 记录全部 SQL。适合本地开发和测试环境排查多表写入、数据权限、字典、生成器等逻辑问题。
+    sql-mode: off
+
+    # 是否启用 traceId。用于串联接口日志、SQL 日志和操作审计。
+    trace-enabled: true
+
+    # traceId 请求/响应头名称。
+    trace-header-name: X-Trace-Id

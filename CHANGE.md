@@ -1,5 +1,635 @@
 # 更新日志
 
+## v2.0.2（20260731）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html)
+
+### sz-boot-parent
+
+#### 新增
+
+- 新增 Java 21 / Java 25 LTS 双版本兼容矩阵；Java 21 继续作为默认和最低基线，使用 Java 25 构建时仍通过 `--release 21` 产出 Java 21 字节码。
+
+#### 重构与优化
+
+- Spring Boot 升级至 `4.1.0`，Jackson 升级至 `3.2.1`，MyBatis-Flex 升级至 `1.11.8`。
+- 同步升级 MyBatis Spring、MySQL Connector/J、PostgreSQL JDBC Driver、HikariCP、Apache POI、AWS CRT、Commons IO 等依赖。
+- yauaa 升级至 `8.1.1`，降低 Windows 安全软件对旧依赖的误报干扰。
+- 优化后端 Docker 构建：同一 JAR 分别构建 Java 21 / 25 镜像，校验运行时版本和镜像内 JAR 哈希；PR 仅构建验证，不推送镜像。
+
+#### 修复
+
+- 修复 WebSocket 独立服务无法反序列化后台业务 DTO 导致消息发送失败的问题；消息数据改为可跨服务传输的通用 `Map` 结构。
+- 修复滑块验证码使用前端时间戳导致误报“验证过快”的问题，校验耗时改由服务端生成时间计算。
+- 修复同一终端连续获取验证码时旧校验数据被覆盖的问题；每次生成独立 `requestId`，同时保留 IP + User-Agent 维度的请求限流。
+- 补齐滑块验证码缺失 IV 校验，并将非法密文和 AES-GCM 解密失败统一转换为验证码验证失败，避免加密异常直接暴露为服务端错误。
+- 修复生产配置缺少 `router.whitelist` 时拦截器注册发生空指针异常的问题；白名单属性默认初始化为空集合。
+
+### sz-admin
+
+#### 重构与优化
+
+- 升级前端运行与构建依赖：Axios `1.18.0`、Vite `7.3.5`、TypeScript `5.9.3`、vue-tsc `3.3.8`、ESLint `10.8.0`、VueUse `14.4.0` 等。
+- 更新 pnpm overrides，收口 Babel、form-data、js-yaml、brace-expansion、PostCSS、micromatch、shell-quote、esbuild 等传递依赖版本。
+- 调整 tabs store 中 keep-alive store 的初始化时机，避免在 Pinia 激活前访问 store。
+- 同步适配依赖升级后的组件类型、属性和模板写法。
+
+#### 修复
+
+- WebSocket 消息通知同时兼容对象 payload 和历史字符串 payload，修复后端跨服务消息结构调整后的前端解析问题。
+- 滑块验证码不再提交客户端 `startTime`，与后端服务端计时契约保持一致。
+
+#### 升级影响
+
+- 自定义 WebSocket 客户端应把 `MESSAGE.data` 按对象处理；如需兼容旧后端，可同时支持 JSON 字符串。
+- 自定义验证码前端应始终提交本次 `/captcha/get` 返回的 `requestId`，不要复用旧验证码标识，也不要再依赖客户端 `startTime`。
+- 前端依赖和锁文件变化较大，升级后应使用 pnpm `10.17.1` 重新安装依赖，并执行 `pnpm run type-check` 与 `pnpm run build`。
+
+## v2.0.1 （20260602）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2.0.1)
+>
+> 本版本为 v2.0.0 之后的功能增强和修复版本，升级前建议先阅读升级指南。
+
+### sz-boot-parent
+
+#### 新增
+
+- [代码生成器] 支持生成到已有后端模块或新建后端模块，并联动 API 前缀、前端模块和 Liquibase 接入。
+- [代码生成器] 支持新模块骨架生成、前端模块注册和生成前磁盘检查增强。
+- 新增 main 分支 `sz-dev` 官方镜像打包 CI。
+- README 增加英文版。
+
+#### 优化
+
+- [代码生成器] 重构编辑配置、字段配置和代码预览流程，提升生成前确认体验。
+- [代码生成器] 优化字段智能推断、模板输出和生成结果预览。
+- 优化 Excel 中 `LocalDate`、`LocalDateTime`、`LocalTime` 的导入导出转换。
+- 优化审计日志诊断记录逻辑：性能日志、异常日志不再受 request请求method 节制。
+- 优化 admin API 前缀扫描范围，减少子包遗漏。
+
+#### 修复
+
+- 修复 FastExcel 导出 `LocalDate`、`LocalDateTime`、`LocalTime` 等 Java Time 类型时可能出现的格式异常。
+- 修复代码生成器部分模板格式问题。
+- 修复角色管理 SQL 导出按钮初始化缺口。
+- 修正“登陆日志”为“登录日志”。
+
+#### 数据库变更
+
+- `generator_table` 增加代码生成目标相关字段。
+- 初始化脚本补充角色管理 SQL 导出按钮和默认角色授权。
+
+### sz-admin
+
+#### 新增
+
+- [代码生成器] 支持后端模块、API 前缀、前端模块等新生成配置。
+- 新增前端模块自动发现能力。
+- 新增动态模块 API 上下文配置 `VITE_API_CONTEXT_PATH`。
+- 新增 main 分支 `sz-dev` 官方镜像打包 CI。
+
+#### 重构与优化
+
+- [代码生成器] 重构编辑页、字段配置页和代码预览交互。
+- [代码生成器] 优化生成配置提示、字段风险提示和预览展示。
+- 优化动态模块 API base 拼接和 Vite proxy 配置。
+- 优化 `HighCode` 代码预览样式。
+
+#### 升级影响
+
+- 升级后建议重新确认已导入表的生成器配置，并执行预览和磁盘检查。
+- 使用自动模块发现时，需要确认 `register.ts` 中的模块名唯一。
+
+### AI 支持
+
+#### 新增
+
+- 新增 Sz 体系通用知识库 `docs/project-knowledge-conventions.md`。
+- 新增 Codex skill：`sz-code-generator-workflow`，用于代码生成器相关生成、检查、清理和回滚。
+- 新增 Codex skill：`sz-liquibase-db-compat`，用于 Liquibase 与 MySQL/PostgreSQL 双库兼容迁移。
+- 新增 Codex skills 使用说明。
+
+#### 说明
+
+- AI 协作资料不参与 Maven 构建，也不改变后端启动方式或前端运行方式。
+
+---
+
+## v2.0.0 （20260529）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2.0.0)
+>
+> 本版本基于 `v1.3.4-beta` 之后的实际代码变化整理。v2.0.0 涉及大量不兼容重构，升级前请先阅读升级指南并完成数据库、配置和业务代码备份。
+
+### sz-boot-parent
+
+#### 新增
+
+- 新增 `sz-module` 业务模块层，后端主结构调整为 `sz-common`、`sz-module`、`sz-service` 三层。
+- 新增 `sz-module-admin`，承载后台管理业务实现，`sz-service-admin` 调整为启动和装配层。
+- 新增 `sz-module-common`，用于放置跨模块业务契约、配置 key 常量和字典常量。
+- 新增 `sz-module-generator`，代码生成器从 `sz-common-generator` 迁移到业务模块层，为后续独立扩展做准备。
+- 新增 `sz-module-audit`，提供操作审计、性能日志、异常日志查询接口和审计数据持久化能力。
+- 新增 `sz-common-log` 审计采集能力，支持 `@OperationAudit`、`@OperationAuditIgnore`、traceId、慢操作阈值、请求参数与响应摘要记录策略。
+- 新增 `sz-common-db-core`，承载 MyBatis-Flex 公共配置、雪花 ID、类型处理器和数据权限抽象。
+- 新增 `sz-common-db-postgresql`，提供 PostgreSQL 数据权限方言和数组字段处理能力。
+- 新增 PostgreSQL 支持，代码生成器、Liquibase、数据权限、SQL 元数据读取同步适配 MySQL/PostgreSQL。
+- 新增字典来源管理，新增 `sys_dict_source` 表，并在 `sys_dict_type` 上增加 `source_code`，支持按来源和 ID 区间治理框架内置字典与业务自定义字典。
+- 新增模块化 API 前缀配置 `sz.api-prefix.modules.admin/audit/generator`，并通过 `ApiPrefixRegister` 由各业务模块声明默认前缀和 Controller 扫描范围。
+- 新增 `@Phone`、`@IdCard` 等数据校验注解，增强 DTO 入参校验能力。
+- 新增脚本导出能力，支持菜单、字典、角色-权限等初始化与迁移脚本预览、导出。
+- 新增角色-权限脚本导出接口 `POST /sys-role/menu/script/export`，可导出 `sys_role_menu` 与 `sys_data_role_relation` 的 SQL / Liquibase XML，辅助迁移功能授权和自定义数据权限范围。
+- 新增字典来源动态字典 `dynamic_dict_source_options`，字典类型新增时可直接从来源管理中选择归属来源。
+- 新增静态字典查询接口 `GET /sys-dict/static` 与批量按类型查询接口 `GET /sys-dict/code?typeCode=...`，支持静态字典预热与动态字典按需加载。
+
+#### 重构
+
+- Spring Boot 从 3.5.x 升级到 4.0.6，并同步升级 Sa-Token、Jackson、MyBatis-Flex、HikariCP、Springdoc 等依赖。
+- 后端业务实现从 `sz-service-admin` 迁移到 `sz-module-admin`，服务层只负责组合模块、数据库实现和运行配置。
+- 数据库 changelog 重构为模块级结构，拆分 `framework`、`audit`、`generator`、`demo` 入口，便于多 module、多 Liquibase 体系演进。
+- 全局 ID 体系统一向雪花 `Long` 迁移，移除历史自增 ID、UUID、字符串 ID 混用场景。
+- 密码加密逻辑切换为 `BcryptUtils`，旧密码规则与新规则不兼容。
+- 数据权限核心逻辑重构，配置入口合并到系统角色授权；`sys_role_menu.permission_type=scope` 保存菜单级数据范围，`sys_data_role_relation` 只承载自定义部门/用户范围。
+- 数据权限方言抽象公共执行流程，并分别实现 MySQL 与 PostgreSQL。
+- WebSocket 消息处理重构，新增 `ClientMessage`、`SocketPushMessage`，优化服务间消息转发、鉴权和跨域处理。
+- 全局错误响应重构，响应结构更贴近 HTTP 状态语义。
+- 代码生成器数据库元数据读取、菜单导入、初始化脚本、路径选择和模板输出逻辑重构。
+
+#### 优化
+
+- 优化菜单深度验证和循环引用处理逻辑。
+- 优化部门、用户角色等批量查询逻辑，减少重复查询。
+- 优化 Liquibase 初始化脚本，补充索引并清理无效脚本。
+- 优化防抖配置和异常写法，防抖能力下沉到 `sz-common-security`。
+- 优化用户资料接口，在用户不存在时给出明确异常。
+- 优化数据权限自定义范围处理，修正关系类型映射。
+- 优化字典加载器与缓存机制：`DictLoaderFactory` 精确区分动态字典加载器和默认静态字典加载器，Redis 增加静态字典加载标记与类型列表，字典来源变更时同步刷新 `dynamic_dict_source_options`。
+- 优化 Sa-Token 异常处理，登录失效和权限不足响应统一使用 `CommonResponseEnum` 中定义的 HTTP 状态，减少硬编码状态码。
+
+#### 不兼容变更
+
+- 代码生成器 Maven 坐标从 `sz-common-generator` 变更为 `sz-module-generator`。
+- `sz-service-admin` 不再作为业务实现主目录，自定义业务代码建议迁移到独立 `sz-module-*`。
+- ID 类型统一为 `Long`，旧数据库和前端若仍传字符串 ID 需要迁移。
+- 旧密码加密规则不再直接兼容 BCrypt，存量用户需重置密码或提供临时兼容迁移。
+- 切换 PostgreSQL 时必须同时修改 `DB_TYPE` 和 `sz-service-admin/pom.xml` 中的数据库模块依赖。
+- v2.0.0 的 Liquibase 目录与旧版 SQL changelog 差异较大，存量库不建议直接无演练原地升级。
+- `sys_dict_type` 新增 `source_code` 字段，存量自定义字典需要归属到 `framework`、`custom` 或自定义来源。
+- 新增审计表 `sys_operation_log`、`sys_operation_log_detail`，存量库升级时默认不会迁移历史操作日志，需要按新功能评估是否启用和规划保留周期。
+- 独立数据角色不再作为当前官网主流程，存量数据权限需迁移到系统角色、菜单 `use_data_scope` 和 `sys_role_menu` / `sys_data_role_relation` 组合模型。
+
+#### 数据库与迁移辅助
+
+- 升级指南新增 MySQL / PostgreSQL 数据库备份命令、结构盘点脚本、ID 映射表脚本。
+- 升级指南新增数据权限结构检查脚本，辅助核对 `sys_menu.use_data_scope`、`sys_role_menu.permission_type/data_scope_cd` 和 `sys_data_role_relation`。
+- 升级指南新增 `sys_dict_source` 与 `sys_dict_type.source_code` 的 MySQL / PostgreSQL 补齐脚本。
+- 升级指南新增审计日志模块说明，覆盖 `sz-module-audit`、`audit-log.yml`、`VITE_AUDIT_API_BASE`、审计菜单权限和生产日志量风险。
+- 升级指南补充角色-权限脚本导出使用说明，明确该脚本依赖目标库已存在对应角色、菜单、部门或用户 ID。
+- 文档明确脚本仅作为辅助工具，不能覆盖所有二开场景，生产执行前必须先备份并在影子库验证。
+- 对存量库迁移给出保守建议：优先“v2.0.0 新库初始化 + 旧库数据映射导入”，不建议未演练原地升级。
+
+### sz-admin
+
+#### 新增
+
+- 新增 `src/core`，提供登录适配器、模块注册、菜单组件解析等底座能力。
+- 新增 `src/editions/admin.ts`，默认 edition 注册本地登录适配器、audit 模块和 toolbox 模块。
+- 新增 `src/modules/audit`，提供操作审计、性能日志、异常日志三类诊断视图和审计详情抽屉。
+- 新增 `src/modules/toolbox`，代码生成器前端页面迁移到模块目录。
+- 新增 `adminHttp`、`auditHttp` 和 `generatorHttp` 三个 HTTP 实例，分别对应管理端、审计和生成器接口。
+- 新增字典来源管理页面，支持字典类型与来源配置联动；后续官网可补充列表、编辑弹窗和字典类型关联来源截图。
+- 新增脚本预览弹窗 `ScriptPreviewDialog`。
+- 角色管理新增 SQL 导出入口，按角色导出权限迁移脚本，并复用脚本预览弹窗和 SQL 方言选择。
+- 新增环境变量 `VITE_ADMIN_API_BASE`、`VITE_AUDIT_API_BASE`、`VITE_GENERATOR_API_BASE`、`VITE_API_PROXY_TARGET`。
+- 新增 `packageManager: pnpm@10.17.1` 与 `engines.node >=20.19.0` 声明，统一本地、CI 和部署构建环境口径。
+- 角色授权弹窗支持在菜单维度同时维护功能权限和数据权限范围，只有开启 `useDataScope` 的菜单允许配置数据范围。
+- 新增 `src/core/authSession.ts`，统一处理 axios、blob 下载错误和 WebSocket `4401` 触发的会话过期清理、提示与登录页跳转。
+
+#### 重构
+
+- API 调用方式统一改为 `adminHttp` / `auditHttp` / `generatorHttp`，废弃旧 `src/api/helper/prefix.ts` 前缀拼接模式。
+- Vite proxy 改为基于 API base 动态注册，支持管理端、审计和生成器接口分离。
+- 前端构建链集中升级：Vite `6.4.2 -> 7.3.3`、Vue `3.5.33 -> 3.5.35`、Element Plus `2.13.7 -> 2.14.0`、Pinia `2.3.1 -> 3.0.4`、Vue Router `4.6.4 -> 5.0.7`、Axios `1.15.2 -> 1.16.1`、VueUse `10.11.1 -> 14.3.0`、Sass `1.87.0 -> 1.100.0`。
+- Pinia 持久化插件升级到 `pinia-plugin-persistedstate 4.7.1`，持久化配置从 `paths` 迁移为 `pick`。
+- 动态路由组件解析重构，按模块注册表、`src/modules/<domain>/views`、旧 `src/views` 的顺序匹配。
+- WebSocket 前端重构，增加心跳机制、自定义关闭码和鉴权失效处理。
+- 登录流程适配 `AuthAdapter`，为派生项目替换登录方式预留扩展点。
+- 代码生成器前端接口、类型和页面迁移到 `src/modules/toolbox`。
+- 字典状态管理重构为“静态字典全量预热 + 指定 typeCode 按需加载”，`optionsStore` 增加已加载、过期和加载中状态，减少动态字典无谓请求。
+
+#### 修复
+
+- 修复系统菜单上级目录回显问题。
+- 修复附件回显为空时文件列表初始化异常。
+- 同步适配后端错误响应结构。
+- 优化会话过期后的返回路径处理，登录页支持携带 `back` 参数，重新登录后回到原目标页面。
+
+#### 不兼容变更
+
+- 旧 API 写法 `http + ADMIN_MODULE` 需要迁移为 `adminHttp`、`auditHttp` 或 `generatorHttp`。
+- 旧环境变量 `VITE_API_URL` 需要迁移为新的 API base 与 proxy target 配置。
+- 前端构建环境需要升级到 Node.js `>=20.19.0`，建议使用 pnpm `10.17.1` 重新安装依赖。
+- 二开 store 如使用 `pinia-plugin-persistedstate` 旧版 `paths` 配置，需要同步改为 `pick`。
+- 菜单 `component` 字段需要能命中模块注册表、`src/modules/<domain>/views` 或旧 `src/views`。
+- 派生项目如需替换登录方式，应通过 edition 和 `AuthAdapter` 接入。
+
+#### 兼容与截图占位
+
+- 传统 `src/views` 页面仍作为动态路由兜底路径，普通旧页面无需一次性迁移到 `src/modules`。
+- 新模块优先通过 `src/modules/<domain>` 和 edition 注册接入，便于派生项目按需组合。
+- 截图占位：字典来源管理、审计日志三页签、脚本预览弹窗、模块路由未命中 warn、WebSocket 鉴权失效重登。
+
+### 官网文档
+
+#### 新增
+
+- 新增 v2.0.0 升级指南。
+- 新增独立业务模块接入指南，以官方 `sz-module-audit` 为例说明后端 module、API 前缀、Liquibase、前端 HTTP client、edition 注册和菜单 component 映射。
+- 新增审计日志文档，说明操作审计、性能日志、异常日志的启用流程、配置、表结构、前端页面和生产注意事项。
+- 新增官网文档维护 `AGENTS.md`。
+- 升级指南按“迁移 + 兼容 + 新功能 + 行为变化”重新组织 v2.0.0 内容，并补充可执行辅助脚本和免责声明。
+- 更新部署相关文档，补充 `sz-deploy-v3`、Docker Compose 快速部署、GitHub Actions CI/CD、普通升级和蓝绿部署的当前推荐链路。
+
+#### 修正
+
+- 将主线技术栈从 Spring Boot 3 更新为 Spring Boot 4。
+- 将数据库迁移主线统一为 Liquibase，移除 Flyway 作为当前方案的描述。
+- 更新目录结构、配置说明、代码生成器、快速开始、多数据源和 FAQ 中的旧口径。
+- 修正部署总览、Docker 快速部署和 GitHub CI/CD 的旧口径，明确 CI/CD 只负责构建推送镜像并远程触发 `sz-deploy-v3` 的 `upgrade.sh` 或 `deploy.sh`。
+- 重新核对并补正数据权限、数据字典文档，明确 v2.0.0 的系统角色数据权限模型、字典来源、动态字典和脚本导出口径。
+
+---
+
+---
+
+## v1.3.4-beta （20260503）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.4-beta)
+
+### sz-boot-parent
+
+#### 新增
+
+- 资源模块（sz-common-resource）：全新引入多场景存储模块，支持本地磁盘 / OSS 公有 / OSS 私有三种存储类型，以「场景（sceneCode）」为核心进行独立配置，提供统一上传接口 `POST /resource/upload`。
+- `@OssUrlFill` 注解：标注在 VO 字段上，接口返回时自动将 `objectKey` 转换为可访问的 `accessUrl`，无需手动转换。
+- Excel 注解增强：
+    - `@ExcelTemplate(alias)`：标注导入 DTO 类，支持动态生成空白导入模板，无需手动维护模板文件。
+    - `@ImportColumn(required, columnWidth)`：配置必填校验（表头自动加红色 `*` 前缀）与自定义列宽。
+    - `@ExcelEnumFormat(preset, writeField, readField)`：支持枚举属性的导入/导出映射转换。
+    - `@EnableExcelTemplateScan(basePackages)`：启用导入 DTO 类的 classpath 扫描，配合 `@ExcelTemplate` 使用。
+- `AbstractExcelImportTemplate` 导入框架：新增统一导入抽象基类，框架自动处理批次创建、分片执行、失败记录落库；失败数据持久化至 `sys_import_batch` / `sys_import_fail_record`，可结合业务自行实现失败记录查询功能。
+- 用户基本资料接口：新增 `GET /sys-user/profile` 接口，提供当前登录用户的基本信息获取能力。
+- 用户资料更新及联系方式管理接口：
+    - `PUT /sys-user/profile`：更新用户基本资料（昵称、性别、生日、头像）。
+    - `PUT /sys-user/profile/contact`：更新/绑定手机号或邮箱。
+    - `DELETE /sys-user/profile/contact`：解绑手机号或邮箱。
+- 批量上传资源文件接口：新增 `POST /resource/batchUpload`，支持批量上传并返回 `ResourceRef` 文件引用列表。
+- `@LogicDeleteFill` 注解：新增逻辑删除附加字段自动填充注解。只有标注该注解的实体类，才会在逻辑删除时自动填充 `delete_time`、`delete_id` 字段；逻辑删除本身（`@Column(isLogicDelete = true)`）不受影响。支持通过注解属性自定义字段名，详见升级指南。
+- 数据脱敏工具类 MaskUtils：支持用户名、邮箱、手机号、身份证号和银行卡号的脱敏处理
+
+#### 修复
+
+- 修复 `RedisUtils` 中的模板获取方法名错误（`getTemplate` → 正确方法名）。
+
+#### 修改
+
+- [代码生成器] - 适配升级：支持资源上传模块联动生成；支持本次新增的 Excel 注解与导入模板/导入框架相关代码生成。
+- 废弃 `sysFile` 体系：统一替换为 `sysResource`，并同步完成模板文件管理模块适配；补充初始化 `data` 目录的本地（local）演示数据。
+
+#### 优化
+
+- 优化滑块验证码样式，优化边界问题。
+
+#### Dockerfile
+- 增加对 `/data` 资源目录的挂载支持。
+
+
+---
+
+### sz-admin
+
+#### 新增
+
+- 个人中心 - 头像裁剪：上传头像时支持圆形裁剪预览，裁剪后再上传，提升头像设置体验。
+- 个人中心 - 基本资料编辑：新增昵称、性别、生日的编辑功能，左侧头像卡片 + 右侧表单布局，支持变更检测与重置。
+- 个人中心 - 联系方式管理：新增手机号和邮箱的修改/绑定/解绑功能，操作时需验证当前密码。
+- Excel 导入结果展示：导入完成后展示成功/失败条数及批次 ID，有失败时提示引导至失败记录页查看明细。
+
+#### 优化
+
+- 账户列表：增加头像回显效果。
+- 为字典、参数管理组件添加（补全）权限控制。
+- 优化滑块验证码组件，调整样式和逻辑。
+
+#### 重构
+
+- 上传逻辑统一重构：所有上传组件（`UploadFiles`、`SimplifyUpload`、`Img`、`Imgs`、`JoditEditor`）改用统一资源上传接口 `POST /resource/upload`，组件 `dir` 属性变更为 `sceneCode`。（Breaking Change，详见[升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#_2-%E5%89%8D%E7%AB%AF%E4%B8%8A%E4%BC%A0%E7%BB%84%E4%BB%B6-props-%E5%8F%98%E6%9B%B4-breaking-change)）
+- `FileDownloadList` 组件适配：统一适配 resource 体系的 `ResourceRef` 结构，读取 `accessUrl` / `originName` / `contentType` 字段，优化图片预览。
+- 用户状态管理重构：`userStore.userInfo` 重命名为 `userStore.profile`（类型 `UserProfileVO`），取消用户信息持久化，仅持久化 `token`，用户信息在路由初始化时由接口重新拉取。（Breaking Change，详见升级指南）
+- 废弃 `sysFile` 体系：统一替换为 `sysResource`。
+
+#### 修复
+- `eslint-config-typescript` 和 `eslint-config-prettier` 两个依赖之间的冲突。([issue28](https://github.com/feiyuchuixue/sz-admin/issues/28))（感谢[processcrash](https://github.com/processcrash)）。
+
+
+### 数据库变更
+
+- 新增 `sys_resource` 表：资源实体主表，含 `scene_code`、`object_key`、`e_tag`、`storage_type`、`access_url`、`origin_name`、`content_type`、`size` 等字段。
+- 新增 Excel 导入相关表：
+    - `sys_import_batch`：导入批次记录表。
+    - `sys_import_fail_record`：导入失败记录表。
+
+---
+## v1.3.3-beta （20260224）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.3-beta)
+
+### sz-boot-parent
+
+#### 修改
+
+- oss.yml 配置，新增 `oss.allowedExts`,`oss.allowedMimeTypes` 配置项，用于执行允许上传的文件后缀和mime信息。
+
+#### 修复
+
+- 消息查询增加了消息归属验证，用户只能查询到自己相关的消息。
+- 重置账户密码接口增加权限标识验证，只有拥有对应权限的用户才可以进行重置。
+- 文件上传接口增加后缀和 MIME 类型白名单。
+- 模板下载接口校验路径合法性，非法路径仅返回错误提示，防止路径穿越。
+- 文件下载接口仅允许 http/https 协议，防止 SSRF 和任意文件读取。
+
+---
+
+### sz-admin
+
+#### 修复
+
+- 开启数据权限后菜单无可用权限时仍然提交空菜单的问题。(issue: https://github.com/feiyuchuixue/sz-admin/issues/27)。
+
+- 升级 axios 至 1.13.5，修复 CVE-2026-25639 漏洞。
+
+- 账号管理-更多菜单按钮的权限设置问题。
+
+## v1.3.2-beta （20260116）
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.2-beta)
+
+### sz-boot-parent
+
+#### 新增
+
+- [代码生成器] 支持选择弹窗类型（抽屉、弹窗）。
+- 通用 API：新增获取 OSS 私有文件访问 URL 接口。
+- 通用 API：新增文件下载接口。
+- 参数管理新增「是否前端加载」字段。
+- websocket新增：支持同步字典、权限和前端参数。
+
+#### 修改
+
+- oss.yml 配置，新增 `oss.richtextBucketName` 配置项，用于为富文本编辑器**单独指定** bucket
+
+#### 优化
+
+- 优化逻辑删除监听器的登录状态检查，增加异常处理以支持非Web环境
+
+---
+
+### sz-admin
+
+#### 新增
+
+- [代码生成器] - 增加弹窗类型的支持（抽屉、弹窗）。
+- 参数 / 字典 / 权限的 websocket同步支持，并在参数管理中新增「是否前端加载」配置。
+- 新增： useDialogWidth Hook 组件，实现弹窗/对话框宽度的动态自适应。
+
+#### 重构
+
+- 重构 websocket实现，将消息解析与频道处理逻辑解耦，结构更清晰、扩展性更强。
+
+#### 修复
+
+- 修复 `MenuForm.vue` 中目录类型的可操作属性，恢复路由名称和路由地址属性。（[issue 25](https://github.com/feiyuchuixue/sz-admin/issues/25)）。
+
+- 修复 `SearchFormItem` 组件仅在搜索项配置 `enum` 时读取 `undefined` 导致的报错问题。现在在 `SearchProps` 或 `ColumnProps` 任一处配置 `enum` 即可正常使用。（[issue 26](https://github.com/feiyuchuixue/sz-admin/issues/26)）。
+
+#### 优化
+
+- `Avatar` 头像组件：增加对 OSS 私有访问地址的支持。
+- `FileDownloadList` 文件回显展示组件：增加对 OSS 私有访问地址的支持。
+- `Img` 图片组件：增加对 OSS 私有访问地址的支持。
+- `Imgs` 多图片组件：增加对 OSS 私有访问地址的支持。
+- 账户管理 - 添加/编辑用户：头像字段增加对 OSS 私有访问地址的支持。
+- `JoditEditor` 富文本组件：支持使用独立的 bucket 空间（通过 `oss.richtextBucketName` 配置）。
+- 文件管理列表：优化文件下载方式。
+- `useUrlDownload`：移除前端 Fetch 下载逻辑，改为调用通用 API 文件下载接口，解决文件跨域问题。
+
+### 数据库变更
+
+- 更新 `sys_config` 表：增加 `frontend_visible` 字段，用于标记参数是否需要前端加载、缓存及使用。
+- 更新 `generator_table` 表：增加 `window_show_type` 字段，用于配置窗口展示方式（0：dialog 弹窗；1：drawer 抽屉）。
+
+## v1.3.1-beta （20251210）
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.1-beta)
+
+### sz-boot-parent
+
+#### 依赖升级
+
+- modelmapper：3.2.6
+- mybatis-flex：1.11.4
+- commons-lang3：3.20.0
+- swagger-annotations：2.2.41
+- lombok：1.18.42
+- org.lionsoul-ip2region：3.1.0
+- springdoc-openapi-starter-webmvc-ui：2.8.14
+
+#### 新增
+
+- 添加 .editorconfig 文件以统一编码和行结束符设置。
+
+#### 修复
+
+- 代码生成设置中的业务名称修改后路由路径不生效问题。（感谢[lxwcv](https://github.com/lxwcv)）
+- spring-doc 增加开关控制参数 `springdoc.api-docs.enabled` 和 `springdoc.swagger-ui.enabled`，生产环境建议关闭。
+- 更新ip2region 版本为3.1.0 RegionUtils 以支持 IPv4 地址库，改进 IP 地址库加载逻辑。
+
+#### 修改
+
+- 演示案例 - [教师统计]  增加富文本编辑器功能。
+
+#### 优化
+
+- 更新Dockerfile，安装curl支持容器内的健康检查。
+- [代码生成器] - 添加 jodit-editor 富文本编辑器的支持。
+- 代码模板 Dialog 弹窗组件添加动态宽度的支持。
+
+---
+
+### sz-admin
+
+### 依赖升级
+
+- 对package.json文件中的依赖进行了兼容性升级。
+
+#### 新增
+
+- 新增：添加.editorconfig文件。
+- 富文本编辑器组件-JoditEditor。
+- 新增： useDialogWidth Hook 组件，实现弹窗/对话框宽度的动态自适应。
+
+#### 重构
+
+- [UploadFiles 组件] 增加多项功能并修正若干问题。
+- 角色管理-权限分配组件重构，提升交互体验。
+
+#### 优化
+
+- 权限组件，暗黑模式下的样式不适配的问题。
+- 多维选择器组件，暗黑模式下的样式不适配的问题。
+- 更新表格组件的 rowKey 属性为可选，并修复 radio 组件的类型问题。
+
+#### 修复
+
+- 更新protable组件部分类型问题。
+
+#### 修改
+
+- 演示案例 - 【教师统计】 增加富文本编辑器功能。
+- 【代码生成器】- 添加 jodit-editor 富文本编辑器的支持。
+
+### 数据库变更
+
+- 更新 `teacher_statistics` 表：增加`content_html`字段及演示数据。
+## v1.3.0-beta （20251109）| 大型更新
+
+> [!NOTE]
+>
+> [升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v1.3.0-beta)
+>
+> <font color="red">！存在潜在破坏性变更，请务必仔细阅读升级文档！</font>
+>
+> **重要提示**：升级至本版本前，请先**清理 Redis 缓存**中的用户信息，否则可能因数据结构变更导致**登录异常**。
+
+### sz-boot-parent
+
+#### 新增
+
+- 支持 Spring Boot Actuator 监控。
+- login 相关密码传输支持 AES-GCM 加密，提升安全性。
+- 增加登录请求及验证码请求次数的限制配置。
+- [代码生成器] 支持多文件上传（fileUpload）。
+- [代码生成器] 支持数据权限创建。
+- 账户管理新增账户类型设置，支持超管账户指定。
+- 支持“超级管理员”角色参数配置。
+
+#### 重构
+
+- <font color="red">破坏性变更</font>：模板文件管理及下载等逻辑。
+- <font color="red">破坏性变更</font>：移除独立数据权限角色，合并至系统角色。
+- <font color="red">破坏性变更</font>：简化数据权限核心 SimplePermissionDialect，实现与处理流程更加清晰。
+- <font color="red">破坏性变更</font>：调整数据存储结构，login 相关方法引入 dataScope 缓存，移除 ruleMap、userRuleMap、deptRuleMap。因数据结构升级后可能需要清空redis缓存。
+
+#### 修复
+
+- 修复登录日志异步线程引发的记录异常。
+- 修复 IP 地址获取失败的问题。
+- 修复 Excel 导入时数据为空问题，移除代码模板中的 @Accessors(chain = true)。
+- 回退 FastExcel 版本至 1.2.0，解决部分 Excel 导出异常。
+
+#### 修改/移除
+
+- 移除生产环境配置中的 CORS 设置。
+- ImportExcel 方法支持数据库入库功能。
+- [演示案例] 教师统计，支持附件文件上传。
+- sys_data_role、sys_data_role_menu 相关业务标记为弃用，功能合并至 sys_role。
+- Dockerfile 镜像切换至 azul/zulu-openjdk（JDK 21）。
+- 移除 Flyway，数据库迁移已完全转至 liquibase。
+
+#### 优化
+
+- 登录列表倒序排序显示。
+- [代码生成器] 菜单按钮的查询与排序优化。
+- 修复[动态字典]部门、角色在 redisCache 中循环赋值导致的性能问题。
+- OSS 上传支持原始文件名元数据与特殊字符（如#）处理。
+- HttpReqResUtil 增加 getRequest 方法，支持全局 HttpServletRequest 获取。
+- StringUtils.getRealKey 方法增强字符串替换、null 处理与异常捕获。
+
+---
+
+### sz-admin
+
+#### 新增
+
+- 新增 FileDownloadList 组件，实现 ProTable 中文件资源展示、支持多文件下载与预览、文件列表回显优化。
+- login 相关密码传输支持 AES-GCM 加密，提升安全性。
+- 账户管理支持账户类型设置，可直接指定管理员身份。
+
+#### 重构
+
+- [UploadFiles 组件] 增加多项功能并修正若干问题。
+- 角色管理-权限分配组件重构，提升交互体验。
+
+#### 优化
+
+- useDownload 组件优先采用 response header 中 filename 作为下载文件名。
+- 优化菜单表单的操作逻辑，新增提示说明。
+- 优化模板文件管理列表的文件操作列。
+- [ImportExcel] 增加模板信息展示及必填参数校验。
+- [file 组件] 优化 accept 文件类型检查，可选开启，默认不限制类型。
+- 文件下载和模板功能进一步优化，提升用户体验：
+  - 优化 useDownload Hook 的实现
+  - 文件模板相关逻辑调整
+  - 菜单 Form 表单增加提示性 tooltip
+  - 修正 blob 流响应拦截器的错误处理
+  - 列表文件展示统一切换为 FileDownloadList 组件
+
+#### 修复
+
+- [ProTable] 因数据类型不匹配导致的列表字典项渲染样式异常。
+
+#### 修改
+
+- [演示案例] 教师统计，新增多文件上传及回显组件支持。
+
+### 数据库变更
+
+- 更新 `sys_menu` 表：优化菜单数据，采用更简洁的路由名称，并将原本在菜单上的查询权限提取为按钮级权限。
+
+- 调整 `sys_role_menu` 表：新增字段 `permission_type`（权限类型，如功能权限、数据权限），新增字段 `data_scope_cd`（数据权限范围）。
+
+- 更新 `sys_data_role_relation` 表：新增字段 `menu_id`，用于关联菜单。
+
+- 表 `sys_data_role_menu`、`sys_data_role` 标记为**废弃**，相关业务已合并至 `sys_role` 和 `sys_data_role_relation` 表。
+
+- 优化 `sys_temp_file`、`sys_temp_file_history` 表：将 `url` 字段类型调整为 JSON，并插入演示数据。
+
+  <font color="red"> ！！注意：此更改会导致原有数据不兼容。</font>
+
+- `sys_temp_file` 表新增 `alias` 字段，用于标识文件别名。
+
+- `sys_role`、`sys_role_menu`、`sys_data_role_relation`、`sys_user_role` 表补充及调整了演示数据。
+
+> **升级建议**：
+>
+> - 建议在升级前做好数据和数据库结构的完整备份，以保障您的数据安全。
+> - 本次数据库结构及功能调整，可能影响部分旧数据兼容性及现有业务，请结合自身情况提前评估，并根据实际需求做好适配与数据处理。
+> - 欢迎在升级过程中通过社区或交流群反馈遇到的问题，我们也会积极协助答疑与经验分享。
+
 ## v1.2.6-beta （20250831）
 
 > [!NOTE]

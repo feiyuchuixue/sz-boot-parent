@@ -10,97 +10,47 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sz-service-admin</artifactId>
 
-    <!-- 全局公用dependency版本管理 -->
-    <properties>
-        <flyway.version>10.12.0</flyway.version>
-        <liquibase.version>4.31.1</liquibase.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- 数据库依赖尽量独立引用，因为每个service引用的数据库有可能不同，因此就不再parent中配置公共的mysql依赖-->
-        <!-- mysql数据库模块 -->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-mysql</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--鉴权模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-security</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--代码生成模块-->
-        <dependency>
-            <groupId>com.sz.generator</groupId>
-            <artifactId>sz-common-generator</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--微信模块-->
-        <dependency>
-            <groupId>com.sz.wechat</groupId>
-            <artifactId>sz-common-wechat</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--日志模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-log</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!--redis模块-->
-        <dependency>
-            <groupId>com.sz</groupId>
-            <artifactId>sz-common-db-redis</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sz.excel</groupId>
-            <artifactId>sz-common-excel</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!-- oss模块 -->
-        <dependency>
-            <groupId>com.sz.oss</groupId>
-            <artifactId>sz-common-oss</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <!-- flyway db ddl; https://documentation.red-gate.com/fd/mysql-184127601.html-->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
-            <version>${flyway.version}</version>
-        </dependency>
-        <!-- aspect aop 切面-->
+        <!-- aspect aop 切面 -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${liquibase.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
         </dependency>
-        <!-- knife4j swagger文档 -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springdoc</groupId>
-                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-core</artifactId>
         </dependency>
+        <!-- 日志切面与 Logback 扩展 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-common-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-admin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-audit</artifactId>
+        </dependency>
+        <!-- 代码生成器默认随 admin 服务启用，降低本地开发和新用户使用门槛。 -->
+        <dependency>
+            <groupId>com.sz</groupId>
+            <artifactId>sz-module-generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models-jakarta</artifactId>
+        </dependency>
+        <!-- OpenAPI / Knife4j 文档能力默认可用，生产环境通过配置关闭入口。 -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -110,8 +60,34 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>nl.basjes.parse.useragent</groupId>
-            <artifactId>yauaa</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-mysql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>postgresql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sz</groupId>
+                    <artifactId>sz-common-db-postgresql</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>

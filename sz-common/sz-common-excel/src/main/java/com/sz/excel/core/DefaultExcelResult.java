@@ -18,19 +18,25 @@ public class DefaultExcelResult<T> implements ExcelResult<T> {
     // 错误信息列表
     private List<String> errorList;
 
+    // 结构化失败行列表
+    private List<ExcelFailRow<T>> failRowList;
+
     public DefaultExcelResult() {
         this.list = new ArrayList<>();
         this.errorList = new ArrayList<>();
+        this.failRowList = new ArrayList<>();
     }
 
-    public DefaultExcelResult(List<T> list, List<String> errorList) {
+    public DefaultExcelResult(List<T> list, List<String> errorList, List<ExcelFailRow<T>> failRowList) {
         this.list = list;
         this.errorList = errorList;
+        this.failRowList = failRowList;
     }
 
     public DefaultExcelResult(ExcelResult<T> excelResult) {
         this.list = excelResult.getList();
         this.errorList = excelResult.getErrorList();
+        this.failRowList = excelResult.getFailRowList();
     }
 
     @Override
@@ -41,6 +47,11 @@ public class DefaultExcelResult<T> implements ExcelResult<T> {
     @Override
     public List<String> getErrorList() {
         return errorList;
+    }
+
+    @Override
+    public List<ExcelFailRow<T>> getFailRowList() {
+        return failRowList;
     }
 
     @Override

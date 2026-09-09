@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.sz</groupId>
+        <artifactId>sz-module</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>sz-module-common</artifactId>
+
+    <!--
+        sz-module-common：跨业务模块共享的业务契约模块。
+        只放：跨模块共享的业务接口、字典常量、配置 key 常量、轻量 DTO、跨模块事件定义。
+        不放：Controller、ServiceImpl、Mapper、数据库 PO、缓存实现、第三方调用实现。
+    -->
+
+</project>

@@ -18,6 +18,7 @@ public enum ErrorPrefixEnum {
     // @formatter:off
     COMMON("C", "common异常"),
     ADMIN("A", "admin异常"),
+    RESOURCE("R", "resource异常"),
 
     // ...其他业务模块的异常前缀
     ;

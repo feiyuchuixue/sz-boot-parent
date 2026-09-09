@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_dept_role: framework struct + init -->
+<changeSet  id="framework-struct-sys-dept-role-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="sys_dept_role"/></not>
+        </preConditions>
+        <createTable tableName="sys_dept_role" remarks="系统部门-角色关联表">
+            <column name="dept_id" type="BIGINT" remarks="部门ID (sys_dept_id)"><constraints nullable="false"/></column>
+            <column name="role_id" type="BIGINT" remarks="角色ID(sys_role_id)"><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="sys_dept_role" columnNames="dept_id,role_id" constraintName="pk_sys_dept_role"/>
+        <createIndex tableName="sys_dept_role" indexName="idx_dept_role_role_id">
+            <column name="role_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

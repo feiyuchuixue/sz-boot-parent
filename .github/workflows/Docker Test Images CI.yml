@@ -1,0 +1,137 @@
+name: Java 25 Test Images - Build and Deploy
+
+on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+  workflow_dispatch:
+    inputs:
+      db_type:
+        description: "sz-service-admin database profile"
+        required: true
+        default: "mysql"
+        type: choice
+        options:
+          - mysql
+          - postgresql
+      deploy:
+        description: "Deploy to test server after image push"
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  build-and-publish:
+    name: Build & Push ${{ matrix.app_name }}
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        include:
+          - app_name: sz-service-admin
+            module_dir: sz-service/sz-service-admin
+            image_kind: admin
+          - app_name: sz-service-websocket
+            module_dir: sz-service/sz-service-websocket
+            image_kind: websocket
+
+    env:
+      ACR_DOMAIN: registry.cn-beijing.aliyuncs.com
+      ACR_ZONE: sz-action
+      ENVIRONMENT_TAG: test
+      BUILD_DB_TYPE: ${{ github.event.inputs.db_type || vars.SZ_TEST_DB_TYPE || vars.SZ_DB_TYPE || 'mysql' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25 (Zulu)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Set up Maven 3.9.6
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.6
+
+      - name: Resolve image metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          maven_profile=""
+          image_tag="${ENVIRONMENT_TAG}"
+
+          if [ "${{ matrix.image_kind }}" = "admin" ]; then
+            case "${BUILD_DB_TYPE}" in
+              mysql)
+                maven_profile="mysql"
+                image_tag="${ENVIRONMENT_TAG}"
+                ;;
+              postgresql)
+                maven_profile="postgresql"
+                image_tag="${ENVIRONMENT_TAG}-postgresql"
+                ;;
+              *)
+                echo "不支持的 BUILD_DB_TYPE: ${BUILD_DB_TYPE}，可选值：mysql/postgresql" >&2
+                exit 1
+                ;;
+            esac
+          fi
+
+          echo "maven_profile=${maven_profile}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "image_ref=${ACR_DOMAIN}/${ACR_ZONE}/${{ matrix.app_name }}:${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "本次构建镜像: ${ACR_DOMAIN}/${ACR_ZONE}/${{ matrix.app_name }}:${image_tag}"
+
+      - name: Build Docker image
+        env:
+          APP_NAME: ${{ matrix.app_name }}
+          MODULE_DIR: ${{ matrix.module_dir }}
+          MAVEN_PROFILE: ${{ steps.meta.outputs.maven_profile }}
+          IMAGE_REF: ${{ steps.meta.outputs.image_ref }}
+        run: bash .github/scripts/build-sz-service-image.sh
+
+      - name: Login to ACR
+        if: github.event_name != 'pull_request'
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login --username=${{ secrets.ACR_USERNAME }} ${{ env.ACR_DOMAIN }} --password-stdin
+
+      - name: Push Docker image to ACR
+        if: github.event_name != 'pull_request'
+        run: docker push ${{ steps.meta.outputs.image_ref }}
+
+  deploy:
+    name: Deploy with sz-deploy-v3 scripts
+    runs-on: ubuntu-latest
+    needs: build-and-publish
+    if: github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || github.event.inputs.deploy == 'true')
+    steps:
+      - name: Deploy services on test server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.REMOTE_HOST_TEST }}
+          username: ${{ secrets.REMOTE_USER_TEST }}
+          password: ${{ secrets.REMOTE_PASSWORD_TEST }}
+          script: |
+            set -e
+
+            echo "==================== 部署 sz-service-admin ===================="
+            cd /home/docker-compose/sz-service-admin
+            if [ -f .env ] && grep -q '^COMPOSE_FILE=.*docker-compose.gen.yml' .env && [ -x ./deploy.sh ]; then
+              [ -x ./gen-conf.sh ] && bash ./gen-conf.sh
+              bash ./deploy.sh
+            elif [ -x ./upgrade.sh ]; then
+              bash ./upgrade.sh
+            else
+              echo "未找到可执行部署脚本：deploy.sh 或 upgrade.sh" >&2
+              exit 1
+            fi
+
+            echo "==================== 部署 sz-service-websocket ===================="
+            cd /home/docker-compose/sz-service-websocket
+            bash ./upgrade.sh

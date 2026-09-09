@@ -1,0 +1,130 @@
+package com.sz.admin.system.service;
+
+import com.mybatisflex.core.service.IService;
+import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
+import com.sz.admin.system.pojo.dto.sysmenu.SysUserRoleDTO;
+import com.sz.admin.system.pojo.dto.sysuser.*;
+import com.sz.admin.system.pojo.po.SysUser;
+import com.sz.admin.system.pojo.vo.common.UserVO;
+import com.sz.admin.system.pojo.vo.sysuser.SysUserRoleVO;
+import com.sz.admin.system.pojo.vo.sysuser.SysUserVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserOptionVO;
+import com.sz.admin.system.pojo.vo.sysuser.UserProfileVO;
+import com.sz.security.core.model.LoginUser;
+import com.sz.core.common.entity.PageResult;
+import com.sz.core.common.entity.SelectIdsDTO;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ * 系统用户表 服务类
+ * </p>
+ *
+ * @author sz
+ * @since 2022-10-01
+ */
+public interface SysUserService extends IService<SysUser> {
+
+    SysUserVO getSysUserByUsername(String username);
+
+    SysUserVO getSysUserByUserId(Long userId);
+
+    /**
+     * 创建用户
+     *
+     * @param dto
+     *            用户信息
+     */
+    void create(SysUserCreateDTO dto);
+
+    /**
+     * 更新用户
+     *
+     * @param dto
+     *            用户信息
+     */
+    void update(SysUserUpdateDTO dto);
+
+    /**
+     * 删除用户
+     *
+     * @param dto
+     *            用户id数组
+     */
+    void remove(SelectIdsDTO dto);
+
+    /**
+     * 详情
+     *
+     * @param id
+     *            id
+     * @return {@link SysUser}
+     */
+    SysUserVO detail(Long id);
+
+    PageResult<SysUserVO> page(SysUserListDTO dto);
+
+    SysUserRoleVO findSysUserRole(Long userId);
+
+    void changeSysUserRole(SysUserRoleDTO dto);
+
+    /**
+     * 更改密码
+     *
+     * @param dto
+     *            dto
+     */
+    void changePassword(SysUserPasswordDTO dto);
+
+    /**
+     * 重置密码
+     *
+     * @param id
+     *            id
+     */
+    void resetPassword(Long id);
+
+    /**
+     * 使用已构建好的 LoginUser 同步用户 SaSession，避免重复查库 适用于批量场景（buildLoginUserBatch 已完成
+     * LoginUser 构建后调用）
+     *
+     * @param userId
+     *            用户ID
+     * @param loginUser
+     *            已构建好的最新 LoginUser
+     */
+    void syncUserInfoWithLoginUser(Long userId, LoginUser loginUser);
+
+    LoginUser buildLoginUser(String username, String password);
+
+    LoginUser buildLoginUser(Long userId);
+
+    /**
+     * 批量构建多个用户的 LoginUser（普通用户走批量查询路径，超管走单个路径） 相比逐个调用 buildLoginUser，大幅减少 DB 查询次数
+     *
+     * @param userIds
+     *            用户ID列表
+     * @return userId -> LoginUser 的映射
+     */
+    Map<Long, LoginUser> buildLoginUserBatch(List<Long> userIds);
+
+    void unlock(SelectIdsDTO dto);
+
+    void bindUserDept(UserDeptDTO dto);
+
+    List<UserOptionVO> getUserOptions();
+
+    PageResult<UserVO> pageSelector(SelectorQueryDTO dto);
+
+    void changeUserTag(SysUserTagDTO dto);
+
+    UserProfileVO getProfile();
+
+    void updateProfile(UserProfileUpdateDTO dto);
+
+    void updateContact(SysUserContactUpdateDTO dto);
+
+    void unbindContact(SysUserContactUnbindDTO dto);
+}

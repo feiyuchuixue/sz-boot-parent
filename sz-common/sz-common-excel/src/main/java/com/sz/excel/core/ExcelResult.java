@@ -19,6 +19,11 @@ public interface ExcelResult<T> {
     List<String> getErrorList();
 
     /**
+     * 结构化失败行列表
+     */
+    List<ExcelFailRow<T>> getFailRowList();
+
+    /**
      * 导入回执
      */
     String getAnalysis();

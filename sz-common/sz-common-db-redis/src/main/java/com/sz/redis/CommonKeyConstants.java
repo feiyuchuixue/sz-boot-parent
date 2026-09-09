@@ -21,9 +21,24 @@ public class CommonKeyConstants {
     public static final String SYS_DICT = "sys_dict";
 
     /**
+     * 静态字典全量加载标记
+     */
+    public static final String SYS_DICT_STATIC_LOADED = "sys_dict:static_loaded";
+
+    /**
+     * 静态字典类型编码列表
+     */
+    public static final String SYS_DICT_STATIC_TYPES = "sys_dict:static_types";
+
+    /**
      * 系统参数信息
      */
     public static final String SYS_CONFIG = "sys_config";
+
+    /**
+     * 前端配置信息
+     */
+    public static final String FRONTEND_CONFIG = "frontend_config";
 
     /**
      * sa-token token信息
@@ -44,5 +59,12 @@ public class CommonKeyConstants {
      * 验证码请求次数限制
      */
     public static final String CAPTCHA_REQUEST_LIMIT = "captcha:request-limit:${requestId}";
+
+    public static final String LOGIN_REQUEST_ID = "login:request:${requestId}";
+
+    /**
+     * 登录请求次数限制
+     */
+    public static final String LOGIN_REQUEST_LIMIT = "login:request-limit:${requestId}";
 
 }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_user: framework struct + init -->
+    <changeSet id="framework-struct-sys-dict-source-202605202010" author="feiyu">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="sys_dict_source"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="sys_dict_source" remarks="字典来源表">
+            <column name="id" type="BIGINT" remarks="主键ID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="source_code" type="VARCHAR(64)" remarks="来源编码">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_name" type="VARCHAR(64)" remarks="来源名称">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_id" type="BIGINT" remarks="起始ID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_id" type="BIGINT" remarks="结束ID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="${bool.type}" defaultValue="T" remarks="状态">
+                <constraints nullable="false"/>
+            </column>
+            <column name="remark" type="VARCHAR(255)" defaultValue="" remarks="备注">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_time" type="${datetime.type}" remarks="创建时间"/>
+            <column name="update_time" type="${datetime.type}" remarks="更新时间"/>
+            <column name="create_id" type="BIGINT" remarks="创建人ID"/>
+            <column name="update_id" type="BIGINT" remarks="更新人ID"/>
+        </createTable>
+
+        <createIndex tableName="sys_dict_source" indexName="uk_sys_dict_source_code" unique="true">
+            <column name="source_code"/>
+        </createIndex>
+    </changeSet>
+
+    
+    <changeSet id="framework-init-sys-dict-source-202605202011" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_dict_source</sqlCheck>
+        </preConditions>
+
+        <insert tableName="sys_dict_source">
+            <column name="id" valueNumeric="1"/>
+            <column name="source_code" value="framework"/>
+            <column name="source_name" value="框架内置"/>
+            <column name="start_id" valueNumeric="1000"/>
+            <column name="end_id" valueNumeric="1999"/>
+            <column name="status" value="T"/>
+            <column name="remark" value="框架保留来源，对应 1000-1999 区间"/>
+            <column name="create_time" valueDate="2026-05-20 20:11:00"/>
+            <column name="update_time" valueDate="2026-05-20 20:11:00"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="sys_dict_source">
+            <column name="id" valueNumeric="2"/>
+            <column name="source_code" value="custom"/>
+            <column name="source_name" value="业务自定义"/>
+            <column name="start_id" valueNumeric="2000"/>
+            <column name="end_id" valueNumeric="2999"/>
+            <column name="status" value="T"/>
+            <column name="remark" value="业务默认来源，对应 2000-2999 区间"/>
+            <column name="create_time" valueDate="2026-05-20 20:11:00"/>
+            <column name="update_time" valueDate="2026-05-20 20:11:00"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="update_id" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,10 +1,10 @@
 package com.sz.security.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.sz.core.common.entity.SocketMessage;
-import com.sz.core.common.entity.TransferMessage;
+import com.sz.core.common.entity.SocketPushMessage;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.common.enums.SocketChannelEnum;
+import com.sz.core.util.SocketUtil;
 import com.sz.core.util.SpringApplicationContextUtils;
 import com.sz.redis.WebsocketRedisService;
 import com.sz.security.pojo.ClientVO;
@@ -43,18 +43,14 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * 强制注销指定用户
-     * 
+     *
      * @param id
      *            用户id
      */
     @Override
     public void kickOut(Long id) {
-        TransferMessage tm = new TransferMessage();
-        tm.setToUsers(Collections.singletonList(id + ""));
-        SocketMessage sb = new SocketMessage();
-        sb.setChannel(SocketChannelEnum.KICK_OFF);
-        tm.setMessage(sb);
-        websocketRedisService.sendServiceToWs(tm);
+        websocketRedisService
+                .sendServiceToWs(SocketUtil.toUsers(SocketPushMessage.of(SocketChannelEnum.KICK_OFF), Collections.singletonList(String.valueOf(id))));
         StpUtil.logout(id);
     }
 

@@ -1,0 +1,57 @@
+package com.sz.admin.system.pojo.vo.systempfile;
+
+import com.mybatisflex.annotation.Column;
+import com.sz.db.handler.Jackson3TypeHandler;
+import com.sz.resource.model.ResourceRef;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * <p>
+ * SysTempFile返回vo
+ * </p>
+ *
+ * @author sz-admin
+ * @since 2024-12-05
+ */
+@Data
+@Schema(description = "SysTempFile返回vo")
+public class SysTempFileVO {
+
+    @Schema(description = "ID")
+    private Long id;
+
+    @Schema(description = "文件ID")
+    private Long sysFileId;
+
+    @Schema(description = "模版名")
+    private String tempName;
+
+    @Schema(description = "地址")
+    @Column(typeHandler = Jackson3TypeHandler.class)
+    private List<ResourceRef> url;
+
+    @Schema(description = "备注")
+    private String remark;
+
+    @Schema(description = "逻辑删除")
+    private String delFlag;
+
+    @Schema(description = "创建人")
+    private Long createId;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "更新人")
+    private Long updateId;
+
+    @Schema(description = "更新时间")
+    private LocalDateTime updateTime;
+
+    @Schema(description = "标识")
+    private String alias;
+
+}

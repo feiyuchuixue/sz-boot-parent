@@ -1,7 +1,7 @@
 package com.sz.logger.logbackadvice;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
-import com.sz.logger.utils.DesensitizationUtil;
+import com.sz.logger.desensitize.LogDesensitizer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -34,9 +34,8 @@ public class DesensitizationAppender {
         if (event.getArgumentArray() != null) {
             // 获取格式化后的Message
             String eventFormattedMessage = event.getFormattedMessage();
-            DesensitizationUtil util = new DesensitizationUtil();
             // 获取替换后的日志信息
-            String changeMessage = util.customChange(eventFormattedMessage);
+            String changeMessage = LogDesensitizer.GLOBAL.desensitize(eventFormattedMessage);
             if (!(null == changeMessage || changeMessage.isEmpty())) {
                 try {
                     // 利用反射的方式，将替换后的日志设置到原event对象中去

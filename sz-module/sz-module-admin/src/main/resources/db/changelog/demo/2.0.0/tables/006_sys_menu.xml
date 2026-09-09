@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_menu: demo data -->
+
+    <changeSet id="demo-data-sys-menu-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_menu WHERE id IN ('705327582685564993', '705327582689759298', '705327582693953603', '705327582698147908', '705327582702342213', '705327582706536518', '705327582710730823')</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582685564993"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="修改"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="200"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.update"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582689759298"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="删除"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.remove"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582693953603"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="导出"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="500"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.export"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582698147908"/>
+            <column name="pid" value="0"/>
+            <column name="path" value="/teacher/teacherStatistics"/>
+            <column name="name" value="TeacherStatisticsView"/>
+            <column name="title" value="教师统计"/>
+            <column name="icon" value="svg-org"/>
+            <column name="component" value="/teacher/teacherStatistics/index"/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="300"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002002"/>
+            <column name="permissions" value=""/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="T"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="T"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582702342213"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="导入"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="400"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.import"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582706536518"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="查询"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="99"/>
+            <column name="deep" valueNumeric="2"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.query_table"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+        <insert tableName="sys_menu">
+            <column name="id" value="705327582710730823"/>
+            <column name="pid" value="705327582698147908"/>
+            <column name="path" value=""/>
+            <column name="name" value=""/>
+            <column name="title" value="新增"/>
+            <column name="icon" value=""/>
+            <column name="component" value=""/>
+            <column name="redirect" value=""/>
+            <column name="sort" valueNumeric="100"/>
+            <column name="deep" valueNumeric="1"/>
+            <column name="menu_type_cd" value="1002003"/>
+            <column name="permissions" value="teacher.statistics.create"/>
+            <column name="is_hidden" value="F"/>
+            <column name="has_children" value="F"/>
+            <column name="is_link" value="F"/>
+            <column name="is_full" value="F"/>
+            <column name="is_affix" value="F"/>
+            <column name="is_keep_alive" value="F"/>
+            <column name="del_flag" value="F"/>
+            <column name="use_data_scope" value="F"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

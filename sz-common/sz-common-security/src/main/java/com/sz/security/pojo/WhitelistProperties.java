@@ -11,6 +11,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ConfigurationProperties(prefix = "router")
 public class WhitelistProperties {
 
-    private CopyOnWriteArraySet<String> whitelist;
+    private CopyOnWriteArraySet<String> whitelist = new CopyOnWriteArraySet<>();
 
 }

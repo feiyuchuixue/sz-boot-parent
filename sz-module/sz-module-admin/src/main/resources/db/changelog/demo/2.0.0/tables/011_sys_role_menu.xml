@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_role_menu: demo data -->
+
+    <changeSet id="demo-data-sys-role-menu-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_role_menu WHERE role_id IN (2, 3, 4, 5, 6, 7)</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582647816248"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582496821268"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582542958623"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582584901673"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582538764318"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582580707368"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582450683913"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582563930148"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="1"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="3"/>
+            <column name="permission_type" value="scope"/>
+            <column name="data_scope_cd" value="1006001"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="4"/>
+            <column name="permission_type" value="scope"/>
+            <column name="data_scope_cd" value="1006002"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="6"/>
+            <column name="permission_type" value="scope"/>
+            <column name="data_scope_cd" value="1006004"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="5"/>
+            <column name="permission_type" value="scope"/>
+            <column name="data_scope_cd" value="1006003"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582706536518"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582710730823"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582685564993"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582689759298"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582702342213"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582693953603"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582698147908"/>
+            <column name="role_id" valueNumeric="7"/>
+            <column name="permission_type" value="scope"/>
+            <column name="data_scope_cd" value="1006005"/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582639427638"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+        <insert tableName="sys_role_menu">
+            <column name="menu_id" value="705327582534570013"/>
+            <column name="role_id" valueNumeric="2"/>
+            <column name="permission_type" value="menu"/>
+            <column name="data_scope_cd" value=""/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

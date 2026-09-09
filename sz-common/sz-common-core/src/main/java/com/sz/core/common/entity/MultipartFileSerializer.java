@@ -1,19 +1,17 @@
 package com.sz.core.common.entity;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.SerializationContext;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 /**
  * 自定义MultipleFile序列化
  */
-public class MultipartFileSerializer extends JsonSerializer<MultipartFile> {
+public class MultipartFileSerializer extends ValueSerializer<MultipartFile> {
 
     @Override
-    public void serialize(MultipartFile value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(MultipartFile value, JsonGenerator gen, SerializationContext serializers) {
         gen.writeString(value.getOriginalFilename());
     }
 }

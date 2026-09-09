@@ -1,0 +1,39 @@
+name: Java 25 Baseline CI
+
+on:
+  push:
+    branches: [ "main", "dev", "preview", "test" ]
+  pull_request:
+    branches: [ "main", "dev", "preview", "test" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: JDK 25 / ${{ matrix.database }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [ mysql, postgresql ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25 (Zulu)
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: "25"
+          cache: maven
+
+      - name: Set up Maven 3.9.6
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.6
+
+      - name: Verify with ${{ matrix.database }} profile
+        run: mvn clean verify -DskipTests=false -DskipITs=false -P${{ matrix.database }}

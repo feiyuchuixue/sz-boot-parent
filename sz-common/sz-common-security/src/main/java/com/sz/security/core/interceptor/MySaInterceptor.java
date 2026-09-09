@@ -10,7 +10,6 @@ import com.sz.core.common.entity.ControlPermissions;
 import com.sz.core.datascope.ControlThreadLocal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.lang.NonNull;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -40,7 +39,7 @@ public class MySaInterceptor extends SaInterceptor {
                 // 如果此 Method 标注了 @SaCheckPermission，则进行（数据权限）校验
                 SaCheckPermission checkPermission = (SaCheckPermission) SaAnnotationStrategy.instance.getAnnotation.apply(method, SaCheckPermission.class);
                 if (checkPermission != null) {
-                    ControlThreadLocal.set(new ControlPermissions(checkPermission.value(), checkPermission.mode().name()));
+                    ControlThreadLocal.set(new ControlPermissions(checkPermission.value()));
                 }
             }
 
@@ -48,18 +47,12 @@ public class MySaInterceptor extends SaInterceptor {
             auth.run(handler);
 
         } catch (StopMatchException e) {
-            // StopMatchException 异常代表：停止匹配，进入Controller
-            ControlThreadLocal.clearDataScope();
+            // 停止匹配，正常进入 Controller，ControlPermissions 由 afterCompletion 统一清理
         } catch (BackResultException e) {
             ControlThreadLocal.clearDataScope();
             // BackResultException 异常代表：停止匹配，向前端输出结果
-            // 请注意此处默认 Content-Type 为 text/plain，如果需要返回 JSON 信息，需要在 back 前自行设置 Content-Type
-            // 为 application/json
-            // 例如：SaHolder.getResponse().setHeader("Content-Type",
-            // "application/json;charset=UTF-8");
-            if (response.getContentType() == null) {
-                response.setContentType("text/plain; charset=utf-8");
-            }
+            // 统一输出 JSON 格式，确保前端拦截器可正常解析
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print(e.getMessage());
             return false;
         }
@@ -69,8 +62,7 @@ public class MySaInterceptor extends SaInterceptor {
     }
 
     @Override
-    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex)
-            throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         ControlThreadLocal.clearDataScope();
         super.afterCompletion(request, response, handler, ex);
     }

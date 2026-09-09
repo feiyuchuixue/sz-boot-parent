@@ -19,7 +19,9 @@ public enum SocketChannelEnum {
     SYNC_PERMISSIONS("sync_permissions", "同步permission权限", "push"),
     UPGRADE_CHANNEL("upgrade_channel", "升级通告", "push"),
     MESSAGE("message", "系统消息", "push"),
-    READ("read","消息已读刷新数量","push");
+    READ("read","消息已读刷新数量","push"),
+    SYNC_FRONTEND_CONF("sync_frontend_conf","同步前端配置","push"),
+    ;
     // @formatter:on
 
     /**

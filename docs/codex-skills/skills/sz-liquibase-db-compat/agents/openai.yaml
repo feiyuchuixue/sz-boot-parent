@@ -1,0 +1,7 @@
+interface:
+  display_name: "Sz Liquibase 双库兼容"
+  short_description: "审查 Sz Liquibase 迁移的数据库兼容性"
+  default_prompt: "使用 $sz-liquibase-db-compat 设计并验证兼容 MySQL 和 PostgreSQL 的 Sz Liquibase 迁移。"
+
+policy:
+  allow_implicit_invocation: true

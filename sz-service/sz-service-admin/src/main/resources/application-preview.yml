@@ -1,4 +1,9 @@
 server:
   servlet:
-    context-path: /api/admin
+    context-path: /api
   port: 9991
+sz:
+  cors:
+    allowed-origins:
+      - "https://preview.szadmin.cn"
+      - "https://*.szadmin.cn"

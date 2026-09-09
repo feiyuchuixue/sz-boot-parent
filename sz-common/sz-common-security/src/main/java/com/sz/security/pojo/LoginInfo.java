@@ -16,7 +16,7 @@ public class LoginInfo {
     @Schema(description = "用户名")
     private String username;
 
-    @Schema(description = "密码")
+    @Schema(description = "密码, 防止明文传输使用AES-GCM加密")
     private String password;
 
     @Schema(description = "客户端id", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -27,5 +27,11 @@ public class LoginInfo {
 
     @Schema(description = "微信小程序登录code")
     private String code;
+
+    @Schema(description = "请求id")
+    private String requestId;
+
+    @Schema(description = "iv向量")
+    private String iv;
 
 }

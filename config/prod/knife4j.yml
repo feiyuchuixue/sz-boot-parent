@@ -1,15 +1,14 @@
-# swagger文档配置
-knife4j:
-  enable: false
-  setting:
-    language: zh_cn
 springdoc:
   default-flat-param-object: true
   swagger-ui:
+    # 是否开启 swagger-ui，【生产环境】建议关闭
+    enabled: false
     path: /swagger-ui.html
     tags-sorter: alpha
-    operations-sorter: alpha·
+    operations-sorter: alpha
   api-docs:
+    # 是否开启 api-docs，【生产环境】建议关闭
+    enabled: false
     path: /v3/api-docs
   group-configs:
     - group: 'admin'

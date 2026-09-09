@@ -1,0 +1,124 @@
+package com.sz.admin.teacher.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsCreateDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsListDTO;
+import com.sz.admin.teacher.pojo.dto.TeacherStatisticsUpdateDTO;
+import com.sz.admin.teacher.pojo.vo.TeacherStatisticsVO;
+import com.sz.admin.teacher.service.TeacherStatisticsService;
+import com.sz.resource.service.ResourceDownloadService;
+import com.sz.core.common.constant.GlobalConstant;
+import com.sz.core.common.entity.*;
+import com.sz.excel.imports.model.ExcelImportResultVO;
+import com.sz.logger.audit.OperationAudit;
+import com.sz.logger.audit.OperationType;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 教师统计 Controller
+ * </p>
+ *
+ * @author sz
+ * @since 2024-02-19
+ */
+@Tag(name = "教师统计")
+@RestController
+@RequestMapping("teacher-statistics")
+@RequiredArgsConstructor
+@Profile({"dev", "local", "preview"})
+public class TeacherStatisticsController {
+
+    private final TeacherStatisticsService teacherStatisticsService;
+
+    private final ResourceDownloadService resourceDownloadService;
+
+    @Operation(summary = "新增教师统计")
+    @SaCheckPermission(value = "teacher.statistics.create", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping
+    public ApiResult<Void> create(@RequestBody TeacherStatisticsCreateDTO dto) {
+        teacherStatisticsService.create(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "修改教师统计")
+    @SaCheckPermission(value = "teacher.statistics.update", orRole = GlobalConstant.SUPER_ROLE)
+    @PutMapping
+    public ApiResult<Void> update(@RequestBody TeacherStatisticsUpdateDTO dto) {
+        teacherStatisticsService.update(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "删除教师统计")
+    @SaCheckPermission(value = "teacher.statistics.remove", orRole = GlobalConstant.SUPER_ROLE)
+    @DeleteMapping
+    public ApiResult<Void> remove(@RequestBody SelectIdsDTO dto) {
+        teacherStatisticsService.remove(dto);
+        return ApiResult.success();
+    }
+
+    @Operation(summary = "查询教师统计列表")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping
+    public ApiResult<PageResult<TeacherStatisticsVO>> list(TeacherStatisticsListDTO dto) {
+        return ApiPageResult.success(teacherStatisticsService.page(dto));
+    }
+
+    @Operation(summary = "查询教师统计详情")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @GetMapping("/{id}")
+    public ApiResult<TeacherStatisticsVO> detail(@PathVariable Long id) {
+        return ApiResult.success(teacherStatisticsService.detail(id));
+    }
+
+    @Operation(summary = "下载教师统计附件")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/{id}/resources/{resourceId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        teacherStatisticsService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.download(resourceId);
+    }
+
+    @Operation(summary = "预览教师统计附件")
+    @SaCheckPermission(value = "teacher.statistics.query_table", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/{id}/resources/{resourceId}/preview")
+    public ResponseEntity<StreamingResponseBody> previewResource(@PathVariable Long id, @PathVariable Long resourceId) {
+        teacherStatisticsService.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.preview(resourceId);
+    }
+
+    @Operation(summary = "导入教师统计", parameters = {
+            @Parameter(name = "file", description = "上传文件", schema = @Schema(type = "string", format = "binary"), required = true)})
+    @OperationAudit(operationType = OperationType.IMPORT)
+    @SaCheckPermission(value = "teacher.statistics.import", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/import")
+    public ApiResult<ExcelImportResultVO> importExcel(@ModelAttribute ImportExcelDTO dto) {
+        return ApiResult.success(teacherStatisticsService.importExcel(dto));
+    }
+
+    @Operation(summary = "导出教师统计")
+    @OperationAudit(operationType = OperationType.EXPORT)
+    @SaCheckPermission(value = "teacher.statistics.export", orRole = GlobalConstant.SUPER_ROLE)
+    @PostMapping("/export")
+    public void exportExcel(@RequestBody TeacherStatisticsListDTO dto, HttpServletResponse response) {
+        teacherStatisticsService.exportExcel(dto, response);
+    }
+
+    @Operation(summary = "远程搜索教师统计")
+    @GetMapping("/remote/{keyword}")
+    public ApiResult<List<TeacherStatisticsVO.TeacherTypeEnum>> remoteSearch(@PathVariable String keyword) {
+        return ApiResult.success(teacherStatisticsService.remoteSearch(keyword));
+    }
+
+}

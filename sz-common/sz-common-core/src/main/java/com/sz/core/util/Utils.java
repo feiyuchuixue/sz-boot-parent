@@ -1,5 +1,6 @@
 package com.sz.core.util;
 
+import com.sz.core.common.enums.CommonResponseEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -128,7 +129,7 @@ public class Utils {
      *            HttpServletRequest对象
      * @return 用户验证码用的RequestId
      */
-    public static String generateCaptchaRequestId(HttpServletRequest request) {
+    public static String generateAgentRequestId(HttpServletRequest request) {
         String ip = HttpReqResUtil.getIpAddress(request);
         String userAgent = request.getHeader("User-Agent");
         return ip + ":" + userAgent;
@@ -150,6 +151,28 @@ public class Utils {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
+    }
+
+    public static Long parseNumericId(Object id) {
+        CommonResponseEnum.INVALID_ID.assertNull(id);
+        // 直接是数字类型
+        if (id instanceof Number n) {
+            long v = n.longValue();
+            CommonResponseEnum.INVALID_ID.assertTrue(v <= 0);
+            return v;
+        }
+        // 字符串：必须是纯数字（不允许空格/小数点/负号/科学计数法等）
+        if (id instanceof CharSequence cs) {
+            String s = cs.toString();
+            CommonResponseEnum.INVALID_ID.assertFalse(s.matches("\\d+"));
+            // 这里不会有非数字了，安全转换
+            long v = Long.parseLong(s);
+            CommonResponseEnum.INVALID_ID.assertTrue(v <= 0);
+            return v;
+        }
+        // 其它类型全部拒绝
+        CommonResponseEnum.INVALID_ID.assertTrue(true);
+        return null;
     }
 
 }

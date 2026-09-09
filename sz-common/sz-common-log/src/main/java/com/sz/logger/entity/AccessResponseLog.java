@@ -1,6 +1,7 @@
 package com.sz.logger.entity;
 
 import lombok.Data;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -51,6 +52,7 @@ public class AccessResponseLog {
      */
     private Object reqBody;
 
+    @Builder.Default
     private String type = "response";
 
     private String method;

@@ -1,0 +1,59 @@
+package com.sz.admin.system.pojo.po;
+
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.Table;
+import com.sz.platform.listener.TableSysConfigListener;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+/**
+ * <p>
+ * 参数配置表
+ * </p>
+ *
+ * @author sz
+ * @since 2023-11-23
+ */
+
+@Data
+@Table(value = "sys_config", onInsert = TableSysConfigListener.class, onUpdate = TableSysConfigListener.class)
+@Schema(description = "参数配置表")
+public class SysConfig implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Schema(description = "id")
+    private Long id;
+
+    @Schema(description = "参数名")
+    private String configName;
+
+    @Schema(description = "参数key")
+    private String configKey;
+
+    @Schema(description = "参数value")
+    private String configValue;
+
+    @Schema(description = "备注")
+    private String remark;
+
+    @Schema(description = "是否锁定")
+    private String isLock;
+
+    @Schema(description = "该参数是否需要前端加载、缓存及使用")
+    private String frontendVisible;
+
+    private Long createId;
+
+    private LocalDateTime createTime;
+
+    private Long updateId;
+
+    private LocalDateTime updateTime;
+}

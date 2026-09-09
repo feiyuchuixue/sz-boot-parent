@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- sys_temp_file: demo data -->
+
+    <changeSet id="demo-data-sys-temp-file-202605100838" author="升职哦（sz）">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM sys_temp_file WHERE id IN (2)</sqlCheck>
+        </preConditions>
+        <insert tableName="sys_temp_file">
+            <column name="id" valueNumeric="2"/>
+            <column name="sys_file_id" valueNumeric="407693840624005120"/>
+            <column name="temp_name" value="教师统计导入模板新.xlsx"/>
+            <column name="remark" value=""/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="1"/>
+            <column name="create_time" valueDate="2026-05-01 13:06:33"/>
+            <column name="update_id" valueNumeric="1"/>
+            <column name="update_time" valueDate="2026-05-01 13:06:33"/>
+            <column name="url" value="[{&quot;accessUrl&quot;: null, &quot;objectKey&quot;: &quot;template/20260501/教师统计导入模板新.xlsx&quot;, &quot;sceneCode&quot;: &quot;template.excel&quot;, &quot;originName&quot;: &quot;教师统计导入模板新.xlsx&quot;, &quot;resourceId&quot;: 407687721621008384, &quot;contentType&quot;: &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;}]"/>
+            <column name="alias" value="jstj"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -3,10 +3,11 @@ package com.sz.wechat.mini;
 import com.sz.core.util.JsonUtils;
 import com.sz.redis.RedisUtils;
 import com.sz.wechat.WechatProperties;
+import com.sz.wechat.config.WechatRestClientConfiguration;
 import com.sz.wechat.pojo.AccessTokenResult;
 import com.sz.wechat.pojo.ErrorMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -22,11 +23,17 @@ import static com.sz.wechat.WechatApiConstant.WECHAT_TOKEN_URL;
  * @version 1.0
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class MiniWechatService {
 
     private final WechatProperties wechatProperties;
+
+    private final RestClient restClient;
+
+    public MiniWechatService(WechatProperties wechatProperties, @Qualifier(WechatRestClientConfiguration.WECHAT_REST_CLIENT) RestClient restClient) {
+        this.wechatProperties = wechatProperties;
+        this.restClient = restClient;
+    }
 
     private static final String WECHAT_MINI_TOKEN = "wechat:mini:token";
 
@@ -39,14 +46,14 @@ public class MiniWechatService {
         if (RedisUtils.hasKey(WECHAT_MINI_TOKEN)) {
             return (String) RedisUtils.getValue(WECHAT_MINI_TOKEN);
         } else {
-            ResponseEntity<AccessTokenResult> entity = RestClient.create().get()
+            ResponseEntity<AccessTokenResult> entity = restClient.get()
                     .uri(WECHAT_TOKEN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret()).retrieve()
                     .toEntity(AccessTokenResult.class);
             AccessTokenResult result = entity.getBody();
             assert result != null;
             if (validSuccess(result)) {
                 int expireTime = result.getExpiresIn() - 1200;
-                RedisUtils.getRestTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccessToken(), expireTime, TimeUnit.SECONDS);
+                RedisUtils.getRedisTemplate().opsForValue().set(WECHAT_MINI_TOKEN, result.getAccessToken(), expireTime, TimeUnit.SECONDS);
                 return result.getAccessToken();
             } else {
                 log.error("【微信小程序】 获取accessToken失败，错误码：{}，错误信息：{}", result.getErrcode(), result.getErrmsg());
@@ -66,7 +73,7 @@ public class MiniWechatService {
      */
     public LoginInfoResult miniLogin(String code, String accessToken) {
         // 微信小程序登录接口返回content-type是text/plain，因此无法直接映射对象。使用String接收，后续再做转换
-        ResponseEntity<String> entity = RestClient.create().get()
+        ResponseEntity<String> entity = restClient.get()
                 .uri(WECHAT_MINI_LOGIN_URL, wechatProperties.getMini().getAppId(), wechatProperties.getMini().getAppSecret(), code, accessToken).retrieve()
                 .toEntity(String.class);
         return JsonUtils.parseObject(entity.getBody(), LoginInfoResult.class);

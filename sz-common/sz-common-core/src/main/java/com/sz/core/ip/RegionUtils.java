@@ -2,7 +2,9 @@ package com.sz.core.ip;
 
 import com.sz.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.lionsoul.ip2region.xdb.LongByteArray;
 import org.lionsoul.ip2region.xdb.Searcher;
+import org.lionsoul.ip2region.xdb.Version;
 
 import java.io.InputStream;
 
@@ -15,21 +17,31 @@ import java.io.InputStream;
 public class RegionUtils {
 
     // IP地址库文件名称
-    public static final String IP_XDB_FILENAME = "region/ip2region.xdb";
+    public static final String IP_XDB_CLASSPATH_V4 = "region/ip2region_v4.xdb";
 
     private static final Searcher SEARCHER;
 
+    private static final Version version = Version.IPv4;
+
     static {
-        Searcher searcher = null;
-        try (InputStream inputStream = RegionUtils.class.getClassLoader().getResourceAsStream(IP_XDB_FILENAME)) {
-            if (inputStream == null) {
-                throw new RuntimeException("IP地址库文件不存在: " + IP_XDB_FILENAME);
+        LongByteArray cBuff = null;
+        try (InputStream is = RegionUtils.class.getClassLoader().getResourceAsStream(IP_XDB_CLASSPATH_V4)) {
+            if (is == null) {
+                log.error("无法找到 ip2region 地址库文件: {}", IP_XDB_CLASSPATH_V4);
+            } else {
+                // 将 InputStream 转为 byte[]
+                byte[] bytes = is.readAllBytes();
+                cBuff = new LongByteArray(bytes);
             }
-            byte[] data = inputStream.readAllBytes();
-            searcher = Searcher.newWithBuffer(data);
-            log.info("RegionUtils初始化成功，加载IP地址库数据成功！");
         } catch (Exception e) {
-            log.error("RegionUtils初始化失败", e);
+            log.error("加载ip地址库失败", e);
+        }
+        Searcher searcher = null;
+        try {
+            searcher = Searcher.newWithBuffer(version, cBuff);
+        } catch (Exception e) {
+            System.out.printf("failed to create content cached searcher: %s\n", e);
+            log.error("创建Region缓存搜索器失败", e);
         }
         SEARCHER = searcher;
     }
