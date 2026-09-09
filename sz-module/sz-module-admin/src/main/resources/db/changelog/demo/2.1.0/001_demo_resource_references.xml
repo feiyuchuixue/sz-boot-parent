@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+      仅修复官方 demo 附件数据，不变更表结构，不执行任意业务资源的自动迁移。
+      使用通用 insert/update 和两库内建 MD5，同时适用于 MySQL、PostgreSQL。
+      MD5 仅用于识别原始 url 文本（避免 MySQL 不区分大小写的比较），不用于鉴权。
+      用户已改附件、资源 ID/路径已占用时 MARK_RAN，
+      保留现有数据，由管理员核对后重新上传/关联，不覆盖、不复活已删除资源。
+      每条教师记录的资源登记和引用回填在同一事务中执行，避免只补一半。
+      文件仍需随 data 目录部署；本脚本不创建文件，size 来自官方 demo 文件，create_time 为登记时间。
+      数据回退需使用迁移前备份，不提供可能删除已被其他业务引用资源的自动 rollback。
+    -->
+
+    <changeSet id="demo-teacher-25-resource-references-20260904" author="sz" runInTransaction="true">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="1"><![CDATA[SELECT COUNT(*) FROM teacher_statistics WHERE id = 25 AND create_id = 4 AND MD5(url) = 'adc599bd6f2949f3b11abca386b93078']]></sqlCheck>
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT COUNT(*) FROM sys_resource
+                WHERE id IN (407693840624005121, 407693840624005122, 407693840624005123)
+                   OR (scene_code = 'teacher.attachment' AND object_key IN ('teacher-attachments/template/teacher/20251021/bg1.png', 'teacher-attachments/template/teacher/20251021/bg7.png', 'teacher-attachments/template/teacher/20251021/bg10.png'))
+            ]]></sqlCheck>
+        </preConditions>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005121"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/bg1.png"/>
+            <column name="origin_name" value="bg1.png"/>
+            <column name="size" valueNumeric="105636"/>
+            <column name="content_type" value="image/png"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="4"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005122"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/bg7.png"/>
+            <column name="origin_name" value="bg7.png"/>
+            <column name="size" valueNumeric="66861"/>
+            <column name="content_type" value="image/png"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="4"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005123"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/bg10.png"/>
+            <column name="origin_name" value="bg10.png"/>
+            <column name="size" valueNumeric="87531"/>
+            <column name="content_type" value="image/png"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="4"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <update tableName="teacher_statistics">
+            <column name="url" value="[{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/bg1.png&quot;,&quot;originName&quot;:&quot;bg1.png&quot;,&quot;contentType&quot;:&quot;image/png&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005121&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/bg7.png&quot;,&quot;originName&quot;:&quot;bg7.png&quot;,&quot;contentType&quot;:&quot;image/png&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005122&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/bg10.png&quot;,&quot;originName&quot;:&quot;bg10.png&quot;,&quot;contentType&quot;:&quot;image/png&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005123&quot;}]"/>
+            <where><![CDATA[id = 25 AND create_id = 4 AND MD5(url) = 'adc599bd6f2949f3b11abca386b93078']]></where>
+        </update>
+    </changeSet>
+
+    <changeSet id="demo-teacher-26-resource-references-20260904" author="sz" runInTransaction="true">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="1"><![CDATA[SELECT COUNT(*) FROM teacher_statistics WHERE id = 26 AND create_id = 5 AND MD5(url) = '6cae297be4fc22213f5ca9318012bb0c']]></sqlCheck>
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT COUNT(*) FROM sys_resource
+                WHERE id IN (407693840624005124, 407693840624005125, 407693840624005126, 407693840624005127, 407693840624005128)
+                   OR (scene_code = 'teacher.attachment' AND object_key IN ('teacher-attachments/template/teacher/20251021/bg4.png', 'teacher-attachments/template/teacher/20251021/bg5.png', 'teacher-attachments/template/teacher/20251021/微信图片_20240420160033.jpg', 'teacher-attachments/template/teacher/20251021/教师统计.xlsx', 'teacher-attachments/template/teacher/20251021/sz-admin介绍.pdf'))
+            ]]></sqlCheck>
+        </preConditions>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005124"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/bg4.png"/>
+            <column name="origin_name" value="bg4.png"/>
+            <column name="size" valueNumeric="90015"/>
+            <column name="content_type" value="image/png"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="5"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005125"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/bg5.png"/>
+            <column name="origin_name" value="bg5.png"/>
+            <column name="size" valueNumeric="70640"/>
+            <column name="content_type" value="image/png"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="5"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005126"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/微信图片_20240420160033.jpg"/>
+            <column name="origin_name" value="微信图片_20240420160033.jpg"/>
+            <column name="size" valueNumeric="20276"/>
+            <column name="content_type" value="image/jpeg"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="5"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005127"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/教师统计.xlsx"/>
+            <column name="origin_name" value="教师统计.xlsx"/>
+            <column name="size" valueNumeric="5481"/>
+            <column name="content_type" value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="5"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="sys_resource">
+            <column name="id" valueNumeric="407693840624005128"/>
+            <column name="scene_code" value="teacher.attachment"/>
+            <column name="object_key" value="teacher-attachments/template/teacher/20251021/sz-admin介绍.pdf"/>
+            <column name="origin_name" value="sz-admin介绍.pdf"/>
+            <column name="size" valueNumeric="294682"/>
+            <column name="content_type" value="application/pdf"/>
+            <column name="storage_type" value="LOCAL"/>
+            <column name="del_flag" value="F"/>
+            <column name="create_id" valueNumeric="5"/>
+            <column name="create_time" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <update tableName="teacher_statistics">
+            <column name="url" value="[{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/bg4.png&quot;,&quot;originName&quot;:&quot;bg4.png&quot;,&quot;contentType&quot;:&quot;image/png&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005124&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/bg5.png&quot;,&quot;originName&quot;:&quot;bg5.png&quot;,&quot;contentType&quot;:&quot;image/png&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005125&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/微信图片_20240420160033.jpg&quot;,&quot;originName&quot;:&quot;微信图片_20240420160033.jpg&quot;,&quot;contentType&quot;:&quot;image/jpeg&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005126&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/教师统计.xlsx&quot;,&quot;originName&quot;:&quot;教师统计.xlsx&quot;,&quot;contentType&quot;:&quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005127&quot;},{&quot;objectKey&quot;:&quot;teacher-attachments/template/teacher/20251021/sz-admin介绍.pdf&quot;,&quot;originName&quot;:&quot;sz-admin介绍.pdf&quot;,&quot;contentType&quot;:&quot;application/pdf&quot;,&quot;sceneCode&quot;:&quot;teacher.attachment&quot;,&quot;resourceId&quot;:&quot;407693840624005128&quot;}]"/>
+            <where><![CDATA[id = 26 AND create_id = 5 AND MD5(url) = '6cae297be4fc22213f5ca9318012bb0c']]></where>
+        </update>
+    </changeSet>
+
+    <!-- 当前模板与历史模板独立修复；其中一条被修改，不影响另一条。 -->
+    <changeSet id="demo-template-current-resource-reference-20260904" author="sz">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="1"><![CDATA[SELECT COUNT(*) FROM sys_temp_file WHERE id = 2 AND sys_file_id = 407693840624005120 AND create_id = 1 AND MD5(url) = 'e7d2254dd5c3b6d6bacabc7657f920b6']]></sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM sys_resource WHERE id = 407693840624005120
+                AND scene_code = 'template.excel' AND object_key = 'template/20260501/教师统计导入模板新.xlsx'
+                AND storage_type = 'LOCAL' AND del_flag = 'F'
+            </sqlCheck>
+        </preConditions>
+        <update tableName="sys_temp_file">
+            <column name="url" value="[{&quot;objectKey&quot;:&quot;template/20260501/教师统计导入模板新.xlsx&quot;,&quot;originName&quot;:&quot;教师统计导入模板新.xlsx&quot;,&quot;contentType&quot;:&quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,&quot;sceneCode&quot;:&quot;template.excel&quot;,&quot;resourceId&quot;:&quot;407693840624005120&quot;}]"/>
+            <where><![CDATA[id = 2 AND sys_file_id = 407693840624005120 AND create_id = 1 AND MD5(url) = 'e7d2254dd5c3b6d6bacabc7657f920b6']]></where>
+        </update>
+    </changeSet>
+
+    <!-- 当前模板与历史模板独立修复；其中一条被修改，不影响另一条。 -->
+    <changeSet id="demo-template-history-resource-reference-20260904" author="sz">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="1"><![CDATA[SELECT COUNT(*) FROM sys_temp_file_history WHERE id = 3 AND sys_file_id = 407693840624005120 AND create_id = 1 AND MD5(url) = 'e7d2254dd5c3b6d6bacabc7657f920b6']]></sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM sys_resource WHERE id = 407693840624005120
+                AND scene_code = 'template.excel' AND object_key = 'template/20260501/教师统计导入模板新.xlsx'
+                AND storage_type = 'LOCAL' AND del_flag = 'F'
+            </sqlCheck>
+        </preConditions>
+        <update tableName="sys_temp_file_history">
+            <column name="url" value="[{&quot;objectKey&quot;:&quot;template/20260501/教师统计导入模板新.xlsx&quot;,&quot;originName&quot;:&quot;教师统计导入模板新.xlsx&quot;,&quot;contentType&quot;:&quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,&quot;sceneCode&quot;:&quot;template.excel&quot;,&quot;resourceId&quot;:&quot;407693840624005120&quot;}]"/>
+            <where><![CDATA[id = 3 AND sys_file_id = 407693840624005120 AND create_id = 1 AND MD5(url) = 'e7d2254dd5c3b6d6bacabc7657f920b6']]></where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

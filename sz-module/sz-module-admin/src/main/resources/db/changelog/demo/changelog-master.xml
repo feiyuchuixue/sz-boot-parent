@@ -6,5 +6,6 @@
 
     <!-- 演示/测试数据：生产环境不需要时，可在聚合 master 注释此模块的 include。 -->
     <include file="2.0.0/001_demo_init.xml" relativeToChangelogFile="true"/>
+    <include file="2.1.0/001_demo_resource_references.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
