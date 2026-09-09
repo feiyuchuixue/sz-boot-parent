@@ -1,13 +1,10 @@
 package com.sz.admin.system.pojo.vo.sysuser;
 
-import com.sz.resource.annotation.OssUrlFill;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import static com.sz.platform.constant.AdminSceneCodeConstant.ADMIN_USER_LOGO_SCENE_CODE;
 
 @Data
 @Builder
@@ -37,8 +34,10 @@ public class UserProfileVO {
     @Schema(description = "邮箱")
     private String email;
 
-    @OssUrlFill(sceneCode = ADMIN_USER_LOGO_SCENE_CODE)
-    @Schema(description = "头像URL")
+    @Schema(description = "头像对象键")
     private String avatar;
+
+    @Schema(description = "头像回显URL")
+    private String avatarUrl;
 
 }

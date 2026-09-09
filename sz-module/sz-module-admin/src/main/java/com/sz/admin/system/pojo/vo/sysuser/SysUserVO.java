@@ -1,13 +1,10 @@
 package com.sz.admin.system.pojo.vo.sysuser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sz.resource.annotation.OssUrlFill;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
-import static com.sz.platform.constant.AdminSceneCodeConstant.ADMIN_USER_LOGO_SCENE_CODE;
 
 /**
  * @author sz
@@ -32,9 +29,11 @@ public class SysUserVO {
     @Schema(description = "昵称")
     private String nickname;
 
-    @OssUrlFill(sceneCode = ADMIN_USER_LOGO_SCENE_CODE)
-    @Schema(description = "LOGO")
+    @Schema(description = "LOGO对象键")
     private String logo;
+
+    @Schema(description = "LOGO回显URL")
+    private String logoUrl;
 
     @Schema(description = "性别")
     private Integer sex;

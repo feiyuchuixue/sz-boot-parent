@@ -40,6 +40,7 @@ import com.sz.platform.socket.SocketService;
 import com.sz.redis.CommonKeyConstants;
 import com.sz.redis.RedisCache;
 import com.sz.redis.RedisUtils;
+import com.sz.resource.service.ResourceService;
 import com.sz.security.core.util.LoginUtils;
 import com.sz.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ import static com.sz.admin.system.pojo.po.table.SysRoleTableDef.SYS_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserDeptTableDef.SYS_USER_DEPT;
 import static com.sz.admin.system.pojo.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 import static com.sz.admin.system.pojo.po.table.SysUserTableDef.SYS_USER;
+import static com.sz.platform.constant.AdminSceneCodeConstant.ADMIN_USER_LOGO_SCENE_CODE;
 
 /**
  * <p>
@@ -102,6 +104,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private final SysDeptClosureService sysDeptClosureService;
 
+    private final ResourceService resourceService;
+
     /**
      * 获取认证账户信息接角色信息
      *
@@ -117,6 +121,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
         SysUserVO sysUserVO = new SysUserVO();
         BeanCopyUtils.copy(one, sysUserVO);
+        sysUserVO.setLogoUrl(resolveLogoUrl(sysUserVO.getLogo()));
         return sysUserVO;
     }
 
@@ -132,7 +137,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper wrapper = QueryWrapper.create().eq(SysUser::getId, userId);
         SysUser one = getOne(wrapper);
         CommonResponseEnum.BAD_USERNAME_OR_PASSWORD.assertNull(one);
-        return BeanCopyUtils.copy(one, SysUserVO.class);
+        SysUserVO result = BeanCopyUtils.copy(one, SysUserVO.class);
+        result.setLogoUrl(resolveLogoUrl(result.getLogo()));
+        return result;
     }
 
     /**
@@ -204,7 +211,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUserVO detail(Long id) {
         SysUser user = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(user);
-        return BeanCopyUtils.copy(user, SysUserVO.class);
+        SysUserVO result = BeanCopyUtils.copy(user, SysUserVO.class);
+        result.setLogoUrl(resolveLogoUrl(result.getLogo()));
+        return result;
     }
 
     @Override
@@ -222,6 +231,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             setUserDeptInfo(sysUserVOS);
             setUserRoleInfo(sysUserVOS);
+            sysUserVOS.forEach(user -> user.setLogoUrl(resolveLogoUrl(user.getLogo())));
             result = PageUtils.getPageResult(sysUserVOS);
         } finally {
             PageHelper.clearPage();
@@ -661,7 +671,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         CommonResponseEnum.INVALID_USER.assertNull(sysUser);
         UserProfileVO profileVO = BeanCopyUtils.copy(sysUser, UserProfileVO.class);
         profileVO.setAvatar(sysUser.getLogo());
+        profileVO.setAvatarUrl(resolveLogoUrl(profileVO.getAvatar()));
         return profileVO;
+    }
+
+    private String resolveLogoUrl(String logo) {
+        try {
+            return resourceService.resolveUrl(ADMIN_USER_LOGO_SCENE_CODE, logo);
+        } catch (RuntimeException exception) {
+            log.warn("[SysUser] 头像地址解析失败，logo={}", logo, exception);
+            return null;
+        }
     }
 
     @Override
