@@ -15,5 +15,4 @@ public interface CommonService {
 
     ChallengeVO challenge();
 
-    void urlDownload(String url, HttpServletResponse response) throws IOException;
 }

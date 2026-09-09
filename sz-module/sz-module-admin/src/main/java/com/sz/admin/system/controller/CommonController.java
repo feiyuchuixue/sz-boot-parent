@@ -1,8 +1,6 @@
 package com.sz.admin.system.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.sz.admin.system.pojo.dto.common.ProxyDownloadDTO;
 import com.sz.admin.system.pojo.dto.common.SelectorQueryDTO;
 import com.sz.admin.system.pojo.vo.common.ChallengeVO;
 import com.sz.admin.system.pojo.vo.common.SelectorVO;
@@ -15,8 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 /**
  * 通用controller
@@ -57,13 +53,6 @@ public class CommonController {
     @Operation(summary = "一次性认证参数，用于登录密码加密传输场景")
     public ApiResult<ChallengeVO> challenge() {
         return ApiResult.success(commonService.challenge());
-    }
-
-    @SaCheckLogin
-    @Operation(summary = "文件下载")
-    @PostMapping("/files/download")
-    public void proxyDownload(@RequestBody ProxyDownloadDTO dto, HttpServletResponse response) throws IOException {
-        commonService.urlDownload(dto.getUrl(), response);
     }
 
 }

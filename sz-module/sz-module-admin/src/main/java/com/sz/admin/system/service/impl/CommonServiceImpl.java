@@ -27,8 +27,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
 import static com.sz.core.common.enums.CommonResponseEnum.FILE_NOT_EXISTS;
@@ -79,9 +77,9 @@ public class CommonServiceImpl implements CommonService {
         SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByNameOrAlias(templateName, alias);
         if (sysTempFileInfoVO != null) {
             ResourceRef result = sysTempFileInfoVO.getUrl().getFirst();
-            String fileUrl = resourceService.resolveUrl(result.getSceneCode(), result.getObjectKey());
             String filename = result.getOriginName();
-            try (InputStream in = URI.create(fileUrl).toURL().openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
+            try (InputStream in = resourceService.readStream(result.getSceneCode(), result.getObjectKey());
+                    OutputStream os = FileUtils.getOutputStream(response, filename)) {
                 in.transferTo(os);
                 os.flush();
             }
@@ -153,104 +151,6 @@ public class CommonServiceImpl implements CommonService {
         redisCache.clearLoginSecret(requestId);
         redisCache.putLoginSecret(requestId, secretKey, 60);
         return new ChallengeVO().setRequestId(requestId).setSecretKey(secretKey);
-    }
-
-    @Override
-    public void urlDownload(String url, HttpServletResponse response) throws IOException {
-        CommonResponseEnum.NOT_EXISTS.message("URL 不能为空").assertTrue(url == null || url.isEmpty());
-        URI parsedUri;
-        try {
-            parsedUri = new URI(url);
-        } catch (URISyntaxException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
-            return;
-        }
-        String protocol = parsedUri.getScheme();
-        if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "非法的URL协议");
-            return;
-        }
-        String filename = getFilenameFromObjectName(parsedUri.getPath());
-        String accessUrl;
-        try {
-            URI uri = new URI(parsedUri.getScheme(), parsedUri.getUserInfo(), parsedUri.getHost(), parsedUri.getPort(), parsedUri.getPath(),
-                    parsedUri.getQuery(), null);
-            accessUrl = uri.toASCIIString();
-        } catch (URISyntaxException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL格式错误");
-            return;
-        }
-        try (InputStream in = URI.create(accessUrl).toURL().openStream(); OutputStream os = FileUtils.getOutputStream(response, filename)) {
-            in.transferTo(os);
-            os.flush();
-        }
-    }
-
-    /**
-     * 根据 URL 获取 bucket： 1. 若是 http(s) 开头且能解析出 bucket，则返回 URL 中的 bucket 2. 否则返回
-     * defaultBucket
-     */
-    public String getBucketFromUrl(String url, String defaultBucket) {
-        String finalBucket = defaultBucket;
-
-        if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-            int schemeEndIndex = url.indexOf("://");
-            String noScheme = url.substring(schemeEndIndex + 3); // 去掉 "http://"/"https://"
-
-            int firstSlashIndex = noScheme.indexOf('/');
-            // firstSlashIndex < 0 或者刚好在最后一个字符，说明没有 path，无法解析
-            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 bucket").assertTrue(firstSlashIndex < 0 || firstSlashIndex == noScheme.length() - 1);
-
-            // path 形如：test/user/20241216/xxx.jpg
-            String path = noScheme.substring(firstSlashIndex + 1);
-
-            int secondSlashIndex = path.indexOf('/');
-            // 没有第二个 /，说明没有 objectName 部分，也就无法切分出 bucket
-            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 bucket").assertTrue(secondSlashIndex < 0);
-            String bucketFromUrl = path.substring(0, secondSlashIndex);
-            if (finalBucket == null || finalBucket.isEmpty()) {
-                finalBucket = bucketFromUrl;
-            }
-        }
-        return finalBucket;
-    }
-
-    /**
-     * 根据 URL 获取 objectName： 1. 若是 http(s) 开头，则解析出 path 中 bucket 后面的部分作为 objectName
-     * 2. 否则直接把 url 当成 objectName
-     */
-    public String getObjectNameFromUrl(String url) {
-        if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
-            int schemeEndIndex = url.indexOf("://");
-            String noScheme = url.substring(schemeEndIndex + 3); // 去掉 "http://"/"https://"
-
-            int firstSlashIndex = noScheme.indexOf('/');
-            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 objectName").assertTrue(firstSlashIndex < 0 || firstSlashIndex == noScheme.length() - 1);
-
-            String path = noScheme.substring(firstSlashIndex + 1); // 去掉第一个 "/"
-
-            // path 形如：test/user/20241216/xxx.jpg
-            int secondSlashIndex = path.indexOf('/');
-            CommonResponseEnum.INVALID.message("URL 格式不正确，无法解析出 objectName").assertTrue(secondSlashIndex < 0);
-
-            // 去掉 bucket 后面的 "/"
-            return path.substring(secondSlashIndex + 1);
-        } else {
-            // 非 http(s) 开头，直接认为是 objectName
-            return url;
-        }
-    }
-
-    public String getFilenameFromObjectName(String objectName) {
-        if (objectName == null || objectName.isEmpty()) {
-            return objectName;
-        }
-        int lastSlashIndex = objectName.lastIndexOf('/');
-        if (lastSlashIndex < 0 || lastSlashIndex == objectName.length() - 1) {
-            // 没有 "/" 或 "/" 在最后（类似 "xxx/"），直接返回原字符串
-            return objectName;
-        }
-        return objectName.substring(lastSlashIndex + 1);
     }
 
 }
