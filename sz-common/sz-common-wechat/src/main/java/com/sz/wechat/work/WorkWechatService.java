@@ -3,10 +3,11 @@ package com.sz.wechat.work;
 import com.sz.core.util.JsonUtils;
 import com.sz.redis.RedisUtils;
 import com.sz.wechat.WechatProperties;
+import com.sz.wechat.config.WechatRestClientConfiguration;
 import com.sz.wechat.pojo.AccessTokenResult;
 import com.sz.wechat.pojo.ErrorMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,17 @@ import static com.sz.wechat.WechatApiConstant.WORK_WECHAT_TOKEN_URL;
  * @version 1.0
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class WorkWechatService {
 
     private final WechatProperties wechatProperties;
+
+    private final RestClient restClient;
+
+    public WorkWechatService(WechatProperties wechatProperties, @Qualifier(WechatRestClientConfiguration.WECHAT_REST_CLIENT) RestClient restClient) {
+        this.wechatProperties = wechatProperties;
+        this.restClient = restClient;
+    }
 
     private static final String WECHAT_WORK_TOKEN = "wechat:work:token";
 
@@ -48,7 +55,7 @@ public class WorkWechatService {
         if (RedisUtils.hasKey(WECHAT_WORK_TOKEN)) {
             return (String) RedisUtils.getValue(WECHAT_WORK_TOKEN);
         } else {
-            ResponseEntity<AccessTokenResult> entity = RestClient.create().get()
+            ResponseEntity<AccessTokenResult> entity = restClient.get()
                     .uri(WORK_WECHAT_TOKEN_URL, wechatProperties.getWork().getCorpId(), wechatProperties.getWork().getCorpSecret()).retrieve()
                     .toEntity(AccessTokenResult.class);
             AccessTokenResult result = entity.getBody();
@@ -93,8 +100,8 @@ public class WorkWechatService {
                 .text(new TextMessageBody.Text(dto.getContent())).msgtype("text").safe(1).build();
 
         // 微信小程序登录接口返回content-type是text/plain，因此无法直接映射对象。使用String接收，后续再做转换
-        ResponseEntity<String> entity = RestClient.create().post().uri(WORK_WECHAT_MESSAGE_SEND_URL, dto.getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON).body(body).retrieve().toEntity(String.class);
+        ResponseEntity<String> entity = restClient.post().uri(WORK_WECHAT_MESSAGE_SEND_URL, dto.getAccessToken()).contentType(MediaType.APPLICATION_JSON)
+                .body(body).retrieve().toEntity(String.class);
         return JsonUtils.parseObject(entity.getBody(), MessageResult.class);
     }
 
