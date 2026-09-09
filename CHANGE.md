@@ -1,4 +1,73 @@
 # 更新日志
+## v2.1.0（20260909）
+
+> [!IMPORTANT]
+>
+> 本版本包含 Java 25、Sa-Token 登录态、资源访问契约和前后端接口调整。升级前请完整阅读[升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html)，前后端应在同一发布窗口升级。
+
+### sz-boot-parent
+
+#### 新增
+
+- 新增通用 HTML 内容安全净化器 `HtmlContentSanitizer`，对富文本、CMS、Markdown 转换结果和外部导入 HTML 执行白名单净化。
+- 资源场景统一支持 `DIRECT`、`PRESIGNED`、`PROTECTED` 三种访问模式；省略 `serve-mode` 时默认为 `PROTECTED`，公开资源必须显式声明。
+- 新增受保护资源统一流式响应服务。教师统计附件、当前模板和模板历史记录分别提供固定的业务下载/预览接口，每次请求都校验接口权限、数据范围或业务记录与 `resourceId` 的引用关系。
+- 文件管理列表增加用途、访问方式和存储方式等业务化展示；受保护资源只提供详情，不暴露可直接访问地址。
+- 代码生成器支持为 `ResourceRef[]` 文件字段生成保存规范化、业务资源校验、下载/预览接口及前端 API 绑定。
+
+#### 安全修复
+
+- 修复旧文件下载接口的服务端请求伪造（SSRF）漏洞，影响版本为 **v1.3.2-beta 至 v2.0.2**。在默认鉴权配置下，该问题的利用前提是具备有效登录态，并非未登录即可利用；已登录用户可能利用该接口使服务端访问非预期地址，实际影响取决于部署环境的网络可达范围。建议受影响用户升级至 **v2.1.0**；包含旧下载接口的二次开发项目也需同步迁移相关调用。
+- 删除 `POST /api/admin/common/files/download` 及对应 `ProxyDownloadDTO`、`urlDownload()`、前端 URL 下载封装，改由业务接口校验权限后读取已登记资源，不再通过该链路请求调用方提交的 URL。迁移步骤和暂时无法升级时的处置方式见[资源访问安全升级](./upgrade.md#_4-资源访问安全升级)。
+- 业务保存时只信任 `resourceId`，由后端根据活动的 `sys_resource` 记录重建 `sceneCode/objectKey/originName/contentType`；新增引用同时校验上传人，阻止伪造资源元数据和跨场景挂接。
+- 受保护文件默认以 attachment 返回；预览仅允许 PNG、JPEG、WebP、GIF 和 PDF，并增加 `Content-Disposition`、`X-Content-Type-Options: nosniff`、`Cache-Control: no-store`。
+- `ResourceRef.accessUrl` 仅用于 DIRECT/PRESIGNED 展示，作为只读派生字段，不参与持久化、资源定位或授权。
+
+#### 重构与优化
+
+- Java 构建与运行基线由 21 切换为 25；MySQL、PostgreSQL 两套 CI 验证矩阵同步使用 JDK 25。
+- Spring Boot 从 `4.1.0` 升级至 `4.1.1`，Sa-Token 从 `1.45.0` 升级至 `1.46.0`。
+- `BaseUserInfo`、`LoginUser`、`RoleMenuScopeVO` 从 `sz-common-core` 迁移到 `sz-common-security`，并实现 `SaJsonType`。
+- Dockerfile 改为 Spring Boot 分层镜像构建，官方、预览和测试镜像统一使用 Java 25。
+- 账户头像仍保存 objectKey；仅在 `SysUserVO`、`UserProfileVO` 和专用登录返回 VO 中提供展示 URL，不向 `BaseUserInfo` 扩散资源 URL 字段。
+
+#### 数据库与配置
+
+- 本版本没有数据库结构变更；`sys_resource` 继续作为受管资源元数据的权威来源。
+- 新增 `demo/2.1.0/001_demo_resource_references.xml` 数据 changeSet，仅为未被二开修改的官方教师统计、当前模板和模板历史演示数据补齐确定性的 `resourceId` 引用。
+- 运行配置新增/调整资源场景用途和访问模式。旧的 `serve-mode: TOKEN` 不再支持，应改为 `PROTECTED`；`PROTECTED` 不配置 `base-url`，也没有 ticket/token 申请流程。
+- 自定义历史附件不会由 Liquibase 猜测迁移，升级方需确保业务 JSON 引用的 `resourceId` 在 `sys_resource` 中存在，无法确定映射时应重新上传并保存业务记录。
+
+#### 升级影响
+
+- 后端、CI 和生产运行环境必须升级到 JDK 25；Sa-Token 升级后需清理旧登录态缓存并让用户重新登录。
+- 二开代码如引用旧登录态包名、旧容器 `/app.jar` 路径、旧 URL 下载接口或 `TOKEN` 配置，需要同步迁移。
+- 新增受保护文件业务时，必须由业务接口完成权限和记录关系校验，再调用公共流式服务；不能直接提供通用 `resourceId` 下载端点。
+- 安全回滚可以关闭受保护文件入口，但不得恢复任意 URL 代理。
+
+### sz-admin
+
+#### 安全与依赖升级
+
+- Jodit 从 `4.12.26` 升级至 `4.13.23`，DOMPurify 升级至 `3.4.14`，Nano ID 3.x 通过 pnpm override 收口到 `3.3.18`。
+- 移除 `vite-plugin-svg-icons` 及旧 SVG sprite 注册，`SvgIcon` 改为通过 `import.meta.glob` 加载本地 SVG。
+- 富文本写入和上传响应增加统一净化与校验，内联图片类型收口为 JPG、JPEG、PNG、GIF、WebP。
+
+#### 资源访问改造
+
+- 资源 ID 在网络和前端类型中统一按字符串处理；表单保存完整 `ResourceRef[]`，提交前移除本地预览状态并按 `resourceId` 去重。
+- `FileDownloadList`、`UploadFiles` 支持 `bizId + downloadApi + previewApi`。受保护文件调用固定业务接口获取 Blob；DIRECT/PRESIGNED 才使用 `accessUrl`。
+- 代码生成器字段配置改为选择已注册资源场景，并生成受保护业务资源 API；默认通用场景为 `system.protected`。
+- 文件管理页面按“用途、访问方式、存储方式”展示资源；受保护资源明确提示需要从所属业务记录访问。
+- 用户编辑只提交 `logo/avatar` objectKey，页面展示使用后端专用 VO 返回的 `logoUrl/avatarUrl`。
+
+#### 升级影响
+
+- 前端应与 v2.1.0 后端成套发布；旧的 `useUrlDownload`、`fileDownload({ url })` 和 `accessContext`/ticket 用法不可继续使用。
+- 使用 pnpm `10.17.1` 重新安装依赖，并执行 `pnpm run type-check`、`pnpm run build`。
+- 二开模块的文件字段需为已保存记录传入业务主键和下载/预览 API；缺少业务接口且没有 `accessUrl` 时，组件会拒绝访问，不回退 URL 代理。
+
+---
 
 ## v2.0.2（20260731）
 

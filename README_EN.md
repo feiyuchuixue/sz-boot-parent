@@ -7,7 +7,7 @@
 </p>
 
 <h1 align="center">Sz-Admin</h1>
-<h4 align="center">An open-source RBAC admin scaffold built with Spring Boot 4, Java 21/25 LTS, Vue 3 and Vite 7</h4>
+<h4 align="center">An open-source RBAC admin scaffold built with Spring Boot 4, Java 25 LTS, Vue 3 and Vite 7</h4>
 
 <p align="center">
   <a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub" alt="GitHub Stars"></a>
@@ -24,7 +24,8 @@
   <a href="https://szadmin.cn">Documentation</a> |
   <a href="https://github.com/feiyuchuixue/sz-admin">Frontend Repo</a> |
   <a href="https://github.com/feiyuchuixue/sz-deploy-v3">Deploy Scripts</a> |
-  <a href="https://szadmin.cn/md/Help/doc/other/change-log.html">Changelog</a>
+  <a href="https://szadmin.cn/md/Help/doc/other/change-log.html">Changelog</a> |
+  <a href="https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0">v2.1.0 Upgrade Guide</a>
 </p>
 
 ## Overview
@@ -33,18 +34,18 @@ Sz-Admin is an open-source admin scaffold for enterprise back-office systems, Sa
 
 The project focuses on clear module boundaries, upgrade-friendly architecture and practical admin features instead of simply collecting as many functions as possible.
 
-- **Backend stack**: Spring Boot 4, Java 21 LTS (default) / Java 25 LTS (supported), Sa-Token, MyBatis-Flex, Liquibase and Redis.
+- **Backend stack**: Spring Boot 4, Java 25 LTS, Sa-Token, MyBatis-Flex, Liquibase and Redis.
 - **Frontend stack**: Vue 3, Vite 7, TypeScript, Element Plus and Pinia.
 - **Built-in features**: RBAC permissions, dynamic menus, data scope, code generator, dictionaries, Excel import/export, OSS resources, WebSocket and request debounce.
 - **Use cases**: enterprise admin systems, SaaS admin consoles, secondary development scaffolds, CRUD code generation and MySQL/PostgreSQL projects.
 
-> **Java lifecycle notice:** Dual Java 21 / 25 support remains active through August 31, 2026. Starting September 1, 2026, the planned default and minimum build/runtime baseline is Java 25, and no new Java 21 images will be published. See the [Java LTS compatibility policy](docs/java-lts-compatibility.md) before upgrading.
+> **v2.1.0 upgrade notice:** JDK 25 is required to build and run the backend; Java 21 is no longer supported. Upgrade the frontend and backend together, clear old login sessions and sign in again. This version removes the legacy URL proxy download endpoint affected by SSRF in v1.3.2-beta through v2.0.2 (inclusive). Exploitation requires a valid login session under the default authentication configuration; the impact depends on network reachability. Deployments that allowed anonymous access to the endpoint do not have this restriction. Custom projects must migrate old download calls, resource configuration and historical attachment references; a frontend-only upgrade is insufficient. See the [v2.1.0 Upgrade Guide](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0).
 
 ## Why Sz-Admin
 
 | Highlight | Description |
 | --- | --- |
-| Modern stack | Spring Boot 4, Java 21/25 LTS, Vue 3.5, Vite 7.3 and TypeScript 5.2. |
+| Modern stack | Spring Boot 4, Java 25 LTS, Vue 3.5, Vite 7.3 and TypeScript 5.9. |
 | Practical admin foundation | Built from real back-office development scenarios, with attention to daily development workflow and maintainability. |
 | Clear module boundaries | Backend modules are split into `sz-common`, `sz-module` and `sz-service`, making official features and custom business modules easier to separate. |
 | Upgrade friendly | Custom business code can live in independent `sz-module-*` modules, reducing conflicts with official core modules during upgrades. |
@@ -87,7 +88,7 @@ GitHub Actions CI/CD only builds and pushes backend images, then connects to the
 | Live demo | [https://preview.szadmin.cn](https://preview.szadmin.cn) |
 | Quick start | [https://szadmin.cn/md/Help/doc/info/start.html](https://szadmin.cn/md/Help/doc/info/start.html) |
 | Changelog | [https://szadmin.cn/md/Help/doc/other/change-log.html](https://szadmin.cn/md/Help/doc/other/change-log.html) |
-| v2.0.0 upgrade guide | [https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0) |
+| v2.1.0 upgrade guide | [https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0) |
 
 Default demo account:
 
@@ -102,7 +103,7 @@ admin / sz123456
 - **Dictionaries**: built-in and business dictionaries with frontend option loading.
 - **Code generator**: table inspection, field configuration, code preview, menu export and initialization scripts.
 - **Database migrations**: Liquibase changelogs for framework modules, generator modules and demo business modules.
-- **OSS resources**: resource scenes based on `sceneCode`, object key storage and access URL filling.
+- **OSS resources**: scenes use `sceneCode` and default to `PROTECTED`; public access must be explicitly configured. Protected downloads/previews require business permission and resource-reference checks. `DIRECT/PRESIGNED` use returned access URLs; arbitrary URL proxying is not provided.
 - **Excel import/export**: templates, failure records, dictionary formatting and export field configuration.
 - **WebSocket**: standalone real-time messaging service with heartbeat and authentication handling.
 - **Request debounce**: built-in duplicate request protection with global and endpoint-level configuration.
@@ -114,7 +115,7 @@ admin / sz123456
 | Technology | Description |
 | --- | --- |
 | Spring Boot 4.x | Core backend framework. |
-| Java 21 / 25 LTS | Java 21 is the default and minimum baseline; Java 25 is supported. Both produce Java 21 bytecode. |
+| Java 25 LTS | Required to build and run v2.1.0; artifacts use Java 25 bytecode and cannot run on Java 21. |
 | Sa-Token | Lightweight Java authentication and authorization framework. |
 | MyBatis-Flex | MyBatis enhancement framework. |
 | Liquibase | Database version control and migration tool. |
@@ -132,11 +133,11 @@ See the [Java LTS compatibility policy](./docs/java-lts-compatibility.md) for lo
 | --- | --- |
 | Vue 3.5.x | Frontend framework. |
 | Vite 7.3.x | Frontend development and build tool. |
-| TypeScript 5.2.x | Type safety and maintainability. |
+| TypeScript 5.9.x | Type safety and maintainability. |
 | Element Plus 2.14.x | UI component library. |
 | Pinia 3.x | State management. |
 | Vue Router 5.x | Routing. |
-| Axios 1.16.x | HTTP client. |
+| Axios 1.18.x | HTTP client. |
 
 ## Project Structure
 
@@ -187,7 +188,7 @@ sz-admin/
 
 | Runtime | Requirement |
 | --- | --- |
-| JDK | Java 21 LTS (default/minimum) or Java 25 LTS |
+| JDK | 25 (backend build and runtime) |
 | Maven | 3.8+, 3.9.x recommended |
 | Database | MySQL 8.0.17+ or PostgreSQL 16+ |
 | Redis | 7.x |
@@ -304,7 +305,7 @@ English issues and pull requests are welcome. Full English documentation and fro
 - [Data Scope](https://szadmin.cn/md/Help/doc/core/data-scope.html)
 - [Dictionaries](https://szadmin.cn/md/Help/doc/core/dict.html)
 - [Code Generator](https://szadmin.cn/md/Help/doc/generator/generator-tools.html)
-- [v2.0.0 Upgrade Guide](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0)
+- [v2.1.0 Upgrade Guide](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0)
 
 ## License
 

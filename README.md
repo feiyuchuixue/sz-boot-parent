@@ -7,7 +7,7 @@
 </p>
 
 <h1 align="center">Sz-Admin</h1>
-<h4 align="center">一套开源 RBAC 中后台管理脚手架，基于 Spring Boot 4、Java 21/25 LTS、Vue 3、Vite 7 构建</h4>
+<h4 align="center">一套开源 RBAC 中后台管理脚手架，基于 Spring Boot 4、Java 25 LTS、Vue 3、Vite 7 构建</h4>
 
 <p align="center">
   <a href="https://github.com/feiyuchuixue/sz-boot-parent/stargazers"><img src="https://img.shields.io/github/stars/feiyuchuixue/sz-boot-parent?style=flat-square&logo=GitHub" alt="GitHub Stars"></a>
@@ -25,19 +25,19 @@
   <a href="https://github.com/feiyuchuixue/sz-admin">前端仓库</a> |
   <a href="https://github.com/feiyuchuixue/sz-deploy-v3">部署脚本</a> |
   <a href="https://szadmin.cn/md/Help/doc/other/change-log.html">更新日志</a> |
-  <a href="https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0">v2.0.0 升级指南</a>
+  <a href="https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0">v2.1.0 升级指南</a>
 </p>
 
 ## 项目介绍
 
 Sz-Admin 是一套面向企业中后台、管理端系统和二次开发项目的开源脚手架。它由后端 `sz-boot-parent`、前端 `sz-admin` 和官方文档共同组成，目标不是堆砌功能，而是提供一套边界清晰、便于升级、适合扩展的基础工程。
 
-- **后端技术栈**：Spring Boot 4、Java 21 LTS（默认）/ Java 25 LTS（兼容）、Sa-Token、MyBatis-Flex、Liquibase、Redis。
+- **后端技术栈**：Spring Boot 4、Java 25 LTS、Sa-Token、MyBatis-Flex、Liquibase、Redis。
 - **前端技术栈**：Vue 3、Vite 7、TypeScript、Element Plus、Pinia。
 - **内置能力**：RBAC 权限、动态菜单、数据权限、代码生成器、字典、Excel、OSS、WebSocket、接口防抖。
 - **适用场景**：企业后台、SaaS 管理端、二次开发脚手架、代码生成与快速原型、多数据库适配项目。
 
-> **Java 生命周期公告：** Java 21 / 25 双版本兼容政策执行至 2026-08-31。计划自 2026-09-01 起将默认、最低编译与运行基线统一提升到 Java 25，并停止发布新的 Java 21 镜像。迁移前请参阅 [Java LTS 兼容政策](docs/java-lts-compatibility.md)。
+> **v2.1.0 升级提醒：** 后端构建与运行统一使用 JDK 25，不再支持 Java 21；前后端应配套升级，清理旧登录态后重新登录。本版本移除存在 SSRF 风险的旧 URL 代理下载接口，影响版本为 v1.3.2-beta 至 v2.0.2（含）；默认鉴权配置下利用该问题需要有效登录态，实际影响取决于部署网络，自行放开匿名访问的部署不适用此限制。二开项目需同步迁移旧下载调用、资源配置和历史附件引用，不能只升级前端。详见 [v2.1.0 升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0)。
 
 v2.0.0 是一次面向兼容性和扩展性的结构性重构：后端形成 `sz-common`、`sz-module`、`sz-service` 三层边界，前端引入 `src/core`、`src/editions`、`src/modules` 等模块化入口，让数据库、业务模块、登录适配、页面组合和派生项目接入都具备更清晰的扩展空间。对于二次开发项目来说，推荐把自有业务放进独立模块，从而减少与官方核心代码的耦合，也更利于后续升级。
 
@@ -47,7 +47,7 @@ Sz-Admin 也可以理解为“升职 Admin”，寓意升职加薪、节节高�
 
 | 亮点 | 说明 |
 | --- | --- |
-| 现代技术栈 | Spring Boot 4.x、Java 21/25 LTS、Vue 3.5、Vite 7.3、TypeScript 5.2 |
+| 现代技术栈 | Spring Boot 4.x、Java 25 LTS、Vue 3.5、Vite 7.3、TypeScript 5.9 |
 | 贴近真实开发 | 来自实际中后台开发场景的持续实践，注重细节和开发体验，尽量降低使用者的心智负担 |
 | 模块边界清晰 | 后端拆分 `sz-common`、`sz-module`、`sz-service`，官方能力和二开业务更容易隔离 |
 | 升级友好 | 推荐自有业务独立成 `sz-module-*`，减少直接改官方核心模块带来的升级冲突 |
@@ -64,7 +64,7 @@ Sz-Admin 也可以理解为“升职 Admin”，寓意升职加薪、节节高�
 | 在线预览 | [https://preview.szadmin.cn](https://preview.szadmin.cn) |
 | 快速开始 | [https://szadmin.cn/md/Help/doc/info/start.html](https://szadmin.cn/md/Help/doc/info/start.html) |
 | 更新日志 | [https://szadmin.cn/md/Help/doc/other/change-log.html](https://szadmin.cn/md/Help/doc/other/change-log.html) |
-| v2.0.0 升级指南 | [https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0) |
+| v2.1.0 升级指南 | [https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0) |
 
 ## 代码仓库
 
@@ -121,7 +121,7 @@ GitHub Actions CI/CD 只负责构建并推送后端镜像，然后通过 SSH 触
 - **数据字典**：支持框架内置字典、业务自定义字典、静态字典预热和动态字典按需加载。
 - **代码生成器**：支持读取表结构、配置字段、预览代码、导出菜单和初始化脚本。
 - **数据库迁移**：使用 Liquibase 管理框架、生成器、演示业务等模块级 changelog。
-- **文件与 OSS**：基于资源场景 `sceneCode` 管理上传路径、访问方式和资源引用。
+- **文件与 OSS**：按 `sceneCode` 管理资源，默认 `PROTECTED`，公开访问须显式配置。受保护文件通过所属业务接口校验权限和资源引用关系后下载/预览；`DIRECT/PRESIGNED` 使用返回的访问地址，不提供任意 URL 代理。
 - **Excel 导入导出**：封装导入模板、失败记录、字典格式化、导出字段配置等常见能力。
 - **WebSocket**：独立服务承载实时消息，支持多节点转发、心跳、鉴权失效处理。
 - **接口防抖**：内置重复请求防护能力，可按全局或接口维度配置。
@@ -133,7 +133,7 @@ GitHub Actions CI/CD 只负责构建并推送后端镜像，然后通过 SSH 触
 | 技术 | 说明 |
 | --- | --- |
 | Spring Boot 4.x | 核心框架，主线已从历史 Spring Boot 3.x 升级到 4.x |
-| Java 21 / 25 LTS | Java 21 是默认和最低基线，Java 25 可选；两者均编译为 Java 21 字节码 |
+| Java 25 LTS | v2.1.0 构建与运行基线，产物为 Java 25 字节码，不支持 Java 21 |
 | Sa-Token | 轻量级 Java 权限认证框架 |
 | MyBatis-Flex | MyBatis 增强框架，配合项目内数据库能力使用 |
 | Liquibase | 数据库版本控制工具，替代历史 Flyway 主线 |
@@ -150,12 +150,12 @@ Java 版本选择、验证矩阵和 Docker 标签详见 [Java LTS 兼容政策](
 | 技术 | 说明 |
 | --- | --- |
 | Vue 3.5.x | 前端核心框架 |
-| Vite 7.3.3 | 前端开发与构建工具 |
-| TypeScript 5.2.x | 类型约束和工程可维护性 |
+| Vite 7.3.5 | 前端开发与构建工具 |
+| TypeScript 5.9.x | 类型约束和工程可维护性 |
 | Element Plus 2.14.x | UI 组件库 |
 | Pinia 3.x | 状态管理 |
 | Vue Router 5.x | 路由管理 |
-| Axios 1.16.x | HTTP 客户端，v2.0.0 使用 `adminHttp` / `auditHttp` / `generatorHttp` 区分接口域 |
+| Axios 1.18.x | HTTP 客户端，v2.0.0 使用 `adminHttp` / `auditHttp` / `generatorHttp` 区分接口域 |
 
 ## 项目结构
 
@@ -212,7 +212,7 @@ sz-admin/
 
 | 环境 | 要求 |
 | --- | --- |
-| JDK | Java 21 LTS（默认/最低）或 Java 25 LTS |
+| JDK | 25（后端构建与运行） |
 | Maven | 3.8+，推荐 3.9.x |
 | 数据库 | MySQL 8.0.17+ 或 PostgreSQL 16+，二选一启用 |
 | Redis | 7.x |
@@ -249,7 +249,7 @@ cd sz-boot-parent
 | 健康检查 | `http://127.0.0.1:9991/api/actuator/health` |
 | WebSocket | `ws://127.0.0.1:9993/socket` |
 
-> v2.0.0 使用 Liquibase 管理数据库结构和初始化数据，首次启动会自动创建表结构。存量旧库升级不要直接套用快速开始流程，请先阅读 [v2.0.0 升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0)。
+> v2.0.0 使用 Liquibase 管理数据库结构和初始化数据，首次启动会自动创建表结构。存量旧库升级不要直接套用快速开始流程，请先阅读 [v2.1.0 升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0)。
 
 ### 前端
 
@@ -333,7 +333,7 @@ admin / sz123456
 - [数据权限](https://szadmin.cn/md/Help/doc/core/data-scope.html)
 - [数据字典](https://szadmin.cn/md/Help/doc/core/dict.html)
 - [代码生成器](https://szadmin.cn/md/Help/doc/generator/generator-tools.html)
-- [v2.0.0 升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-0-0)
+- [v2.1.0 升级指南](https://szadmin.cn/md/Help/doc/other/upgrade.html#v2-1-0)
 
 ## 参与讨论
 
