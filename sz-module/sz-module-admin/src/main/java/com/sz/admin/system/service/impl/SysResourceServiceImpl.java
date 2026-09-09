@@ -7,6 +7,7 @@ import com.sz.admin.system.mapper.SysResourceMapper;
 import com.sz.admin.system.pojo.dto.sysresource.SysResourceListDTO;
 import com.sz.admin.system.pojo.po.SysResource;
 import com.sz.admin.system.pojo.vo.sysresource.SysResourceVO;
+import com.sz.resource.enums.ResourceAccessResponseEnum;
 import com.sz.admin.system.service.SysResourceService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.util.PageUtils;
@@ -15,6 +16,7 @@ import com.sz.resource.config.ResourceProperties;
 import com.sz.resource.config.ResourceSceneConfig;
 import com.sz.resource.enums.ServeModeEnum;
 import com.sz.resource.enums.StorageTypeEnum;
+import com.sz.resource.model.ResourceRef;
 import com.sz.resource.model.ResourceUploadResult;
 import com.sz.resource.service.ResourceService;
 import com.sz.resource.util.PathSanitizer;
@@ -32,7 +34,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -132,16 +141,93 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
     public PageResult<SysResourceVO> page(SysResourceListDTO dto) {
         Page<SysResourceVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysResourceVO.class);
         PageResult<SysResourceVO> pageResult = PageUtils.getPageResult(page);
+        Map<String, String> sceneNames = getSceneNames();
         for (SysResourceVO vo : pageResult.getRows()) {
-            if (vo.getSceneCode() == null || vo.getObjectKey() == null)
+            vo.setSceneName(sceneNames.getOrDefault(vo.getSceneCode(), vo.getSceneCode()));
+            ResourceSceneConfig scene = resourceProperties.getSceneMap().get(vo.getSceneCode());
+            if (scene == null) {
                 continue;
+            }
+            vo.setServeMode(scene.getServeMode());
+            if (scene.getServeMode() == ServeModeEnum.PROTECTED) {
+                continue;
+            }
             try {
                 vo.setAccessUrl(resourceService.resolveUrl(vo.getSceneCode(), vo.getObjectKey()));
             } catch (Exception e) {
-                log.warn("[ResourceManage] 场景配置不存在，跳过 accessUrl 填充，sceneCode={} objectKey={}", vo.getSceneCode(), vo.getObjectKey());
+                log.warn("[ResourceManage] 访问链接生成失败，resourceId={} sceneCode={}", vo.getId(), vo.getSceneCode());
             }
         }
         return pageResult;
+    }
+
+    @Override
+    public Map<String, String> getSceneNames() {
+        Map<String, String> names = new LinkedHashMap<>();
+        resourceProperties.getSceneMap().forEach((code, scene) -> names.put(code, Utils.isNotNull(scene.getName()) ? scene.getName() : code));
+        return names;
+    }
+
+    @Override
+    public Optional<SysResource> findActiveById(Long resourceId) {
+        if (resourceId == null || resourceId <= 0) {
+            return Optional.empty();
+        }
+        QueryWrapper wrapper = QueryWrapper.create().eq(SysResource::getId, resourceId).eq(SysResource::getDelFlag, "F");
+        return Optional.ofNullable(getOne(wrapper));
+    }
+
+    @Override
+    public Optional<ResourceRef> findActiveReference(Long resourceId) {
+        return findActiveById(resourceId).map(this::toReference);
+    }
+
+    @Override
+    public List<ResourceRef> normalizeForCreate(List<ResourceRef> submitted, String sceneCode, Long userId) {
+        return normalizeReferences(Set.of(), submitted, sceneCode, userId);
+    }
+
+    @Override
+    public List<ResourceRef> normalizeForUpdate(List<ResourceRef> existing, List<ResourceRef> submitted, String sceneCode, Long userId) {
+        Set<Long> existingIds = new HashSet<>();
+        if (existing != null) {
+            existing.stream().filter(Objects::nonNull).map(ResourceRef::getResourceId).filter(Objects::nonNull).filter(id -> id > 0).forEach(existingIds::add);
+        }
+        return normalizeReferences(existingIds, submitted, sceneCode, userId);
+    }
+
+    private List<ResourceRef> normalizeReferences(Set<Long> existingIds, List<ResourceRef> submitted, String sceneCode, Long userId) {
+        if (submitted == null || submitted.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, ResourceRef> normalized = new LinkedHashMap<>();
+        for (ResourceRef ref : submitted) {
+            ResourceAccessResponseEnum.RESOURCE_REFERENCE_INVALID.message("资源引用缺少有效 resourceId")
+                    .assertTrue(ref == null || ref.getResourceId() == null || ref.getResourceId() <= 0);
+            Long resourceId = ref.getResourceId();
+            if (normalized.containsKey(resourceId)) {
+                continue;
+            }
+            SysResource resource = findActiveById(resourceId)
+                    .orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.message("资源不存在或已删除，resourceId=" + resourceId).newException());
+            ResourceAccessResponseEnum.RESOURCE_REFERENCE_SCENE_MISMATCH
+                    .message("资源场景不匹配，期望 " + sceneCode + "，实际 " + resource.getSceneCode())
+                    .assertFalse(Objects.equals(sceneCode, resource.getSceneCode()));
+            ResourceAccessResponseEnum.RESOURCE_REFERENCE_OWNER_MISMATCH.message("新增资源必须由当前用户上传，resourceId=" + resourceId)
+                    .assertTrue(!existingIds.contains(resourceId) && !Objects.equals(userId, resource.getCreateId()));
+            normalized.put(resourceId, toReference(resource));
+        }
+        return new ArrayList<>(normalized.values());
+    }
+
+    private ResourceRef toReference(SysResource resource) {
+        ResourceRef ref = new ResourceRef();
+        ref.setResourceId(resource.getId());
+        ref.setSceneCode(resource.getSceneCode());
+        ref.setObjectKey(resource.getObjectKey());
+        ref.setOriginName(resource.getOriginName());
+        ref.setContentType(resource.getContentType());
+        return ref;
     }
 
     private static QueryWrapper buildQueryWrapper(SysResourceListDTO dto) {

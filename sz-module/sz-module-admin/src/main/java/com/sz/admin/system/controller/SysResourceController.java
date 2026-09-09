@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "统一资源管理")
 @Slf4j
@@ -42,6 +43,12 @@ public class SysResourceController {
     @GetMapping
     public ApiPageResult<PageResult<SysResourceVO>> page(SysResourceListDTO dto) {
         return ApiPageResult.success(sysResourceService.page(dto));
+    }
+
+    @Operation(summary = "资源用途选项", description = "仅返回场景编码和显示名称，不包含存储配置")
+    @GetMapping("/scenes")
+    public ApiResult<Map<String, String>> scenes() {
+        return ApiResult.success(sysResourceService.getSceneNames());
     }
 
     /**

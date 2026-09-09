@@ -45,17 +45,22 @@ public class ResourceSceneConfig {
     private String code;
 
     /**
+     * 场景显示名称，可选，未配置时展示 code
+     */
+    private String name;
+
+    /**
      * 存储类型：LOCAL（本地磁盘）/ OSS（委托 sz-common-oss）
      */
     private StorageTypeEnum type = StorageTypeEnum.LOCAL;
 
     /**
-     * 访问模式：DIRECT（明文直接访问）/ TOKEN（一次性加密token+代理）/ PRESIGNED（S3 Presigned URL）
+     * 访问模式：PROTECTED（默认，业务鉴权后访问）/ DIRECT（显式公开）/ PRESIGNED（S3 Presigned URL）
      */
-    private ServeModeEnum serveMode = ServeModeEnum.DIRECT;
+    private ServeModeEnum serveMode = ServeModeEnum.PROTECTED;
 
     /**
-     * 临时 URL 有效期（秒），serveMode=PRESIGNED 或 TOKEN 时有效，默认 3600 秒
+     * 临时 URL 有效期（秒），仅 serveMode=PRESIGNED 时有效，默认 3600 秒
      */
     private Long expire = 3600L;
 

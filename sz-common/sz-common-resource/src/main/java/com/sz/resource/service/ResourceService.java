@@ -144,14 +144,14 @@ public class ResourceService {
      * DIRECT + LOCAL：  baseUrl + "/" + objectKey 中 basePath 之后的相对路径
      * DIRECT + OSS：    OSS 公开访问 URL（由 OssClient 构建）
      * PRESIGNED：       自动生成 S3 Presigned URL（仅 OSS），调用方无需感知
-     * TOKEN：           返回 null，由上层 ResourceAccessService.generateTempAccessUrl 按需生成
+     * PROTECTED：       返回 null，由业务下载/预览接口鉴权后流式读取
      * </pre>
      *
      * @param sceneCode
      *            场景编码
      * @param objectKey
      *            存储键，如 "avatars/1/20260403/abc.png"
-     * @return 完整可访问 URL，TOKEN 场景返回 null
+     * @return 完整可访问 URL，PROTECTED 场景返回 null
      */
     public String resolveUrl(String sceneCode, String objectKey) {
         if (objectKey == null || objectKey.isBlank()) {
@@ -161,7 +161,7 @@ public class ResourceService {
         return switch (scene.getServeMode()) {
             case DIRECT -> buildPublicUrl(objectKey, scene);
             case PRESIGNED -> buildPresignedUrl(objectKey, scene);
-            case TOKEN -> null;
+            case PROTECTED -> null;
         };
     }
 

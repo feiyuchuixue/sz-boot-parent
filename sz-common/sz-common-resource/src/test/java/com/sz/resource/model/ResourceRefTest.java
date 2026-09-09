@@ -1,7 +1,9 @@
 package com.sz.resource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sz.core.common.configuration.JacksonConfiguration;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.lang.reflect.Field;
 
@@ -28,5 +30,17 @@ class ResourceRefTest {
         Field accessUrl = ResourceRef.class.getDeclaredField("accessUrl");
         JsonProperty jsonProperty = accessUrl.getAnnotation(JsonProperty.class);
         assertThat(jsonProperty.access()).isEqualTo(JsonProperty.Access.READ_ONLY);
+    }
+
+    @Test
+    void resourceIdAboveJavascriptSafeRangeSerializesAsString() {
+        JsonMapper.Builder builder = JsonMapper.builder();
+        new JacksonConfiguration().szJacksonCustomizer().customize(builder);
+        ResourceRef ref = new ResourceRef();
+        ref.setResourceId(407693840624005120L);
+
+        String json = builder.build().writeValueAsString(ref);
+
+        assertThat(json).contains("\"resourceId\":\"407693840624005120\"");
     }
 }

@@ -1,5 +1,6 @@
 package com.sz.admin.system.pojo.vo.sysresource;
 
+import com.sz.resource.enums.ServeModeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -20,6 +21,12 @@ public class SysResourceVO {
     @Schema(description = "场景编码，如 sso.provider.logo")
     private String sceneCode;
 
+    @Schema(description = "用途名称，未配置名称时为场景编码")
+    private String sceneName;
+
+    @Schema(description = "当前场景访问模式，场景配置缺失时为空")
+    private ServeModeEnum serveMode;
+
     @Schema(description = "存储键（相对路径/objectName）")
     private String objectKey;
 
@@ -38,7 +45,7 @@ public class SysResourceVO {
     @Schema(description = "文件 ETag")
     private String eTag;
 
-    @Schema(description = "业务标识")
+    @Schema(description = "命名用业务标识，不代表关联业务记录ID")
     private String bizKey;
 
     @Schema(description = "完整访问地址（查询时动态生成）")
@@ -47,7 +54,7 @@ public class SysResourceVO {
     @Schema(description = "创建人")
     private Long createId;
 
-    @Schema(description = "创建时间")
+    @Schema(description = "资源登记时间")
     private LocalDateTime createTime;
 
 }

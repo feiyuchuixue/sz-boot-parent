@@ -8,8 +8,8 @@ package com.sz.resource.enums;
  * {@code PrivateModeEnum}（PRESIGNED/PROXY）的组合， 用单一枚举统一表达资源的访问方式。
  *
  * <ul>
- * <li>{@link #DIRECT} — 明文直接访问，base-url 指向 Java endpoint 或 Nginx（默认模式）</li>
- * <li>{@link #TOKEN} — 一次性加密 token + 平台代理读取，隐藏真实存储地址</li>
+ * <li>{@link #PROTECTED} — 受保护资源，不生成访问 URL，由业务接口鉴权后流式读取（默认模式）</li>
+ * <li>{@link #DIRECT} — 明文直接访问，base-url 指向 Java endpoint 或 Nginx</li>
  * <li>{@link #PRESIGNED} — S3 Presigned URL，仅 OSS 存储可用</li>
  * </ul>
  *
@@ -24,19 +24,19 @@ package com.sz.resource.enums;
 public enum ServeModeEnum {
 
     /**
-     * 明文直接访问（默认）
+     * 明文直接访问（显式公开）
      * <p>
      * 访问 URL = base-url + 相对路径，前端直接使用。 适合公开资源（Logo、头像等）。
      */
     DIRECT,
 
     /**
-     * 一次性加密 token + 平台代理
+     * 受保护业务访问（默认）
      * <p>
-     * 上传时不生成访问 URL，由 ResourceAccessService 按需生成临时 token， 前端通过
-     * /resource/token/{token} 端点访问，平台代理读取并返回文件流。 适合需要隐藏真实存储地址的场景（合同、敏感文件等）。
+     * 上传和查询时不生成访问 URL。前端通过业务固定下载/预览接口访问，由业务权限、数据范围和记录—资源关系共同鉴权，
+     * 再由平台流式返回文件，不签发 ticket 或临时 token。
      */
-    TOKEN,
+    PROTECTED,
 
     /**
      * S3 Presigned URL
