@@ -304,6 +304,9 @@ public final class GeneratorColumnSmartRules {
         if ("create_id".equals(columnName) || "update_id".equals(columnName) || "delete_id".equals(columnName)) {
             column.setJavaType(GeneratorConstants.TYPE_LONG);
         }
+        if (GeneratorConstants.TYPE_LONG.equals(column.getJavaType())) {
+            column.setTsType(GeneratorConstants.TS_TYPE_STRING);
+        }
     }
 
     private static void setLogicDelete(String columnName, GeneratorTableColumn column) {
@@ -436,8 +439,8 @@ public final class GeneratorColumnSmartRules {
             column.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
         }
         Map<String, Object> options = column.getOptions() != null ? column.getOptions() : new HashMap<>();
-        options.put("upload-files.sceneCode", "system.temp");
-        options.put("upload-files.pathSegments", "your_biz_path");
+        options.putIfAbsent("upload-files.sceneCode", "system.protected");
+        options.putIfAbsent("upload-files.pathSegments", "your_biz_path");
         options.put("upload-files.accept", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(column.getHtmlType()) ? "image/*" : "");
         options.put("upload-files.limit", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(column.getHtmlType()) ? 1 : 5);
         options.put("upload-files.fileSize", 3);

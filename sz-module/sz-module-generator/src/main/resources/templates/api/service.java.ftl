@@ -45,6 +45,10 @@ public interface ${serviceClassName} extends IService<${poClassName}> {
     void remove(SelectIdsDTO dto);
 
     ${voClassName} detail(${idJavaType} id);
+    <#if hasResourceRef == true>
+
+    void validateResourceAccess(${idJavaType} id, Long resourceId);
+    </#if>
     <#if GeneratorInfo.hasImport == "1">
 
     ExcelImportResultVO importExcel(ImportExcelDTO dto);

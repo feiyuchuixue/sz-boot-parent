@@ -383,8 +383,8 @@ public class GeneratorUtils {
                 tableColumn.setHtmlType(GeneratorConstants.HTML_FILE_UPLOAD);
             }
             Map<String, Object> options = tableColumn.getOptions() != null ? tableColumn.getOptions() : HashMap.newHashMap(8);
-            options.put("upload-files.sceneCode", "system.temp"); // 多文件上传组件：文件上传目录
-            options.put("upload-file.pathSegments", "your_biz_path");
+            options.putIfAbsent("upload-files.sceneCode", "system.protected"); // 多文件上传组件：资源场景
+            options.putIfAbsent("upload-files.pathSegments", "your_biz_path");
             options.put("upload-files.accept", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType) ? "image/*" : ""); // 多文件上传组件：允许上传的文件类型,
                                                                                                                         // doc,pdf,jpg等,空表示不限制
             options.put("upload-files.limit", GeneratorConstants.HTML_IMAGE_UPLOAD.equals(htmlType) ? 1 : 5); // 多文件上传组件：最多上传5个文件

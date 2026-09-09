@@ -25,5 +25,7 @@ class GeneratorUtilsTest {
         assertThat(column.getJavaType()).isEqualTo(GeneratorConstants.TYPE_LIST_UPLOADRESULT);
         assertThat(column.getIsImport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
         assertThat(column.getIsExport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
+        assertThat(column.getOptions()).containsEntry("upload-files.sceneCode", "system.protected")
+                .containsEntry("upload-files.pathSegments", "your_biz_path");
     }
 }

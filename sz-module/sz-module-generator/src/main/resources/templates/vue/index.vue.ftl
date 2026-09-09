@@ -66,7 +66,14 @@
         <#assign downloadAlign = "left">
       </#if>
       <template #${field.javaField}="{ row }">
-        <file-download-list :files="row?.${field.javaField}" align="${downloadAlign}" :max-rows="${field.options['file-download-list.maxRows']!2}" />
+        <file-download-list
+          :files="row?.${field.javaField}"
+          :biz-id="String(row.${pkName})"
+          :download-api="${funDownloadResource}"
+          :preview-api="${funPreviewResource}"
+          align="${downloadAlign}"
+          :max-rows="${field.options['file-download-list.maxRows']!2}"
+        />
       </template>
     </#if>
   </#list>
@@ -122,6 +129,10 @@ import {
   ${funUpdate},
   ${funGetList},
   ${funDetail},
+  <#if hasResourceRef == true>
+  ${funDownloadResource},
+  ${funPreviewResource},
+  </#if>
   <#if GeneratorInfo.hasImport == "1">
   ${funImport},
   </#if>

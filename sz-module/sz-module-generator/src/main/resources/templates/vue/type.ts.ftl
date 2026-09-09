@@ -1,14 +1,17 @@
 import type { IPageQuery } from '@/api/types';
+<#if hasResourceRef == true>
+import type { ResourceRef } from '@/api/types/system/upload';
+</#if>
 
 // 查询条件
 export type ${interfaceNamespace}Query = IPageQuery & {
 <#list columns as field>
 <#if field.isQuery == "1" >
   <#if field.queryType == "BETWEEN" >
-  ${field.javaField}Start?: ${field.tsType};
-  ${field.javaField}End?: ${field.tsType};
+  ${field.javaField}Start?: <#if field.javaType == "Long">string<#else>${field.tsType}</#if>;
+  ${field.javaField}End?: <#if field.javaType == "Long">string<#else>${field.tsType}</#if>;
   <#else>
-  ${field.javaField}?: ${field.tsType};
+  ${field.javaField}?: <#if field.javaType == "Long">string<#elseif field.javaType == "List<ResourceRef>">ResourceRef[]<#else>${field.tsType}</#if>;
   </#if>
 </#if>
 </#list>
@@ -18,7 +21,7 @@ export type ${interfaceNamespace}Query = IPageQuery & {
 export type ${interfaceNamespace}Form = {
 <#list columns as field>
 <#if field.isInsert == "1" || field.isEdit == "1" >
-  ${field.javaField}?: ${field.tsType};
+  ${field.javaField}?: <#if field.javaType == "Long">string<#elseif field.javaType == "List<ResourceRef>">ResourceRef[]<#else>${field.tsType}</#if>;
 </#if>
 </#list>
 };
@@ -27,7 +30,7 @@ export type ${interfaceNamespace}Form = {
 export type ${interfaceNamespace}Row = {
 <#list columns as field>
 <#if field.isList == "1">
-  ${field.javaField}?: ${field.tsType};
+  ${field.javaField}?: <#if field.javaType == "Long">string<#elseif field.javaType == "List<ResourceRef>">ResourceRef[]<#else>${field.tsType}</#if>;
 </#if>
 </#list>
 };

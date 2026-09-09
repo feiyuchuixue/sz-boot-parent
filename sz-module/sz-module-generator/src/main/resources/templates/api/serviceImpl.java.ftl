@@ -40,7 +40,11 @@ import lombok.SneakyThrows;
 import com.sz.core.datascope.DataScopeSession;
 </#if>
 <#if hasResourceRef == true>
-import com.sz.resource.service.ResourceService;
+import cn.dev33.satoken.stp.StpUtil;
+import com.sz.resource.enums.ResourceAccessResponseEnum;
+import com.sz.resource.model.ResourceRef;
+import com.sz.resource.service.ResourceReferenceService;
+import java.util.Objects;
 </#if>
 
 import ${voPkg}.${voClassName};
@@ -66,12 +70,15 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 </#if>
 <#if hasResourceRef == true>
 
-    private final ResourceService resourceService;
+    private final ResourceReferenceService resourceReferenceService;
 </#if>
 
     @Override
     public void create(${dtoCreateClassName} dto) {
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
+<#list resourceRefColumns as field>
+        ${camelClassName}.set${field.upCamelField}(resourceReferenceService.normalizeForCreate(dto.get${field.upCamelField}(), "${field.options['upload-files.sceneCode']!'system.protected'}", currentUserId(dto.get${field.upCamelField}())));
+</#list>
 <#if hasUniqueValidField == true>
         long count;
 <#list columns as field>
@@ -87,7 +94,15 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 
     @Override
     public void update(${dtoUpdateClassName} dto) {
+<#if hasResourceRef == true>
+        ${poClassName} existing = getById(dto.get${pkUpCamelName}());
+        CommonResponseEnum.INVALID_ID.assertNull(existing);
+</#if>
         ${poClassName} ${camelClassName} = BeanCopyUtils.copy(dto, ${poClassName}.class);
+<#list resourceRefColumns as field>
+        ${camelClassName}.set${field.upCamelField}(resourceReferenceService.normalizeForUpdate(existing.get${field.upCamelField}(), dto.get${field.upCamelField}(), "${field.options['upload-files.sceneCode']!'system.protected'}", currentUserId(dto.get${field.upCamelField}())));
+</#list>
+<#if hasResourceRef != true>
         QueryWrapper wrapper;
 <#list columns as field>
     <#if field.isPk == "1">
@@ -98,6 +113,8 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
         CommonResponseEnum.INVALID_ID.assertTrue(count(wrapper) <= 0);
     </#if>
 </#list>
+
+</#if>
 
 <#if hasUniqueValidField == true>
         // 唯一性校验
@@ -117,16 +134,10 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 <#if GeneratorInfo.btnDataScopeType == "1">
         try (var ignored = new DataScopeSession(${poClassName}.class)) {
             Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
-<#if hasResourceRef == true>
-            page.getRecords().forEach(this::fillAccessUrl);
-</#if>
             return PageUtils.getPageResult(page);
         }
 <#else>
         Page<${voClassName}> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), ${voClassName}.class);
-<#if hasResourceRef == true>
-        page.getRecords().forEach(this::fillAccessUrl);
-</#if>
         return PageUtils.getPageResult(page);
 </#if>
     }
@@ -136,16 +147,10 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 <#if GeneratorInfo.btnDataScopeType == "1">
         try (var ignored = new DataScopeSession(${poClassName}.class)) {
             List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
-<#if hasResourceRef == true>
-            list.forEach(this::fillAccessUrl);
-</#if>
             return list;
         }
 <#else>
         List<${voClassName}> list = listAs(buildQueryWrapper(dto), ${voClassName}.class);
-<#if hasResourceRef == true>
-        list.forEach(this::fillAccessUrl);
-</#if>
         return list;
 </#if>
     }
@@ -158,12 +163,19 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 
     @Override
     public ${voClassName} detail(${idJavaType} id) {
+<#if GeneratorInfo.btnDataScopeType == "1">
+        try (var ignored = new DataScopeSession(${poClassName}.class)) {
+            return doDetail(id);
+        }
+<#else>
+        return doDetail(id);
+</#if>
+    }
+
+    private ${voClassName} doDetail(${idJavaType} id) {
         ${poClassName} ${camelClassName} = getById(id);
         CommonResponseEnum.INVALID_ID.assertNull(${camelClassName});
         ${voClassName} vo = BeanCopyUtils.copy(${camelClassName}, ${voClassName}.class);
-<#if hasResourceRef == true>
-        fillAccessUrl(vo);
-</#if>
         return vo;
     }
 <#if GeneratorInfo.hasImport == "1">
@@ -187,13 +199,33 @@ public class ${serviceImplClassName} extends ServiceImpl<${mapperClassName}, ${p
 </#if>
 <#if hasResourceRef == true>
 
-    /** 将 VO 中 List<ResourceRef> 类型字段的 accessUrl 填充为当前环境可访问 URL */
-    private void fillAccessUrl(${voClassName} vo) {
-<#list columns as field>
-<#if field.javaType == "List<ResourceRef>">
-        resourceService.fillAccessUrl(vo.get${field.upCamelField}());
+    @Override
+    public void validateResourceAccess(${idJavaType} id, Long resourceId) {
+        ${poClassName} record = findAccessibleById(id);
+        if (record == null) {
+            throw ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException();
+        }
+        boolean matched = <#list resourceRefColumns as field>containsResource(record.get${field.upCamelField}(), resourceId)<#if field_has_next> || </#if></#list>;
+        ResourceAccessResponseEnum.ACCESS_DENIED.assertFalse(matched);
+    }
+
+    private ${poClassName} findAccessibleById(${idJavaType} id) {
+<#if GeneratorInfo.btnDataScopeType == "1">
+        try (var ignored = new DataScopeSession(${poClassName}.class)) {
+            return getById(id);
+        }
+<#else>
+        return getById(id);
 </#if>
-</#list>
+    }
+
+    private static boolean containsResource(List<ResourceRef> references, Long resourceId) {
+        return references != null && references.stream()
+                .anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
+    }
+
+    private static Long currentUserId(List<ResourceRef> references) {
+        return references == null || references.isEmpty() ? null : StpUtil.getLoginIdAsLong();
     }
 </#if>
 

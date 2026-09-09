@@ -120,11 +120,14 @@
           <#elseif field.htmlType == "fileUpload" || field.htmlType == "imageUpload">
         <upload-files
           v-model:modelValue="${field.javaField}UploadResult"
+          :biz-id="resourceBizId"
+          :download-api="${funDownloadResource}"
           :limit="${field.options['upload-files.limit']!5}"
           :file-size="${field.options['upload-files.fileSize']!3}"
-          scene-code="${field.options['upload-files.sceneCode']!'system.temp'}"
+          scene-code="${field.options['upload-files.sceneCode']!'system.protected'}"
           path-segments="${field.options['upload-files.pathSegments']!'your_biz_path'}"
           :accept="'${field.options['upload-files.accept']!''}'"
+          @uploading-change="uploading = $event"
           @change="syncUploadValue('${field.javaField}', $event)"
           @update:modelValue="syncUploadValue('${field.javaField}', $event)"
         />
@@ -144,7 +147,7 @@
     </el-form>
     <template #footer>
       <el-button @click="visible = false"> 取消</el-button>
-      <el-button type="primary" @click="handleSubmit"> 确定</el-button>
+      <el-button type="primary" :disabled="uploading" :loading="uploading" @click="handleSubmit"> 确定</el-button>
     </template>
 <#if GeneratorInfo.windowShowType == "0">
   </el-dialog>
@@ -154,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive<#if hasResourceRef == true>, computed</#if> } from 'vue';
 import { type ElForm, ElMessage } from 'element-plus';
 <#if hasSelect == true>
 import { useOptionsStore } from '@/stores/modules/options';
@@ -171,8 +174,10 @@ import { useOptionsStore } from '@/stores/modules/options';
 </#if>
 </#list>
 <#if hasFileUpload?? && hasFileUpload>
-import type { IResourceUploadResult } from '@/api/types/system/upload';
+import type { ResourceRef } from '@/api/types/system/upload';
 import UploadFiles from '@/components/Upload/UploadFiles.vue';
+import { normalizeResourceFiles } from '@/components/Upload/resourceFiles';
+import { ${funDownloadResource} } from '@${modulesPkg}/${modulesClassName}';
 </#if>
 <#if hasJoditEditor?? && hasJoditEditor>
 import JoditEditor from '@/components/JoditEditor/index.vue';
@@ -186,19 +191,26 @@ const dialogWidth = useDialogWidth('');
 const optionsStore = useOptionsStore();
 </#if>
 const visible = ref(false);
+const uploading = ref(false);
 const paramsProps = ref<View.DefaultParams>({
   title: '',
   row: {},
   api: undefined,
   getTableList: undefined
 });
+<#if hasResourceRef == true>
+const resourceBizId = computed(() => {
+  const value = paramsProps.value.row.${pkName};
+  return value === undefined || value === null || value === '' ? undefined : String(value);
+});
+</#if>
 
 <#list columns as field>
 <#if field.htmlType == "checkbox">
 const ${field.javaField}CheckedValues = ref<Array<string | number | boolean>>([]);
 </#if>
 <#if field.htmlType == "fileUpload" || field.htmlType == "imageUpload">
-const ${field.javaField}UploadResult = ref<IResourceUploadResult[] | string[]>([]);
+const ${field.javaField}UploadResult = ref<ResourceRef[]>([]);
 </#if>
 </#list>
 
@@ -225,15 +237,7 @@ const syncCheckboxValue = (fieldName: string, value: unknown, validate = true) =
 
 </#if>
 <#if hasFileUpload?? && hasFileUpload>
-const normalizeUploadValue = (value: unknown): IResourceUploadResult[] | string[] => {
-  if (Array.isArray(value)) {
-    return value.filter(item => item !== undefined && item !== null && item !== '') as IResourceUploadResult[] | string[];
-  }
-  if (value === undefined || value === null || value === '') {
-    return [];
-  }
-  return [value] as IResourceUploadResult[] | string[];
-};
+const normalizeUploadValue = (value: unknown): ResourceRef[] => normalizeResourceFiles(value);
 
 const hasUploadValue = (value: unknown) => normalizeUploadValue(value).length > 0;
 
@@ -302,6 +306,10 @@ const acceptParams = (params: View.DefaultParams) => {
 // 提交数据（新增/编辑）
 const ruleFormRef = ref<InstanceType<typeof ElForm>>();
 const handleSubmit = () => {
+  if (uploading.value) {
+    ElMessage.warning('文件仍在上传，请稍候再提交');
+    return;
+  }
   ruleFormRef.value!.validate(async (valid) => {
     if (!valid) return;
     try {
@@ -310,7 +318,7 @@ const handleSubmit = () => {
       paramsProps.value.row.${field.javaField} = formatCheckboxValue(${field.javaField}CheckedValues.value);
   </#if>
   <#if field.htmlType == "fileUpload" || field.htmlType == "imageUpload">
-      paramsProps.value.row.${field.javaField} = ${field.javaField}UploadResult.value; // 附件数据添加--从上传组件获取
+      paramsProps.value.row.${field.javaField} = normalizeResourceFiles(${field.javaField}UploadResult.value);
   </#if>
 </#list>
       await paramsProps.value.api!(paramsProps.value.row);

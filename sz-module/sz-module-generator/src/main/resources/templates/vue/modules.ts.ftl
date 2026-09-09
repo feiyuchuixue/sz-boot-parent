@@ -59,6 +59,16 @@ export const ${funDetail} = (params: { id: ${idType} }) => {
   const { id } = params;
   return ${httpClientName}.get<${interfaceNamespace}Row>(`/${router}/<#noparse>${id}</#noparse>`);
 };
+<#if hasResourceRef == true>
+
+export const ${funDownloadResource} = (bizId: string, resourceId: string) => {
+  return ${httpClientName}.downloadWithHeader(`/${router}/<#noparse>${bizId}</#noparse>/resources/<#noparse>${resourceId}</#noparse>/download`);
+};
+
+export const ${funPreviewResource} = (bizId: string, resourceId: string) => {
+  return ${httpClientName}.downloadWithHeader(`/${router}/<#noparse>${bizId}</#noparse>/resources/<#noparse>${resourceId}</#noparse>/preview`);
+};
+</#if>
 <#if GeneratorInfo.hasImport == "1">
 
 /**

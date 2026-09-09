@@ -41,6 +41,7 @@ class GeneratorColumnSmartRulesTest {
         assertThat(image.getIsExport()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
         assertThat(image.getIsQuery()).isEqualTo(GeneratorConstants.NOT_REQUIRE);
         assertThat(image.getOptions()).containsEntry("upload-files.accept", "image/*");
+        assertThat(image.getOptions()).containsEntry("upload-files.sceneCode", "system.protected");
 
         GeneratorTableColumn file = column("contract_file", "varchar(512)", "0", "0");
         GeneratorColumnSmartRules.applyImportDefaults(file);

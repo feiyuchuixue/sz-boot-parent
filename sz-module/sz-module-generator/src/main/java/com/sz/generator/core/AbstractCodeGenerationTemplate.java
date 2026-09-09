@@ -63,7 +63,8 @@ public abstract class AbstractCodeGenerationTemplate {
     protected abstract String getOutputPackage(Map<String, Object> model);
 
     public CodeGenTempResult buildTemplate(boolean isSaveToLocal) throws IOException {
-        Template template = configurer.getConfiguration().getTemplate(getTemplateFileName());
+        String templateName = getTemplateFileName().replace('\\', '/');
+        Template template = configurer.getConfiguration().getTemplate(templateName);
         String outputPackage = getOutputPackage(model);
         String outputClassName = getOutputFileName(model);
         String outputRelativePath = buildRelativeOutputFilePath(outputPackage, outputClassName, getExtension());

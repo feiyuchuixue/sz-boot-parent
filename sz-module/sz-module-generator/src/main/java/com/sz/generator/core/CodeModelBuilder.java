@@ -84,12 +84,14 @@ public class CodeModelBuilder {
         String idType = "";
         String idJavaType = "Long";
         String pkName = "";
+        String pkUpCamelName = "";
         boolean hasDict = false;
         boolean hasSelect = false;
         boolean hasExcel = false;
         boolean hasResourceRef = false;
         GeneratorDetailVO.Column importBizKeyColumn = null;
         List<GeneratorDetailVO.Column> pkColumns = new ArrayList<>();
+        List<GeneratorDetailVO.Column> resourceRefColumns = new ArrayList<>();
         List<GeneratorDetailVO.Column> columns = detailVO.getColumns();
 
         boolean hasGenExcel = ("1").equals(detailVO.getGeneratorInfo().getHasImport()) || ("1").equals(detailVO.getGeneratorInfo().getHasExport());
@@ -100,9 +102,10 @@ public class CodeModelBuilder {
             }
 
             if (("1").equals(column.getIsPk())) {
-                idType = column.getTsType();
                 idJavaType = defaultString(column.getJavaType(), idJavaType);
+                idType = GeneratorConstants.TYPE_LONG.equals(idJavaType) ? GeneratorConstants.TS_TYPE_STRING : column.getTsType();
                 pkName = column.getJavaField();
+                pkUpCamelName = column.getUpCamelField();
             }
             if (Utils.isNotNull(column.getDictType())) {
                 hasDict = true;
@@ -117,12 +120,14 @@ public class CodeModelBuilder {
             // 检测是否存在 List<ResourceRef> 类型字段
             if (GeneratorConstants.TYPE_LIST_UPLOADRESULT.equals(column.getJavaType())) {
                 hasResourceRef = true;
+                resourceRefColumns.add(column);
             }
             if (("1").equals(column.getIsImport()) && shouldUseImportBizKey(importBizKeyColumn, column)) {
                 importBizKeyColumn = column;
             }
         }
         model.put("pkName", pkName);
+        model.put("pkUpCamelName", pkUpCamelName);
         model.put("idJavaType", idJavaType);
         model.put("hasDict", hasDict);
         model.put("hasSelect", hasSelect);
@@ -130,6 +135,7 @@ public class CodeModelBuilder {
         model.put("idType", idType);
         model.put("pkColumns", pkColumns);
         model.put("hasResourceRef", hasResourceRef);
+        model.put("resourceRefColumns", resourceRefColumns);
         model.put("importBizKeyColumn", importBizKeyColumn);
         return this;
     }
@@ -227,6 +233,8 @@ public class CodeModelBuilder {
         model.put("funRemove", "remove" + className + "Api");
         model.put("funImport", "import" + className + "ExcelApi");
         model.put("funExport", "export" + className + "ExcelApi");
+        model.put("funDownloadResource", "download" + className + "ResourceApi");
+        model.put("funPreviewResource", "preview" + className + "ResourceApi");
         model.put("frontendLayout", frontendLayout);
         model.put("frontendModuleName", frontendModuleName);
         model.put("frontendModuleVarName", frontendModuleVarName);

@@ -25,6 +25,11 @@ import ${dtoPkg}.${dtoListClassName};
 import ${voPkg}.${voClassName};
 import com.sz.logger.audit.OperationAudit;
 import com.sz.logger.audit.OperationType;
+<#if hasResourceRef == true>
+import com.sz.resource.service.ResourceDownloadService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+</#if>
 <#if GeneratorInfo.hasImport == "1">
 import com.sz.core.common.entity.ImportExcelDTO;
 import com.sz.excel.imports.model.ExcelImportResultVO;
@@ -51,6 +56,10 @@ public class ${controllerClassName} {
 
 <#assign serviceName = lower_case_first_letter(serviceClassName)>
     private final ${serviceClassName} ${serviceName};
+<#if hasResourceRef == true>
+
+    private final ResourceDownloadService resourceDownloadService;
+</#if>
 
     @Operation(summary = "新增${tableComment}")
     @OperationAudit(operationType = OperationType.CREATE)
@@ -98,6 +107,24 @@ public class ${controllerClassName} {
     public ApiResult<${voClassName}> detail(@PathVariable ${idJavaType} id) {
         return ApiResult.success(${serviceName}.detail(id));
     }
+<#if hasResourceRef == true>
+
+    @Operation(summary = "下载${tableComment}附件")
+    @SaCheckPermission(value = "${listPermission}")
+    @PostMapping("/{id}/resources/{resourceId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadResource(@PathVariable ${idJavaType} id, @PathVariable Long resourceId) {
+        ${serviceName}.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.download(resourceId);
+    }
+
+    @Operation(summary = "预览${tableComment}附件")
+    @SaCheckPermission(value = "${listPermission}")
+    @PostMapping("/{id}/resources/{resourceId}/preview")
+    public ResponseEntity<StreamingResponseBody> previewResource(@PathVariable ${idJavaType} id, @PathVariable Long resourceId) {
+        ${serviceName}.validateResourceAccess(id, resourceId);
+        return resourceDownloadService.preview(resourceId);
+    }
+</#if>
 <#if GeneratorInfo.hasImport == "1">
 
     @Operation(summary = "导入${tableComment}", parameters = {

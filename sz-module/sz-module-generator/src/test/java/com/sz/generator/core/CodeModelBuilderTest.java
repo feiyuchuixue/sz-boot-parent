@@ -1,11 +1,18 @@
 package com.sz.generator.core;
 
+import com.sz.core.util.BeanCopyUtils;
+import com.sz.generator.core.builder.java.ControllerCodeBuilder;
+import com.sz.generator.core.smart.GeneratorColumnSmartRules;
+import com.sz.generator.pojo.po.GeneratorTableColumn;
 import com.sz.generator.pojo.vo.GeneratorDetailVO;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -155,7 +162,70 @@ class CodeModelBuilderTest {
         Map<String, Object> model = new CodeModelBuilder().builderDynamicsParam(detailVO).getModel();
 
         assertThat(model.get("idJavaType")).isEqualTo("Long");
-        assertThat(model.get("idType")).isEqualTo("number");
+        assertThat(model.get("idType")).isEqualTo("string");
+    }
+
+    @Test
+    void resourceTemplatesRenderProtectedDownloadContract() throws Exception {
+        GeneratorDetailVO detailVO = resourceDetail();
+        Map<String, Object> model = fullModel(detailVO);
+
+        String controller = render("api/controller.java.ftl", model);
+        String service = render("api/service.java.ftl", model);
+        String serviceImpl = render("api/serviceImpl.java.ftl", model);
+        String api = render("vue/modules.ts.ftl", model);
+        String index = render("vue/index.vue.ftl", model);
+        String form = render("vue/componentForm.vue.ftl", model);
+
+        assertThat(controller).contains("ResourceDownloadService", "bizDocumentService.validateResourceAccess(id, resourceId)",
+                "@PostMapping(\"/{id}/resources/{resourceId}/download\")", "@PostMapping(\"/{id}/resources/{resourceId}/preview\")");
+        assertThat(service).contains("void validateResourceAccess(Long id, Long resourceId);");
+        assertThat(serviceImpl).contains("ResourceReferenceService", "normalizeForCreate(dto.getAttachments(), \"system.protected\"",
+                "normalizeForUpdate(existing.getAttachments(), dto.getAttachments(), \"system.protected\"", "containsResource(record.getAttachments(), resourceId)",
+                "new DataScopeSession(BizDocument.class)").doesNotContain("fillAccessUrl");
+        assertThat(api).contains("downloadBizDocumentResourceApi", "previewBizDocumentResourceApi", "downloadWithHeader");
+        assertThat(index).contains(":biz-id=\"String(row.id)\"", ":download-api=\"downloadBizDocumentResourceApi\"",
+                ":preview-api=\"previewBizDocumentResourceApi\"");
+        assertThat(form).contains(":biz-id=\"resourceBizId\"", ":download-api=\"downloadBizDocumentResourceApi\"",
+                "const resourceBizId = computed");
+    }
+
+    @Test
+    void selectedResourceSceneShouldSurviveColumnConversionAndRenderInBothEnds() throws Exception {
+        for (String htmlType : List.of("fileUpload", "imageUpload")) {
+            GeneratorDetailVO detailVO = resourceDetail();
+            GeneratorDetailVO.Column attachments = detailVO.getColumns().get(1);
+            attachments.setHtmlType(htmlType);
+            attachments.getOptions().put("upload-files.sceneCode", "teacher.attachment");
+            attachments.getOptions().put("upload-files.limit", "8");
+
+            GeneratorTableColumn savedColumn = BeanCopyUtils.copy(attachments, GeneratorTableColumn.class);
+            GeneratorColumnSmartRules.normalizeByHtmlType(savedColumn);
+            GeneratorDetailVO.Column loadedColumn = BeanCopyUtils.copy(savedColumn, GeneratorDetailVO.Column.class);
+            GeneratorColumnSmartRules.normalizeByHtmlType(loadedColumn);
+            detailVO.setColumns(List.of(detailVO.getColumns().getFirst(), loadedColumn));
+
+            assertThat(loadedColumn.getOptions()).containsEntry("upload-files.sceneCode", "teacher.attachment")
+                    .containsEntry("upload-files.limit", "8").containsEntry("upload-files.pathSegments", "document");
+            Map<String, Object> model = fullModel(detailVO);
+            assertThat(render("vue/componentForm.vue.ftl", model)).contains("scene-code=\"teacher.attachment\"", ":limit=\"8\"")
+                    .doesNotContain("scene-code=\"system.protected\"");
+            assertThat(render("api/serviceImpl.java.ftl", model)).contains("normalizeForCreate(dto.getAttachments(), \"teacher.attachment\"",
+                    "normalizeForUpdate(existing.getAttachments(), dto.getAttachments(), \"teacher.attachment\"");
+        }
+    }
+
+    @Test
+    void controllerTemplateShouldLoadWithWindowsPathSeparators() throws Exception {
+        FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+        configurer.setTemplateLoaderPath("classpath:/templates");
+        configurer.afterPropertiesSet();
+        Map<String, Object> model = Map.of("controllerClassName", "DemoController", "controllerPkg", "com.sz.demo.controller");
+
+        var result = new ControllerCodeBuilder(configurer, ".", new GeneratorDetailVO(), model).buildTemplate(false);
+
+        assertThat(result.getTemplate()).isNotNull();
+        assertThat(result.getTemplate().getName()).endsWith("api/controller.java.ftl");
     }
 
     @Test
@@ -204,7 +274,7 @@ class CodeModelBuilderTest {
             assertThat(template).contains("validator: validate${field.upCamelField}Checked, trigger: 'change'");
             assertThat(template).contains("@change=\"syncUploadValue('${field.javaField}', $event)\"");
             assertThat(template).contains("@update:modelValue=\"syncUploadValue('${field.javaField}', $event)\"");
-            assertThat(template).contains("const normalizeUploadValue = (value: unknown): IResourceUploadResult[] | string[] => {");
+            assertThat(template).contains("const normalizeUploadValue = (value: unknown): ResourceRef[] => normalizeResourceFiles(value);");
             assertThat(template).contains("const hasUploadValue = (value: unknown) => normalizeUploadValue(value).length > 0;");
             assertThat(template).contains("const syncUploadValue = (fieldName: string, value: unknown, validate = true) => {");
             assertThat(template).contains("if (!hasUploadValue(paramsProps.value.row.${field.javaField})) {");
@@ -286,5 +356,93 @@ class CodeModelBuilderTest {
             assertThat(template).doesNotContain("SysImportBatchService");
             assertThat(template).doesNotContain("SysImportFailRecordService");
         }
+    }
+
+    private static Map<String, Object> fullModel(GeneratorDetailVO detailVO) {
+        return new CodeModelBuilder().builderBaseInfo(detailVO).builderImportPackage(detailVO).builderDynamicsParam(detailVO).builderPojo(detailVO)
+                .builderVue(detailVO).getModel();
+    }
+
+    private static String render(String templateName, Map<String, Object> model) throws Exception {
+        FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+        configurer.setTemplateLoaderPath("classpath:/templates");
+        configurer.afterPropertiesSet();
+        StringWriter writer = new StringWriter();
+        configurer.getConfiguration().getTemplate(templateName).process(model, writer);
+        return writer.toString();
+    }
+
+    private static GeneratorDetailVO resourceDetail() {
+        GeneratorDetailVO detailVO = new GeneratorDetailVO();
+        GeneratorDetailVO.BaseInfo baseInfo = new GeneratorDetailVO.BaseInfo();
+        baseInfo.setTableName("biz_document");
+        baseInfo.setTableComment("业务文档");
+        baseInfo.setClassName("BizDocument");
+        baseInfo.setCamelClassName("bizDocument");
+        baseInfo.setFunctionAuthor("sz");
+        detailVO.setBaseInfo(baseInfo);
+
+        GeneratorDetailVO.GeneratorInfo generatorInfo = new GeneratorDetailVO.GeneratorInfo();
+        generatorInfo.setPackageName("com.sz");
+        generatorInfo.setModuleName("demo");
+        generatorInfo.setBusinessName("bizDocument");
+        generatorInfo.setFunctionName("业务文档");
+        generatorInfo.setFrontendLayout("module");
+        generatorInfo.setFrontendModuleName("admin");
+        generatorInfo.setApiPrefixModule("admin");
+        generatorInfo.setApiPrefix("/admin");
+        generatorInfo.setGenerateType("all");
+        generatorInfo.setBtnPermissionType("1");
+        generatorInfo.setBtnDataScopeType("1");
+        generatorInfo.setHasImport("0");
+        generatorInfo.setHasExport("0");
+        generatorInfo.setWindowShowType("0");
+        detailVO.setGeneratorInfo(generatorInfo);
+
+        GeneratorDetailVO.Column id = column("id", "Id", "Long", "input");
+        id.setTsType("number");
+        id.setIsPk("1");
+        id.setIsInsert("0");
+        id.setIsEdit("0");
+        id.setIsList("0");
+
+        GeneratorDetailVO.Column attachments = column("attachments", "Attachments", GeneratorConstants.TYPE_LIST_UPLOADRESULT, "fileUpload");
+        attachments.setJavaTypePackage("com.sz.resource.model.ResourceRef,java.util.List");
+        attachments.setIsInsert("1");
+        attachments.setIsEdit("1");
+        attachments.setIsList("1");
+        attachments.setOptions(new HashMap<>(Map.of("upload-files.sceneCode", "system.protected", "upload-files.pathSegments", "document",
+                "upload-files.accept", "", "upload-files.limit", "5", "upload-files.fileSize", "3", "file-download-list.align", "left",
+                "file-download-list.maxRows", "3")));
+
+        detailVO.setColumns(List.of(id, attachments));
+        detailVO.setDictTypes(Set.of());
+        return detailVO;
+    }
+
+    private static GeneratorDetailVO.Column column(String javaField, String upCamelField, String javaType, String htmlType) {
+        GeneratorDetailVO.Column column = new GeneratorDetailVO.Column();
+        column.setColumnName(javaField);
+        column.setColumnComment(javaField);
+        column.setJavaField(javaField);
+        column.setUpCamelField(upCamelField);
+        column.setJavaType(javaType);
+        column.setHtmlType(htmlType);
+        column.setIsPk("0");
+        column.setIsRequired("0");
+        column.setIsInsert("0");
+        column.setIsEdit("0");
+        column.setIsList("0");
+        column.setIsQuery("0");
+        column.setIsImport("0");
+        column.setIsExport("0");
+        column.setIsUniqueValid("0");
+        column.setIsLogicDel("0");
+        column.setQueryType("");
+        column.setSearchType("");
+        column.setDictType("");
+        column.setDictShowWay("0");
+        column.setOptions(new HashMap<>());
+        return column;
     }
 }
