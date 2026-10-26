@@ -1,0 +1,881 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sz-Admin 应用配置",
+  "description": "为服务 application.yml 中的 Sz-Admin 自定义配置提供字段、类型、初始化值与建议值提示。Spring 标准配置和导入文件由各自 Schema 负责。",
+  "type": "object",
+  "properties": {
+    "sz": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/applicationSzConfig"
+        }
+      ],
+      "description": "Sz-Admin 自定义配置命名空间。本 Schema 细化 api-prefix、data-scope、debounce、generator、wechat 与 cors；sz 下其他框架配置仍允许存在。"
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "applicationSzConfig": {
+      "type": "object",
+      "properties": {
+        "api-prefix": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/apiPrefixConfig"
+            }
+          ],
+          "description": "模块 API 路径前缀配置。"
+        },
+        "apiPrefix": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/apiPrefixConfig"
+            }
+          ],
+          "description": "api-prefix 的 camelCase 别名，绑定语义相同。"
+        },
+        "data-scope": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/dataScopeConfig"
+            }
+          ],
+          "description": "数据权限全局配置。"
+        },
+        "dataScope": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/dataScopeConfig"
+            }
+          ],
+          "description": "data-scope 的 camelCase 别名，绑定语义相同。"
+        },
+        "debounce": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/debounceConfig"
+            }
+          ],
+          "description": "接口防抖配置。"
+        },
+        "generator": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/generatorConfig"
+            }
+          ],
+          "description": "代码生成器工程路径与默认配置。"
+        },
+        "wechat": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/wechatConfig"
+            }
+          ],
+          "description": "微信小程序与企业微信配置。"
+        },
+        "cors": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/corsConfig"
+            }
+          ],
+          "description": "后台服务跨域 Origin 配置。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "apiPrefixConfig": {
+      "type": "object",
+      "description": "模块 API 路径前缀配置。",
+      "properties": {
+        "modules": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/apiPrefixPropertiesModuleMap"
+            }
+          ],
+          "description": "模块 API 前缀配置。Map 键与运行时 ApiPrefixRegister.module() 返回值对应，属于开放集合；当前内置 admin、audit、generator， 新模块可注册自己的键。未配置某个模块时，该模块完全使用注册器声明的 enabled 和 prefix；本 Map 应保持非 null。",
+          "x-intellij-html-description": "<p>模块 API 前缀配置。Map 键与运行时 ApiPrefixRegister.module() 返回值对应，属于开放集合；当前内置 admin、audit、generator， 新模块可注册自己的键。未配置某个模块时，该模块完全使用注册器声明的 enabled 和 prefix；本 Map 应保持非 null。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiPrefixPropertiesModule": {
+      "type": "object",
+      "description": "单个模块的 API 前缀覆盖配置。",
+      "properties": {
+        "enabled": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableBoolean"
+            }
+          ],
+          "description": "是否注册该模块的 Controller 路径前缀。Java 属性为 null 时继承 ApiPrefixRegister.enabled()；YAML 省略、显式 null 或 空标量均保持该属性为 null。false 跳过该模块的路径前缀注册，但不会卸载模块 Bean、数据库变更或其他功能。",
+          "x-intellij-html-description": "<p>是否注册该模块的 Controller 路径前缀。Java 属性为 null 时继承 ApiPrefixRegister.enabled()；YAML 省略、显式 null 或 空标量均保持该属性为 null。false 跳过该模块的路径前缀注册，但不会卸载模块 Bean、数据库变更或其他功能。</p>"
+        },
+        "prefix": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "追加到模块 Controller 路径之前的业务前缀。只有 Java 属性为 null 时才继承 ApiPrefixRegister.prefix()；YAML 应省略本项 以继承，显式 null 或空标量会绑定为空串并清除模块前缀，纯空白也会清除。非空值会去除首尾空白、自动补齐开头斜杠，并去除根路径之外的末尾斜杠。server.servlet.context-path 仍在本前缀之外生效。",
+          "x-intellij-html-description": "<p>追加到模块 Controller 路径之前的业务前缀。只有 Java 属性为 null 时才继承 ApiPrefixRegister.prefix()；YAML 应省略本项 以继承，显式 null 或空标量会绑定为空串并清除模块前缀，纯空白也会清除。非空值会去除首尾空白、自动补齐开头斜杠，并去除根路径之外的末尾斜杠。server.servlet.context-path 仍在本前缀之外生效。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataScopeConfig": {
+      "type": "object",
+      "description": "数据权限全局配置。",
+      "properties": {
+        "enabled": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "是否启用数据权限。关闭后方言不向查询注入数据范围条件，登录用户构建过程也不加载角色数据范围；业务查询仍需通过 DataScopeSession 等方式进入数据权限处理流程，单独开启本开关不会使所有查询自动过滤。 默认值：true。",
+          "default": true,
+          "x-intellij-html-description": "<p>是否启用数据权限。关闭后方言不向查询注入数据范围条件，登录用户构建过程也不加载角色数据范围；业务查询仍需通过 DataScopeSession 等方式进入数据权限处理流程，单独开启本开关不会使所有查询自动过滤。</p><p><b>默认值：</b><code>true</code></p>"
+        },
+        "logic-min-unit": {
+          "anyOf": [
+            {
+              "enum": [
+                "user",
+                "dept"
+              ],
+              "x-intellij-enum-metadata": {
+                "user": {
+                  "description": "按数据创建人及其部门关系过滤"
+                },
+                "dept": {
+                  "description": "按业务表 dept_scope 部门范围过滤"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "user",
+            "dept"
+          ],
+          "description": "数据权限部门范围的最小过滤单位。当前消费者仅对精确字符串 user 采用 create_id 和用户部门关系过滤；其他任何值，包括 dept、null、空串和未知字符串，都会进入 dept_scope 部门范围分支。本字段没有运行时枚举校验，建议仅配置 user 或 dept，并确保业务表具有对应字段。 默认值：user。",
+          "default": "user",
+          "x-intellij-html-description": "<p>数据权限部门范围的最小过滤单位。当前消费者仅对精确字符串 user 采用 create_id 和用户部门关系过滤；其他任何值，包括 dept、null、空串和未知字符串，都会进入 dept_scope 部门范围分支。本字段没有运行时枚举校验，建议仅配置 user 或 dept，并确保业务表具有对应字段。</p><p><b>默认值：</b><code>user</code></p><p><b>示例：</b></p><ul><li><code>user</code> — 按数据创建人及其部门关系过滤</li><li><code>dept</code> — 按业务表 dept_scope 部门范围过滤</li></ul>"
+        },
+        "logicMinUnit": {
+          "anyOf": [
+            {
+              "enum": [
+                "user",
+                "dept"
+              ],
+              "x-intellij-enum-metadata": {
+                "user": {
+                  "description": "按数据创建人及其部门关系过滤"
+                },
+                "dept": {
+                  "description": "按业务表 dept_scope 部门范围过滤"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "user",
+            "dept"
+          ],
+          "description": "数据权限部门范围的最小过滤单位。当前消费者仅对精确字符串 user 采用 create_id 和用户部门关系过滤；其他任何值，包括 dept、null、空串和未知字符串，都会进入 dept_scope 部门范围分支。本字段没有运行时枚举校验，建议仅配置 user 或 dept，并确保业务表具有对应字段。 默认值：user。这是 logic-min-unit 的 camelCase 别名，绑定语义相同。",
+          "default": "user",
+          "x-intellij-html-description": "<p>数据权限部门范围的最小过滤单位。当前消费者仅对精确字符串 user 采用 create_id 和用户部门关系过滤；其他任何值，包括 dept、null、空串和未知字符串，都会进入 dept_scope 部门范围分支。本字段没有运行时枚举校验，建议仅配置 user 或 dept，并确保业务表具有对应字段。这是 logic-min-unit 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>user</code></p><p><b>示例：</b></p><ul><li><code>user</code> — 按数据创建人及其部门关系过滤</li><li><code>dept</code> — 按业务表 dept_scope 部门范围过滤</li></ul>"
+        },
+        "allow-admin-view": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "部门范围过滤时是否允许查看管理员创建的数据。存在部门过滤条件时，true 会把管理员数据作为可见分支加入，false 会显式排除管理员数据；仅按用户列表或本人 create_id 过滤、所需字段缺失而未形成部门过滤时，本字段不生效。当前数据范围为 ALL 时会在构造这些过滤条件前直接放行，本字段同样不生效。 默认值：false。",
+          "default": false,
+          "x-intellij-html-description": "<p>部门范围过滤时是否允许查看管理员创建的数据。存在部门过滤条件时，true 会把管理员数据作为可见分支加入，false 会显式排除管理员数据；仅按用户列表或本人 create_id 过滤、所需字段缺失而未形成部门过滤时，本字段不生效。当前数据范围为 ALL 时会在构造这些过滤条件前直接放行，本字段同样不生效。</p><p><b>默认值：</b><code>false</code></p>"
+        },
+        "allowAdminView": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "部门范围过滤时是否允许查看管理员创建的数据。存在部门过滤条件时，true 会把管理员数据作为可见分支加入，false 会显式排除管理员数据；仅按用户列表或本人 create_id 过滤、所需字段缺失而未形成部门过滤时，本字段不生效。当前数据范围为 ALL 时会在构造这些过滤条件前直接放行，本字段同样不生效。 默认值：false。这是 allow-admin-view 的 camelCase 别名，绑定语义相同。",
+          "default": false,
+          "x-intellij-html-description": "<p>部门范围过滤时是否允许查看管理员创建的数据。存在部门过滤条件时，true 会把管理员数据作为可见分支加入，false 会显式排除管理员数据；仅按用户列表或本人 create_id 过滤、所需字段缺失而未形成部门过滤时，本字段不生效。当前数据范围为 ALL 时会在构造这些过滤条件前直接放行，本字段同样不生效。这是 allow-admin-view 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>false</code></p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "debounceConfig": {
+      "type": "object",
+      "description": "接口防抖配置。",
+      "properties": {
+        "enabled": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "是否启用 Controller 接口防抖。关闭时所有请求直接放行，即使类或方法标注 Debounce 也不会加锁；开启时 DebounceIgnore 标注的 类或方法仍始终跳过防抖。命中重复请求时返回统一的防抖业务异常。 默认值：true。",
+          "default": true,
+          "x-intellij-html-description": "<p>是否启用 Controller 接口防抖。关闭时所有请求直接放行，即使类或方法标注 Debounce 也不会加锁；开启时 DebounceIgnore 标注的 类或方法仍始终跳过防抖。命中重复请求时返回统一的防抖业务异常。</p><p><b>默认值：</b><code>true</code></p>"
+        },
+        "global-lock-time": {
+          "anyOf": [
+            {
+              "enum": [
+                500
+              ],
+              "x-intellij-enum-metadata": {
+                "500": {
+                  "description": "将未单独标注的接口锁定半秒"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/longValue"
+            }
+          ],
+          "examples": [
+            500
+          ],
+          "description": "未标注 Debounce 时使用的 Redis 防抖锁时长，单位毫秒。Debounce.time() 会覆盖本值；本值直接作为 Redis 锁 TTL 传入， 配置层不额外校验正数。 默认值：1000。",
+          "default": 1000,
+          "x-intellij-html-description": "<p>未标注 Debounce 时使用的 Redis 防抖锁时长，单位毫秒。Debounce.time() 会覆盖本值；本值直接作为 Redis 锁 TTL 传入， 配置层不额外校验正数。</p><p><b>默认值：</b><code>1000</code></p><p><b>示例：</b></p><ul><li><code>500</code> — 将未单独标注的接口锁定半秒</li></ul>"
+        },
+        "globalLockTime": {
+          "anyOf": [
+            {
+              "enum": [
+                500
+              ],
+              "x-intellij-enum-metadata": {
+                "500": {
+                  "description": "将未单独标注的接口锁定半秒"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/longValue"
+            }
+          ],
+          "examples": [
+            500
+          ],
+          "description": "未标注 Debounce 时使用的 Redis 防抖锁时长，单位毫秒。Debounce.time() 会覆盖本值；本值直接作为 Redis 锁 TTL 传入， 配置层不额外校验正数。 默认值：1000。这是 global-lock-time 的 camelCase 别名，绑定语义相同。",
+          "default": 1000,
+          "x-intellij-html-description": "<p>未标注 Debounce 时使用的 Redis 防抖锁时长，单位毫秒。Debounce.time() 会覆盖本值；本值直接作为 Redis 锁 TTL 传入， 配置层不额外校验正数。这是 global-lock-time 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>1000</code></p><p><b>示例：</b></p><ul><li><code>500</code> — 将未单独标注的接口锁定半秒</li></ul>"
+        },
+        "ignore-get-method": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "是否跳过未标注 Debounce 的 GET 请求。true 只放行没有 Debounce 标注的 GET；类或方法显式标注 Debounce 时仍执行防抖， DebounceIgnore 的优先级更高并直接放行。该字段不影响 POST、PUT、DELETE 等其他请求方法。 默认值：false。",
+          "default": false,
+          "x-intellij-html-description": "<p>是否跳过未标注 Debounce 的 GET 请求。true 只放行没有 Debounce 标注的 GET；类或方法显式标注 Debounce 时仍执行防抖， DebounceIgnore 的优先级更高并直接放行。该字段不影响 POST、PUT、DELETE 等其他请求方法。</p><p><b>默认值：</b><code>false</code></p>"
+        },
+        "ignoreGetMethod": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "是否跳过未标注 Debounce 的 GET 请求。true 只放行没有 Debounce 标注的 GET；类或方法显式标注 Debounce 时仍执行防抖， DebounceIgnore 的优先级更高并直接放行。该字段不影响 POST、PUT、DELETE 等其他请求方法。 默认值：false。这是 ignore-get-method 的 camelCase 别名，绑定语义相同。",
+          "default": false,
+          "x-intellij-html-description": "<p>是否跳过未标注 Debounce 的 GET 请求。true 只放行没有 Debounce 标注的 GET；类或方法显式标注 Debounce 时仍执行防抖， DebounceIgnore 的优先级更高并直接放行。该字段不影响 POST、PUT、DELETE 等其他请求方法。这是 ignore-get-method 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>false</code></p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "corsConfig": {
+      "type": "object",
+      "description": "后台服务跨域 Origin 配置。",
+      "properties": {
+        "allowed-origins": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringList"
+            }
+          ],
+          "description": "允许跨域访问的 Origin 列表，值会原样交给 Spring CorsConfiguration。必须配置为非 null；缺省会在创建 CORS 过滤器时因 无法读取列表而失败。空列表不允许任何跨域 Origin；列表只要包含精确值 \"*\"，代码就仅注册通配 Origin 并忽略同列表中的其他值。未包含星号时逐项精确注册，代码不负责去除单项空白。过滤器同时允许全部请求头和方法，并暴露全部响应头。",
+          "x-intellij-html-description": "<p>允许跨域访问的 Origin 列表，值会原样交给 Spring CorsConfiguration。必须配置为非 null；缺省会在创建 CORS 过滤器时因 无法读取列表而失败。空列表不允许任何跨域 Origin；列表只要包含精确值 &quot;*&quot;，代码就仅注册通配 Origin 并忽略同列表中的其他值。未包含星号时逐项精确注册，代码不负责去除单项空白。过滤器同时允许全部请求头和方法，并暴露全部响应头。</p>"
+        },
+        "allowedOrigins": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringList"
+            }
+          ],
+          "description": "允许跨域访问的 Origin 列表，值会原样交给 Spring CorsConfiguration。必须配置为非 null；缺省会在创建 CORS 过滤器时因 无法读取列表而失败。空列表不允许任何跨域 Origin；列表只要包含精确值 \"*\"，代码就仅注册通配 Origin 并忽略同列表中的其他值。未包含星号时逐项精确注册，代码不负责去除单项空白。过滤器同时允许全部请求头和方法，并暴露全部响应头。这是 allowed-origins 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>允许跨域访问的 Origin 列表，值会原样交给 Spring CorsConfiguration。必须配置为非 null；缺省会在创建 CORS 过滤器时因 无法读取列表而失败。空列表不允许任何跨域 Origin；列表只要包含精确值 &quot;*&quot;，代码就仅注册通配 Origin 并忽略同列表中的其他值。未包含星号时逐项精确注册，代码不负责去除单项空白。过滤器同时允许全部请求头和方法，并暴露全部响应头。这是 allowed-origins 的 camelCase 别名，绑定语义相同。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wechatConfig": {
+      "type": "object",
+      "description": "微信小程序与企业微信配置。",
+      "properties": {
+        "mini": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/wechatPropertiesMiniProgramProperties"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "微信小程序接口凭据。未使用 MiniWechatService 时可不配置；调用获取 access_token 或小程序登录时必须提供本对象及其中两项凭据，当前代码不做启动期完整性校验。",
+          "x-intellij-html-description": "<p>微信小程序接口凭据。未使用 MiniWechatService 时可不配置；调用获取 access_token 或小程序登录时必须提供本对象及其中两项凭据，当前代码不做启动期完整性校验。</p>"
+        },
+        "work": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/wechatPropertiesWorkProgramProperties"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "企业微信自建应用配置。未使用 WorkWechatService 时可不配置；获取 access_token 需要企业 ID 和应用 Secret，发送应用消息 还需要应用 AgentId，当前代码不做启动期完整性校验。",
+          "x-intellij-html-description": "<p>企业微信自建应用配置。未使用 WorkWechatService 时可不配置；获取 access_token 需要企业 ID 和应用 Secret，发送应用消息 还需要应用 AgentId，当前代码不做启动期完整性校验。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wechatPropertiesMiniProgramProperties": {
+      "type": "object",
+      "description": "微信小程序接口凭据。",
+      "properties": {
+        "app-id": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_MINI_APP_ID}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_MINI_APP_ID}": {
+                  "description": "从环境变量读取小程序 AppId"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_MINI_APP_ID}"
+          ],
+          "description": "微信小程序 AppId。与 app-secret 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验。",
+          "x-intellij-html-description": "<p>微信小程序 AppId。与 app-secret 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_MINI_APP_ID}</code> — 从环境变量读取小程序 AppId</li></ul>"
+        },
+        "appId": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_MINI_APP_ID}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_MINI_APP_ID}": {
+                  "description": "从环境变量读取小程序 AppId"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_MINI_APP_ID}"
+          ],
+          "description": "微信小程序 AppId。与 app-secret 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验。这是 app-id 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>微信小程序 AppId。与 app-secret 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验。这是 app-id 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_MINI_APP_ID}</code> — 从环境变量读取小程序 AppId</li></ul>"
+        },
+        "app-secret": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_MINI_APP_SECRET}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_MINI_APP_SECRET}": {
+                  "description": "从环境变量读取小程序 AppSecret"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_MINI_APP_SECRET}"
+          ],
+          "description": "微信小程序 AppSecret。与 app-id 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验，应通过环境变量等安全方式提供。",
+          "x-intellij-html-description": "<p>微信小程序 AppSecret。与 app-id 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验，应通过环境变量等安全方式提供。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_MINI_APP_SECRET}</code> — 从环境变量读取小程序 AppSecret</li></ul>"
+        },
+        "appSecret": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_MINI_APP_SECRET}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_MINI_APP_SECRET}": {
+                  "description": "从环境变量读取小程序 AppSecret"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_MINI_APP_SECRET}"
+          ],
+          "description": "微信小程序 AppSecret。与 app-id 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验，应通过环境变量等安全方式提供。这是 app-secret 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>微信小程序 AppSecret。与 app-id 一起用于获取小程序 access_token 和调用小程序登录接口；当前代码直接把本值放入微信 请求 URI，不做非空校验，应通过环境变量等安全方式提供。这是 app-secret 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_MINI_APP_SECRET}</code> — 从环境变量读取小程序 AppSecret</li></ul>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wechatPropertiesWorkProgramProperties": {
+      "type": "object",
+      "description": "企业微信自建应用配置。",
+      "properties": {
+        "corp-id": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_WORK_CORP_ID}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_WORK_CORP_ID}": {
+                  "description": "从环境变量读取企业微信 CorpId"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_WORK_CORP_ID}"
+          ],
+          "description": "企业微信企业 ID（CorpId）。与 corp-secret 一起用于获取企业微信 access_token；发送消息接口不直接读取本字段。当前代码不做非空校验。",
+          "x-intellij-html-description": "<p>企业微信企业 ID（CorpId）。与 corp-secret 一起用于获取企业微信 access_token；发送消息接口不直接读取本字段。当前代码不做非空校验。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_WORK_CORP_ID}</code> — 从环境变量读取企业微信 CorpId</li></ul>"
+        },
+        "corpId": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_WORK_CORP_ID}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_WORK_CORP_ID}": {
+                  "description": "从环境变量读取企业微信 CorpId"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_WORK_CORP_ID}"
+          ],
+          "description": "企业微信企业 ID（CorpId）。与 corp-secret 一起用于获取企业微信 access_token；发送消息接口不直接读取本字段。当前代码不做非空校验。这是 corp-id 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>企业微信企业 ID（CorpId）。与 corp-secret 一起用于获取企业微信 access_token；发送消息接口不直接读取本字段。当前代码不做非空校验。这是 corp-id 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_WORK_CORP_ID}</code> — 从环境变量读取企业微信 CorpId</li></ul>"
+        },
+        "corp-secret": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_WORK_CORP_SECRET}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_WORK_CORP_SECRET}": {
+                  "description": "从环境变量读取企业微信应用 Secret"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_WORK_CORP_SECRET}"
+          ],
+          "description": "企业微信自建应用 Secret。与 corp-id 一起用于获取企业微信 access_token；当前代码不做非空校验，应通过环境变量等安全 方式提供。",
+          "x-intellij-html-description": "<p>企业微信自建应用 Secret。与 corp-id 一起用于获取企业微信 access_token；当前代码不做非空校验，应通过环境变量等安全 方式提供。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_WORK_CORP_SECRET}</code> — 从环境变量读取企业微信应用 Secret</li></ul>"
+        },
+        "corpSecret": {
+          "anyOf": [
+            {
+              "enum": [
+                "${WECHAT_WORK_CORP_SECRET}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${WECHAT_WORK_CORP_SECRET}": {
+                  "description": "从环境变量读取企业微信应用 Secret"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${WECHAT_WORK_CORP_SECRET}"
+          ],
+          "description": "企业微信自建应用 Secret。与 corp-id 一起用于获取企业微信 access_token；当前代码不做非空校验，应通过环境变量等安全 方式提供。这是 corp-secret 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>企业微信自建应用 Secret。与 corp-id 一起用于获取企业微信 access_token；当前代码不做非空校验，应通过环境变量等安全 方式提供。这是 corp-secret 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${WECHAT_WORK_CORP_SECRET}</code> — 从环境变量读取企业微信应用 Secret</li></ul>"
+        },
+        "agent-id": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableInteger"
+            }
+          ],
+          "description": "企业微信自建应用的数值 AgentId。发送应用消息时写入请求体 agentid 字段，用于指定由哪个应用发送；它不是 Secret， 也不参与 access_token 获取。当前代码不做非空校验。",
+          "x-intellij-html-description": "<p>企业微信自建应用的数值 AgentId。发送应用消息时写入请求体 agentid 字段，用于指定由哪个应用发送；它不是 Secret， 也不参与 access_token 获取。当前代码不做非空校验。</p>"
+        },
+        "agentId": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableInteger"
+            }
+          ],
+          "description": "企业微信自建应用的数值 AgentId。发送应用消息时写入请求体 agentid 字段，用于指定由哪个应用发送；它不是 Secret， 也不参与 access_token 获取。当前代码不做非空校验。这是 agent-id 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>企业微信自建应用的数值 AgentId。发送应用消息时写入请求体 agentid 字段，用于指定由哪个应用发送；它不是 Secret， 也不参与 access_token 获取。当前代码不做非空校验。这是 agent-id 的 camelCase 别名，绑定语义相同。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "generatorConfig": {
+      "type": "object",
+      "description": "代码生成器工程路径与默认配置。",
+      "properties": {
+        "path": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/generatorPropertiesPathProperties"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "代码生成目标路径。整个对象或其中字段缺省、为空白时，生成器会基于应用进程工作目录识别工程根目录，再选择推荐后端模块并 推导同级 sz-admin 前端目录；显式路径作为导入表时的初始目标和路径选项，不替代后续页面中保存的表级目标路径。",
+          "x-intellij-html-description": "<p>代码生成目标路径。整个对象或其中字段缺省、为空白时，生成器会基于应用进程工作目录识别工程根目录，再选择推荐后端模块并 推导同级 sz-admin 前端目录；显式路径作为导入表时的初始目标和路径选项，不替代后续页面中保存的表级目标路径。</p>"
+        },
+        "global": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/generatorPropertiesGlobalProperties"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "导入数据库表时使用的全局代码信息。当前导入流程会直接读取本对象及 ignore-table-prefix，实际使用生成器时应完整配置； 缺少整个对象或缺少 ignore-table-prefix 会导致导入流程无法读取配置。",
+          "x-intellij-html-description": "<p>导入数据库表时使用的全局代码信息。当前导入流程会直接读取本对象及 ignore-table-prefix，实际使用生成器时应完整配置； 缺少整个对象或缺少 ignore-table-prefix 会导致导入流程无法读取配置。</p>"
+        },
+        "module-name": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "后端模块聚合目录名。该值原样传给 projectRoot.resolve，用于扫描后端模块，并在缺少显式 api 路径时参与拼接候选模块路径；精确空串会解析为项目根目录，纯空白会解析为名称含空白的子目录，null 没有保护并会导致路径解析失败。代码不会自动推断其他 聚合目录。 默认值：sz-module。",
+          "default": "sz-module",
+          "x-intellij-html-description": "<p>后端模块聚合目录名。该值原样传给 projectRoot.resolve，用于扫描后端模块，并在缺少显式 api 路径时参与拼接候选模块路径；精确空串会解析为项目根目录，纯空白会解析为名称含空白的子目录，null 没有保护并会导致路径解析失败。代码不会自动推断其他 聚合目录。</p><p><b>默认值：</b><code>sz-module</code></p>"
+        },
+        "moduleName": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "后端模块聚合目录名。该值原样传给 projectRoot.resolve，用于扫描后端模块，并在缺少显式 api 路径时参与拼接候选模块路径；精确空串会解析为项目根目录，纯空白会解析为名称含空白的子目录，null 没有保护并会导致路径解析失败。代码不会自动推断其他 聚合目录。 默认值：sz-module。这是 module-name 的 camelCase 别名，绑定语义相同。",
+          "default": "sz-module",
+          "x-intellij-html-description": "<p>后端模块聚合目录名。该值原样传给 projectRoot.resolve，用于扫描后端模块，并在缺少显式 api 路径时参与拼接候选模块路径；精确空串会解析为项目根目录，纯空白会解析为名称含空白的子目录，null 没有保护并会导致路径解析失败。代码不会自动推断其他 聚合目录。这是 module-name 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>sz-module</code></p>"
+        },
+        "service-name": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "未扫描到可推荐后端模块时使用的后端目标模块名。生成器以它构造回退模块代码、API 前缀和项目根目录下的目标路径；空白时 再使用代码内置的后端模块名。 默认值：sz-module-admin。",
+          "default": "sz-module-admin",
+          "x-intellij-html-description": "<p>未扫描到可推荐后端模块时使用的后端目标模块名。生成器以它构造回退模块代码、API 前缀和项目根目录下的目标路径；空白时 再使用代码内置的后端模块名。</p><p><b>默认值：</b><code>sz-module-admin</code></p>"
+        },
+        "serviceName": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "未扫描到可推荐后端模块时使用的后端目标模块名。生成器以它构造回退模块代码、API 前缀和项目根目录下的目标路径；空白时 再使用代码内置的后端模块名。 默认值：sz-module-admin。这是 service-name 的 camelCase 别名，绑定语义相同。",
+          "default": "sz-module-admin",
+          "x-intellij-html-description": "<p>未扫描到可推荐后端模块时使用的后端目标模块名。生成器以它构造回退模块代码、API 前缀和项目根目录下的目标路径；空白时 再使用代码内置的后端模块名。这是 service-name 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>sz-module-admin</code></p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "generatorPropertiesGlobalProperties": {
+      "type": "object",
+      "description": "代码生成全局默认配置。",
+      "properties": {
+        "author": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "导入数据库表时写入生成配置的作者名称，后续供代码模板使用。字段内容按配置原样保存，未做格式或非空校验。 默认值：sz-admin。",
+          "default": "sz-admin",
+          "x-intellij-html-description": "<p>导入数据库表时写入生成配置的作者名称，后续供代码模板使用。字段内容按配置原样保存，未做格式或非空校验。</p><p><b>默认值：</b><code>sz-admin</code></p>"
+        },
+        "packages": {
+          "anyOf": [
+            {
+              "enum": [
+                "com.sz.admin"
+              ],
+              "x-intellij-enum-metadata": {
+                "com.sz.admin": {
+                  "description": "使用当前 admin 模块基础包名"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "com.sz.admin"
+          ],
+          "description": "导入数据库表时写入生成配置的基础 Java 包名，也作为无法从目标模块源码识别包名时的回退。当前导入流程会原样保存本值， 不在配置绑定阶段校验 Java 包名格式。 默认值：com.sz.admin。",
+          "default": "com.sz.admin",
+          "x-intellij-html-description": "<p>导入数据库表时写入生成配置的基础 Java 包名，也作为无法从目标模块源码识别包名时的回退。当前导入流程会原样保存本值， 不在配置绑定阶段校验 Java 包名格式。</p><p><b>默认值：</b><code>com.sz.admin</code></p><p><b>示例：</b></p><ul><li><code>com.sz.admin</code> — 使用当前 admin 模块基础包名</li></ul>"
+        },
+        "ignore-table-prefix": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/generatorPropertiesIgnoreTablePrefix"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "导入数据库表时的表名前缀移除规则。当前导入流程直接读取本对象，实际使用生成器时应配置；缺省会导致导入流程无法读取 enabled 和 prefixes。",
+          "x-intellij-html-description": "<p>导入数据库表时的表名前缀移除规则。当前导入流程直接读取本对象，实际使用生成器时应配置；缺省会导致导入流程无法读取 enabled 和 prefixes。</p>"
+        },
+        "ignoreTablePrefix": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/generatorPropertiesIgnoreTablePrefix"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "导入数据库表时的表名前缀移除规则。当前导入流程直接读取本对象，实际使用生成器时应配置；缺省会导致导入流程无法读取 enabled 和 prefixes。这是 ignore-table-prefix 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>导入数据库表时的表名前缀移除规则。当前导入流程直接读取本对象，实际使用生成器时应配置；缺省会导致导入流程无法读取 enabled 和 prefixes。这是 ignore-table-prefix 的 camelCase 别名，绑定语义相同。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "generatorPropertiesPathProperties": {
+      "type": "object",
+      "description": "代码生成目标路径配置。",
+      "properties": {
+        "web": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "前端项目初始路径。非空时直接作为导入表和路径选项的前端目标；缺省或空白时，从后端项目根目录推导同级 sz-admin 目录。相对路径由后续文件操作按应用进程工作目录解析，建议配置明确路径。",
+          "x-intellij-html-description": "<p>前端项目初始路径。非空时直接作为导入表和路径选项的前端目标；缺省或空白时，从后端项目根目录推导同级 sz-admin 目录。相对路径由后续文件操作按应用进程工作目录解析，建议配置明确路径。</p>"
+        },
+        "api": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "description": "后端代码初始目标路径。非空时直接作为导入表和路径选项的后端目标；缺省或空白时，本地环境优先选择扫描到的推荐模块， 其他情况回退到 module-name 与 service-name 推导的模块目录。相对路径由后续文件操作按应用进程工作目录解析。",
+          "x-intellij-html-description": "<p>后端代码初始目标路径。非空时直接作为导入表和路径选项的后端目标；缺省或空白时，本地环境优先选择扫描到的推荐模块， 其他情况回退到 module-name 与 service-name 推导的模块目录。相对路径由后续文件操作按应用进程工作目录解析。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "generatorPropertiesIgnoreTablePrefix": {
+      "type": "object",
+      "description": "导入表名的前缀移除规则。",
+      "properties": {
+        "enabled": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableBoolean"
+            }
+          ],
+          "description": "导入数据库表时是否移除匹配的表名前缀。必须为非 null；启用后才遍历 prefixes，关闭时保留完整表名。 默认值：false。",
+          "default": false,
+          "x-intellij-html-description": "<p>导入数据库表时是否移除匹配的表名前缀。必须为非 null；启用后才遍历 prefixes，关闭时保留完整表名。</p><p><b>默认值：</b><code>false</code></p>"
+        },
+        "prefixes": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringArray"
+            }
+          ],
+          "description": "按数组顺序匹配的表名前缀。enabled=true 且表名以某项开头时，移除首次命中的前缀后立即停止；null 表示没有可匹配项，空数组也不会修改表名。匹配区分大小写；命中项随后传给 replaceFirst，包含正则元字符可能改变替换结果或导致异常，建议使用普通字母、数字和下划线前缀。 默认值：[t_]。",
+          "default": [
+            "t_"
+          ],
+          "x-intellij-html-description": "<p>按数组顺序匹配的表名前缀。enabled=true 且表名以某项开头时，移除首次命中的前缀后立即停止；null 表示没有可匹配项，空数组也不会修改表名。匹配区分大小写；命中项随后传给 replaceFirst，包含正则元字符可能改变替换结果或导致异常，建议使用普通字母、数字和下划线前缀。</p><p><b>默认值：</b><code>[t_]</code></p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiPrefixPropertiesModuleMap": {
+      "description": "字符串键到 apiPrefixPropertiesModule 配置对象的动态映射。",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/apiPrefixPropertiesModule"
+      }
+    },
+    "nullableString": {
+      "description": "字符串、包含 Spring 环境变量占位符的字符串或 null。",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "placeholderString": {
+      "type": "string",
+      "description": "Spring 环境变量占位符，支持 ${ENV}、${ENV:default} 以及嵌入普通字符串；占位符解析后的目标类型和值合法性由 Spring Binder 检查。",
+      "pattern": "\\$\\{[^{}]+\\}"
+    },
+    "nullableBoolean": {
+      "description": "布尔值、Spring 布尔字符串、环境变量占位符或 null。字符串会先去除两端 U+0000-U+0020 字符，再忽略大小写识别 true/on/yes/1 与 false/off/no/0；精确空串或仅含这些 trim 字符的字符串转换为 null。转换结果不等于对初始化字段执行清空，最终值由 Binder 与绑定目标决定。JSON 数字 1、0 不按布尔值接受。",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[\\u0000-\\u0020]*(?:(?:[Tt][Rr][Uu][Ee]|[Oo][Nn]|[Yy][Ee][Ss]|1|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff]|[Nn][Oo]|0)[\\u0000-\\u0020]*)?$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "booleanValue": {
+      "description": "primitive boolean、Spring 布尔字符串或环境变量占位符。未配置字段时使用 Java 初始化值。",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[\\u0000-\\u0020]*(?:[Tt][Rr][Uu][Ee]|[Oo][Nn]|[Yy][Ee][Ss]|1|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff]|[Nn][Oo]|0)[\\u0000-\\u0020]*$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        }
+      ]
+    },
+    "longValue": {
+      "description": "primitive long、Long 字符串或环境变量占位符。未配置字段时使用 Java 初始化值；范围和溢出由 Spring Binder 检查。",
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[+-]?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*-?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*(?:(?:0[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[xX])|#)[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*)$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        }
+      ]
+    },
+    "nullableInteger": {
+      "description": "Java Integer、十进制或 0x/0X/# 前缀十六进制整数字符串、环境变量占位符或 null。十六进制可带负号但不接受正号；精确空串转换为 null，32 位范围由 Spring Binder 检查。",
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:$|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[+-]?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*-?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*(?:(?:0[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[xX])|#)[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*)$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stringList": {
+      "description": "字符串列表，可写成 YAML 数组、Spring 逗号分隔字符串、环境变量占位符或 null。",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stringArray": {
+      "description": "字符串数组，可写成 YAML 数组、Spring 逗号分隔字符串、环境变量占位符或 null。",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

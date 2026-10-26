@@ -1,3 +1,4 @@
+# $schema: ../../schemas/config/oss.schema.json
 sz:
   # OSS 默认连接配置
   oss:

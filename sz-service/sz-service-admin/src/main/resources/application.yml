@@ -1,3 +1,4 @@
+# $schema: ../../../../../schemas/config/application.schema.json
 # 数据库类型，默认为mysql，可选项：mysql、postgresql，根据实际使用的数据库类型进行配置。
 DB_TYPE: mysql
 spring:

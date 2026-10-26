@@ -1,3 +1,4 @@
+# $schema: ../../schemas/config/oss.schema.json
 sz:
   # oss存储配置
   oss:
