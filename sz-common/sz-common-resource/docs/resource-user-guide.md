@@ -46,14 +46,14 @@
 `sz-common-resource` 是 **统一资源管理模块**，为业务层提供一套与存储介质无关的文件上传、读取、URL 生成接口。
 
 - 业务代码只调用 `ResourceService`，不再直接依赖 `OssClient` 或文件系统 API。
-- 存储位置（本地磁盘 / OSS）、访问方式（明文 URL / 代理 token / 签名 URL）、路径规则、命名规则、安全白名单，全部通过 **yml 配置（scene）** 描述，代码零改动即可切换。
+- 存储位置（本地磁盘 / OSS）、访问方式（公开直链 / 业务鉴权后读取 / 签名 URL）、路径规则、命名规则、安全白名单，全部通过 **yml 配置（scene）** 描述。
 
 ### 1.2 模块不做什么
 
 | 不负责的事 | 由谁负责 |
 |------------|---------|
 | OSS 厂商接入与 bucket 生命周期管理 | `sz-common-oss` |
-| TOKEN 模式的实际 URL 签发与代理转发 | 上层业务（本模块返回 `null`，由上层 Controller/Service 根据业务策略生成） |
+| PROTECTED 模式的鉴权与下载接口 | 上层业务（本模块返回 `null`，由业务鉴权后调用 `readStream`） |
 | 资源元数据落库（如 `sys_resource` 表） | 上层业务（本模块只返回 `ResourceUploadResult`，不写库） |
 | 资源鉴权、RBAC、限流 | 上层业务 |
 
@@ -61,7 +61,7 @@
 
 - `sz-common-oss`：厂商适配层，封装 S3 / MinIO / 阿里云 OSS 等底层 SDK。
 - `sz-common-resource`：业务抽象层，定义 **场景（scene）** 概念，按场景组装存储/命名/访问策略。
-- 依赖方向：`resource → oss`（单向）。未引入 `sz-common-oss` 时，本模块仍可单机 LOCAL 模式工作。
+- 依赖方向：`resource → oss`（单向）。当前 `sz-common-resource` 的 POM 会传递引入 `sz-common-oss`。
 
 ---
 
@@ -80,60 +80,60 @@
 </dependency>
 ```
 
-> 仅使用 LOCAL 存储时，**无需** 引入 `sz-common-oss`。OSS 模式需同时引入 `sz-common-oss`。
+> 当前 `sz-common-resource` 已传递依赖 `sz-common-oss`，引入上述依赖即可使用两种存储类型，无需重复声明 OSS 依赖。
 
 ### Step 2 yml 定义场景
 
-三种常见部署方式如下，按需取消注释其中一种，其余保持注释状态。
+三种常见部署方式如下，按需启用其中一种。LOCAL 示例中的独立开发文件服务由 `dev-file-server.enabled` 控制，推荐只在本机开发配置中开启；dev、preview、prod 默认关闭，并应提供与 `base-url` 一致的 Nginx 或其他静态文件服务。OSS 示例假设已配置 `sz.oss.endpoint`、凭据和全局 `sz.oss.bucketName`；只有场景确实使用不同桶、公开地址或连接时，才填写场景级 `bucket`、`base-url` 或顶层连接字段。
 
 ```yaml
 sz:
   resource:
     root: ./data          # LOCAL 模式的本地存储根目录
+    dev-file-server:
+      enabled: true       # 本地开发配置显式开启；属性默认 false
     scenes:
 
-      # ========= 方式一：本地磁盘 + Java 服务代理（开发/内网，当前激活） =========
+      # ========= 方式一：本地磁盘 + 独立开发文件服务（推荐仅本地开发） =========
       - code: admin.user.logo
         type: LOCAL
         serve-mode: DIRECT
         path: logo                                                   # 相对于 root 的子目录
-        base-url: http://127.0.0.1:19991/api/admin/resource/file/logo  # Java 代理访问地址
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/logo   # 独立开发文件服务地址
         naming: ORIGINAL                                             # 保留原始文件名
         path-strategy: BIZ_DATE                                      # 路径结构：{userId}/{yyyyMMdd}/
         exts: [svg, png, jpg, jpeg, webp, gif]
-        max-size: 3                                                  # MB
+        max-size: 3MB                                                # 场景单文件大小上限
 
       # ========= 方式二：OSS 私有桶 + 预签名 URL（生产推荐） =========
       # - code: admin.user.logo
       #   type: OSS
       #   serve-mode: PRESIGNED          # 访问时生成临时签名 URL，私有桶安全访问
-      #   bucket: client-logos
-      #   base-url: http://192.168.100.176:9000/client-logos
       #   naming: ORIGINAL
       #   path-strategy: BIZ_DATE
       #   exts: [svg, png, jpg, jpeg, webp, gif]
-      #   max-size: 3
+      #   max-size: 3MB
 
       # ========= 方式三：OSS 公有桶 + 直链（CDN / 公开资源） =========
       # - code: admin.user.logo
       #   type: OSS
-      #   serve-mode: DIRECT             # 公有桶，直接返回 base-url + objectKey 拼接的明文链接
-      #   bucket: client-logos-public
-      #   base-url: http://192.168.100.176:9000/client-logos-public
+      #   serve-mode: DIRECT             # 公有桶，直接返回公开 URL
       #   naming: UUID                   # 公有桶建议 UUID 命名，避免原始文件名泄露
       #   path-strategy: BIZ_DATE
       #   exts: [svg, png, jpg, jpeg, webp, gif]
-      #   max-size: 3
+      #   max-size: 3MB
 ```
+
+`dev-file-server.enabled` 默认为 `false`，实际注册完全由配置值决定：显式为 `true` 时注册 `DevResourceFileController` 及匿名读取路由 `GET /resource/file/{sceneDir}/**`；为 `false` 或未配置时，Controller Bean、MVC 映射和 Swagger 接口均不注册。叠加服务 context-path 与 admin API 前缀后，默认外部路径为 `/api/admin/resource/file/{sceneDir}/**`。该入口只读取唯一匹配的 LOCAL + DIRECT 场景，关闭后不会影响上传、磁盘写入、资源记录或 URL 生成。仓库 local 配置默认开启，dev、preview、prod 默认关闭；部署环境应保持关闭并使用 Nginx 等静态文件服务，但任何 profile 显式配置为 `true` 都会注册该入口。
 
 **三种方式对比：**
 
 | | 方式一：LOCAL DIRECT | 方式二：OSS PRESIGNED | 方式三：OSS DIRECT |
 |---|---|---|---|
 | 存储位置 | 本地磁盘 | OSS 私有桶 | OSS 公有桶 |
-| accessUrl 形式 | `base-url/objectKey` 明文 | 带 `X-Amz-Signature` 的临时链接 | `base-url/objectKey` 明文 |
-| 文件访问 | Java 服务代理流式转发 | OSS 直接下发，Java 不参与 | OSS 直接下发，Java 不参与 |
-| 适用场景 | 开发、内网、无 OSS 环境 | 生产、需要访问控制 | 公开静态资源、CDN |
+| accessUrl 形式 | `base-url/文件相对路径` 明文 | 带 `X-Amz-Signature` 的临时链接 | `base-url/文件相对路径` 明文 |
+| 文件访问 | 配置 `enabled=true` 可启用独立开发文件服务；部署环境建议关闭并由实际静态文件服务读取 | OSS 直接下发，Java 不参与 | OSS 直接下发，Java 不参与 |
+| 适用场景 | 本机开发、无 OSS 环境；部署环境应使用 Nginx 等静态服务 | 生产、需要访问控制 | 公开静态资源、CDN |
 | 依赖 | 无额外依赖 | `sz-common-oss` + MinIO/S3 | `sz-common-oss` + MinIO/S3 |
 
 ### Step 3 调用上传接口
@@ -181,7 +181,7 @@ public ApiResult<ResourceUploadResult> upload(
   "originName":  "avatar.png",
   "size":        98304,
   "contentType": "image/png",
-  "accessUrl":   "http://127.0.0.1:19991/api/admin/resource/file/logo/1001/20260424/avatar.png",
+  "accessUrl":   "http://127.0.0.1:9991/api/admin/resource/file/logo/1001/20260424/avatar.png",
   "resourceId":  10086
 }
 ```
@@ -234,7 +234,7 @@ public ApiResult<PageResult<SysUserVO>> list(SysUserListDTO dto) {
 
 ```bash
 # 上传头像，pathSegments 传用户 id（决定文件存放的子目录层级）
-curl -X POST http://127.0.0.1:19991/api/admin/resource/upload \
+curl -X POST http://127.0.0.1:9991/api/admin/resource/upload \
   -H "Authorization: Bearer <token>" \
   -F "sceneCode=admin.user.logo" \
   -F "pathSegments=1001" \
@@ -264,7 +264,7 @@ export type ResourceUploadFile = {
 export type ResourceUploadResult = {
   objectKey: string;    // 存储路径，入库值，如 "logo/user/logo/20260424/avatar.png"
   originName: string;   // 原始文件名，如 "avatar.png"
-  accessUrl: string;    // 可访问 URL（LOCAL: Java 代理地址；OSS PRESIGNED: 带签名临时链接；OSS DIRECT: 明文链接）
+  accessUrl: string;    // 可访问 URL（LOCAL DIRECT: 配置的文件服务地址；OSS PRESIGNED: 带签名临时链接；OSS DIRECT: 明文链接）
   contentType: string;  // MIME 类型，如 "image/png"
   size: number;         // 文件大小（字节）
   eTag: string;         // ETag（OSS 场景有值，LOCAL 为空）
@@ -376,10 +376,10 @@ const fileChange = (data: IResourceUploadResult) => {
 
 #### 4. 文件上传场景对照（UploadFiles）
 
-`UploadFiles.vue` 默认 `sceneCode` 为 `system.template`（对应临时文件场景）：
+`UploadFiles.vue` 默认 `sceneCode` 为 `system.protected`（受保护附件场景）：
 
 ```vue
-<!-- 临时文件上传，使用默认 sceneCode，无需显式传参 -->
+<!-- 受保护附件上传，使用默认 sceneCode，无需显式传参 -->
 <UploadFiles v-model="fileUrls" />
 
 <!-- 指定其他场景，如合同文档 -->
@@ -400,14 +400,17 @@ import type { IResourceUploadResult } from '@/api/types/system/upload';
 const fileUrls = ref<IResourceUploadResult[]>([]);
 
 function handleAllSuccess(list: IResourceUploadResult[]) {
-  // list[i].objectKey  → 入库
+  // list[i].resourceId → 受保护业务的稳定资源引用，保存时由后端校验归属并重建元数据
+  // list[i].objectKey  → 存储键，随资源引用保存
   // list[i].originName → 显示文件名（原 filename）
-  // list[i].accessUrl  → 下载/预览地址（后端已处理签名，前端直接使用）
+  // list[i].accessUrl  → DIRECT/PRESIGNED 可用的访问地址；PROTECTED 为 null
   console.log('全部上传成功，共', list.length, '条：', list);
 }
 ```
 
-> 下载逻辑已简化：`UploadFiles.vue` 直接使用后端返回的 `accessUrl` 发起下载，不再经过前端 `getOssPreviewUrl()` 转换。私有桶（OSS PRESIGNED）的签名 URL 由后端在上传时生成，前端透传即可。
+> `UploadFiles.vue` 有 `accessUrl` 时直接下载，PRESIGNED 的签名由后端生成。PROTECTED 不返回公开地址，组件需要 `biz-id`、`download-api` 和文件的 `resourceId` 才能通过业务接口下载；缺少业务上下文时提示先保存。刚上传图片的即时展示使用本地 Blob URL，不依赖 `base-url`。
+
+> 列表组件 `FileDownloadList.vue` 在提供业务 ID、资源 ID 和下载/预览 API 时，优先调用业务接口；接口返回文件流后，前端生成 Blob URL 展示。教师附件采用这条链路，不依赖场景 `base-url` 或查询时的 `accessUrl` 回填。
 
 
 ---
@@ -434,13 +437,17 @@ function handleAllSuccess(list: IResourceUploadResult[]) {
 |-----------|---------------------|---------|
 | DIRECT | `base-url` + objectKey 去 basePath 前缀后的相对部分 | 公开资源（头像、Logo、静态文档） |
 | PRESIGNED | 由 OSS 驱动签发临时签名 URL，有效期 = `scene.expire` 秒 | 私有 bucket 上的图片预览等 |
-| TOKEN | **本模块返回 `null`**，URL 由上层业务按策略生成（token + 代理接口） | 合同、敏感文件，需隐藏真实地址 |
+| PROTECTED | **本模块返回 `null`**，上层业务鉴权后通过 `readStream` 读取 | 合同、敏感文件，需隐藏真实地址 |
 
-> TOKEN 模式下实际 URL 的签发 **不在本模块职责内**，由上层业务决定端点与令牌机制。
+> PROTECTED 模式由上层业务提供鉴权后的读取接口，本模块不签发访问 URL。
 
 ### 3.4 配置优先级
 
-文件大小：`min(全局 security.maxSize, 场景 maxSize)`
+文件大小：全局 `security.max-size` 与场景 `max-size` 均使用 Spring `DataSize` 格式，支持 `B` / `KB` / `MB` / `GB` / `TB`，推荐显式填写单位，例如 `50MB`、`512KB`、`1GB`。未带单位的数字在两处均按字节解析。
+
+全局未配时默认 `50MB`；场景配置正数时，生效上限为两者的较小值。场景未配或小于等于 `0B` 时不增加场景上限，仍受全局限制。
+
+旧场景配置中的整数原先表示 MB，升级时须补写单位，例如 `max-size: 10` 改为 `max-size: 10MB`，才能保持原有上限。
 
 扩展名白名单：**两者同时生效**（先过全局白名单，再过场景白名单；场景是进一步收窄）
 
@@ -456,8 +463,11 @@ MIME 白名单：**场景优先**（`scene.mimes` 非空时不再查全局）
 |------|------|--------|------|
 | `root` | String | `./data` | 本地存储根目录（LOCAL 有效） |
 | `default-storage-type` | Enum | `LOCAL` | 默认存储类型（目前仅作为语义保留，实际类型以 scene.type 为准） |
+| `dev-file-server` | Object | `enabled=false` | 独立开发文件服务开关；只控制读取 Controller 注册，不控制上传或存储 |
 | `security` | Object | 见下表 | 全局安全策略 |
 | `scenes` | List | `[]` | 场景列表 |
+
+`dev-file-server.enabled` 是默认关闭的开发便利开关，也是注册 `DevResourceFileController` 的唯一配置条件。显式设为 `true` 时，无论当前 profile 是什么都会注册；设为 `false` 或省略时不注册 Controller Bean、MVC 映射和 Swagger 接口。注册后的 URL 仍是 `/resource/file/{sceneDir}/**`，并且只允许读取 LOCAL + DIRECT 场景；关闭时上传及其他资源能力保持可用。仓库 local 配置为 `true`，dev、preview、prod 配置为 `false`，部署环境建议保持关闭并使用 Nginx 等静态文件服务。
 
 ### 4.2 `security` 三字段
 
@@ -465,7 +475,7 @@ MIME 白名单：**场景优先**（`scene.mimes` 非空时不再查全局）
 |------|------|--------------|------|
 | `allowed-exts` | Set<String> | `ResourceSecurityDefaults.DEFAULT_ALLOWED_EXTS` | 全局扩展名白名单（小写无点） |
 | `allowed-mime-types` | Set<String> | `ResourceSecurityDefaults.DEFAULT_ALLOWED_MIMES` | 全局 MIME 白名单 |
-| `max-size` | DataSize | `50MB` | 全局最大文件大小，支持 `50MB` / `10KB` / `1GB` |
+| `max-size` | DataSize | `50MB` | 全局单文件大小上限，与场景使用相同格式，如 `50MB` / `512KB` / `1GB`；未带单位时按字节解析 |
 
 默认扩展名白名单覆盖：图片、文档、压缩包、音视频（详见 §10.3）。
 
@@ -475,16 +485,32 @@ MIME 白名单：**场景优先**（`scene.mimes` 非空时不再查全局）
 |------|------|--------|----------|------|
 | `code` | String | — | 必填 | 场景唯一编码，如 `demo.avatar` |
 | `type` | Enum | `LOCAL` | — | `LOCAL` / `OSS` |
-| `serve-mode` | Enum | `DIRECT` | — | `DIRECT` / `TOKEN` / `PRESIGNED` |
+| `serve-mode` | Enum | `PROTECTED` | — | `DIRECT` / `PROTECTED` / `PRESIGNED` |
 | `expire` | Long（秒） | `3600` | PRESIGNED 必须 >0 | 临时 URL 有效期 |
 | `path` | String | — | type=LOCAL 必填 | 相对 `root` 的子目录，如 `avatars/` |
-| `base-url` | String | — | serve-mode=DIRECT 必填 | 访问根 URL（不含末尾斜杠） |
-| `bucket` | String | — | type=OSS 必填 | OSS 桶名；同时作为 objectKey 一级前缀 |
+| `base-url` | String | — | LOCAL + DIRECT 必填；OSS + DIRECT 可推导 | DIRECT 访问前缀；完整 HTTP(S) 地址或 `/` 开头同源路径均生效且同级。显式值最高；OSS 缺省时按连接、bucket 和寻址风格推导 |
+| `bucket` | String | — | type=OSS 且 `sz.oss.bucketName` 为空时必填 | OSS 桶名；未配置时继承 `sz.oss.bucketName`，同时作为 objectKey 一级前缀 |
+| `addressing-style` | Enum | 继承 `sz.oss.addressing-style` | — | SDK 寻址风格：`PATH` / `VIRTUAL_HOSTED`；场景显式值优先 |
+| `endpoint` / `access-key` / `secret-key` | String | 全局 `sz.oss` 连接 | type=OSS 且需要另一套连接时 | scene 顶层成组填写三项；只换桶时无需重复连接配置 |
+| `region` | String | `sz.oss.region` | — | scene 可单独覆盖 S3 签名区域；不改变 endpoint |
+| `provider` | Enum | `sz.oss.provider` | — | scene 可覆盖厂商预设；仅在 scene 与全局都未显式写寻址风格时参与默认风格推导，切换厂商建议同时明确 region 与寻址风格 |
 | `naming` | Enum | `UUID` | — | `BIZ_KEY` / `UUID` / `ORIGINAL` / `TIMESTAMP` |
 | `path-strategy` | Enum | `FLAT` | — | `FLAT` / `DATE` / `BIZ` / `BIZ_DATE` |
 | `exts` | Set<String> | null | — | 场景扩展名白名单；为空则只查全局 |
 | `mimes` | Set<String> | null | — | 场景 MIME 白名单；非空时忽略全局 MIME |
-| `max-size` | long（MB） | `0` | — | 场景最大文件大小，0=不限 |
+| `max-size` | DataSize | 未配，不添加场景上限 | — | 场景单文件大小上限，与全局使用相同格式，如 `10MB` / `512KB` / `1GB`；正数时与全局取较小值，未配或非正数时仍受全局限制 |
+
+#### base-url 的写法与地址优先级
+
+- 完整 HTTP(S) 地址：`https://files.example.com/resource/avatars`，浏览器访问指定文件入口。
+- 同源路径：`/resource/avatars`，浏览器使用当前页面的协议、域名和端口；入口必须提供对应文件路由或反向代理，不会自动使用后端 endpoint。
+- 两种形式优先级相同。scene 显式 `base-url` 最高，直接使用，不再补 endpoint、domain、bucket 或 LOCAL path；仅追加 objectKey 去掉 OSS bucket 或 LOCAL path 前缀后的相对部分。
+- OSS 未填写时，独立连接按自身 endpoint、生效 bucket 和寻址风格推导，不继承全局 domain；默认连接优先按全局 domain 推导，没有 domain 才使用全局 endpoint。
+- LOCAL DIRECT 必须显式填写，不继承 `sz.oss`；PRESIGNED 根据生效连接签名，PROTECTED 返回 `null`，两者不使用 `base-url`。
+
+例如 LOCAL 逻辑 key 为 `avatars/20261009/a.png`，`base-url: /resource/avatars` 返回 `/resource/avatars/20261009/a.png`；页面在 `https://admin.example.com` 时，浏览器访问 `https://admin.example.com/resource/avatars/20261009/a.png`。改成 `base-url: https://files.example.com/resource/avatars` 则返回并访问该文件域名下的完整地址。
+
+PATH 下全局 domain 会追加有效 bucket，显式 scene base-url 不会。建议访问前缀不带末尾斜杠，不使用裸域名或无 `/` 的页面相对路径；这是配置约定，本轮未新增格式校验。`127.0.0.1` 指浏览器所在电脑。OSS 反向代理隐藏 bucket 的完整说明见[base-url 的两种写法与优先级](../../sz-common-oss/docs/oss-scene-connection-design.md#base-url-的两种写法与优先级)。
 
 ### 4.4 启动期强校验（`ResourceProperties.validate()` 共 5 条）
 
@@ -493,12 +519,12 @@ MIME 白名单：**场景优先**（`scene.mimes` 非空时不再查全局）
 | # | 规则 | 报错信息片段 |
 |---|------|-------------|
 | 1 | `type=LOCAL` 时 `path` 必填且不含路径穿越字符 | `type=LOCAL 但未配置 path` |
-| 2 | `type=OSS` 时 `bucket` 必填且不含路径穿越字符 | `type=OSS 但未配置 bucket` |
-| 3 | `serve-mode=DIRECT` 时 `base-url` 必填 | `serveMode=DIRECT 但未配置 base-url` |
+| 2 | `type=OSS` 时 scene `bucket` 或 `sz.oss.bucketName` 至少有一个，且生效值不含路径穿越字符 | `type=OSS 未配置 bucket，且 sz.oss.bucketName 为空` |
+| 3 | `serve-mode=DIRECT` 时 LOCAL 必填 `base-url`；OSS 未配时自动生成公开 URL | `serveMode=DIRECT 但未配置 base-url` |
 | 4 | `serve-mode=PRESIGNED` + `type=LOCAL` 组合禁用 | `PRESIGNED 不能与 type=LOCAL 组合` |
 | 5 | `serve-mode=PRESIGNED` 时 `expire > 0` | `serveMode=PRESIGNED 但 expire 无效` |
 
-另有两条附加规则：
+另外，scene 覆写 endpoint 或任一凭据时必须成组填写三项；`region` 单独覆盖无需重复连接字段。`scenes[].oss-instance` 已完全移除，不再绑定或执行专用迁移校验，旧配置应删除并迁移到 scene 顶层连接字段；旧 `sz.oss.instances` 配置仍会明确报错。另有两条附加规则：
 - `code` 不能为空
 - `code` 不能重复
 
@@ -510,30 +536,44 @@ MIME 白名单：**场景优先**（`scene.mimes` 非空时不再查全局）
 
 > 下面 10 个案例覆盖绝大多数真实需求，全部使用虚构场景 `demo.avatar` / `demo.document` / `demo.archive` 演示。
 
-### 案例 A：LOCAL + DIRECT + Java 直接返回
+### 案例 A：LOCAL + DIRECT + 独立开发文件服务
 
-适合：内网小文件、Demo 环境。
+适合：本机 `local` profile 下快速验证公开富文本图片、头像等 LOCAL DIRECT 资源。它不是 dev、preview、prod 的文件服务方案。
 
 ```yaml
 sz:
   resource:
     root: ./data
+    dev-file-server:
+      enabled: true
     scenes:
       - code: demo.avatar
         type: LOCAL
         serve-mode: DIRECT
         path: avatars/
-        base-url: http://127.0.0.1:8080/api/resource/file/avatars
+        base-url: /api/admin/resource/file/avatars
         naming: UUID
 ```
 
 ```java
 ResourceUploadResult r = resourceService.upload("demo.avatar", null, file);
 // r.getObjectKey()  → avatars/5f7c...9a.png
-// r.getAccessUrl()  → http://127.0.0.1:8080/api/resource/file/avatars/5f7c...9a.png
+// r.getAccessUrl()  → /api/admin/resource/file/avatars/5f7c...9a.png
 ```
 
-> `base-url` 指向的 Java 接口由 **上层业务** 提供（读取 `objectKey` 并回流字节）；本模块不内置此 Controller。
+> `sz-module-admin` 的独立 `DevResourceFileController` 在 `dev-file-server.enabled=true` 时注册 `GET /api/admin/resource/file/{sceneDir}/**`，不额外检查 profile。它只匹配唯一的 LOCAL + DIRECT 场景，再按 `root + objectKey` 读取磁盘文件；`sceneDir` 对应 `base-url` 的最后一段，实际存储目录使用场景 `path`。关闭或省略开关不会影响 `resourceService.upload(...)`，但上面的 URL 将没有 Java 读取入口。部署环境建议保持关闭并使用 Nginx 等静态文件服务。
+
+当前仓库 `config/local/oss.yml` 的场景分工如下：
+
+| 场景 | 存储与访问模式 | 访问入口 |
+| --- | --- | --- |
+| `template.excel`、`teacher.attachment`、`system.protected` | LOCAL + PROTECTED | 不配置 `base-url`，通过业务鉴权接口读取 |
+| `teacher.richtext` | LOCAL + DIRECT | `/api/admin/resource/file/teacher-richtext` |
+| `system.richtext` | LOCAL + DIRECT | `/api/admin/resource/file/richtext` |
+| `system.temp` | LOCAL + DIRECT | `/api/admin/resource/file/temp`，保留旧公开场景兼容 |
+| `admin.user.logo` | OSS + DIRECT | 从生效连接和默认 bucket 推导公开地址，无需重复填写 scene `base-url` |
+
+教师附件保存后的预览入口为 `POST /api/admin/teacher-statistics/{id}/resources/{resourceId}/preview`。后端先校验业务权限及附件关联，再通过资源记录的 `sceneCode + objectKey` 读取文件流；它与上表中的公开 DIRECT 文件路由是不同入口。
 
 ### 案例 B：LOCAL + DIRECT + Nginx 前置
 
@@ -560,7 +600,7 @@ location /static/ {
 }
 ```
 
-> DIRECT 模式的 **Java/Nginx 切换由 `base-url` 隐式决定**，代码无需改动。
+> 本地开发可通过 `dev-file-server.enabled=true` 使用独立文件服务；dev、preview、prod 默认关闭该开关，并建议让 `base-url` 指向实际可用的 Nginx 或其他静态文件服务。任何 profile 显式开启都会注册开发文件入口。修改 `base-url` 不会自动创建路由，也不表示 Nginx 已部署。静态服务只映射公开场景目录，不应将 PROTECTED 附件目录加入公开路径。
 
 ### 案例 C：OSS + DIRECT（公开读 bucket）
 
@@ -606,7 +646,36 @@ ResourceUploadResult r = resourceService.upload("demo.document", null, file);
 
 调用方 **无需感知** PRESIGNED，与 DIRECT 模式 API 完全一致。
 
-### 案例 E：TOKEN 模式
+### 同一应用中的另一套 S3 连接
+
+仅当某个 OSS 场景要连接不同的服务或账号时，在该场景顶层写 endpoint 与两项凭据；不需要先在 `sz.oss` 下定义命名实例。同一连接仅换 bucket 时，只写 scene 的 `bucket`。
+
+```yaml
+sz:
+  oss:
+    provider: RUSTFS
+    endpoint: http://rustfs:9000
+    access-key: ${OSS_ACCESS_KEY}
+    secret-key: ${OSS_SECRET_KEY}
+    bucket-name: media
+    domain: https://files.example.com
+    addressing-style: PATH
+  resource:
+    scenes:
+      - code: demo.archive
+        type: OSS
+        serve-mode: PRESIGNED
+        bucket: records
+        addressing-style: VIRTUAL_HOSTED
+        endpoint: https://archive.example.com
+        access-key: ${ARCHIVE_ACCESS_KEY}
+        secret-key: ${ARCHIVE_SECRET_KEY}
+        region: eu-west-1
+```
+
+`demo.archive` 使用自己的 endpoint、凭据和签名 region，`bucket` 与 `addressing-style` 由场景覆盖；未写 `bucket` 时回退全局 `bucket-name`。该场景如改用 DIRECT 且未写 `base-url`，公开 URL 从自己的 endpoint 推导，不继承全局 `domain`。只改签名区域的 scene 可以单独写 `region`，但 endpoint 仍是全局值。详见 [OSS 全局默认与 scene 独立连接设计](../../sz-common-oss/docs/oss-scene-connection-design.md)。
+
+### 案例 E：PROTECTED 模式
 
 适合：合同、身份证照片等敏感资源，需隐藏真实存储地址。
 
@@ -616,7 +685,7 @@ sz:
     scenes:
       - code: demo.document
         type: LOCAL
-        serve-mode: TOKEN
+        serve-mode: PROTECTED
         path: contracts/
         naming: UUID
 ```
@@ -627,7 +696,7 @@ ResourceUploadResult r = resourceService.upload("demo.document", null, file);
 // r.getObjectKey() == "contracts/xxx.pdf"
 ```
 
-> **模块边界**：TOKEN 模式的实际访问 URL 由上层业务生成（一般做法是签发短时 token，前端带 token 调代理接口，接口内部再用 `resourceService.readStream(sceneCode, objectKey)` 读文件回流）。具体端点与 token 机制 **不属于本模块职责**。
+> **模块边界**：PROTECTED 模式不生成访问 URL。上层业务校验身份、权限及资源归属后，调用 `resourceService.readStream(sceneCode, objectKey)` 回流文件。
 
 ### 案例 F：命名规则选型（4 种）
 
@@ -667,9 +736,13 @@ resourceService.upload("demo.avatar", null, file, "tenant1", "group2");
 
 ### 案例 H：场景白名单与 MIME 收窄
 
+以下开发读取示例建议只在本机开发配置中使用；是否注册入口仅取决于 `dev-file-server.enabled`。
+
 ```yaml
 sz:
   resource:
+    dev-file-server:
+      enabled: true
     security:
       allowed-exts: [jpg, jpeg, png, pdf, docx]   # 全局放行 5 种
     scenes:
@@ -677,11 +750,11 @@ sz:
         type: LOCAL
         serve-mode: DIRECT
         path: avatars/
-        base-url: http://127.0.0.1:8080/api/resource/file/avatars
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/avatars
         naming: UUID
         exts: [jpg, jpeg, png]                    # 场景仅允许图片 3 种
         mimes: [image/jpeg, image/png]            # 严格 MIME 限制
-        max-size: 2                               # 进一步压到 2MB
+        max-size: 2MB                             # 场景单文件大小上限，与全局取较小值
 ```
 
 最终 `demo.avatar` 仅接受 jpg/jpeg/png 且 ≤2MB 的图片；pdf 会被 **场景白名单** 阻断。
@@ -741,7 +814,7 @@ public class ResourceService {
 
 **异常**：
 - `IllegalArgumentException`：文件为空、扩展名被黑名单拒绝、双重扩展名攻击、命中白名单外、MIME 不符、大小超限、`namingKey` 非法
-- `IllegalStateException`：OSS 场景但未引入 `sz-common-oss`（`OssClient` 未注册）
+- `IllegalStateException`：OSS 场景但 `OssClient` 未注册，或场景配置不完整
 - `IOException`：底层存储写入失败
 
 ### 6.3 `resolveUrl`
@@ -750,7 +823,7 @@ public class ResourceService {
 |-----------|--------|
 | DIRECT | `base-url` + objectKey 去前缀后的相对部分 |
 | PRESIGNED | 临时签名 URL，有效期 `scene.expire` 秒 |
-| TOKEN | **`null`**（由上层业务按策略生成 URL） |
+| PROTECTED | **`null`**（由上层业务鉴权后读取） |
 
 `objectKey` 为 `null` / 空时返回 `null`。
 
@@ -771,7 +844,7 @@ public class ResourceService {
 | `originName` | 本模块 | 上传时的原始文件名 |
 | `size` | 本模块 | 字节 |
 | `contentType` | 本模块 | 上传时的 MIME |
-| `accessUrl` | 本模块 | DIRECT / PRESIGNED 有值；TOKEN 为 `null` |
+| `accessUrl` | 本模块 | DIRECT / PRESIGNED 有值；PROTECTED 为 `null` |
 | `eTag` | **驱动层**（OSS 有值，LOCAL 为 `null`） | 存储端 ETag |
 | `resourceId` | **上层业务**（本模块 **不填**） | `sys_resource` 表主键，如需落库由业务层 set |
 
@@ -873,7 +946,7 @@ public class SomeMessageHandler {
 | 字段类型限制 | 仅支持 `String` 类型字段；非 `String` 字段标注后会打印 WARN 并跳过 |
 | 已是 URL 的字段 | 字段值以 `http://` 或 `https://` 开头时自动跳过，兼容历史存了完整 URL 的数据 |
 | 字段为空时 | `null` 或空白值直接跳过，不会报错 |
-| TOKEN 场景 | `resolveUrl` 返回 `null` 时框架跳过覆写，字段保持原 objectKey |
+| PROTECTED 场景 | `resolveUrl` 返回 `null` 时框架跳过覆写，字段保持原 objectKey |
 | 反射缓存 | 同一 VO 类的字段反射结果缓存在 `ConcurrentHashMap` 中，同类型只扫描一次，不影响性能 |
 
 ---
@@ -891,7 +964,7 @@ public class SomeMessageHandler {
 | 路径规则 | 代码里拼字符串 | 配置化（naming + path-strategy） |
 | 安全白名单 | 业务自己写 if 判断 | 三层模型自动校验 |
 | 签名 URL | 业务手动调 SDK | PRESIGNED 配置后自动生成 |
-| 访问模式 | 要么公开要么业务自己签 token | DIRECT / TOKEN / PRESIGNED 三选一 |
+| 访问模式 | 要么公开要么业务自己处理私有资源 | DIRECT / PROTECTED / PRESIGNED 三选一 |
 
 ### 7.2 API 对照表
 
@@ -900,7 +973,7 @@ public class SomeMessageHandler {
 | `ossClient.upload(inputStream, bucket, objectKey, contentType)` | `resourceService.upload(sceneCode, namingKey, file, ...segments)` |
 | `ossClient.upload(file, bucket, path)` | `resourceService.upload(sceneCode, null, file)` |
 | `ossClient.getPresignedUrl(bucket, key, expire)` | 配置 `serve-mode: PRESIGNED` + `expire`，调 `resolveUrl` 自动生成 |
-| `ossClient.getPublicUrl(bucket, key)` | 配置 `serve-mode: DIRECT` + `base-url`，调 `resolveUrl` |
+| 手工拼接公开 URL | 配置 `serve-mode: DIRECT`，按需覆写 `base-url`，调 `resolveUrl` |
 | `ossClient.download(bucket, key)` | `resourceService.readBytes(sceneCode, objectKey)` |
 | `ossClient.downloadStream(bucket, key)` | `resourceService.readStream(sceneCode, objectKey)` |
 | `ossClient.delete(bucket, key)` | 暂无 `ResourceService` 对应方法；如需删除，注入对应 `ResourceStorageDriver` 调 `delete` |
@@ -911,7 +984,7 @@ public class SomeMessageHandler {
 |------------------------|------------------------------|------|
 | `fileName` | `originName` | 原始文件名 |
 | `filePath` / `key` | `objectKey` | 入库值 |
-| `url` | `accessUrl` | TOKEN 模式下为 `null` |
+| `url` | `accessUrl` | PROTECTED 模式下为 `null` |
 | `fileSize` | `size` | 字节 |
 | `fileType` / `contentType` | `contentType` | MIME |
 | `eTag` | `eTag` | 保持一致 |
@@ -976,9 +1049,9 @@ sz:
 | `IllegalStateException: 场景配置缺少 code 字段` | scene 列表某项未写 `code` | 检查 yml |
 | `IllegalStateException: 场景编码重复` | 两个 scene 写了相同 `code` | 重命名 |
 | `IllegalStateException: type=LOCAL 但未配置 path` | LOCAL 场景忘配 `path` | 补 `path` |
-| `IllegalStateException: type=OSS 但未配置 bucket` | OSS 场景忘配 `bucket` | 补 `bucket` |
-| `IllegalStateException: serveMode=DIRECT 但未配置 base-url` | DIRECT 场景忘配 `base-url` | 补 `base-url` |
-| `IllegalStateException: PRESIGNED 不能与 type=LOCAL 组合` | LOCAL 场景误配 PRESIGNED | 改为 DIRECT 或 TOKEN |
+| `IllegalStateException: type=OSS 未配置 bucket，且 sz.oss.bucketName 为空` | OSS 场景和全局都未配桶 | 配置全局 `sz.oss.bucketName` 或场景 `bucket` |
+| `IllegalStateException: serveMode=DIRECT 但未配置 base-url` | LOCAL 场景未配置访问根地址，或 OSS 客户端无法生成公开地址 | LOCAL 补 `base-url`；OSS 核对 `sz.oss.domain` / `endpoint` |
+| `IllegalStateException: PRESIGNED 不能与 type=LOCAL 组合` | LOCAL 场景误配 PRESIGNED | 改为 DIRECT 或 PROTECTED |
 | `IllegalStateException: PRESIGNED 但 expire 无效` | `expire` 为 null / ≤0 | 设置正整数秒数 |
 | `IllegalStateException: path 配置非法 [...]` | `path` 含 `..` / `\` / 绝对路径等 | 用相对路径，不带特殊字符 |
 | WARN `未配置任何资源场景` | `scenes` 为空 | 至少配一个 scene（否则 ResourceService 不可用） |
@@ -988,8 +1061,8 @@ sz:
 | 现象 | 原因 | 处理 |
 |------|------|------|
 | `IllegalArgumentException: 未找到资源场景配置` | sceneCode 拼错或未在 yml 定义 | 对齐 sceneCode |
-| `IllegalStateException: OssClient 未在容器中注册` | 场景配了 OSS 但没引 `sz-common-oss` | 引入依赖或改用 LOCAL |
-| `UnsupportedOperationException`（LOCAL 驱动 presign） | 代码绕过校验直接调 driver | 理论不可达；如果出现说明启动校验被短路，检查是否有自定义 `ResourceSceneProvider` 跳过了 validate |
+| `IllegalStateException: OSS 驱动未注册` | 场景配了 OSS，但未配置全局 `sz.oss.endpoint` 或未装配 OSS 模块 | 补全全局 OSS 连接配置并检查模块装配 |
+| `UnsupportedOperationException`（LOCAL 驱动 presign） | 代码绕过 `ResourceService` 直接调 driver | 正常 scene 解析会拒绝 LOCAL + PRESIGNED；检查是否直接调用了底层驱动 |
 | `IllegalArgumentException: 文件类型 .xxx 在黑名单中` | 上传了 `exe/bat/php/jsp/...` 等危险文件 | 硬编码不可覆盖，拒绝上传 |
 | `IllegalArgumentException: 检测到双重扩展名攻击` | 文件名形如 `report.php.jpg` | 拒绝 |
 | `IllegalArgumentException: 不支持的文件类型` | 超出场景 `exts` 范围 | 检查 exts 配置 |
@@ -1024,19 +1097,17 @@ sz:
   ┌──────────▼──────────────┐
   │ ResourceStorageDriver   │
   │   ├─ LocalDriver         │
-  │   └─ OssDriver (可选)    │                ← @ConditionalOnBean(OssClient)
+  │   └─ OssDriver (条件注册)│                ← @ConditionalOnBean(OssClientRegistry)
   └─────────────────────────┘
              │
        ┌─────▼──────┐
-       │ sz-common-oss│                       ← 可选依赖
+       │ sz-common-oss│                       ← 当前为传递依赖
        └─────────────┘
 ```
 
-### 9.2 OSS 驱动的可选装配
+### 9.2 OSS 驱动的装配
 
-`OssResourceStorageDriver` 带 `@ConditionalOnBean(OssClient.class)`；未引入 `sz-common-oss` 时 bean 不会注册，`ResourceService` 通过 `ObjectProvider.getIfAvailable()` 拿到 `null`，仅当业务访问 OSS 场景时才抛 `IllegalStateException`。
-
-这意味着：**仅用 LOCAL 的项目可以完全不依赖 OSS**。
+`OssResourceStorageDriver` 带 `@ConditionalOnBean(OssClientRegistry.class)`，只有 OSS 客户端注册表存在时才注册。当前 `sz-common-resource` 的 POM 直接依赖 `sz-common-oss`，因此引入资源模块会传递引入 OSS 模块；未配置 `sz.oss.endpoint` 的纯 LOCAL 场景不会创建 S3 客户端及 OSS 驱动。
 
 ### 9.3 objectKey 双语义
 
@@ -1113,16 +1184,16 @@ LOCAL 存储驱动在读写文件时执行两层路径安全校验：
 
 若 `objectKey` 包含 `..` 等穿越序列导致路径逃逸出 `root`，直接抛 `IllegalArgumentException`。
 
-**第二层：符号链接防护**（仅读取时生效）
+**第二层：符号链接防护**（上传、读取、存在性检查和删除时生效）
 
 ```
 realPath = file.toPath().toRealPath()   // 解析所有符号链接，得到真实物理路径
 要求：真实路径仍必须在 root 目录之下
 ```
 
-通过符号链接把 `root` 内某个文件指向 `root` 外部时，第一层校验通过（路径看起来合法），但 `toRealPath()` 解析后真实地址在 `root` 外，第二层拦截并抛 `IllegalArgumentException`。
+通过符号链接把 `root` 内某个文件或目录指向 `root` 外部时，第一层校验通过（路径看起来合法），但 `toRealPath()` 解析后真实地址在 `root` 外，第二层拦截并抛 `IllegalArgumentException`。上传目标尚不存在时，从最近已存在的父目录验证真实路径；创建目录后再验证一次。本机 Windows 无创建符号链接权限，真实逃逸用例跳过，需在可创建符号链接的环境复跑。
 
-> 注意：符号链接防护**只在读取时**生效（`readBytes` / `readStream`）；写入时不做此校验，由操作系统决定符号链接的写行为。
+`LocalResourceStorageDriver.delete(objectKey, scene)` 是存储驱动层删除指定磁盘文件的能力。当前 `ResourceService` 和 Admin 业务接口没有调用它，也没有提供业务删除 API；本轮 upload→读取→删除测试只验证临时目录中的驱动行为，不改变数据库记录或现有业务删除流程。`delete` 当前沿用 `FileUtils.deleteQuietly`，目标不存在或删除失败时不会返回成功/失败状态。
 
 ### 10.5 `PathSanitizer` 三模式
 
@@ -1267,28 +1338,30 @@ public class DbSecurityPolicyProvider implements ResourceSecurityPolicyProvider 
 | 方法 | 签名 | 返回 | 备注 |
 |------|------|------|------|
 | 上传 | `upload(sceneCode, namingKey, file, segments...)` | `ResourceUploadResult` | 三层安全校验；自动选驱动 |
-| 生成 URL | `resolveUrl(sceneCode, objectKey)` | `String` / `null` | TOKEN 模式返回 `null` |
+| 生成 URL | `resolveUrl(sceneCode, objectKey)` | `String` / `null` | PROTECTED 模式返回 `null` |
 | 规范化 | `normalizeObjectKey(sceneCode, rawValue)` | `String` | 完整 URL → objectKey 防御 |
 | 读字节 | `readBytes(sceneCode, objectKey)` | `byte[]` | **不用于大文件** |
 | 读流 | `readStream(sceneCode, objectKey)` | `InputStream` | 调用方负责关闭 |
 
 ## 附录 B · yml 示例
 
-### B.1 最小可运行配置（LOCAL + DIRECT，拷贝即用）
+### B.1 本地开发最小配置（LOCAL + DIRECT，推荐用于 local profile）
 
 ```yaml
 sz:
   resource:
     root: ./data
+    dev-file-server:
+      enabled: true
     scenes:
       - code: demo.avatar
         type: LOCAL
         serve-mode: DIRECT
         path: avatars/
-        base-url: http://127.0.0.1:8080/api/resource/file/avatars
+        base-url: http://127.0.0.1:9991/api/admin/resource/file/avatars
         naming: UUID
         exts: [jpg, jpeg, png, webp]
-        max-size: 5
+        max-size: 5MB
 ```
 
 ### B.2 进阶混合配置（LOCAL + OSS + 三种访问模式）
@@ -1322,7 +1395,7 @@ sz:
         path-strategy: DATE
         exts: [jpg, jpeg, png, webp]
         mimes: [image/jpeg, image/png, image/webp]
-        max-size: 5
+        max-size: 5MB
 
       # 2. OSS + 签名：私有 bucket 文档
       - code: demo.document
@@ -1333,17 +1406,17 @@ sz:
         naming: UUID
         path-strategy: BIZ_DATE
         exts: [pdf, docx, xlsx]
-        max-size: 20
+        max-size: 20MB
 
-      # 3. 本地 + TOKEN：合同（URL 由上层按需签发）
+      # 3. 本地 + PROTECTED：合同（由上层鉴权后读取）
       - code: demo.archive
         type: LOCAL
-        serve-mode: TOKEN
+        serve-mode: PROTECTED
         path: archives/
         naming: BIZ_KEY
         path-strategy: BIZ
         exts: [zip, pdf]
-        max-size: 50
+        max-size: 50MB
 ```
 
 ## 附录 C · 与 sz-common-oss 的配合
@@ -1351,7 +1424,7 @@ sz:
 | 约定 | 说明 |
 |------|------|
 | bucket 命名 | kebab-case（如 `private-docs`），与 OSS 厂商要求一致 |
-| endpoint | 由 `sz-common-oss` 的 `sz.oss.*` 配置决定，本模块透明 |
+| endpoint | 默认由 `sz.oss.endpoint` 决定；单个场景可用 `oss.endpoint` 与完整凭据指定独立连接 |
 | URL 拼接 | `base-url` + （objectKey 去 bucket 前缀后的相对部分）；本模块自动处理 |
 | 依赖关系 | `sz-common-resource` pom 中 `sz-common-oss` 为 `optional=true`；OSS 驱动按需装配 |
-| 详细配置 | 参见 `sz-common-oss/docs/oss-provider-guide.md` |
+| 详细配置 | 参见 [OSS 厂商配置](../../sz-common-oss/docs/oss-provider-guide.md)与[scene 独立连接设计](../../sz-common-oss/docs/oss-scene-connection-design.md) |
