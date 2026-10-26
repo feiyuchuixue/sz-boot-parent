@@ -3,15 +3,20 @@ package com.sz.resource.enums;
 /**
  * 资源存储类型
  * <p>
- * LOCAL - 本地磁盘存储，由 sz-common-resource 自身管理读写 OSS - 对象存储，委托给 sz-common-oss 的
- * OssClient 处理； 具体厂商（MinIO / 阿里云 / 七牛 / 腾讯云等）由 oss.* 配置决定，本模块不感知
+ * LOCAL 由 sz-common-resource 在全局 root 下管理文件；OSS 委托 sz-common-oss 的 OssClient 读写
+ * S3 兼容存储。 OSS 默认连接来自 sz.oss，场景也可提供独立连接；provider 用于寻址风格等服务商差异判定，不会自行切换
+ * endpoint。
  * </p>
  */
 public enum StorageTypeEnum {
 
-    /** 本地磁盘存储 */
+    /**
+     * 本地磁盘存储。 文件由资源模块写入全局 root 下，场景必须配置合法 path。
+     */
     LOCAL,
 
-    /** 对象存储（S3 兼容，底层由 sz-common-oss 驱动，厂商透明） */
+    /**
+     * S3 兼容对象存储。 文件读写委托 sz-common-oss，具体服务商由 OSS 连接配置决定。
+     */
     OSS
 }
