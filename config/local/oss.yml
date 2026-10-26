@@ -3,6 +3,7 @@ sz:
   oss:
     # 支持S3协议的厂商
     provider: MINIO
+    addressing-style: PATH
     endpoint: 192.168.100.176:9000
     accessKey: 05balQ9A7aJYUwH8NOt1
     secretKey: YMhKoRbfHEgl3eDM2gDlu3hFSmBnB0cKZY2AzCrc
@@ -13,7 +14,6 @@ sz:
   # 场景资源配置
   resource:
     root: ./data
-    default-storage-type: LOCAL
     dev-file-server:
       enabled: true
     security:
@@ -104,3 +104,14 @@ sz:
         path-strategy: DATE
         exts: [ png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx ]
         max-size: 10MB
+      # ========= 富文本组件默认公开资源 =========
+      - code: system.richtext
+        name: 通用富文本资源
+        type: LOCAL
+        serve-mode: DIRECT
+        path: richtext
+        base-url: /api/admin/resource/file/richtext
+        naming: UUID
+        path-strategy: DATE
+        exts: [ png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx ]
+        max-size: 5MB
