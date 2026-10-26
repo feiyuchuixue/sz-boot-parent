@@ -114,10 +114,9 @@ public class TeacherStatisticsServiceImpl extends ServiceImpl<TeacherStatisticsM
 
     @Override
     public void validateResourceAccess(Long id, Long resourceId) {
-        TeacherStatistics record = findAccessibleById(id)
-                .orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException());
-        boolean matched = record.getUrl() != null && record.getUrl().stream()
-                .anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
+        TeacherStatistics record = findAccessibleById(id).orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException());
+        boolean matched = record.getUrl() != null
+                && record.getUrl().stream().anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
         ResourceAccessResponseEnum.ACCESS_DENIED.assertFalse(matched);
     }
 

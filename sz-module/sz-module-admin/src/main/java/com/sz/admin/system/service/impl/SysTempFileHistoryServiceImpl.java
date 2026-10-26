@@ -62,8 +62,7 @@ public class SysTempFileHistoryServiceImpl extends ServiceImpl<SysTempFileHistor
             throw ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException();
         }
         boolean matched = Objects.equals(history.getSysFileId(), resourceId) && history.getUrl() != null
-                && history.getUrl().stream()
-                .anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
+                && history.getUrl().stream().anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
         ResourceAccessResponseEnum.ACCESS_DENIED.assertFalse(matched);
     }
 

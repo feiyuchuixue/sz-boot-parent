@@ -85,7 +85,7 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
 
     @Override
     public String presign(String objectKey, ResourceSceneConfig scene, long expireSeconds) {
-        // LOCAL 存储无签名概念；ResourceProperties 启动校验已保证 PRESIGNED ↔ OSS 绑定，运行时不应到达此处
+        // LOCAL 不支持签名；静态场景启动校验和动态场景解析均拒绝 LOCAL + PRESIGNED 组合。
         throw new UnsupportedOperationException("LOCAL 存储不支持签名 URL，场景：" + scene.getCode());
     }
 
@@ -116,11 +116,10 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
     }
 
     /**
-     * 读取场景下的文件解析：在 {@link #resolveFile(String)} 基础上增加符号链接防护。
+     * 读取文件时，在 {@link #resolveFile(String)} 基础上增加符号链接防护。
      *
      * <p>
-     * 通过 {@link Path#toRealPath()} 解析符号链接后的真实路径， 再次校验真实路径是否仍在 root 目录下，防止通过符号链接逃逸到
-     * root 外部。
+     * 通过 {@link Path#toRealPath()} 解析符号链接后的真实路径，再次校验真实路径是否仍在 root 目录下，防止通过符号链接逃逸到 root 外部。
      *
      * @param objectKey
      *            存储键

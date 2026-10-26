@@ -70,7 +70,7 @@ public class CommonServiceImpl implements CommonService {
             return;
         }
 
-        // 第二优先级：sys_temp_file 表（OSS 手动上传的模板）
+        // 第二优先级：sys_temp_file 表中登记的手动上传模板（存储类型由资源场景决定）
         SysTempFileInfoVO sysTempFileInfoVO = sysTempFileService.detailByNameOrAlias(templateName, alias);
         if (sysTempFileInfoVO != null) {
             ResourceRef result = sysTempFileInfoVO.getUrl().getFirst();
@@ -138,7 +138,7 @@ public class CommonServiceImpl implements CommonService {
             CommonResponseEnum.LOGIN_LIMIT.assertTrue(cacheLimit > limit);
         }
 
-        // 根据request标识生成Sha256Id
+        // 生成本次 challenge 使用的随机密钥
         String secretKey = AESUtil.getRandomString(16);
 
         if (limit != 0) {

@@ -12,7 +12,6 @@ import com.sz.admin.system.service.SysResourceService;
 import com.sz.core.common.entity.PageResult;
 import com.sz.core.util.PageUtils;
 import com.sz.core.util.Utils;
-import com.sz.resource.config.ResourceProperties;
 import com.sz.resource.config.ResourceSceneConfig;
 import com.sz.resource.enums.ServeModeEnum;
 import com.sz.resource.enums.StorageTypeEnum;
@@ -45,6 +44,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+@SuppressWarnings("ALL")
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -52,12 +52,10 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
 
     private final ResourceService resourceService;
 
-    private final ResourceProperties resourceProperties;
-
     private final SysResourceMapper sysResourceMapper;
 
     /**
-     * 上传文件并写入 sys_resource 审计记录
+     * 上传文件并写入 sys_resource 资源管理记录
      *
      * @param sceneCode
      *            场景编码，如 sso.provider.logo
@@ -231,8 +229,7 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
             }
             SysResource resource = findActiveById(resourceId)
                     .orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.message("资源不存在或已删除，resourceId=" + resourceId).newException());
-            ResourceAccessResponseEnum.RESOURCE_REFERENCE_SCENE_MISMATCH
-                    .message("资源场景不匹配，期望 " + sceneCode + "，实际 " + resource.getSceneCode())
+            ResourceAccessResponseEnum.RESOURCE_REFERENCE_SCENE_MISMATCH.message("资源场景不匹配，期望 " + sceneCode + "，实际 " + resource.getSceneCode())
                     .assertFalse(Objects.equals(sceneCode, resource.getSceneCode()));
             ResourceAccessResponseEnum.RESOURCE_REFERENCE_OWNER_MISMATCH.message("新增资源必须由当前用户上传，resourceId=" + resourceId)
                     .assertTrue(!existingIds.contains(resourceId) && !Objects.equals(userId, resource.getCreateId()));
