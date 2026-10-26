@@ -64,18 +64,18 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
      * @param file
      *            上传的文件
      * @param pathSegments
-     *            路径分段（可选），用于 BIZ_ONLY / BIZ_DATE 策略，每段对应一级子目录
+     *            路径分段（可选），用于 BIZ / BIZ_DATE 策略，每段对应一级子目录
      * @return 上传结果（含 resourceId）
      * @throws IOException
      *             文件存储失败
      */
     @Override
     public ResourceUploadResult upload(String sceneCode, String namingKey, MultipartFile file, String... pathSegments) throws IOException {
-        // 1. 委托底层 ResourceService 完成校验、存储、URL 生成
-        ResourceUploadResult result = resourceService.upload(sceneCode, namingKey, file, pathSegments);
+        // 1. 先解析场景快照，再委托底层 ResourceService 完成校验、存储、URL 生成
+        ResourceSceneConfig scene = resourceService.resolveScene(sceneCode);
+        ResourceUploadResult result = resourceService.uploadUsingResolvedScene(scene, namingKey, file, pathSegments);
 
-        // 2. 写入 sys_resource 审计记录
-        ResourceSceneConfig scene = resourceProperties.getScene(sceneCode);
+        // 2. 写入 sys_resource 资源管理记录
         SysResource resource = new SysResource();
         resource.setSceneCode(sceneCode);
         resource.setObjectKey(result.getObjectKey());
@@ -141,10 +141,11 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
     public PageResult<SysResourceVO> page(SysResourceListDTO dto) {
         Page<SysResourceVO> page = pageAs(PageUtils.getPage(dto), buildQueryWrapper(dto), SysResourceVO.class);
         PageResult<SysResourceVO> pageResult = PageUtils.getPageResult(page);
-        Map<String, String> sceneNames = getSceneNames();
+        Map<String, ResourceSceneConfig> scenes = resourceService.getEffectiveScenes();
+        Map<String, String> sceneNames = toSceneNames(scenes);
         for (SysResourceVO vo : pageResult.getRows()) {
             vo.setSceneName(sceneNames.getOrDefault(vo.getSceneCode(), vo.getSceneCode()));
-            ResourceSceneConfig scene = resourceProperties.getSceneMap().get(vo.getSceneCode());
+            ResourceSceneConfig scene = scenes.get(vo.getSceneCode());
             if (scene == null) {
                 continue;
             }
@@ -153,7 +154,7 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
                 continue;
             }
             try {
-                vo.setAccessUrl(resourceService.resolveUrl(vo.getSceneCode(), vo.getObjectKey()));
+                vo.setAccessUrl(resourceService.resolveUrlUsingResolvedScene(scene, vo.getObjectKey()));
             } catch (Exception e) {
                 log.warn("[ResourceManage] 访问链接生成失败，resourceId={} sceneCode={}", vo.getId(), vo.getSceneCode());
             }
@@ -163,8 +164,12 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
 
     @Override
     public Map<String, String> getSceneNames() {
+        return toSceneNames(resourceService.getEffectiveScenes());
+    }
+
+    private Map<String, String> toSceneNames(Map<String, ResourceSceneConfig> scenes) {
         Map<String, String> names = new LinkedHashMap<>();
-        resourceProperties.getSceneMap().forEach((code, scene) -> names.put(code, Utils.isNotNull(scene.getName()) ? scene.getName() : code));
+        scenes.forEach((code, scene) -> names.put(code, Utils.isNotNull(scene.getName()) ? scene.getName() : code));
         return names;
     }
 

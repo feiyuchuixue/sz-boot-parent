@@ -26,7 +26,10 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,7 +40,8 @@ import java.util.Set;
  * 提供以下核心能力：
  * <ul>
  * <li>{@link #upload} - 上传文件，根据场景配置选择存储驱动和路径分层策略</li>
- * <li>{@link #resolveUrl} - 根据场景配置和 objectKey 生成完整可访问 URL</li>
+ * <li>{@link #resolveUrl} - 生成 DIRECT 访问地址或 PRESIGNED URL；PROTECTED 返回
+ * null</li>
  * <li>{@link #normalizeObjectKey} - 防御性方法，将前端误传的完整 URL 还原为 objectKey</li>
  * <li>{@link #readBytes} - 读取文件字节（用于代理访问接口）</li>
  * <li>{@link #readStream} - 读取文件流（用于代理访问接口）</li>
@@ -60,6 +64,8 @@ import java.util.Set;
  *   objectKey  = {path}/{subDirs}/{filename}   （不含 root 前缀）
  *   物理路径   = root + "/" + objectKey
  * </pre>
+ *
+ * 文件读取方法不执行业务身份或资源归属鉴权，调用方应先完成业务校验；返回的输入流由调用方关闭。
  */
 @Slf4j
 @Service
@@ -108,12 +114,31 @@ public class ResourceService {
      *            上传的文件
      * @param pathSegments
      *            路径分段（可选），每个元素对应一级子目录
-     * @return 上传结果，包含 objectKey 和 accessUrl
+     * @return 上传结果，包含 objectKey 和 accessUrl；PROTECTED 的 accessUrl 为 null
      * @throws IOException
      *             文件存储失败
      */
     public ResourceUploadResult upload(String sceneCode, String namingKey, MultipartFile file, String... pathSegments) throws IOException {
-        ResourceSceneConfig scene = getScene(sceneCode);
+        return uploadWithEffectiveScene(resolveScene(sceneCode), namingKey, file, pathSegments);
+    }
+
+    /**
+     * 使用调用方已经解析的场景快照上传文件。
+     *
+     * <p>
+     * 场景仍会复制并应用统一校验，但不会再次读取 {@link ResourceSceneProvider}，从而保证一次上传的存储连接、 objectKey
+     * 和返回 URL 使用同一份配置快照。
+     */
+    public ResourceUploadResult uploadUsingResolvedScene(ResourceSceneConfig scene, String namingKey, MultipartFile file, String... pathSegments)
+            throws IOException {
+        ResourceSceneConfig effectiveScene = resourceProperties.resolveEffectiveScene(scene);
+        ResourceResponseEnum.SCENE_NOT_FOUND.message("资源场景配置不能为空").assertNull(effectiveScene);
+        return uploadWithEffectiveScene(effectiveScene, namingKey, file, pathSegments);
+    }
+
+    private ResourceUploadResult uploadWithEffectiveScene(ResourceSceneConfig scene, String namingKey, MultipartFile file, String... pathSegments)
+            throws IOException {
+        String sceneCode = scene.getCode();
 
         // 1. 安全校验（三层模型）
         validateFile(file, scene);
@@ -132,18 +157,18 @@ public class ResourceService {
         log.info("[Resource] 上传成功 scene={} objectKey={} eTag={}", sceneCode, objectKey, eTag);
 
         // 4. 生成访问 URL
-        String accessUrl = resolveUrl(sceneCode, objectKey);
+        String accessUrl = resolveUrlForScene(scene, objectKey);
 
         return ResourceUploadResult.builder().objectKey(objectKey).originName(file.getOriginalFilename()).size(file.getSize())
                 .contentType(file.getContentType()).accessUrl(accessUrl).eTag(eTag).sceneCode(sceneCode).build();
     }
 
     /**
-     * 根据场景配置和 objectKey 生成完整可访问 URL
+     * 根据场景配置和 objectKey 生成访问地址
      *
      * <pre>
-     * DIRECT + LOCAL：  baseUrl + "/" + objectKey 中 basePath 之后的相对路径
-     * DIRECT + OSS：    OSS 公开访问 URL（由 OssClient 构建）
+     * DIRECT：          生效 baseUrl + "/" + objectKey 去除 LOCAL path / OSS bucket 前缀后的相对路径
+     *                  baseUrl 可为完整 HTTP(S) 地址或同源路径；OSS 缺省值由生效连接配置推导
      * PRESIGNED：       自动生成 S3 Presigned URL（仅 OSS），调用方无需感知
      * PROTECTED：       返回 null，由业务下载/预览接口鉴权后流式读取
      * </pre>
@@ -152,15 +177,33 @@ public class ResourceService {
      *            场景编码
      * @param objectKey
      *            存储键，如 "avatars/1/20260403/abc.png"
-     * @return 完整可访问 URL，PROTECTED 场景返回 null
+     * @return 完整 URL 或同源访问路径；objectKey 为空或 PROTECTED 场景返回 null
      */
     public String resolveUrl(String sceneCode, String objectKey) {
         if (objectKey == null || objectKey.isBlank()) {
             return null;
         }
-        ResourceSceneConfig scene = getScene(sceneCode);
+        return resolveUrlForScene(resolveScene(sceneCode), objectKey);
+    }
+
+    /**
+     * 使用调用方已经解析的场景快照生成访问 URL，不再次读取场景 provider。
+     */
+    public String resolveUrlUsingResolvedScene(ResourceSceneConfig scene, String objectKey) {
+        ResourceSceneConfig effectiveScene = resourceProperties.resolveEffectiveScene(scene);
+        ResourceResponseEnum.SCENE_NOT_FOUND.message("资源场景配置不能为空").assertNull(effectiveScene);
+        return resolveUrlForScene(effectiveScene, objectKey);
+    }
+
+    private String resolveUrlForScene(ResourceSceneConfig scene, String objectKey) {
+        if (objectKey == null || objectKey.isBlank()) {
+            return null;
+        }
         return switch (scene.getServeMode()) {
-            case DIRECT -> buildPublicUrl(objectKey, scene);
+            case DIRECT -> {
+                validateLocalObjectKey(scene, objectKey);
+                yield buildPublicUrl(objectKey, scene);
+            }
             case PRESIGNED -> buildPresignedUrl(objectKey, scene);
             case PROTECTED -> null;
         };
@@ -168,6 +211,9 @@ public class ResourceService {
 
     /**
      * 将 objectKey 或完整 URL 规范化为纯 objectKey（防御入库污染）
+     * <p>
+     * 仅还原以小写 http:// 或 https:// 开头且匹配场景 base-url 的地址，并去除查询参数。 非 HTTP(S)
+     * 输入原样返回；本方法不对这些输入执行路径合法性校验。
      *
      * @param sceneCode
      *            场景编码
@@ -182,11 +228,11 @@ public class ResourceService {
         if (!rawValue.startsWith("http://") && !rawValue.startsWith("https://")) {
             return rawValue;
         }
-        ResourceSceneConfig scene = getScene(sceneCode);
+        ResourceSceneConfig scene = resolveScene(sceneCode);
         String base = scene.getBaseUrl();
         if (base != null && !base.isBlank() && rawValue.startsWith(base)) {
-            // URL = base-url + "/" + relPath（relPath 不含 path/prefix）
-            // 还原完整 objectKey = path/prefix + relPath
+            // URL = base-url + "/" + relPath（relPath 不含 LOCAL path / OSS bucket）
+            // 还原完整 objectKey = LOCAL path / OSS bucket + relPath
             String trimmedBase = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
             String relPath = rawValue.substring(trimmedBase.length());
             if (relPath.startsWith("/")) {
@@ -196,7 +242,7 @@ public class ResourceService {
             if (queryIdx >= 0) {
                 relPath = relPath.substring(0, queryIdx);
             }
-            // 补回 path/prefix 前缀，还原为完整 objectKey
+            // 补回 LOCAL path / OSS bucket 前缀，还原为完整 objectKey
             String basePath = resolveSceneBasePath(scene);
             String objectKey = (basePath == null || basePath.isBlank()) ? relPath : joinPath(basePath, relPath);
             PathSanitizer.validate(objectKey, PathSanitizer.Mode.OBJECT_KEY);
@@ -210,10 +256,10 @@ public class ResourceService {
      * 批量填充 accessUrl（依赖 ResourceRef 中存储的 sceneCode）
      *
      * <p>
-     * 典型用法：查询 VO 返回前调用此方法，自动将 objectKey 转换为可访问 URL。
+     * 典型用法：查询 VO 返回前调用此方法，为 DIRECT / PRESIGNED 填充地址；PROTECTED 的 accessUrl 置为 null。
      *
      * @param refs
-     *            文件引用列表，元素的 sceneCode 和 objectKey 均不为空时才填充
+     *            文件引用列表，仅处理 sceneCode 和 objectKey 均非 null 的元素
      */
     public void fillAccessUrl(List<ResourceRef> refs) {
         if (refs == null)
@@ -226,7 +272,8 @@ public class ResourceService {
      * 读取文件字节内容（用于代理访问接口）
      */
     public byte[] readBytes(String sceneCode, String objectKey) throws IOException {
-        ResourceSceneConfig scene = getScene(sceneCode);
+        ResourceSceneConfig scene = resolveScene(sceneCode);
+        validateLocalObjectKey(scene, objectKey);
         return resolveDriver(scene).read(objectKey, scene);
     }
 
@@ -234,17 +281,54 @@ public class ResourceService {
      * 读取文件输入流（用于代理访问接口）
      */
     public InputStream readStream(String sceneCode, String objectKey) throws IOException {
-        ResourceSceneConfig scene = getScene(sceneCode);
-        return resolveDriver(scene).readStream(objectKey, scene);
+        return readStreamUsingResolvedScene(resolveScene(sceneCode), objectKey);
+    }
+
+    /**
+     * 使用调用方已经解析的场景快照读取文件流，不再次读取场景 provider。
+     */
+    public InputStream readStreamUsingResolvedScene(ResourceSceneConfig scene, String objectKey) throws IOException {
+        ResourceSceneConfig effectiveScene = resourceProperties.resolveEffectiveScene(scene);
+        ResourceResponseEnum.SCENE_NOT_FOUND.message("资源场景配置不能为空").assertNull(effectiveScene);
+        validateLocalObjectKey(effectiveScene, objectKey);
+        return resolveDriver(effectiveScene).readStream(objectKey, effectiveScene);
+    }
+
+    /**
+     * LOCAL objectKey 必须属于当前场景的 path，避免持有其他场景 key 时跨场景读取。
+     */
+    private void validateLocalObjectKey(ResourceSceneConfig scene, String objectKey) {
+        if (scene.getType() != StorageTypeEnum.LOCAL) {
+            return;
+        }
+        PathSanitizer.validate(objectKey, PathSanitizer.Mode.OBJECT_KEY);
+        String basePath = resolveSceneBasePath(scene);
+        boolean belongsToScene = objectKey.equals(basePath) || objectKey.startsWith(basePath + "/");
+        if (!belongsToScene) {
+            throw new IllegalArgumentException("LOCAL 场景 [" + scene.getCode() + "] 的 objectKey 不属于场景路径 [" + basePath + "]：" + objectKey);
+        }
     }
 
     /**
      * 通过 SPI 获取场景配置，找不到则抛异常
      */
-    private ResourceSceneConfig getScene(String sceneCode) {
+    public ResourceSceneConfig resolveScene(String sceneCode) {
         ResourceSceneConfig scene = sceneProvider.getScene(sceneCode);
         ResourceResponseEnum.SCENE_NOT_FOUND.message("未找到资源场景配置，sceneCode=" + sceneCode).assertNull(scene);
-        return scene;
+        return resourceProperties.resolveEffectiveScene(scene);
+    }
+
+    /**
+     * 获取 provider 当前提供的全部场景，并对每个场景应用与 YAML 相同的复制、默认值和校验规则。
+     */
+    public Map<String, ResourceSceneConfig> getEffectiveScenes() {
+        Map<String, ResourceSceneConfig> scenes = sceneProvider.getAllScenes();
+        if (scenes == null || scenes.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, ResourceSceneConfig> effectiveScenes = new LinkedHashMap<>();
+        scenes.forEach((code, scene) -> effectiveScenes.put(code, resourceProperties.resolveEffectiveScene(scene)));
+        return Collections.unmodifiableMap(effectiveScenes);
     }
 
     /**
@@ -278,7 +362,7 @@ public class ResourceService {
     }
 
     /**
-     * 清洗原始文件名：去路径分隔符、控制字符、长度限制（≤255）
+     * 清洗原始文件名：去掉目录部分和控制字符，空白名称回退为 file。 名称超过 255 个字符时，保留前 245 个字符并追加原扩展名。
      */
     private String sanitizeOriginalFilename(MultipartFile file) {
         String name = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
@@ -289,7 +373,7 @@ public class ResourceService {
         }
         // 去掉控制字符
         name = name.replaceAll("[\\x00-\\x1f\\x7f]", "");
-        // 长度限制
+        // 超长名称截取前 245 个字符，并保留扩展名。
         if (name.length() > 255) {
             String ext = extractExtension(name);
             name = name.substring(0, 245) + "." + ext;
@@ -373,7 +457,7 @@ public class ResourceService {
             case LOCAL -> localDriver;
             case OSS -> {
                 if (ossDriver == null) {
-                    throw new IllegalStateException("场景 " + scene.getCode() + " 配置了 OSS 存储，但 OssClient 未在容器中注册，请引入 sz-common-oss 依赖");
+                    throw new IllegalStateException("场景 " + scene.getCode() + " 配置了 OSS 存储，但 OSS 驱动未注册，请检查 sz.oss.endpoint 和连接配置");
                 }
                 yield ossDriver;
             }
@@ -418,7 +502,7 @@ public class ResourceService {
     }
 
     /**
-     * 规范化 basePath：去除 "./" 前缀、去除首尾 "/"，null/blank 统一返回空串
+     * 规范化 basePath：去除重复的 "./" 前缀及首尾各一个 "/"，null/blank 统一返回空串
      */
     private String normalizeBase(String base) {
         if (base == null || base.isBlank()) {
@@ -442,8 +526,9 @@ public class ResourceService {
         }
         String trimmedBase = scene.getBaseUrl().endsWith("/") ? scene.getBaseUrl().substring(0, scene.getBaseUrl().length() - 1) : scene.getBaseUrl();
 
-        // 截掉 objectKey 中的 path/prefix 前缀，剩余部分拼在 base-url 后
-        // objectKey 完整存库（含 path/prefix），base-url 是用户任意填写的访问根地址
+        // base-url 已是生效的对外访问前缀，可为完整 HTTP(S) 地址或 / 开头的同源路径。
+        // 同源路径由浏览器使用当前页面 origin；此处不再补 endpoint、domain、bucket 或 LOCAL path。
+        // objectKey 完整存库；去掉 OSS bucket 或 LOCAL path 前缀后，仅将相对路径追加到 base-url。
         String relPath = stripScenePrefix(objectKey, resolveSceneBasePath(scene));
         if (relPath.isBlank()) {
             return trimmedBase;
@@ -455,7 +540,7 @@ public class ResourceService {
      * 生成 S3 Presigned URL（仅 OSS 场景）
      * <p>
      * 委托给 {@link ResourceStorageDriver#presign}，由具体驱动负责签名生成。 签名有效期取自场景配置
-     * {@code scene.expire}，由启动校验保证必然 &gt; 0。
+     * {@code scene.expire}，由静态场景启动校验或动态场景解析保证 &gt; 0。
      * </p>
      */
     private String buildPresignedUrl(String objectKey, ResourceSceneConfig scene) {
@@ -464,7 +549,7 @@ public class ResourceService {
     }
 
     /**
-     * 截掉 objectKey 中的场景前缀（path 或 prefix）
+     * 截掉 objectKey 中的场景前缀（LOCAL path 或 OSS bucket）
      * <p>
      * 若 objectKey 以场景前缀开头，截掉后返回相对部分； 否则容错返回 objectKey 原值，不抛异常。
      * </p>
@@ -472,7 +557,7 @@ public class ResourceService {
      * @param objectKey
      *            完整 objectKey，如 "avatars/20260416/xxx.jpg"
      * @param basePath
-     *            场景前缀，如 "avatars"（来自 path 或 prefix）
+     *            场景前缀，如 "avatars"（来自 LOCAL path 或 OSS bucket）
      * @return 截掉前缀后的相对路径，如 "20260416/xxx.jpg"
      */
     private String stripScenePrefix(String objectKey, String basePath) {
@@ -484,7 +569,7 @@ public class ResourceService {
         if (objectKey.startsWith(prefix)) {
             return objectKey.substring(prefix.length());
         }
-        // 容错：objectKey 不以 path/prefix 开头时，直接返回原值
+        // 容错：objectKey 不以 LOCAL path / OSS bucket 前缀开头时，直接返回原值
         return objectKey;
     }
 
@@ -533,7 +618,7 @@ public class ResourceService {
     }
 
     /**
-     * 清洗原始文件名用作最终文件名（ORIGINAL 命名规则）： 只保留字母、数字、下划线、连字符、点
+     * 清洗原始文件名用作最终文件名（ORIGINAL 命名规则）：保留 ASCII 字母、数字、下划线、连字符、点和 \u4e00-\u9fa5 范围内的汉字
      */
     private String sanitizeOriginalName(String originalFilename) {
         String sanitized = originalFilename.replaceAll("[^a-zA-Z0-9_\\-.\\u4e00-\\u9fa5]", "_");
