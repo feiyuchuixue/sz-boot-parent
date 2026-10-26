@@ -18,6 +18,7 @@ import com.sz.resource.util.PathSanitizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -358,11 +359,11 @@ public class ResourceService {
      */
     private void checkFileSize(long fileSize, ResourceSceneConfig scene) {
         long globalMax = securityProvider.getMaxSizeBytes();
-        long sceneMax = (scene.getMaxSize() > 0) ? scene.getMaxSize() * 1024 * 1024 : Long.MAX_VALUE;
+        DataSize configuredSceneMax = scene.getMaxSize();
+        long sceneMax = configuredSceneMax != null && configuredSceneMax.toBytes() > 0 ? configuredSceneMax.toBytes() : Long.MAX_VALUE;
         long effectiveMax = Math.min(globalMax, sceneMax);
         boolean overSizeCheck = fileSize > effectiveMax;
-        long maxMb = effectiveMax / (1024 * 1024);
-        ResourceResponseEnum.FILE_SIZE_EXCEEDED.message("文件大小超限：" + fileSize + " bytes，最大允许 " + maxMb + " MB（场景：" + scene.getCode() + "）")
+        ResourceResponseEnum.FILE_SIZE_EXCEEDED.message("文件大小超限：" + fileSize + " bytes，最大允许 " + effectiveMax + " bytes（场景：" + scene.getCode() + "）")
                 .assertTrue(overSizeCheck);
 
     }

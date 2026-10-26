@@ -5,6 +5,7 @@ import com.sz.resource.enums.PathStrategyEnum;
 import com.sz.resource.enums.ServeModeEnum;
 import com.sz.resource.enums.StorageTypeEnum;
 import lombok.Data;
+import org.springframework.util.unit.DataSize;
 
 import java.util.Set;
 
@@ -23,7 +24,7 @@ import java.util.Set;
  *         base-url: http://127.0.0.1:5000/api/admin/resource/file/providers
  *         naming: BIZ_KEY
  *         exts: [svg, png, jpg, jpeg, webp]
- *         max-size: 2
+ *         max-size: 2MB
  *
  *       - code: user.avatar
  *         type: LOCAL
@@ -33,7 +34,7 @@ import java.util.Set;
  *         naming: UUID
  *         path-strategy: BIZ_DATE
  *         exts: [png, jpg, jpeg, webp, gif]
- *         max-size: 5
+ *         max-size: 5MB
  * </pre>
  */
 @Data
@@ -119,7 +120,12 @@ public class ResourceSceneConfig {
     private Set<String> mimes;
 
     /**
-     * 最大允许文件大小（MB），0 表示不限制
+     * 场景单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确大写 B、KB、MB、GB、TB；字符串内 Java
+     * Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。配置且换算后大于 0 时，与全局 max-size
+     * 取较小值；未配置 或小于等于 0 时不增加场景上限，但仍受全局上限约束。
+     *
+     * @schemaExample 2MB | 小型图片场景上限
+     * @schemaExample 5MB | 普通图片场景上限
      */
-    private long maxSize = 0;
+    private DataSize maxSize;
 }
