@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -94,6 +96,11 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         return result;
     }
 
+    /**
+     * 为独立开发文件 Controller 读取公开本地文件；启用开关控制 Controller 是否注册。 本方法仍验证请求路径及唯一的 LOCAL
+     * DIRECT 场景，不能用作受保护资源的访问入口。
+     */
+    @SuppressWarnings("JvmTaintAnalysis")
     @Override
     public ResponseEntity<StreamingResponseBody> findServeFile(String sceneDir, HttpServletRequest request) {
 
@@ -108,25 +115,33 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // 3. 反查匹配的 DIRECT 场景
-        String sceneCode = resolveSceneCode(sceneDir);
-        if (sceneCode == null) {
-            log.warn("[Resource] 未找到匹配 sceneDir={} 的 DIRECT 场景配置", sceneDir);
+        // 3. 反查唯一匹配的 LOCAL + DIRECT 场景
+        ResourceSceneConfig scene = resolveLocalScene(sceneDir);
+        if (scene == null) {
+            log.warn("[Resource] 未找到唯一匹配 sceneDir={} 的 LOCAL DIRECT 场景配置", sceneDir);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        // 4. 组装 objectKey = sceneDir + "/" + subPath
-        String objectKey = sceneDir + "/" + subPath;
+        // 4. 公开路由名可以与实际存储目录不同，objectKey 必须使用场景 path
+        String scenePath = scene.getPath().replaceAll("/+$", "");
+        String objectKey = scenePath + "/" + subPath;
 
-        // 5. 流式写出文件内容，避免将整个文件加载进内存
+        // 5. 响应开始前打开文件，确保缺失文件和非法路径不会在发送 200 后才失败
         MediaType mediaType = resolveMediaType(subPath);
+        InputStream inputStream;
+        try {
+            inputStream = resourceService.readStreamUsingResolvedScene(scene, objectKey);
+        } catch (FileNotFoundException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
+        } catch (IOException exception) {
+            log.error("[Resource] 开发文件读取失败，objectKey={}", objectKey, exception);
+            return ResponseEntity.internalServerError().build();
+        }
         StreamingResponseBody body = outputStream -> {
-            try (InputStream in = resourceService.readStream(sceneCode, objectKey)) {
-                byte[] buf = new byte[8192];
-                int len;
-                while ((len = in.read(buf)) != -1) {
-                    outputStream.write(buf, 0, len);
-                }
+            try (inputStream) {
+                inputStream.transferTo(outputStream);
                 outputStream.flush();
             } catch (IOException e) {
                 log.error("[Resource] 流式读取文件失败，objectKey={}", objectKey, e);
@@ -134,7 +149,8 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
             }
         };
 
-        return ResponseEntity.ok().contentType(mediaType).body(body);
+        // noinspection JvmTaintAnalysis
+        return ResponseEntity.ok().contentType(mediaType).header("X-Content-Type-Options", "nosniff").cacheControl(CacheControl.noStore()).body(body);
     }
 
     @Override
@@ -253,19 +269,19 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
      * <pre>
      *   requestURI = /api/admin/resource/file/logo/user/logo/20260430/%E5%BE%AE%E4%BF%A1.png
      *   sceneDir   = logo
-     *   → subPath  = 微信.png  （decode 后与磁盘实际文件名一致）
+     *   → subPath  = user/logo/20260430/微信.png
      * </pre>
      *
      * <p>
      * 浏览器访问含非 ASCII 字符（如汉字）的文件时，URL 中的文件名段会被自动 percent-encode（如 "微信.png" →
      * "%E5%BE%AE%E4%BF%A1.png"）。{@link HttpServletRequest#getRequestURI()} 返回的是
-     * encode 后的值，若不做 decode 直接拼 objectKey，将找不到磁盘上以原始汉字命名的文件。
+     * encode 后的值，若不做 decode 直接拼 objectKey，将无法定位使用原始汉字路径段的存储对象。
      * </p>
      */
     private String extractSubPath(HttpServletRequest request, String sceneDir) {
         String uri = request.getRequestURI();
-        // 找到 "/{sceneDir}/" 的位置，截取之后的部分作为 subPath
-        String marker = "/" + sceneDir + "/";
+        // 按完整路由标记提取，避免 sceneDir 与前缀中的 file 等路径段重名
+        String marker = "/resource/file/" + sceneDir + "/";
         int idx = uri.indexOf(marker);
         if (idx < 0) {
             // 没有子路径，说明请求的就是 sceneDir 本身（不合法，必须包含文件名）
@@ -274,7 +290,8 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         String rawSubPath = uri.substring(idx + marker.length());
         // URL decode：还原 percent-encoded 字符（含汉字等非 ASCII），使其与磁盘实际文件名一致
         try {
-            return URLDecoder.decode(rawSubPath, StandardCharsets.UTF_8);
+            // URLDecoder 使用表单语义；先保护路径中的字面量 '+'，避免被解码为空格
+            return URLDecoder.decode(rawSubPath.replace("+", "%2B"), StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
             // decode 失败（如含非法 % 序列），视为不合法路径，返回 null 由上层返回 400
             log.warn("[Resource] subPath URL decode 失败，rawSubPath={}", rawSubPath);
@@ -283,18 +300,31 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
     }
 
     /**
-     * 根据 sceneDir 反查匹配的 DIRECT 场景 code 匹配规则：比较场景 base-url 的最后一段路径是否等于 sceneDir
+     * 根据公开路由名查找唯一匹配的 LOCAL + DIRECT 场景。
      */
-    private String resolveSceneCode(String sceneDir) {
-        return resourceProperties.getSceneMap().entrySet().stream().filter(e -> e.getValue().getServeMode() == ServeModeEnum.DIRECT).filter(e -> {
-            String baseUrl = e.getValue().getBaseUrl();
-            if (baseUrl == null || baseUrl.isBlank())
-                return false;
-            String trimmed = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+    private ResourceSceneConfig resolveLocalScene(String sceneDir) {
+        ResourceSceneConfig match = null;
+        for (ResourceSceneConfig scene : resourceService.getEffectiveScenes().values()) {
+            if (scene.getType() != StorageTypeEnum.LOCAL || scene.getServeMode() != ServeModeEnum.DIRECT) {
+                continue;
+            }
+            String baseUrl = scene.getBaseUrl();
+            if (baseUrl == null || baseUrl.isBlank()) {
+                continue;
+            }
+            String trimmed = baseUrl.replaceAll("/+$", "");
             int lastSlash = trimmed.lastIndexOf('/');
             String lastSegment = lastSlash >= 0 ? trimmed.substring(lastSlash + 1) : trimmed;
-            return sceneDir.equals(lastSegment);
-        }).map(Map.Entry::getKey).findFirst().orElse(null);
+            if (!sceneDir.equals(lastSegment)) {
+                continue;
+            }
+            if (match != null) {
+                log.warn("[Resource] 多个 LOCAL DIRECT 场景共用公开路由名 sceneDir={}", sceneDir);
+                return null;
+            }
+            match = scene;
+        }
+        return match;
     }
 
     /**

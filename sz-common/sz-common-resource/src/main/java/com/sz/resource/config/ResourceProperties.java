@@ -90,7 +90,19 @@ public class ResourceProperties {
     private StorageTypeEnum defaultStorageType = StorageTypeEnum.LOCAL;
 
     /**
-     * 全局安全策略配置
+     * 本地开发辅助文件服务。未配置时关闭，是否注册仅由 enabled 配置决定，不额外限制 profile。 仓库 local
+     * 配置显式开启，dev、preview、prod 配置默认关闭；任何环境显式设为 true 均会注册。 只控制配套 admin 开发文件
+     * Controller 的注册，不影响上传、LOCAL 存储或 DIRECT URL 生成。 部署环境使用 Nginx 提供 LOCAL DIRECT
+     * 静态访问，并配置对应场景的实际 base-url。
+     */
+    private DevFileServerConfig devFileServer = new DevFileServerConfig();
+
+    /**
+     * 全局资源上传安全策略。省略本段，或配置 YAML null、精确空串时，保留初始化的 SecurityConfig 对象；只含空白字符的非空
+     * 字符串会绑定失败。运行时该对象必须非 null，否则默认 YmlSecurityPolicyProvider 无法读取策略。容器未提供自定义
+     * ResourceSecurityPolicyProvider 时，默认 provider 读取本段：未配置字段分别使用内置扩展名白名单、MIME 白名单和
+     * 50MB 大小上限；硬编码危险扩展名黑名单始终优先且不可覆盖。上层若注册数据库、配置中心等自定义
+     * ResourceSecurityPolicyProvider，可替代本段提供的全局策略。
      */
     private SecurityConfig security = new SecurityConfig();
 
@@ -105,6 +117,20 @@ public class ResourceProperties {
      */
     @Setter(lombok.AccessLevel.NONE)
     private transient Map<String, ResourceSceneConfig> sceneMap = Collections.emptyMap();
+
+    /**
+     * 本地开发辅助文件服务配置。
+     */
+    @Data
+    public static class DevFileServerConfig {
+
+        /**
+         * 是否注册本地开发文件读取入口，默认 false，不额外限制 profile。false 或未配置时不创建 Controller，也不注册路由。
+         * 建议只在本地临时验证时开启；部署环境默认关闭并使用 Nginx，显式设为 true 时也会启用。 入口匿名读取唯一匹配的 LOCAL DIRECT
+         * 场景，不读取 PROTECTED 或 OSS 场景；上传等接口不受本开关影响。
+         */
+        private boolean enabled = false;
+    }
 
     /**
      * 全局安全策略

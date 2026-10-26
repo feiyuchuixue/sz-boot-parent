@@ -14,6 +14,8 @@ sz:
   resource:
     root: ./data
     default-storage-type: LOCAL
+    dev-file-server:
+      enabled: false
     security:
       allowed-exts: [jpg, jpeg, png, gif, bmp, webp, svg, ico, pdf, doc, docx, xls, xlsx, ppt, pptx, rtf, txt, csv, zip, rar, 7z, tar, gz, mp3, wav, ogg, mp4, mov, avi, wmv]
       max-size: 50MB
@@ -23,7 +25,7 @@ sz:
         name: 账户头像
         type: LOCAL
         serve-mode: DIRECT
-        base-url: /api/admin/resource/file/logo # 同源 Java 服务代理，浏览器可直接访问
+        base-url: /resource/logo
         path: logo
         naming: ORIGINAL
         path-strategy: BIZ_DATE
@@ -75,7 +77,7 @@ sz:
         type: LOCAL
         serve-mode: DIRECT
         path: teacher-richtext
-        base-url: http://127.0.0.1:9991/api/admin/resource/file/teacher-richtext
+        base-url: /resource/teacher-richtext
         naming: UUID
         path-strategy: DATE
         exts: [png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx]
@@ -86,7 +88,7 @@ sz:
         type: LOCAL
         serve-mode: DIRECT
         path: temp
-        base-url: http://127.0.0.1:9991/api/admin/resource/file/temp
+        base-url: /resource/temp
         naming: ORIGINAL
         path-strategy: DATE
         exts: [ png, jpg, jpeg, webp, gif, pdf, doc, docx, xls, xlsx ]
