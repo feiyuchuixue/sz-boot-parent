@@ -10,7 +10,6 @@ import com.sz.core.util.*;
 import com.sz.platform.constant.config.LoginConfigKeyConstant;
 import com.sz.excel.core.ExcelTemplateScanRegistry;
 import com.sz.excel.utils.ExcelUtils;
-import com.sz.oss.OssClient;
 import com.sz.redis.RedisCache;
 import com.sz.resource.model.ResourceRef;
 import com.sz.resource.service.ResourceService;
@@ -40,8 +39,6 @@ public class CommonServiceImpl implements CommonService {
     private final ResourceLoader resourceLoader;
 
     private final SysTempFileService sysTempFileService;
-
-    private final OssClient ossClient;
 
     private final SysUserService sysUserService;
 
