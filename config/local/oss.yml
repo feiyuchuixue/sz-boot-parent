@@ -10,6 +10,8 @@ sz:
     # 去除首尾空白和末尾斜杠；未带协议时使用 scheme（默认 https），已带协议时沿用 endpoint 自身协议。
     # scheme 不覆盖 endpoint 自身协议，但仍用于未带协议的 domain；未配 domain 时 DIRECT URL 沿用生效 endpoint 的协议。
     endpoint: http://192.168.56.104:9000
+    # 公开对外展示域名
+    domain: http://minioapi.example.com
     # accessKey 是访问密钥 ID；secretKey 是配对的访问密钥 Secret。
     accessKey: SZADMIN
     secretKey: Sz2026@123456
