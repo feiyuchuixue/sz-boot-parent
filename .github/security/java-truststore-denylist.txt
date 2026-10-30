@@ -1,0 +1,8 @@
+# Java truststore denylist for CVE-2026-91403 and CVE-2026-114820.
+# Official guidance: https://ops.java/emudhra
+# Do not remove entries without a security review confirming the roots are safe to trust again.
+
+emsignrootcag1 [jdk]
+emsignrootcag2 [jdk]
+emsigneccrootcag3 [jdk]
+comodoaaaca [jdk]
