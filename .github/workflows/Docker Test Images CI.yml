@@ -53,6 +53,14 @@ jobs:
           java-version: '25'
           cache: 'maven'
 
+      - name: Harden Java truststore
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -version
+          bash .github/scripts/harden-java-truststore.sh --apply --denylist .github/security/java-truststore-denylist.txt
+          bash .github/scripts/harden-java-truststore.sh --check --denylist .github/security/java-truststore-denylist.txt
+
       - name: Set up Maven 3.9.6
         uses: stCarolas/setup-maven@v5
         with:
