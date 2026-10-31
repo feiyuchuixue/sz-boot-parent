@@ -4,7 +4,8 @@ package com.sz.resource.enums;
  * 存储路径分层策略
  *
  * <p>
- * 控制上传文件在 {@code path}（基础目录）下的子目录结构，影响：
+ * 控制上传文件在基础前缀下的子目录结构；LOCAL 的基础前缀为场景 path，OSS 的基础前缀为场景 bucket。日期分层取应用进程
+ * 当前本地日期，格式为 yyyyMMdd。以 LOCAL 为例，影响：
  * <ul>
  * <li>物理存储路径：{@code root}/{@code path}/{subDirs}/{filename}</li>
  * <li>objectKey：{@code path}/{subDirs}/{filename}（不含 root 前缀）</li>
@@ -28,42 +29,24 @@ package com.sz.resource.enums;
 public enum PathStrategyEnum {
 
     /**
-     * 平铺（默认）：所有文件直接存于 path 目录下，无子目录
-     * 
-     * <pre>
-     * avatars / abc.png
-     * </pre>
+     * 平铺存储。 不增加子目录，objectKey 形如 basePath/filename。
      */
     FLAT,
 
     /**
-     * 按日期自动分片：框架自动在 path 下创建 yyyyMMdd 子目录
-     * 
-     * <pre>
-     * avatars / 20260403 / abc.png
-     * </pre>
+     * 按日期分层。 使用应用进程当前本地日期增加 yyyyMMdd 子目录，objectKey 形如 basePath/yyyyMMdd/filename。
      */
     DATE,
 
     /**
-     * 仅按业务路径分段分层：{@code pathSegments} 中每个元素作为一级子目录，无日期后缀
-     * 
-     * <pre>
-     * avatars/1/abc.png（pathSegments=["1"]）
-     * </pre>
-     * <p>
-     * <b>注意</b>：{@code BIZ} 指的是 {@code pathSegments}，与 {@code namingKey} 无关
+     * 按业务路径分段分层。 pathSegments 中每个非空白元素依次成为一级子目录，不加日期；BIZ 指 pathSegments，与用于文件命名的
+     * namingKey 无关。
      */
     BIZ,
 
     /**
-     * 先按业务路径分段、再按日期分层：{@code pathSegments} 子目录 + yyyyMMdd 子目录
-     * 
-     * <pre>
-     * avatars/1/20260403/abc.png（pathSegments=["1"]）
-     * </pre>
-     * <p>
-     * <b>注意</b>：{@code BIZ} 指的是 {@code pathSegments}，与 {@code namingKey} 无关
+     * 先按业务路径分段，再按日期分层。 依次加入 pathSegments 中的非空白元素和应用进程当前本地日期 yyyyMMdd 子目录；BIZ 指
+     * pathSegments，与用于文件命名的 namingKey 无关。
      */
     BIZ_DATE,
 }

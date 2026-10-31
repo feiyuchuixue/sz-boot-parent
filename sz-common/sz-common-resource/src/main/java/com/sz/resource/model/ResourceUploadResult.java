@@ -42,9 +42,10 @@ public class ResourceUploadResult {
     private String contentType;
 
     /**
-     * 完整可访问 URL（PUBLIC 场景直接返回；PRIVATE 场景返回临时 URL）
+     * 回显访问地址：DIRECT 返回公开 URL 或同源路径，PRESIGNED 返回临时签名 URL，PROTECTED 返回 null。
+     * PROTECTED 资源由业务接口鉴权后读取；本字段仅用于展示，不应作为永久地址入库。
      */
-    @Schema(description = "完整可访问 URL")
+    @Schema(description = "回显访问地址，DIRECT/PRESIGNED 有值，PROTECTED 为空")
     private String accessUrl;
 
     /**

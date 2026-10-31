@@ -42,8 +42,7 @@ public class ResourceDownloadService {
     }
 
     private ResponseEntity<StreamingResponseBody> open(Long resourceId, boolean preview) {
-        ResourceRef resource = referenceService.findActiveReference(resourceId)
-                .orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException());
+        ResourceRef resource = referenceService.findActiveReference(resourceId).orElseThrow(() -> ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException());
 
         MediaType mediaType = resolveMediaType(resource.getContentType(), preview);
         InputStream inputStream;

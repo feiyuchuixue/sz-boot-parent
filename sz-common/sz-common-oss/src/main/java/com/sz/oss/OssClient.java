@@ -3,9 +3,10 @@ package com.sz.oss;
 import com.sz.core.common.entity.UploadResult;
 import com.sz.core.common.enums.CommonResponseEnum;
 import com.sz.core.util.FileUtils;
-import com.sz.core.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
@@ -23,26 +24,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * OSS 对象存储客户端
  * <p>
- * 封装 AWS S3 SDK，统一支持 MinIO、阿里云 OSS、腾讯云 COS、七牛云 Kodo。
+ * 封装 AWS S3 SDK，统一支持 MinIO、RustFS、阿里云 OSS、腾讯云 COS、七牛云 Kodo。
  * </p>
  *
  * @author sz
  * @since 2024/11/12 14:56
  */
 @Service
-@RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "sz.oss", name = "endpoint")
+@Primary
 public class OssClient {
 
     private final OssProperties properties;
+
+    private final OssSceneConnection sceneConnection;
+
+    private final OssAddressingStyle connectionAddressingStyle;
+
+    private final OssProperties globalDefaults;
 
     private final S3Client s3Client;
 
@@ -50,11 +55,35 @@ public class OssClient {
 
     private final S3Presigner s3Presigner;
 
-    private static final Long DEFAULT_EXPIRE_TIME = 3600L;
-
     private final S3AsyncClient s3AsyncClient;
 
-    private static final String FILE_SEPARATOR = "/";
+    @Autowired
+    public OssClient(OssProperties properties, S3Client s3Client, S3TransferManager transferManager, S3Presigner s3Presigner, S3AsyncClient s3AsyncClient) {
+        this.properties = properties;
+        this.sceneConnection = null;
+        this.connectionAddressingStyle = null;
+        this.globalDefaults = null;
+        this.s3Client = s3Client;
+        this.transferManager = transferManager;
+        this.s3Presigner = s3Presigner;
+        this.s3AsyncClient = s3AsyncClient;
+    }
+
+    OssClient(OssSceneConnection sceneConnection, S3Client s3Client, S3TransferManager transferManager, S3Presigner s3Presigner, S3AsyncClient s3AsyncClient) {
+        this(sceneConnection, new OssProperties(), null, s3Client, transferManager, s3Presigner, s3AsyncClient);
+    }
+
+    OssClient(OssSceneConnection sceneConnection, OssProperties globalDefaults, OssAddressingStyle connectionAddressingStyle, S3Client s3Client,
+            S3TransferManager transferManager, S3Presigner s3Presigner, S3AsyncClient s3AsyncClient) {
+        this.properties = null;
+        this.sceneConnection = sceneConnection;
+        this.connectionAddressingStyle = connectionAddressingStyle;
+        this.globalDefaults = globalDefaults;
+        this.s3Client = s3Client;
+        this.transferManager = transferManager;
+        this.s3Presigner = s3Presigner;
+        this.s3AsyncClient = s3AsyncClient;
+    }
 
     /**
      * 上传文件（跳过扩展名 / MIME 校验）
@@ -292,40 +321,18 @@ public class OssClient {
     /**
      * 获取指定 bucket 的公开访问 URL 前缀（不含末尾 "/"）。
      * <p>
-     * MinIO 无 domain：{@code scheme://endpoint/bucketName}<br>
-     * MinIO 有 domain：{@code domain/bucketName}<br>
-     * 其他厂商无 domain：{@code scheme://bucketName.endpoint}（虚拟主机风格）<br>
-     * 其他厂商有 domain：{@code domain}（CDN 域名，已包含 bucket 路由）
+     * 路径风格会在公开访问根地址后追加 bucket；虚拟主机风格使用已指向 bucket 的 domain， 或在未配置 domain 时将 bucket
+     * 作为 endpoint 的子域名。场景独立连接不使用全局 domain， 按自身 endpoint 和生效寻址风格推导。
      * </p>
      */
     public String getUrl(String bucketName) {
-        String domain = properties.getDomain();
-        String endpoint = properties.getEndpoint();
-        String scheme = properties.getScheme().toString();
-
-        // 规范化 endpoint：去掉末尾斜杠，去掉已有协议前缀（用 scheme 字段替代）
-        String cleanEndpoint = stripTrailingSlash(stripScheme(endpoint));
-
-        // 非 MinIO（阿里云 / 腾讯云 / 七牛云）：虚拟主机风格
-        if (!properties.resolvePathStyle()) {
-            if (StringUtils.isNotEmpty(domain)) {
-                return ensureScheme(domain, scheme);
-            }
-            // 虚拟主机风格：https://bucketName.endpoint
-            return scheme + "://" + bucketName + "." + cleanEndpoint;
-        }
-
-        // MinIO（路径风格）
-        if (StringUtils.isNotEmpty(domain)) {
-            // domain 由用户自行配置，直接使用（含 bucket）
-            return ensureScheme(domain, scheme).replaceAll("/$", "") + "/" + bucketName;
-        }
-        // 路径风格：https://endpoint/bucketName
-        return scheme + "://" + cleanEndpoint + "/" + bucketName;
+        return sceneConnection == null
+                ? properties.resolvePublicUrl(bucketName)
+                : sceneConnection.resolvePublicUrl(bucketName, connectionAddressingStyle, globalDefaults);
     }
 
     /**
-     * 提取文件扩展名（小写，不含点）
+     * 提取文件扩展名（保持原始大小写，不含点）
      */
     public String getFileExt(String fileName) {
         if (fileName == null) {
@@ -336,25 +343,10 @@ public class OssClient {
     }
 
     /**
-     * 解析最终 bucket：若传入值为 null 或空串，回退到全局配置的 {@code oss.bucket-name}。
+     * 解析最终 bucket：若传入值为 null 或空串，回退到全局配置的 {@code sz.oss.bucketName}。
      */
     private String resolveBucket(String bucket) {
-        if (bucket == null || bucket.isBlank()) {
-            return properties.getBucketName();
-        }
-        return bucket;
-    }
-
-    /**
-     * 生成 UUID 文件名，如 /20231212/4150e7c6-b92f-419d-b804-0e8be80f5e71.png
-     */
-    private String generateFileName(String originalFilename) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String localTime = df.format(LocalDate.now());
-        String pathStr = FILE_SEPARATOR + localTime + FILE_SEPARATOR;
-        String extension = org.springframework.util.StringUtils.getFilenameExtension(originalFilename);
-        String fileName = UUID.randomUUID().toString();
-        return pathStr + fileName + "." + extension;
+        return sceneConnection == null ? properties.resolveBucketName(bucket) : globalDefaults.resolveBucketName(bucket);
     }
 
     private String getFileName(String path) {
@@ -383,37 +375,4 @@ public class OssClient {
         return eTag.replaceAll("(^\")|(\"$)", "");
     }
 
-    /**
-     * 若 url 不含协议前缀，则拼接 scheme；若已含协议前缀，直接返回。
-     */
-    private String ensureScheme(String url, String scheme) {
-        if (url.startsWith("https://") || url.startsWith("http://")) {
-            return url.replaceAll("/$", ""); // 去掉末尾斜杠
-        }
-        return scheme + "://" + url.replaceAll("/$", "");
-    }
-
-    /**
-     * 去掉 endpoint 中的协议前缀（http:// / https://）。 S3Configuration 已使用 scheme 字段拼接，此处只需纯
-     * host:port 部分。
-     */
-    private String stripScheme(String endpoint) {
-        if (endpoint == null) {
-            return "";
-        }
-        if (endpoint.startsWith("https://")) {
-            return endpoint.substring("https://".length());
-        }
-        if (endpoint.startsWith("http://")) {
-            return endpoint.substring("http://".length());
-        }
-        return endpoint;
-    }
-
-    private String stripTrailingSlash(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s.endsWith("/") ? s.substring(0, s.length() - 1) : s;
-    }
 }

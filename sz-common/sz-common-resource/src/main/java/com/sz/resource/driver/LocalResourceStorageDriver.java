@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,7 +38,8 @@ import java.nio.file.Paths;
  * </pre>
  *
  * <p>
- * <b>路径穿越防护</b>：objectKey 不允许包含 ".."，且最终路径必须在 root 目录之下。
+ * <b>路径防护</b>：校验 objectKey 和 root 下的规范化路径；上传、读取、删除和存在性检查还校验已存在节点的真实路径边界。 LOCAL
+ * 场景的 path 前缀隔离由上层 ResourceService 校验，本驱动不根据 scene 再拼接目录。
  */
 @Component
 @RequiredArgsConstructor
@@ -47,7 +50,11 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
     @Override
     public String upload(MultipartFile file, String objectKey, ResourceSceneConfig scene) throws IOException {
         File target = resolveFile(objectKey);
+        Path base = resolveBasePath();
+        Files.createDirectories(base);
+        validateRealPathBoundary(target.toPath(), base, objectKey);
         FileUtils.forceMkdirParent(target);
+        validateRealPathBoundary(target.toPath(), base, objectKey);
         file.transferTo(target);
         // LOCAL 无 eTag 概念，返回 null
         return null;
@@ -67,18 +74,18 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
 
     @Override
     public void delete(String objectKey, ResourceSceneConfig scene) {
-        File file = resolveFile(objectKey);
+        File file = resolveFileForExistingOperation(objectKey);
         FileUtils.deleteQuietly(file);
     }
 
     @Override
     public boolean exists(String objectKey, ResourceSceneConfig scene) {
-        return resolveFile(objectKey).exists();
+        return resolveFileForExistingOperation(objectKey).exists();
     }
 
     @Override
     public String presign(String objectKey, ResourceSceneConfig scene, long expireSeconds) {
-        // LOCAL 存储无签名概念；ResourceProperties 启动校验已保证 PRESIGNED ↔ OSS 绑定，运行时不应到达此处
+        // LOCAL 不支持签名；静态场景启动校验和动态场景解析均拒绝 LOCAL + PRESIGNED 组合。
         throw new UnsupportedOperationException("LOCAL 存储不支持签名 URL，场景：" + scene.getCode());
     }
 
@@ -98,8 +105,7 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
      */
     private File resolveFile(String objectKey) {
         validateObjectKey(objectKey);
-        String root = resourceProperties.getRoot();
-        Path base = Paths.get(root).toAbsolutePath().normalize();
+        Path base = resolveBasePath();
         // objectKey 直接拼接在 root 下，保留完整子目录结构
         Path target = base.resolve(objectKey).normalize();
         // 安全校验：目标路径必须在 root 目录之下，防止路径穿越
@@ -110,11 +116,10 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
     }
 
     /**
-     * 读取场景下的文件解析：在 {@link #resolveFile(String)} 基础上增加符号链接防护。
+     * 读取文件时，在 {@link #resolveFile(String)} 基础上增加符号链接防护。
      *
      * <p>
-     * 通过 {@link Path#toRealPath()} 解析符号链接后的真实路径， 再次校验真实路径是否仍在 root 目录下，防止通过符号链接逃逸到
-     * root 外部。
+     * 通过 {@link Path#toRealPath()} 解析符号链接后的真实路径，再次校验真实路径是否仍在 root 目录下，防止通过符号链接逃逸到 root 外部。
      *
      * @param objectKey
      *            存储键
@@ -129,13 +134,46 @@ public class LocalResourceStorageDriver implements ResourceStorageDriver {
         if (!file.exists()) {
             throw new FileNotFoundException("文件不存在：" + objectKey);
         }
-        // 符号链接防护：解析真实路径后再次校验是否在 root 目录下
-        Path realPath = file.toPath().toRealPath();
-        Path base = Paths.get(resourceProperties.getRoot()).toAbsolutePath().normalize().toRealPath();
-        if (!realPath.startsWith(base)) {
+        validateRealPathBoundary(file.toPath(), resolveBasePath(), objectKey);
+        return file.toPath().toRealPath().toFile();
+    }
+
+    /**
+     * 为无需声明受检异常的 exists/delete 操作执行相同的真实路径边界校验。
+     */
+    private File resolveFileForExistingOperation(String objectKey) {
+        File file = resolveFile(objectKey);
+        Path base = resolveBasePath();
+        if (!Files.exists(base, LinkOption.NOFOLLOW_LINKS)) {
+            return file;
+        }
+        try {
+            validateRealPathBoundary(file.toPath(), base, objectKey);
+            return file;
+        } catch (IOException exception) {
+            throw new IllegalArgumentException("无法验证本地文件路径安全性：" + objectKey, exception);
+        }
+    }
+
+    /**
+     * 校验目标自身或最近的已存在父目录解析符号链接后仍位于 root 内。
+     *
+     * <p>
+     * 对尚未创建的上传目标，需要从目标向上查找已存在节点，才能在写入前识别父目录符号链接。
+     */
+    private void validateRealPathBoundary(Path target, Path base, String objectKey) throws IOException {
+        Path realBase = base.toRealPath();
+        Path existingPath = target;
+        while (existingPath != null && !Files.exists(existingPath, LinkOption.NOFOLLOW_LINKS)) {
+            existingPath = existingPath.getParent();
+        }
+        if (existingPath == null || !existingPath.toRealPath().startsWith(realBase)) {
             throw new IllegalArgumentException("文件路径逃逸（可能存在符号链接攻击）：" + objectKey);
         }
-        return realPath.toFile();
+    }
+
+    private Path resolveBasePath() {
+        return Paths.get(resourceProperties.getRoot()).toAbsolutePath().normalize();
     }
 
     /**

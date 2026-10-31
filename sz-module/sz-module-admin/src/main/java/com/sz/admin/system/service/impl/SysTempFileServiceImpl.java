@@ -72,8 +72,7 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
         SysTempFile existing = getById(dto.getId());
         CommonResponseEnum.INVALID_ID.assertNull(existing);
         SysTempFile sysTempFile = BeanCopyUtils.copy(dto, SysTempFile.class);
-        List<ResourceRef> normalized = sysResourceService.normalizeForUpdate(existing.getUrl(), dto.getUrl(), "template.excel",
-                StpUtil.getLoginIdAsLong());
+        List<ResourceRef> normalized = sysResourceService.normalizeForUpdate(existing.getUrl(), dto.getUrl(), "template.excel", StpUtil.getLoginIdAsLong());
         Long fileId = requireSingleResourceId(normalized);
         sysTempFile.setUrl(normalized);
         sysTempFile.setSysFileId(fileId);
@@ -124,8 +123,7 @@ public class SysTempFileServiceImpl extends ServiceImpl<SysTempFileMapper, SysTe
             throw ResourceAccessResponseEnum.RESOURCE_NOT_FOUND.newException();
         }
         boolean matched = Objects.equals(record.getSysFileId(), resourceId) && record.getUrl() != null
-                && record.getUrl().stream()
-                .anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
+                && record.getUrl().stream().anyMatch(reference -> reference != null && Objects.equals(reference.getResourceId(), resourceId));
         ResourceAccessResponseEnum.ACCESS_DENIED.assertFalse(matched);
     }
 

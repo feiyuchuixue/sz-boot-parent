@@ -1,0 +1,1337 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sz-Admin OSS 与资源配置",
+  "description": "为拆分的 oss.yml 提供 sz.oss 与 sz.resource 的字段、类型和候选值提示。跨字段组合及运行时约束仍由 Java 配置校验负责。",
+  "type": "object",
+  "properties": {
+    "sz": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ossSzConfig"
+        }
+      ],
+      "description": "Sz-Admin 自定义配置命名空间。本 Schema 只细化其中的 oss 与 resource；sz 下其他框架配置仍允许存在。"
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "ossSzConfig": {
+      "type": "object",
+      "properties": {
+        "oss": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ossConfig"
+            }
+          ],
+          "description": "S3 兼容对象存储的全局默认连接、签名、寻址风格与访问地址生成配置，供 sz-common-oss 以及未完全覆盖连接的资源场景使用。"
+        },
+        "resource": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/resourceConfig"
+            }
+          ],
+          "description": "统一资源管理配置，定义 LOCAL 根目录、上传安全策略和按 code 区分的资源场景。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "ossConfig": {
+      "type": "object",
+      "description": "S3 兼容对象存储的全局连接与访问地址生成配置。",
+      "properties": {
+        "provider": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ossProvider"
+            }
+          ],
+          "description": "全局对象存储服务提供商。provider 不切换 endpoint；未显式指定寻址风格时，由生效 provider 判定寻址风格。 默认值：MINIO。 候选值：ALIYUN（阿里云 OSS）；QINIU（七牛云 Kodo）；TENCENT（腾讯云 COS）；MINIO（MinIO 对象存储）；RUSTFS（RustFS 对象存储）。",
+          "default": "MINIO",
+          "x-intellij-html-description": "<p>全局对象存储服务提供商。provider 不切换 endpoint；未显式指定寻址风格时，由生效 provider 判定寻址风格。</p><p><b>默认值：</b><code>MINIO</code></p><p><b>候选值及含义：</b></p><p><code>ALIYUN</code><br>阿里云 OSS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>QINIU</code><br>七牛云 Kodo。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>TENCENT</code><br>腾讯云 COS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>MINIO</code><br>MinIO 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p><p><code>RUSTFS</code><br>RustFS 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p>"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_ENDPOINT:http://127.0.0.1:9000}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_ENDPOINT:http://127.0.0.1:9000}": {
+                  "description": "使用环境变量配置 S3 API 端点"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_ENDPOINT:http://127.0.0.1:9000}"
+          ],
+          "description": "全局 S3 API 连接端点。本属性控制 S3 客户端配置是否装配，缺省时不装配；仅配置场景 endpoint 不会独立启用 OSS。装配后 会先使用全局 endpoint、region、access-key、secret-key 创建默认客户端和预签名器，因此即使场景另有独立连接，全局连接参数仍须可用。支持完整 HTTP(S) 地址，也支持不带协议的主机名或主机名加端口；解析时去除首尾空白和末尾斜杠，未带协议 时由 scheme 补全，已带协议时沿用端点自身协议。默认连接的 domain 未配置或为空白，且 OSS DIRECT 场景未显式配置 base-url 时，也用本值推导直连地址；空白端点在创建客户端或推导地址时会报错。",
+          "x-intellij-html-description": "<p>全局 S3 API 连接端点。本属性控制 S3 客户端配置是否装配，缺省时不装配；仅配置场景 endpoint 不会独立启用 OSS。装配后 会先使用全局 endpoint、region、access-key、secret-key 创建默认客户端和预签名器，因此即使场景另有独立连接，全局连接参数仍须可用。支持完整 HTTP(S) 地址，也支持不带协议的主机名或主机名加端口；解析时去除首尾空白和末尾斜杠，未带协议 时由 scheme 补全，已带协议时沿用端点自身协议。默认连接的 domain 未配置或为空白，且 OSS DIRECT 场景未显式配置 base-url 时，也用本值推导直连地址；空白端点在创建客户端或推导地址时会报错。</p><p><b>示例：</b></p><ul><li><code>${OSS_ENDPOINT:http://127.0.0.1:9000}</code> — 使用环境变量配置 S3 API 端点</li></ul>"
+        },
+        "access-key": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_ACCESS_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_ACCESS_KEY}": {
+                  "description": "从环境变量读取访问密钥 ID"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_ACCESS_KEY}"
+          ],
+          "description": "全局默认 S3 连接的访问密钥 ID（Access Key ID 或 SecretID），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。",
+          "x-intellij-html-description": "<p>全局默认 S3 连接的访问密钥 ID（Access Key ID 或 SecretID），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。</p><p><b>示例：</b></p><ul><li><code>${OSS_ACCESS_KEY}</code> — 从环境变量读取访问密钥 ID</li></ul>"
+        },
+        "accessKey": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_ACCESS_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_ACCESS_KEY}": {
+                  "description": "从环境变量读取访问密钥 ID"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_ACCESS_KEY}"
+          ],
+          "description": "全局默认 S3 连接的访问密钥 ID（Access Key ID 或 SecretID），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。这是 access-key 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局默认 S3 连接的访问密钥 ID（Access Key ID 或 SecretID），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。这是 access-key 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${OSS_ACCESS_KEY}</code> — 从环境变量读取访问密钥 ID</li></ul>"
+        },
+        "secret-key": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_SECRET_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_SECRET_KEY}": {
+                  "description": "从环境变量读取访问密钥密码"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_SECRET_KEY}"
+          ],
+          "description": "全局默认 S3 连接的访问密钥密码（Access Key Secret 或 SecretKey），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用 本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。",
+          "x-intellij-html-description": "<p>全局默认 S3 连接的访问密钥密码（Access Key Secret 或 SecretKey），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用 本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。</p><p><b>示例：</b></p><ul><li><code>${OSS_SECRET_KEY}</code> — 从环境变量读取访问密钥密码</li></ul>"
+        },
+        "secretKey": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_SECRET_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_SECRET_KEY}": {
+                  "description": "从环境变量读取访问密钥密码"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_SECRET_KEY}"
+          ],
+          "description": "全局默认 S3 连接的访问密钥密码（Access Key Secret 或 SecretKey），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用 本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。这是 secret-key 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局默认 S3 连接的访问密钥密码（Access Key Secret 或 SecretKey），供 SDK 和预签名认证使用。S3 客户端配置启用后会先用 本值装配默认客户端，因此本值必须可用于全局连接；场景未形成独立连接时也继承此值。字段没有业务默认值。这是 secret-key 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${OSS_SECRET_KEY}</code> — 从环境变量读取访问密钥密码</li></ul>"
+        },
+        "bucket-name": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_BUCKET:sz-admin}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_BUCKET:sz-admin}": {
+                  "description": "使用环境变量配置默认存储桶"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_BUCKET:sz-admin}"
+          ],
+          "description": "全局默认存储桶名称。OSS 场景的 bucket 未配置或为空白时继承此值；场景值和全局值都为空白会使场景校验失败。生效 bucket 既作为 SDK 的 bucket 参数，也作为资源 objectKey 的一级逻辑前缀。",
+          "x-intellij-html-description": "<p>全局默认存储桶名称。OSS 场景的 bucket 未配置或为空白时继承此值；场景值和全局值都为空白会使场景校验失败。生效 bucket 既作为 SDK 的 bucket 参数，也作为资源 objectKey 的一级逻辑前缀。</p><p><b>示例：</b></p><ul><li><code>${OSS_BUCKET:sz-admin}</code> — 使用环境变量配置默认存储桶</li></ul>"
+        },
+        "bucketName": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_BUCKET:sz-admin}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_BUCKET:sz-admin}": {
+                  "description": "使用环境变量配置默认存储桶"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_BUCKET:sz-admin}"
+          ],
+          "description": "全局默认存储桶名称。OSS 场景的 bucket 未配置或为空白时继承此值；场景值和全局值都为空白会使场景校验失败。生效 bucket 既作为 SDK 的 bucket 参数，也作为资源 objectKey 的一级逻辑前缀。这是 bucket-name 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局默认存储桶名称。OSS 场景的 bucket 未配置或为空白时继承此值；场景值和全局值都为空白会使场景校验失败。生效 bucket 既作为 SDK 的 bucket 参数，也作为资源 objectKey 的一级逻辑前缀。这是 bucket-name 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${OSS_BUCKET:sz-admin}</code> — 使用环境变量配置默认存储桶</li></ul>"
+        },
+        "domain": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_DOMAIN:https://files.example.com}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_DOMAIN:https://files.example.com}": {
+                  "description": "使用环境变量配置直连地址根"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_DOMAIN:https://files.example.com}"
+          ],
+          "description": "全局默认连接的 CDN 域名或自定义源站根地址，供 OssClient 生成直连 URL 前缀，也用于未显式配置 scene base-url 的 OSS DIRECT 地址推导；不参与 SDK 请求或预签名。带 HTTP(S) 协议时直接使用，不带协议时由 scheme 补全。 PATH 风格下应填写不含 bucket 的访问根，代码会追加生效 bucket；VIRTUAL_HOSTED 风格下视为已指向桶的完整地址，或用 {bucket} 占位符生成桶地址，PATH 风格使用 {bucket} 会报错。未配置或为空白时回退 endpoint；场景独立连接只用自身 endpoint，不使用此 domain。 本字段只决定返回的地址字符串，不开放存储权限或应用路由。",
+          "x-intellij-html-description": "<p>全局默认连接的 CDN 域名或自定义源站根地址，供 OssClient 生成直连 URL 前缀，也用于未显式配置 scene base-url 的 OSS DIRECT 地址推导；不参与 SDK 请求或预签名。带 HTTP(S) 协议时直接使用，不带协议时由 scheme 补全。 PATH 风格下应填写不含 bucket 的访问根，代码会追加生效 bucket；VIRTUAL_HOSTED 风格下视为已指向桶的完整地址，或用 {bucket} 占位符生成桶地址，PATH 风格使用 {bucket} 会报错。未配置或为空白时回退 endpoint；场景独立连接只用自身 endpoint，不使用此 domain。 本字段只决定返回的地址字符串，不开放存储权限或应用路由。</p><p><b>示例：</b></p><ul><li><code>${OSS_DOMAIN:https://files.example.com}</code> — 使用环境变量配置直连地址根</li></ul>"
+        },
+        "scheme": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/scheme"
+            }
+          ],
+          "description": "全局地址补全协议。endpoint 自带 http:// 或 https:// 时不覆盖 endpoint 协议；endpoint、domain 或场景独立 endpoint 未带协议时使用本值补全，domain 未配置或为空白时的直连地址沿用生效 endpoint 协议。 默认值：https。 候选值：http（HTTP 协议）；https（HTTPS 协议）。",
+          "default": "https",
+          "x-intellij-html-description": "<p>全局地址补全协议。endpoint 自带 http:// 或 https:// 时不覆盖 endpoint 协议；endpoint、domain 或场景独立 endpoint 未带协议时使用本值补全，domain 未配置或为空白时的直连地址沿用生效 endpoint 协议。</p><p><b>默认值：</b><code>https</code></p><p><b>候选值及含义：</b></p><p><code>http</code><br>HTTP 协议。 用于补全未携带协议的 endpoint 或 domain。</p><p><code>https</code><br>HTTPS 协议。 用于补全未携带协议的 endpoint 或 domain。</p>"
+        },
+        "region": {
+          "anyOf": [
+            {
+              "enum": [
+                "us-east-1"
+              ],
+              "x-intellij-enum-metadata": {
+                "us-east-1": {
+                  "description": "S3 兼容服务常用签名区域"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "us-east-1"
+          ],
+          "description": "全局 AWS S3 签名 Region，影响 S3 客户端签名和 Presigned URL，不会切换 endpoint。场景 region 未配置或为空白时继承 本值，本值仍为空白时解析器最终回退 us-east-1。按地域校验签名的服务必须填写 bucket 所在实际区域。 默认值：us-east-1。",
+          "default": "us-east-1",
+          "x-intellij-html-description": "<p>全局 AWS S3 签名 Region，影响 S3 客户端签名和 Presigned URL，不会切换 endpoint。场景 region 未配置或为空白时继承 本值，本值仍为空白时解析器最终回退 us-east-1。按地域校验签名的服务必须填写 bucket 所在实际区域。</p><p><b>默认值：</b><code>us-east-1</code></p><p><b>示例：</b></p><ul><li><code>us-east-1</code> — S3 兼容服务常用签名区域</li></ul>"
+        },
+        "force-path-style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableBoolean"
+            }
+          ],
+          "description": "兼容旧配置的全局 S3 寻址风格开关：true 表示 PATH，地址形如 endpoint/bucket/object；false 表示 VIRTUAL_HOSTED，地址形如 bucket.endpoint/object；未配置时再看 addressing-style 和 provider。有效优先级为场景 addressing-style、全局 addressing-style、本字段、生效 provider 判定值。若本字段与全局 addressing-style 同时配置且 语义冲突，会在应用场景覆盖前报错，因此场景覆盖不能绕过该冲突。",
+          "x-intellij-html-description": "<p>兼容旧配置的全局 S3 寻址风格开关：true 表示 PATH，地址形如 endpoint/bucket/object；false 表示 VIRTUAL_HOSTED，地址形如 bucket.endpoint/object；未配置时再看 addressing-style 和 provider。有效优先级为场景 addressing-style、全局 addressing-style、本字段、生效 provider 判定值。若本字段与全局 addressing-style 同时配置且 语义冲突，会在应用场景覆盖前报错，因此场景覆盖不能绕过该冲突。</p>"
+        },
+        "forcePathStyle": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nullableBoolean"
+            }
+          ],
+          "description": "兼容旧配置的全局 S3 寻址风格开关：true 表示 PATH，地址形如 endpoint/bucket/object；false 表示 VIRTUAL_HOSTED，地址形如 bucket.endpoint/object；未配置时再看 addressing-style 和 provider。有效优先级为场景 addressing-style、全局 addressing-style、本字段、生效 provider 判定值。若本字段与全局 addressing-style 同时配置且 语义冲突，会在应用场景覆盖前报错，因此场景覆盖不能绕过该冲突。这是 force-path-style 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>兼容旧配置的全局 S3 寻址风格开关：true 表示 PATH，地址形如 endpoint/bucket/object；false 表示 VIRTUAL_HOSTED，地址形如 bucket.endpoint/object；未配置时再看 addressing-style 和 provider。有效优先级为场景 addressing-style、全局 addressing-style、本字段、生效 provider 判定值。若本字段与全局 addressing-style 同时配置且 语义冲突，会在应用场景覆盖前报错，因此场景覆盖不能绕过该冲突。这是 force-path-style 的 camelCase 别名，绑定语义相同。</p>"
+        },
+        "addressing-style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/addressingStyle"
+            }
+          ],
+          "description": "全局显式 S3 寻址风格。有效优先级为场景 addressing-style、本字段、旧 force-path-style、生效 provider 判定值；未配置时 继续回退旧开关及 provider。若本字段与 force-path-style 同时配置且语义冲突，会在应用场景覆盖前报错。 候选值：PATH（路径风格寻址）；VIRTUAL_HOSTED（虚拟主机风格寻址）。",
+          "x-intellij-html-description": "<p>全局显式 S3 寻址风格。有效优先级为场景 addressing-style、本字段、旧 force-path-style、生效 provider 判定值；未配置时 继续回退旧开关及 provider。若本字段与 force-path-style 同时配置且语义冲突，会在应用场景覆盖前报错。</p><p><b>候选值及含义：</b></p><p><code>PATH</code><br>路径风格寻址。 bucket 位于 URL 路径中，地址形如 endpoint/bucket/object。</p><p><code>VIRTUAL_HOSTED</code><br>虚拟主机风格寻址。 bucket 位于主机名中，地址形如 bucket.endpoint/object。</p>"
+        },
+        "addressingStyle": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/addressingStyle"
+            }
+          ],
+          "description": "全局显式 S3 寻址风格。有效优先级为场景 addressing-style、本字段、旧 force-path-style、生效 provider 判定值；未配置时 继续回退旧开关及 provider。若本字段与 force-path-style 同时配置且语义冲突，会在应用场景覆盖前报错。 候选值：PATH（路径风格寻址）；VIRTUAL_HOSTED（虚拟主机风格寻址）。这是 addressing-style 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局显式 S3 寻址风格。有效优先级为场景 addressing-style、本字段、旧 force-path-style、生效 provider 判定值；未配置时 继续回退旧开关及 provider。若本字段与 force-path-style 同时配置且语义冲突，会在应用场景覆盖前报错。这是 addressing-style 的 camelCase 别名，绑定语义相同。</p><p><b>候选值及含义：</b></p><p><code>PATH</code><br>路径风格寻址。 bucket 位于 URL 路径中，地址形如 endpoint/bucket/object。</p><p><code>VIRTUAL_HOSTED</code><br>虚拟主机风格寻址。 bucket 位于主机名中，地址形如 bucket.endpoint/object。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resourceConfig": {
+      "type": "object",
+      "description": "统一资源管理配置。",
+      "properties": {
+        "root": {
+          "anyOf": [
+            {
+              "enum": [
+                "./data"
+              ],
+              "x-intellij-enum-metadata": {
+                "./data": {
+                  "description": "将本地资源存放在应用进程工作目录下的 data 目录"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "./data"
+          ],
+          "description": "LOCAL 存储使用的全局物理根目录。LOCAL 场景生成的 objectKey 已包含场景 path 和分层子目录，实际文件路径为 root/objectKey；OSS 场景不使用本字段。相对路径基于应用进程工作目录；YAML null 或精确空串会绑定为空串并解析为工作目录，应填写明确目录。 默认值：./data。",
+          "default": "./data",
+          "x-intellij-html-description": "<p>LOCAL 存储使用的全局物理根目录。LOCAL 场景生成的 objectKey 已包含场景 path 和分层子目录，实际文件路径为 root/objectKey；OSS 场景不使用本字段。相对路径基于应用进程工作目录；YAML null 或精确空串会绑定为空串并解析为工作目录，应填写明确目录。</p><p><b>默认值：</b><code>./data</code></p><p><b>示例：</b></p><ul><li><code>./data</code> — 将本地资源存放在应用进程工作目录下的 data 目录</li></ul>"
+        },
+        "default-storage-type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/storageType"
+            }
+          ],
+          "description": "保留的全局默认存储类型。当前实现不读取它作为场景 type 的回退值；场景未配置 type 时始终使用 ResourceSceneConfig.type 自身的初始化默认值。 默认值：LOCAL。 候选值：LOCAL（本地磁盘存储）；OSS（S3 兼容对象存储）。",
+          "default": "LOCAL",
+          "x-intellij-html-description": "<p>保留的全局默认存储类型。当前实现不读取它作为场景 type 的回退值；场景未配置 type 时始终使用 ResourceSceneConfig.type 自身的初始化默认值。</p><p><b>默认值：</b><code>LOCAL</code></p><p><b>候选值及含义：</b></p><p><code>LOCAL</code><br>本地磁盘存储。 文件由资源模块写入全局 root 下，场景必须配置合法 path。</p><p><code>OSS</code><br>S3 兼容对象存储。 文件读写委托 sz-common-oss，具体服务商由 OSS 连接配置决定。</p>"
+        },
+        "defaultStorageType": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/storageType"
+            }
+          ],
+          "description": "保留的全局默认存储类型。当前实现不读取它作为场景 type 的回退值；场景未配置 type 时始终使用 ResourceSceneConfig.type 自身的初始化默认值。 默认值：LOCAL。 候选值：LOCAL（本地磁盘存储）；OSS（S3 兼容对象存储）。这是 default-storage-type 的 camelCase 别名，绑定语义相同。",
+          "default": "LOCAL",
+          "x-intellij-html-description": "<p>保留的全局默认存储类型。当前实现不读取它作为场景 type 的回退值；场景未配置 type 时始终使用 ResourceSceneConfig.type 自身的初始化默认值。这是 default-storage-type 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>LOCAL</code></p><p><b>候选值及含义：</b></p><p><code>LOCAL</code><br>本地磁盘存储。 文件由资源模块写入全局 root 下，场景必须配置合法 path。</p><p><code>OSS</code><br>S3 兼容对象存储。 文件读写委托 sz-common-oss，具体服务商由 OSS 连接配置决定。</p>"
+        },
+        "dev-file-server": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/resourcePropertiesDevFileServerConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "本地开发辅助文件服务。未配置时关闭，是否注册仅由 enabled 配置决定，不额外限制 profile。 仓库 local 配置显式开启，dev、preview、prod 配置默认关闭；任何环境显式设为 true 均会注册。 只控制配套 admin 开发文件 Controller 的注册，不影响上传、LOCAL 存储或 DIRECT URL 生成。 部署环境使用 Nginx 提供 LOCAL DIRECT 静态访问，并配置对应场景的实际 base-url。",
+          "x-intellij-html-description": "<p>本地开发辅助文件服务。未配置时关闭，是否注册仅由 enabled 配置决定，不额外限制 profile。 仓库 local 配置显式开启，dev、preview、prod 配置默认关闭；任何环境显式设为 true 均会注册。 只控制配套 admin 开发文件 Controller 的注册，不影响上传、LOCAL 存储或 DIRECT URL 生成。 部署环境使用 Nginx 提供 LOCAL DIRECT 静态访问，并配置对应场景的实际 base-url。</p>"
+        },
+        "devFileServer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/resourcePropertiesDevFileServerConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "本地开发辅助文件服务。未配置时关闭，是否注册仅由 enabled 配置决定，不额外限制 profile。 仓库 local 配置显式开启，dev、preview、prod 配置默认关闭；任何环境显式设为 true 均会注册。 只控制配套 admin 开发文件 Controller 的注册，不影响上传、LOCAL 存储或 DIRECT URL 生成。 部署环境使用 Nginx 提供 LOCAL DIRECT 静态访问，并配置对应场景的实际 base-url。这是 dev-file-server 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>本地开发辅助文件服务。未配置时关闭，是否注册仅由 enabled 配置决定，不额外限制 profile。 仓库 local 配置显式开启，dev、preview、prod 配置默认关闭；任何环境显式设为 true 均会注册。 只控制配套 admin 开发文件 Controller 的注册，不影响上传、LOCAL 存储或 DIRECT URL 生成。 部署环境使用 Nginx 提供 LOCAL DIRECT 静态访问，并配置对应场景的实际 base-url。这是 dev-file-server 的 camelCase 别名，绑定语义相同。</p>"
+        },
+        "security": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/securityConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "全局资源上传安全策略。省略本段，或配置 YAML null、精确空串时，保留初始化的 SecurityConfig 对象；只含空白字符的非空字符串会绑定失败。运行时该对象必须非 null，否则默认 YmlSecurityPolicyProvider 无法读取策略。容器未提供自定义 ResourceSecurityPolicyProvider 时，默认 provider 读取本段：未配置字段分别使用内置扩展名白名单、MIME 白名单和 50MB 大小上限；硬编码危险扩展名黑名单始终优先且不可覆盖。上层若注册数据库、配置中心等自定义 ResourceSecurityPolicyProvider，可替代本段提供的全局策略。",
+          "x-intellij-html-description": "<p>全局资源上传安全策略。省略本段，或配置 YAML null、精确空串时，保留初始化的 SecurityConfig 对象；只含空白字符的非空字符串会绑定失败。运行时该对象必须非 null，否则默认 YmlSecurityPolicyProvider 无法读取策略。容器未提供自定义 ResourceSecurityPolicyProvider 时，默认 provider 读取本段：未配置字段分别使用内置扩展名白名单、MIME 白名单和 50MB 大小上限；硬编码危险扩展名黑名单始终优先且不可覆盖。上层若注册数据库、配置中心等自定义 ResourceSecurityPolicyProvider，可替代本段提供的全局策略。</p>"
+        },
+        "scenes": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/sceneList"
+            }
+          ],
+          "description": "静态资源场景列表。每项按 code 建立索引，code 必须非空白且唯一；列表未配置或为空时资源模块记录警告并不可用。每个场景 会在启动时应用默认值并执行 LOCAL/OSS、连接、访问模式等组合校验；自定义 ResourceSceneProvider 提供的动态场景也执行 同一解析规则。",
+          "x-intellij-html-description": "<p>静态资源场景列表。每项按 code 建立索引，code 必须非空白且唯一；列表未配置或为空时资源模块记录警告并不可用。每个场景 会在启动时应用默认值并执行 LOCAL/OSS、连接、访问模式等组合校验；自定义 ResourceSceneProvider 提供的动态场景也执行 同一解析规则。</p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resourcePropertiesDevFileServerConfig": {
+      "type": "object",
+      "description": "嵌套配置对象 ResourceProperties.DevFileServerConfig。",
+      "properties": {
+        "enabled": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/booleanValue"
+            }
+          ],
+          "description": "是否注册本地开发文件读取入口，默认 false，不额外限制 profile。false 或未配置时不创建 Controller，也不注册路由。建议只在本地临时验证时开启；部署环境默认关闭并使用 Nginx，显式设为 true 时也会启用。 入口匿名读取唯一匹配的 LOCAL DIRECT 场景，不读取 PROTECTED 或 OSS 场景；上传等接口不受本开关影响。 默认值：false。",
+          "default": false,
+          "x-intellij-html-description": "<p>是否注册本地开发文件读取入口，默认 false，不额外限制 profile。false 或未配置时不创建 Controller，也不注册路由。建议只在本地临时验证时开启；部署环境默认关闭并使用 Nginx，显式设为 true 时也会启用。 入口匿名读取唯一匹配的 LOCAL DIRECT 场景，不读取 PROTECTED 或 OSS 场景；上传等接口不受本开关影响。</p><p><b>默认值：</b><code>false</code></p>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "securityConfig": {
+      "type": "object",
+      "description": "全局资源上传安全策略。",
+      "properties": {
+        "allowed-exts": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "全局允许上传的文件扩展名白名单，值应使用小写且不带点。未配置或空集合时使用内置的常见图片、文档、压缩包和音视频扩展名集合。上传时先执行不可覆盖的危险扩展名黑名单和双扩展名检查，再检查本白名单；即使把黑名单扩展名写入此处也 不会放行。",
+          "x-intellij-html-description": "<p>全局允许上传的文件扩展名白名单，值应使用小写且不带点。未配置或空集合时使用内置的常见图片、文档、压缩包和音视频扩展名集合。上传时先执行不可覆盖的危险扩展名黑名单和双扩展名检查，再检查本白名单；即使把黑名单扩展名写入此处也 不会放行。</p>"
+        },
+        "allowedExts": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "全局允许上传的文件扩展名白名单，值应使用小写且不带点。未配置或空集合时使用内置的常见图片、文档、压缩包和音视频扩展名集合。上传时先执行不可覆盖的危险扩展名黑名单和双扩展名检查，再检查本白名单；即使把黑名单扩展名写入此处也 不会放行。这是 allowed-exts 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局允许上传的文件扩展名白名单，值应使用小写且不带点。未配置或空集合时使用内置的常见图片、文档、压缩包和音视频扩展名集合。上传时先执行不可覆盖的危险扩展名黑名单和双扩展名检查，再检查本白名单；即使把黑名单扩展名写入此处也 不会放行。这是 allowed-exts 的 camelCase 别名，绑定语义相同。</p>"
+        },
+        "allowed-mime-types": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "全局允许上传的 MIME 类型白名单，值应使用小写标准 MIME。未配置或空集合时使用内置默认集合。客户端 MIME 非空白且 场景未配置非空 mimes 时，将客户端传入的完整值转为小写后与本集合精确匹配，不解析或去除 charset 等参数；场景 mimes 非空时完全使用场景集合，不再检查本集合。客户端未提供 MIME 或值为空白时跳过 MIME 校验。",
+          "x-intellij-html-description": "<p>全局允许上传的 MIME 类型白名单，值应使用小写标准 MIME。未配置或空集合时使用内置默认集合。客户端 MIME 非空白且 场景未配置非空 mimes 时，将客户端传入的完整值转为小写后与本集合精确匹配，不解析或去除 charset 等参数；场景 mimes 非空时完全使用场景集合，不再检查本集合。客户端未提供 MIME 或值为空白时跳过 MIME 校验。</p>"
+        },
+        "allowedMimeTypes": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "全局允许上传的 MIME 类型白名单，值应使用小写标准 MIME。未配置或空集合时使用内置默认集合。客户端 MIME 非空白且 场景未配置非空 mimes 时，将客户端传入的完整值转为小写后与本集合精确匹配，不解析或去除 charset 等参数；场景 mimes 非空时完全使用场景集合，不再检查本集合。客户端未提供 MIME 或值为空白时跳过 MIME 校验。这是 allowed-mime-types 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>全局允许上传的 MIME 类型白名单，值应使用小写标准 MIME。未配置或空集合时使用内置默认集合。客户端 MIME 非空白且 场景未配置非空 mimes 时，将客户端传入的完整值转为小写后与本集合精确匹配，不解析或去除 charset 等参数；场景 mimes 非空时完全使用场景集合，不再检查本集合。客户端未提供 MIME 或值为空白时跳过 MIME 校验。这是 allowed-mime-types 的 camelCase 别名，绑定语义相同。</p>"
+        },
+        "max-size": {
+          "anyOf": [
+            {
+              "enum": [
+                "50MB"
+              ],
+              "x-intellij-enum-metadata": {
+                "50MB": {
+                  "description": "默认全局单文件大小上限"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/dataSize"
+            }
+          ],
+          "examples": [
+            "50MB"
+          ],
+          "description": "默认 YmlSecurityPolicyProvider 使用的全局单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确 大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。未配置时 使用内置 50MB；配置小于等于 0 不会关闭限制，上传仍把该值作为全局上限并与场景上限比较，会拒绝非空文件。自定义 ResourceSecurityPolicyProvider 可替代本值。",
+          "x-intellij-html-description": "<p>默认 YmlSecurityPolicyProvider 使用的全局单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确 大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。未配置时 使用内置 50MB；配置小于等于 0 不会关闭限制，上传仍把该值作为全局上限并与场景上限比较，会拒绝非空文件。自定义 ResourceSecurityPolicyProvider 可替代本值。</p><p><b>示例：</b></p><ul><li><code>50MB</code> — 默认全局单文件大小上限</li></ul>"
+        },
+        "maxSize": {
+          "anyOf": [
+            {
+              "enum": [
+                "50MB"
+              ],
+              "x-intellij-enum-metadata": {
+                "50MB": {
+                  "description": "默认全局单文件大小上限"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/dataSize"
+            }
+          ],
+          "examples": [
+            "50MB"
+          ],
+          "description": "默认 YmlSecurityPolicyProvider 使用的全局单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确 大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。未配置时 使用内置 50MB；配置小于等于 0 不会关闭限制，上传仍把该值作为全局上限并与场景上限比较，会拒绝非空文件。自定义 ResourceSecurityPolicyProvider 可替代本值。这是 max-size 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>默认 YmlSecurityPolicyProvider 使用的全局单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确 大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。未配置时 使用内置 50MB；配置小于等于 0 不会关闭限制，上传仍把该值作为全局上限并与场景上限比较，会拒绝非空文件。自定义 ResourceSecurityPolicyProvider 可替代本值。这是 max-size 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>50MB</code> — 默认全局单文件大小上限</li></ul>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resourceScene": {
+      "type": "object",
+      "description": "单个资源场景配置。",
+      "properties": {
+        "code": {
+          "anyOf": [
+            {
+              "enum": [
+                "user.avatar"
+              ],
+              "x-intellij-enum-metadata": {
+                "user.avatar": {
+                  "description": "用户头像场景编码"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "user.avatar"
+          ],
+          "description": "场景唯一编码，用于上传、读取、URL 解析和 OSS 客户端缓存。静态 scenes 中必须非空白且不可重复；运行时找不到对应 code 会报场景不存在。",
+          "x-intellij-html-description": "<p>场景唯一编码，用于上传、读取、URL 解析和 OSS 客户端缓存。静态 scenes 中必须非空白且不可重复；运行时找不到对应 code 会报场景不存在。</p><p><b>示例：</b></p><ul><li><code>user.avatar</code> — 用户头像场景编码</li></ul>"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "enum": [
+                "用户头像"
+              ],
+              "x-intellij-enum-metadata": {
+                "用户头像": {
+                  "description": "场景的可读名称"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "用户头像"
+          ],
+          "description": "场景显示名称，仅承载可读标签；可不配置，未配置时场景仍由 code 标识，不影响存储路由和安全校验。",
+          "x-intellij-html-description": "<p>场景显示名称，仅承载可读标签；可不配置，未配置时场景仍由 code 标识，不影响存储路由和安全校验。</p><p><b>示例：</b></p><ul><li><code>用户头像</code> — 场景的可读名称</li></ul>"
+        },
+        "type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/storageType"
+            }
+          ],
+          "description": "场景存储类型。YAML 省略或空值时保留本字段的初始化值，不读取 ResourceProperties.defaultStorageType。LOCAL 写入服务器 root 下， 必须配置合法 path，且禁止 bucket、addressing-style、独立连接、provider、region 等 OSS 专用字段；OSS 委托 S3 兼容驱动， bucket 可继承全局 bucket-name，逻辑 objectKey 含 bucket 前缀而 SDK 物理 key 会剥离该前缀。 默认值：LOCAL。 候选值：LOCAL（本地磁盘存储）；OSS（S3 兼容对象存储）。",
+          "default": "LOCAL",
+          "x-intellij-html-description": "<p>场景存储类型。YAML 省略或空值时保留本字段的初始化值，不读取 ResourceProperties.defaultStorageType。LOCAL 写入服务器 root 下， 必须配置合法 path，且禁止 bucket、addressing-style、独立连接、provider、region 等 OSS 专用字段；OSS 委托 S3 兼容驱动， bucket 可继承全局 bucket-name，逻辑 objectKey 含 bucket 前缀而 SDK 物理 key 会剥离该前缀。</p><p><b>默认值：</b><code>LOCAL</code></p><p><b>候选值及含义：</b></p><p><code>LOCAL</code><br>本地磁盘存储。 文件由资源模块写入全局 root 下，场景必须配置合法 path。</p><p><code>OSS</code><br>S3 兼容对象存储。 文件读写委托 sz-common-oss，具体服务商由 OSS 连接配置决定。</p>"
+        },
+        "serve-mode": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/serveMode"
+            }
+          ],
+          "description": "场景访问地址生成模式。YAML 省略或空值时保留本字段的初始化值。该字段只决定 ResourceService 返回地址的方式，不创建或 放开 HTTP 路由，也不自动实施登录、权限、数据范围或资源归属校验；调用方和部署环境必须自行保证相应访问策略。PRESIGNED 仅允许 type=OSS，LOCAL 与 PRESIGNED 组合会在场景校验时报错。 默认值：PROTECTED。 候选值：DIRECT（生成直连地址）；PROTECTED（不生成访问地址）；PRESIGNED（生成 S3 临时签名地址）。",
+          "default": "PROTECTED",
+          "x-intellij-html-description": "<p>场景访问地址生成模式。YAML 省略或空值时保留本字段的初始化值。该字段只决定 ResourceService 返回地址的方式，不创建或 放开 HTTP 路由，也不自动实施登录、权限、数据范围或资源归属校验；调用方和部署环境必须自行保证相应访问策略。PRESIGNED 仅允许 type=OSS，LOCAL 与 PRESIGNED 组合会在场景校验时报错。</p><p><b>默认值：</b><code>PROTECTED</code></p><p><b>候选值及含义：</b></p><p><code>DIRECT</code><br>生成直连地址。 ResourceService 仅拼接 base-url 与相对路径，不修改 OSS bucket 或 CDN 权限，也不保证对应应用或代理路由已开放；地址能否 访问由存储服务、反向代理和业务路由配置决定。</p><p><code>PROTECTED</code><br>不生成访问地址。 ResourceService 仍提供文件流读取能力，但不自动鉴权；业务下载或预览接口必须在读取前自行校验登录、权限、数据范围及记录与资源的归属关系。</p><p><code>PRESIGNED</code><br>生成 S3 临时签名地址。 仅 OSS 存储可用，LOCAL 组合会在启动校验时报错，有效期由场景 expire 秒数决定。ResourceService 不判断请求者是否有权 取得该地址，业务应在签发前完成鉴权；持有者可在地址过期前使用。</p>"
+        },
+        "serveMode": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/serveMode"
+            }
+          ],
+          "description": "场景访问地址生成模式。YAML 省略或空值时保留本字段的初始化值。该字段只决定 ResourceService 返回地址的方式，不创建或 放开 HTTP 路由，也不自动实施登录、权限、数据范围或资源归属校验；调用方和部署环境必须自行保证相应访问策略。PRESIGNED 仅允许 type=OSS，LOCAL 与 PRESIGNED 组合会在场景校验时报错。 默认值：PROTECTED。 候选值：DIRECT（生成直连地址）；PROTECTED（不生成访问地址）；PRESIGNED（生成 S3 临时签名地址）。这是 serve-mode 的 camelCase 别名，绑定语义相同。",
+          "default": "PROTECTED",
+          "x-intellij-html-description": "<p>场景访问地址生成模式。YAML 省略或空值时保留本字段的初始化值。该字段只决定 ResourceService 返回地址的方式，不创建或 放开 HTTP 路由，也不自动实施登录、权限、数据范围或资源归属校验；调用方和部署环境必须自行保证相应访问策略。PRESIGNED 仅允许 type=OSS，LOCAL 与 PRESIGNED 组合会在场景校验时报错。这是 serve-mode 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>PROTECTED</code></p><p><b>候选值及含义：</b></p><p><code>DIRECT</code><br>生成直连地址。 ResourceService 仅拼接 base-url 与相对路径，不修改 OSS bucket 或 CDN 权限，也不保证对应应用或代理路由已开放；地址能否 访问由存储服务、反向代理和业务路由配置决定。</p><p><code>PROTECTED</code><br>不生成访问地址。 ResourceService 仍提供文件流读取能力，但不自动鉴权；业务下载或预览接口必须在读取前自行校验登录、权限、数据范围及记录与资源的归属关系。</p><p><code>PRESIGNED</code><br>生成 S3 临时签名地址。 仅 OSS 存储可用，LOCAL 组合会在启动校验时报错，有效期由场景 expire 秒数决定。ResourceService 不判断请求者是否有权 取得该地址，业务应在签发前完成鉴权；持有者可在地址过期前使用。</p>"
+        },
+        "expire": {
+          "anyOf": [
+            {
+              "enum": [
+                3600
+              ],
+              "x-intellij-enum-metadata": {
+                "3600": {
+                  "description": "一小时有效期"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableLong"
+            }
+          ],
+          "examples": [
+            3600
+          ],
+          "description": "PRESIGNED 临时 URL 的有效期，单位秒。YAML 省略、null 或精确空串时保留本字段的初始化值；只含空白字符的非空字符串会 转换失败。仅 serve-mode=PRESIGNED 时用于签名；场景校验要求大于 0，当前 AWS SDK 的 SigV4 预签名要求 1 至 604800 秒 （7 天），超出上限在生成签名时报错。DIRECT 和 PROTECTED 不使用该值。字符串绑定支持移除 Java Character.isWhitespace 空白后的正负十进制，以及 0x/0X/# 十六进制形式；范围和溢出由 Spring Binder 检查。 默认值：3600。",
+          "default": 3600,
+          "x-intellij-html-description": "<p>PRESIGNED 临时 URL 的有效期，单位秒。YAML 省略、null 或精确空串时保留本字段的初始化值；只含空白字符的非空字符串会 转换失败。仅 serve-mode=PRESIGNED 时用于签名；场景校验要求大于 0，当前 AWS SDK 的 SigV4 预签名要求 1 至 604800 秒 （7 天），超出上限在生成签名时报错。DIRECT 和 PROTECTED 不使用该值。字符串绑定支持移除 Java Character.isWhitespace 空白后的正负十进制，以及 0x/0X/# 十六进制形式；范围和溢出由 Spring Binder 检查。</p><p><b>默认值：</b><code>3600</code></p><p><b>示例：</b></p><ul><li><code>3600</code> — 一小时有效期</li></ul>"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "enum": [
+                "avatars/"
+              ],
+              "x-intellij-enum-metadata": {
+                "avatars/": {
+                  "description": "用户头像的本地基础目录"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "avatars/"
+          ],
+          "description": "LOCAL 场景的基础目录，也是逻辑 objectKey 前缀，相对于全局 root。type=LOCAL 时必须非空白并通过配置路径校验：不超过 512 字符，禁止 null 字节、反斜杠、父目录引用 ..、以 / 开头的绝对路径、./ 当前目录段、连续 //、#?& 和以点开头的隐藏目录段。最终物理路径为 root/objectKey。OSS 场景使用 bucket 作为基础前缀，不使用 path。",
+          "x-intellij-html-description": "<p>LOCAL 场景的基础目录，也是逻辑 objectKey 前缀，相对于全局 root。type=LOCAL 时必须非空白并通过配置路径校验：不超过 512 字符，禁止 null 字节、反斜杠、父目录引用 ..、以 / 开头的绝对路径、./ 当前目录段、连续 //、#?&amp; 和以点开头的隐藏目录段。最终物理路径为 root/objectKey。OSS 场景使用 bucket 作为基础前缀，不使用 path。</p><p><b>示例：</b></p><ul><li><code>avatars/</code> — 用户头像的本地基础目录</li></ul>"
+        },
+        "base-url": {
+          "anyOf": [
+            {
+              "enum": [
+                "/api/admin/resource/file/avatars",
+                "https://files.example.com/avatars"
+              ],
+              "x-intellij-enum-metadata": {
+                "/api/admin/resource/file/avatars": {
+                  "description": "使用应用同源直连地址前缀"
+                },
+                "https://files.example.com/avatars": {
+                  "description": "使用独立静态域名直连地址前缀"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "/api/admin/resource/file/avatars",
+            "https://files.example.com/avatars"
+          ],
+          "description": "DIRECT 模式的完整直连地址前缀，可为 HTTP(S) 地址或以 / 开头的同源路径。显式场景值优先级最高，直接使用，不再追加或 改写为 global domain、endpoint、bucket 或 LOCAL path。仅当 objectKey 以场景 path/bucket 加斜杠开头时，生成地址才去除 该基础前缀。OSS 的前缀为空或不匹配时容错追加原 objectKey；LOCAL 会先校验 objectKey 必须属于场景 path，跨场景 key 会 报错。LOCAL DIRECT 必须显式配置；OSS DIRECT 未配置时，默认连接按 global domain 优先、endpoint 兜底推导，独立连接只按 自身 endpoint 推导。PROTECTED 和 PRESIGNED 不使用本字段。本字段只决定返回的地址字符串，不创建可访问路由或修改存储 访问权限。",
+          "x-intellij-html-description": "<p>DIRECT 模式的完整直连地址前缀，可为 HTTP(S) 地址或以 / 开头的同源路径。显式场景值优先级最高，直接使用，不再追加或 改写为 global domain、endpoint、bucket 或 LOCAL path。仅当 objectKey 以场景 path/bucket 加斜杠开头时，生成地址才去除 该基础前缀。OSS 的前缀为空或不匹配时容错追加原 objectKey；LOCAL 会先校验 objectKey 必须属于场景 path，跨场景 key 会 报错。LOCAL DIRECT 必须显式配置；OSS DIRECT 未配置时，默认连接按 global domain 优先、endpoint 兜底推导，独立连接只按 自身 endpoint 推导。PROTECTED 和 PRESIGNED 不使用本字段。本字段只决定返回的地址字符串，不创建可访问路由或修改存储 访问权限。</p><p><b>示例：</b></p><ul><li><code>/api/admin/resource/file/avatars</code> — 使用应用同源直连地址前缀</li><li><code>https://files.example.com/avatars</code> — 使用独立静态域名直连地址前缀</li></ul>"
+        },
+        "baseUrl": {
+          "anyOf": [
+            {
+              "enum": [
+                "/api/admin/resource/file/avatars",
+                "https://files.example.com/avatars"
+              ],
+              "x-intellij-enum-metadata": {
+                "/api/admin/resource/file/avatars": {
+                  "description": "使用应用同源直连地址前缀"
+                },
+                "https://files.example.com/avatars": {
+                  "description": "使用独立静态域名直连地址前缀"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "/api/admin/resource/file/avatars",
+            "https://files.example.com/avatars"
+          ],
+          "description": "DIRECT 模式的完整直连地址前缀，可为 HTTP(S) 地址或以 / 开头的同源路径。显式场景值优先级最高，直接使用，不再追加或 改写为 global domain、endpoint、bucket 或 LOCAL path。仅当 objectKey 以场景 path/bucket 加斜杠开头时，生成地址才去除 该基础前缀。OSS 的前缀为空或不匹配时容错追加原 objectKey；LOCAL 会先校验 objectKey 必须属于场景 path，跨场景 key 会 报错。LOCAL DIRECT 必须显式配置；OSS DIRECT 未配置时，默认连接按 global domain 优先、endpoint 兜底推导，独立连接只按 自身 endpoint 推导。PROTECTED 和 PRESIGNED 不使用本字段。本字段只决定返回的地址字符串，不创建可访问路由或修改存储 访问权限。这是 base-url 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>DIRECT 模式的完整直连地址前缀，可为 HTTP(S) 地址或以 / 开头的同源路径。显式场景值优先级最高，直接使用，不再追加或 改写为 global domain、endpoint、bucket 或 LOCAL path。仅当 objectKey 以场景 path/bucket 加斜杠开头时，生成地址才去除 该基础前缀。OSS 的前缀为空或不匹配时容错追加原 objectKey；LOCAL 会先校验 objectKey 必须属于场景 path，跨场景 key 会 报错。LOCAL DIRECT 必须显式配置；OSS DIRECT 未配置时，默认连接按 global domain 优先、endpoint 兜底推导，独立连接只按 自身 endpoint 推导。PROTECTED 和 PRESIGNED 不使用本字段。本字段只决定返回的地址字符串，不创建可访问路由或修改存储 访问权限。这是 base-url 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>/api/admin/resource/file/avatars</code> — 使用应用同源直连地址前缀</li><li><code>https://files.example.com/avatars</code> — 使用独立静态域名直连地址前缀</li></ul>"
+        },
+        "bucket": {
+          "anyOf": [
+            {
+              "enum": [
+                "${OSS_BUCKET:sz-admin}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${OSS_BUCKET:sz-admin}": {
+                  "description": "使用环境变量配置场景存储桶"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${OSS_BUCKET:sz-admin}"
+          ],
+          "description": "OSS 场景的存储桶名称；为空白时继承全局 bucket-name，两者都为空白会校验失败。它同时作为 SDK bucket 参数和逻辑 objectKey 的一级前缀；调用 S3 SDK 时驱动会从 objectKey 剥离该 bucket 前缀得到物理 key。该值执行与 path 相同的配置路径 校验：不超过 512 字符，禁止 null 字节、反斜杠、..、绝对路径、点目录段、连续 // 和 #?& 。LOCAL 场景禁止配置本字段。",
+          "x-intellij-html-description": "<p>OSS 场景的存储桶名称；为空白时继承全局 bucket-name，两者都为空白会校验失败。它同时作为 SDK bucket 参数和逻辑 objectKey 的一级前缀；调用 S3 SDK 时驱动会从 objectKey 剥离该 bucket 前缀得到物理 key。该值执行与 path 相同的配置路径 校验：不超过 512 字符，禁止 null 字节、反斜杠、..、绝对路径、点目录段、连续 // 和 #?&amp; 。LOCAL 场景禁止配置本字段。</p><p><b>示例：</b></p><ul><li><code>${OSS_BUCKET:sz-admin}</code> — 使用环境变量配置场景存储桶</li></ul>"
+        },
+        "addressing-style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/addressingStyle"
+            }
+          ],
+          "description": "场景级 S3 寻址风格。本值优先于全局 addressing-style、旧 force-path-style 和生效 provider 判定值；但全局 addressing-style 与 force-path-style 的冲突会先被检查，不能用场景值绕过。LOCAL 场景禁止配置本字段。 候选值：PATH（路径风格寻址）；VIRTUAL_HOSTED（虚拟主机风格寻址）。",
+          "x-intellij-html-description": "<p>场景级 S3 寻址风格。本值优先于全局 addressing-style、旧 force-path-style 和生效 provider 判定值；但全局 addressing-style 与 force-path-style 的冲突会先被检查，不能用场景值绕过。LOCAL 场景禁止配置本字段。</p><p><b>候选值及含义：</b></p><p><code>PATH</code><br>路径风格寻址。 bucket 位于 URL 路径中，地址形如 endpoint/bucket/object。</p><p><code>VIRTUAL_HOSTED</code><br>虚拟主机风格寻址。 bucket 位于主机名中，地址形如 bucket.endpoint/object。</p>"
+        },
+        "addressingStyle": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/addressingStyle"
+            }
+          ],
+          "description": "场景级 S3 寻址风格。本值优先于全局 addressing-style、旧 force-path-style 和生效 provider 判定值；但全局 addressing-style 与 force-path-style 的冲突会先被检查，不能用场景值绕过。LOCAL 场景禁止配置本字段。 候选值：PATH（路径风格寻址）；VIRTUAL_HOSTED（虚拟主机风格寻址）。这是 addressing-style 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>场景级 S3 寻址风格。本值优先于全局 addressing-style、旧 force-path-style 和生效 provider 判定值；但全局 addressing-style 与 force-path-style 的冲突会先被检查，不能用场景值绕过。LOCAL 场景禁止配置本字段。这是 addressing-style 的 camelCase 别名，绑定语义相同。</p><p><b>候选值及含义：</b></p><p><code>PATH</code><br>路径风格寻址。 bucket 位于 URL 路径中，地址形如 endpoint/bucket/object。</p><p><code>VIRTUAL_HOSTED</code><br>虚拟主机风格寻址。 bucket 位于主机名中，地址形如 bucket.endpoint/object。</p>"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "enum": [
+                "${SCENE_OSS_ENDPOINT:http://127.0.0.1:9000}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${SCENE_OSS_ENDPOINT:http://127.0.0.1:9000}": {
+                  "description": "使用环境变量配置场景独立端点"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${SCENE_OSS_ENDPOINT:http://127.0.0.1:9000}"
+          ],
+          "description": "场景独立 S3 API 端点。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串）即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局 endpoint 和凭据。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。完整 HTTP(S) 地址沿用自身协议，未带协议时由全局 scheme 补全。独立连接推导 DIRECT 直连地址时只使用本 endpoint，不使用全局 domain。全局 sz.oss.endpoint 控制 S3 客户端配置是否装配，仅配置本字段不会独立启用 OSS。LOCAL 场景禁止配置本字段。",
+          "x-intellij-html-description": "<p>场景独立 S3 API 端点。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串）即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局 endpoint 和凭据。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。完整 HTTP(S) 地址沿用自身协议，未带协议时由全局 scheme 补全。独立连接推导 DIRECT 直连地址时只使用本 endpoint，不使用全局 domain。全局 sz.oss.endpoint 控制 S3 客户端配置是否装配，仅配置本字段不会独立启用 OSS。LOCAL 场景禁止配置本字段。</p><p><b>示例：</b></p><ul><li><code>${SCENE_OSS_ENDPOINT:http://127.0.0.1:9000}</code> — 使用环境变量配置场景独立端点</li></ul>"
+        },
+        "access-key": {
+          "anyOf": [
+            {
+              "enum": [
+                "${SCENE_OSS_ACCESS_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${SCENE_OSS_ACCESS_KEY}": {
+                  "description": "从环境变量读取场景访问密钥 ID"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${SCENE_OSS_ACCESS_KEY}"
+          ],
+          "description": "场景独立 S3 连接的访问密钥 ID。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、 空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。",
+          "x-intellij-html-description": "<p>场景独立 S3 连接的访问密钥 ID。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、 空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。</p><p><b>示例：</b></p><ul><li><code>${SCENE_OSS_ACCESS_KEY}</code> — 从环境变量读取场景访问密钥 ID</li></ul>"
+        },
+        "accessKey": {
+          "anyOf": [
+            {
+              "enum": [
+                "${SCENE_OSS_ACCESS_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${SCENE_OSS_ACCESS_KEY}": {
+                  "description": "从环境变量读取场景访问密钥 ID"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${SCENE_OSS_ACCESS_KEY}"
+          ],
+          "description": "场景独立 S3 连接的访问密钥 ID。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、 空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。这是 access-key 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>场景独立 S3 连接的访问密钥 ID。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、 空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。这是 access-key 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${SCENE_OSS_ACCESS_KEY}</code> — 从环境变量读取场景访问密钥 ID</li></ul>"
+        },
+        "secret-key": {
+          "anyOf": [
+            {
+              "enum": [
+                "${SCENE_OSS_SECRET_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${SCENE_OSS_SECRET_KEY}": {
+                  "description": "从环境变量读取场景访问密钥密码"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${SCENE_OSS_SECRET_KEY}"
+          ],
+          "description": "场景独立 S3 连接的访问密钥密码。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。",
+          "x-intellij-html-description": "<p>场景独立 S3 连接的访问密钥密码。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。</p><p><b>示例：</b></p><ul><li><code>${SCENE_OSS_SECRET_KEY}</code> — 从环境变量读取场景访问密钥密码</li></ul>"
+        },
+        "secretKey": {
+          "anyOf": [
+            {
+              "enum": [
+                "${SCENE_OSS_SECRET_KEY}"
+              ],
+              "x-intellij-enum-metadata": {
+                "${SCENE_OSS_SECRET_KEY}": {
+                  "description": "从环境变量读取场景访问密钥密码"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "${SCENE_OSS_SECRET_KEY}"
+          ],
+          "description": "场景独立 S3 连接的访问密钥密码。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。这是 secret-key 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>场景独立 S3 连接的访问密钥密码。endpoint、access-key、secret-key 任一项绑定为非 null 字符串（包括空串或空白字符串） 即触发独立连接，三项随后都必须为非空白值；仅三项绑定结果均为 null 时继承全局连接。YAML 应省略三项以继承，显式 null、空串或空白字符串都会触发独立连接并校验失败。provider 或 region 单独覆盖不触发独立连接。LOCAL 场景禁止配置本字段。这是 secret-key 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>${SCENE_OSS_SECRET_KEY}</code> — 从环境变量读取场景访问密钥密码</li></ul>"
+        },
+        "provider": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ossProvider"
+            }
+          ],
+          "description": "场景级对象存储提供商覆盖，仅用于该场景的寻址风格判定和直连地址推导。未配置时继承全局 provider。可单独配置而继续继承 全局 endpoint 和凭据，不会自行切换 endpoint；LOCAL 场景禁止配置。 候选值：ALIYUN（阿里云 OSS）；QINIU（七牛云 Kodo）；TENCENT（腾讯云 COS）；MINIO（MinIO 对象存储）；RUSTFS（RustFS 对象存储）。",
+          "x-intellij-html-description": "<p>场景级对象存储提供商覆盖，仅用于该场景的寻址风格判定和直连地址推导。未配置时继承全局 provider。可单独配置而继续继承 全局 endpoint 和凭据，不会自行切换 endpoint；LOCAL 场景禁止配置。</p><p><b>候选值及含义：</b></p><p><code>ALIYUN</code><br>阿里云 OSS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>QINIU</code><br>七牛云 Kodo。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>TENCENT</code><br>腾讯云 COS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p><p><code>MINIO</code><br>MinIO 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p><p><code>RUSTFS</code><br>RustFS 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p>"
+        },
+        "region": {
+          "anyOf": [
+            {
+              "enum": [
+                "us-east-1"
+              ],
+              "x-intellij-enum-metadata": {
+                "us-east-1": {
+                  "description": "S3 兼容服务常用签名区域"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/nullableString"
+            }
+          ],
+          "examples": [
+            "us-east-1"
+          ],
+          "description": "场景级 AWS S3 签名 Region，影响该场景客户端签名和 Presigned URL，不会切换 endpoint。未配置或为空白时继承全局 region，全局值仍为空白时最终回退 us-east-1。可单独配置而继续继承全局 endpoint 和凭据；LOCAL 场景禁止配置。",
+          "x-intellij-html-description": "<p>场景级 AWS S3 签名 Region，影响该场景客户端签名和 Presigned URL，不会切换 endpoint。未配置或为空白时继承全局 region，全局值仍为空白时最终回退 us-east-1。可单独配置而继续继承全局 endpoint 和凭据；LOCAL 场景禁止配置。</p><p><b>示例：</b></p><ul><li><code>us-east-1</code> — S3 兼容服务常用签名区域</li></ul>"
+        },
+        "naming": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/namingRule"
+            }
+          ],
+          "description": "上传文件命名规则。YAML 省略或空值时保留本字段的初始化值。BIZ_KEY、UUID、TIMESTAMP 使用原文件最后一段扩展名的小写形式，无扩展名时使用 bin；ORIGINAL 使用清洗后的完整原文件名。 默认值：UUID。 候选值：BIZ_KEY（使用业务 Key 命名）；UUID（使用随机 UUID 命名）；ORIGINAL（使用清洗后的原始文件名）；TIMESTAMP（使用毫秒精度时间戳命名）。",
+          "default": "UUID",
+          "x-intellij-html-description": "<p>上传文件命名规则。YAML 省略或空值时保留本字段的初始化值。BIZ_KEY、UUID、TIMESTAMP 使用原文件最后一段扩展名的小写形式，无扩展名时使用 bin；ORIGINAL 使用清洗后的完整原文件名。</p><p><b>默认值：</b><code>UUID</code></p><p><b>候选值及含义：</b></p><p><code>BIZ_KEY</code><br>使用业务 Key 命名。 文件名为调用方提供的 namingKey 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 github.svg。namingKey 必须非空白，其中 ASCII 字母、数字、下划线、连字符以外的字符会替换为下划线；同一路径同 key 重传可覆盖旧文件。</p><p><code>UUID</code><br>使用随机 UUID 命名。 文件名为无连字符 UUID 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 550e8400e29b41d4a716446655440000.svg；每次上传生成新文件。</p><p><code>ORIGINAL</code><br>使用清洗后的原始文件名。 保留 ASCII 字母、数字、下划线、连字符、点及 U+4E00-U+9FA5 范围汉字，其他字符替换为下划线。目标 objectKey 已存在时 仅检查一次并在扩展名前追加下划线和当前毫秒时间戳；该处理降低同名冲突，不保证并发上传绝对不覆盖。</p><p><code>TIMESTAMP</code><br>使用毫秒精度时间戳命名。 文件名为 yyyyMMddHHmmssSSS 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 20260416143025123.pdf； 高并发下仍可能冲突，可结合路径策略分散。</p>"
+        },
+        "path-strategy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/pathStrategy"
+            }
+          ],
+          "description": "objectKey 的路径分层策略。YAML 省略或空值时保留本字段的初始化值。pathSegments 中仅非空白元素参与分层，参与的元素会 清洗为 ASCII 字母、数字、下划线和连字符组成的目录段。基础前缀由存储类型决定：LOCAL 使用 path，OSS 使用 bucket。 默认值：FLAT。 候选值：FLAT（平铺存储）；DATE（按日期分层）；BIZ（按业务路径分段分层）；BIZ_DATE（先按业务路径分段，再按日期分层）。",
+          "default": "FLAT",
+          "x-intellij-html-description": "<p>objectKey 的路径分层策略。YAML 省略或空值时保留本字段的初始化值。pathSegments 中仅非空白元素参与分层，参与的元素会 清洗为 ASCII 字母、数字、下划线和连字符组成的目录段。基础前缀由存储类型决定：LOCAL 使用 path，OSS 使用 bucket。</p><p><b>默认值：</b><code>FLAT</code></p><p><b>候选值及含义：</b></p><p><code>FLAT</code><br>平铺存储。 不增加子目录，objectKey 形如 basePath/filename。</p><p><code>DATE</code><br>按日期分层。 使用应用进程当前本地日期增加 yyyyMMdd 子目录，objectKey 形如 basePath/yyyyMMdd/filename。</p><p><code>BIZ</code><br>按业务路径分段分层。 pathSegments 中每个非空白元素依次成为一级子目录，不加日期；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p><p><code>BIZ_DATE</code><br>先按业务路径分段，再按日期分层。 依次加入 pathSegments 中的非空白元素和应用进程当前本地日期 yyyyMMdd 子目录；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p>"
+        },
+        "pathStrategy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/pathStrategy"
+            }
+          ],
+          "description": "objectKey 的路径分层策略。YAML 省略或空值时保留本字段的初始化值。pathSegments 中仅非空白元素参与分层，参与的元素会 清洗为 ASCII 字母、数字、下划线和连字符组成的目录段。基础前缀由存储类型决定：LOCAL 使用 path，OSS 使用 bucket。 默认值：FLAT。 候选值：FLAT（平铺存储）；DATE（按日期分层）；BIZ（按业务路径分段分层）；BIZ_DATE（先按业务路径分段，再按日期分层）。这是 path-strategy 的 camelCase 别名，绑定语义相同。",
+          "default": "FLAT",
+          "x-intellij-html-description": "<p>objectKey 的路径分层策略。YAML 省略或空值时保留本字段的初始化值。pathSegments 中仅非空白元素参与分层，参与的元素会 清洗为 ASCII 字母、数字、下划线和连字符组成的目录段。基础前缀由存储类型决定：LOCAL 使用 path，OSS 使用 bucket。这是 path-strategy 的 camelCase 别名，绑定语义相同。</p><p><b>默认值：</b><code>FLAT</code></p><p><b>候选值及含义：</b></p><p><code>FLAT</code><br>平铺存储。 不增加子目录，objectKey 形如 basePath/filename。</p><p><code>DATE</code><br>按日期分层。 使用应用进程当前本地日期增加 yyyyMMdd 子目录，objectKey 形如 basePath/yyyyMMdd/filename。</p><p><code>BIZ</code><br>按业务路径分段分层。 pathSegments 中每个非空白元素依次成为一级子目录，不加日期；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p><p><code>BIZ_DATE</code><br>先按业务路径分段，再按日期分层。 依次加入 pathSegments 中的非空白元素和应用进程当前本地日期 yyyyMMdd 子目录；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p>"
+        },
+        "exts": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "场景级允许扩展名集合，值应使用小写且不带点。非空时在全局 allowed-exts 之后再次检查，只能进一步收窄全局白名单；未配置或空集合时不增加场景限制。硬编码危险扩展名黑名单始终优先，不能通过本字段覆盖。",
+          "x-intellij-html-description": "<p>场景级允许扩展名集合，值应使用小写且不带点。非空时在全局 allowed-exts 之后再次检查，只能进一步收窄全局白名单；未配置或空集合时不增加场景限制。硬编码危险扩展名黑名单始终优先，不能通过本字段覆盖。</p>"
+        },
+        "mimes": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/stringSet"
+            }
+          ],
+          "description": "场景级 MIME 白名单，值应使用小写标准 MIME。非空时优先并替代全局 allowed-mime-types，而不是与全局集合取交集；未配置或空集合时回退全局 MIME 白名单。客户端 MIME 非空白时，将传入的完整值转为小写后与生效集合精确匹配，不解析或去除 charset 等参数；客户端未提供 MIME 或值为空白时跳过 MIME 校验。",
+          "x-intellij-html-description": "<p>场景级 MIME 白名单，值应使用小写标准 MIME。非空时优先并替代全局 allowed-mime-types，而不是与全局集合取交集；未配置或空集合时回退全局 MIME 白名单。客户端 MIME 非空白时，将传入的完整值转为小写后与生效集合精确匹配，不解析或去除 charset 等参数；客户端未提供 MIME 或值为空白时跳过 MIME 校验。</p>"
+        },
+        "max-size": {
+          "anyOf": [
+            {
+              "enum": [
+                "2MB",
+                "5MB"
+              ],
+              "x-intellij-enum-metadata": {
+                "2MB": {
+                  "description": "小型图片场景上限"
+                },
+                "5MB": {
+                  "description": "普通图片场景上限"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/dataSize"
+            }
+          ],
+          "examples": [
+            "2MB",
+            "5MB"
+          ],
+          "description": "场景单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。配置且换算后大于 0 时，与全局 max-size 取较小值；未配置 或小于等于 0 时不增加场景上限，但仍受全局上限约束。",
+          "x-intellij-html-description": "<p>场景单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。配置且换算后大于 0 时，与全局 max-size 取较小值；未配置 或小于等于 0 时不增加场景上限，但仍受全局上限约束。</p><p><b>示例：</b></p><ul><li><code>2MB</code> — 小型图片场景上限</li><li><code>5MB</code> — 普通图片场景上限</li></ul>"
+        },
+        "maxSize": {
+          "anyOf": [
+            {
+              "enum": [
+                "2MB",
+                "5MB"
+              ],
+              "x-intellij-enum-metadata": {
+                "2MB": {
+                  "description": "小型图片场景上限"
+                },
+                "5MB": {
+                  "description": "普通图片场景上限"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/dataSize"
+            }
+          ],
+          "examples": [
+            "2MB",
+            "5MB"
+          ],
+          "description": "场景单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。配置且换算后大于 0 时，与全局 max-size 取较小值；未配置 或小于等于 0 时不增加场景上限，但仍受全局上限约束。这是 max-size 的 camelCase 别名，绑定语义相同。",
+          "x-intellij-html-description": "<p>场景单文件大小上限，绑定为 Spring DataSize。支持裸字节整数或整数串，以及精确大写 B、KB、MB、GB、TB；字符串内 Java Character.isWhitespace 空白会移除，KB 及以上按 1024 进制换算。配置且换算后大于 0 时，与全局 max-size 取较小值；未配置 或小于等于 0 时不增加场景上限，但仍受全局上限约束。这是 max-size 的 camelCase 别名，绑定语义相同。</p><p><b>示例：</b></p><ul><li><code>2MB</code> — 小型图片场景上限</li><li><code>5MB</code> — 普通图片场景上限</li></ul>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sceneList": {
+      "description": "资源场景列表，可为 YAML 数组、环境变量占位符或 null。",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/resourceScene"
+          }
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableString": {
+      "description": "字符串、包含 Spring 环境变量占位符的字符串或 null。",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "placeholderString": {
+      "type": "string",
+      "description": "Spring 环境变量占位符，支持 ${ENV}、${ENV:default} 以及嵌入普通字符串；占位符解析后的目标类型和值合法性由 Spring Binder 检查。",
+      "pattern": "\\$\\{[^{}]+\\}"
+    },
+    "nullableBoolean": {
+      "description": "布尔值、Spring 布尔字符串、环境变量占位符或 null。字符串会先去除两端 U+0000-U+0020 字符，再忽略大小写识别 true/on/yes/1 与 false/off/no/0；精确空串或仅含这些 trim 字符的字符串转换为 null。转换结果不等于对初始化字段执行清空，最终值由 Binder 与绑定目标决定。JSON 数字 1、0 不按布尔值接受。",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[\\u0000-\\u0020]*(?:(?:[Tt][Rr][Uu][Ee]|[Oo][Nn]|[Yy][Ee][Ss]|1|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff]|[Nn][Oo]|0)[\\u0000-\\u0020]*)?$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "booleanValue": {
+      "description": "primitive boolean、Spring 布尔字符串或环境变量占位符。未配置字段时使用 Java 初始化值。",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[\\u0000-\\u0020]*(?:[Tt][Rr][Uu][Ee]|[Oo][Nn]|[Yy][Ee][Ss]|1|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff]|[Nn][Oo]|0)[\\u0000-\\u0020]*$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        }
+      ]
+    },
+    "nullableLong": {
+      "description": "Java Long、Long 字符串、环境变量占位符或 null。字符串会移除全部 Java Character.isWhitespace 空白，支持正负十进制，以及 0x/0X/# 前缀的十六进制；十六进制可带负号但不接受正号。精确空串转换为 null，Binder 会保留带初始化值的字段；仅含空白的字符串非法。64 位范围和解析溢出由 Spring Binder 检查。",
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:$|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[+-]?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*-?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*(?:(?:0[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[xX])|#)[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9A-Fa-f])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*)$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dataSize": {
+      "description": "Spring DataSize、裸字节整数、环境变量占位符或 null。字符串会移除全部 Java Character.isWhitespace 空白，数值支持正负号，单位仅接受精确大写 B、KB、MB、GB、TB；KB 及以上按 1024 进制换算。精确空串转换为 null，字段初始化值及业务回退另由 Binder 与读取方决定；仅含空白的字符串非法。数值和换算溢出由 Spring Binder 检查。",
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:$|[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[+-]?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9](?:[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*[0-9])*[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*(?:(?:B|K[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*B|M[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*B|G[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*B|T[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*B))?[\\u0009-\\u000D\\u001C-\\u0020\\u1680\\u2000-\\u2006\\u2008-\\u200A\\u2028\\u2029\\u205F\\u3000]*)$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stringSet": {
+      "description": "字符串集合，可写成 YAML 数组、Spring 逗号分隔字符串、环境变量占位符或 null。",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ossProvider": {
+      "description": "对象存储服务提供商。IDEA 候选使用标准值 ALIYUN、QINIU、TENCENT、MINIO、RUSTFS。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "ALIYUN",
+            "QINIU",
+            "TENCENT",
+            "MINIO",
+            "RUSTFS"
+          ],
+          "x-intellij-enum-metadata": {
+            "ALIYUN": {
+              "description": "阿里云 OSS。",
+              "x-intellij-html-description": "<p>阿里云 OSS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p>"
+            },
+            "QINIU": {
+              "description": "七牛云 Kodo。",
+              "x-intellij-html-description": "<p>七牛云 Kodo。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p>"
+            },
+            "TENCENT": {
+              "description": "腾讯云 COS。",
+              "x-intellij-html-description": "<p>腾讯云 COS。 使用 S3 兼容 API，未显式配置寻址风格时采用 VIRTUAL_HOSTED。</p>"
+            },
+            "MINIO": {
+              "description": "MinIO 对象存储。",
+              "x-intellij-html-description": "<p>MinIO 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p>"
+            },
+            "RUSTFS": {
+              "description": "RustFS 对象存储。",
+              "x-intellij-html-description": "<p>RustFS 对象存储。 适合自建 S3 兼容服务，未显式配置寻址风格时采用 PATH。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Yy][^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Qq][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Cc][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Mm][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ff][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheme": {
+      "description": "访问协议。IDEA 候选使用标准值 http、https。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "http",
+            "https"
+          ],
+          "x-intellij-enum-metadata": {
+            "http": {
+              "description": "HTTP 协议。",
+              "x-intellij-html-description": "<p>HTTP 协议。 用于补全未携带协议的 endpoint 或 domain。</p>"
+            },
+            "https": {
+              "description": "HTTPS 协议。",
+              "x-intellij-html-description": "<p>HTTPS 协议。 用于补全未携带协议的 endpoint 或 domain。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Hh][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Hh][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "addressingStyle": {
+      "description": "S3 寻址风格。IDEA 候选使用标准值 PATH、VIRTUAL_HOSTED。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "PATH",
+            "VIRTUAL_HOSTED"
+          ],
+          "x-intellij-enum-metadata": {
+            "PATH": {
+              "description": "路径风格寻址。",
+              "x-intellij-html-description": "<p>路径风格寻址。 bucket 位于 URL 路径中，地址形如 endpoint/bucket/object。</p>"
+            },
+            "VIRTUAL_HOSTED": {
+              "description": "虚拟主机风格寻址。",
+              "x-intellij-html-description": "<p>虚拟主机风格寻址。 bucket 位于主机名中，地址形如 bucket.endpoint/object。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Hh][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Vv][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*[^0-9A-Za-z\\u0080-\\uFFFF]*[Hh][^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "storageType": {
+      "description": "资源存储类型。IDEA 候选使用标准值 LOCAL、OSS。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "LOCAL",
+            "OSS"
+          ],
+          "x-intellij-enum-metadata": {
+            "LOCAL": {
+              "description": "本地磁盘存储。",
+              "x-intellij-html-description": "<p>本地磁盘存储。 文件由资源模块写入全局 root 下，场景必须配置合法 path。</p>"
+            },
+            "OSS": {
+              "description": "S3 兼容对象存储。",
+              "x-intellij-html-description": "<p>S3 兼容对象存储。 文件读写委托 sz-common-oss，具体服务商由 OSS 连接配置决定。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*[Cc][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serveMode": {
+      "description": "资源访问模式。IDEA 候选使用标准值 DIRECT、PROTECTED、PRESIGNED。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "DIRECT",
+            "PROTECTED",
+            "PRESIGNED"
+          ],
+          "x-intellij-enum-metadata": {
+            "DIRECT": {
+              "description": "生成直连地址。",
+              "x-intellij-html-description": "<p>生成直连地址。 ResourceService 仅拼接 base-url 与相对路径，不修改 OSS bucket 或 CDN 权限，也不保证对应应用或代理路由已开放；地址能否 访问由存储服务、反向代理和业务路由配置决定。</p>"
+            },
+            "PROTECTED": {
+              "description": "不生成访问地址。",
+              "x-intellij-html-description": "<p>不生成访问地址。 ResourceService 仍提供文件流读取能力，但不自动鉴权；业务下载或预览接口必须在读取前自行校验登录、权限、数据范围及记录与资源的归属关系。</p>"
+            },
+            "PRESIGNED": {
+              "description": "生成 S3 临时签名地址。",
+              "x-intellij-html-description": "<p>生成 S3 临时签名地址。 仅 OSS 存储可用，LOCAL 组合会在启动校验时报错，有效期由场景 expire 秒数决定。ResourceService 不判断请求者是否有权 取得该地址，业务应在签发前完成鉴权；持有者可在地址过期前使用。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Cc][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Cc][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Gg][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "namingRule": {
+      "description": "文件命名规则。IDEA 候选使用标准值 BIZ_KEY、UUID、ORIGINAL、TIMESTAMP。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "BIZ_KEY",
+            "UUID",
+            "ORIGINAL",
+            "TIMESTAMP"
+          ],
+          "x-intellij-enum-metadata": {
+            "BIZ_KEY": {
+              "description": "使用业务 Key 命名。",
+              "x-intellij-html-description": "<p>使用业务 Key 命名。 文件名为调用方提供的 namingKey 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 github.svg。namingKey 必须非空白，其中 ASCII 字母、数字、下划线、连字符以外的字符会替换为下划线；同一路径同 key 重传可覆盖旧文件。</p>"
+            },
+            "UUID": {
+              "description": "使用随机 UUID 命名。",
+              "x-intellij-html-description": "<p>使用随机 UUID 命名。 文件名为无连字符 UUID 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 550e8400e29b41d4a716446655440000.svg；每次上传生成新文件。</p>"
+            },
+            "ORIGINAL": {
+              "description": "使用清洗后的原始文件名。",
+              "x-intellij-html-description": "<p>使用清洗后的原始文件名。 保留 ASCII 字母、数字、下划线、连字符、点及 U+4E00-U+9FA5 范围汉字，其他字符替换为下划线。目标 objectKey 已存在时 仅检查一次并在扩展名前追加下划线和当前毫秒时间戳；该处理降低同名冲突，不保证并发上传绝对不覆盖。</p>"
+            },
+            "TIMESTAMP": {
+              "description": "使用毫秒精度时间戳命名。",
+              "x-intellij-html-description": "<p>使用毫秒精度时间戳命名。 文件名为 yyyyMMddHHmmssSSS 加原文件最后一段扩展名的小写形式，无扩展名时使用 bin，例如 20260416143025123.pdf； 高并发下仍可能冲突，可结合路径策略分散。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Bb][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Zz][^0-9A-Za-z\\u0080-\\uFFFF]*[^0-9A-Za-z\\u0080-\\uFFFF]*[Kk][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Yy][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*[Uu][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Oo][^0-9A-Za-z\\u0080-\\uFFFF]*[Rr][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Gg][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Nn][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Mm][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*[Ss][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Mm][^0-9A-Za-z\\u0080-\\uFFFF]*[Pp][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pathStrategy": {
+      "description": "路径分层策略。IDEA 候选使用标准值 FLAT、DATE、BIZ、BIZ_DATE。Spring 枚举转换会去除全部非字母数字字符后忽略大小写匹配，trim 后的空串转换为 null；Binder 绑定带初始化值的字段时会保留该值，不能据此推断字段被清空。Schema 覆盖常用 ASCII 宽松写法和环境变量占位符，复杂 Unicode 转换仍由 Spring Binder 判定。",
+      "anyOf": [
+        {
+          "enum": [
+            "FLAT",
+            "DATE",
+            "BIZ",
+            "BIZ_DATE"
+          ],
+          "x-intellij-enum-metadata": {
+            "FLAT": {
+              "description": "平铺存储。",
+              "x-intellij-html-description": "<p>平铺存储。 不增加子目录，objectKey 形如 basePath/filename。</p>"
+            },
+            "DATE": {
+              "description": "按日期分层。",
+              "x-intellij-html-description": "<p>按日期分层。 使用应用进程当前本地日期增加 yyyyMMdd 子目录，objectKey 形如 basePath/yyyyMMdd/filename。</p>"
+            },
+            "BIZ": {
+              "description": "按业务路径分段分层。",
+              "x-intellij-html-description": "<p>按业务路径分段分层。 pathSegments 中每个非空白元素依次成为一级子目录，不加日期；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p>"
+            },
+            "BIZ_DATE": {
+              "description": "先按业务路径分段，再按日期分层。",
+              "x-intellij-html-description": "<p>先按业务路径分段，再按日期分层。 依次加入 pathSegments 中的非空白元素和应用进程当前本地日期 yyyyMMdd 子目录；BIZ 指 pathSegments，与用于文件命名的 namingKey 无关。</p>"
+            }
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[\\u0000-\\u0020]*|(?:[^0-9A-Za-z\\u0080-\\uFFFF]*[Ff][^0-9A-Za-z\\u0080-\\uFFFF]*[Ll][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Bb][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Zz][^0-9A-Za-z\\u0080-\\uFFFF]*|[^0-9A-Za-z\\u0080-\\uFFFF]*[Bb][^0-9A-Za-z\\u0080-\\uFFFF]*[Ii][^0-9A-Za-z\\u0080-\\uFFFF]*[Zz][^0-9A-Za-z\\u0080-\\uFFFF]*[^0-9A-Za-z\\u0080-\\uFFFF]*[Dd][^0-9A-Za-z\\u0080-\\uFFFF]*[Aa][^0-9A-Za-z\\u0080-\\uFFFF]*[Tt][^0-9A-Za-z\\u0080-\\uFFFF]*[Ee][^0-9A-Za-z\\u0080-\\uFFFF]*))$"
+        },
+        {
+          "$ref": "#/definitions/placeholderString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}
