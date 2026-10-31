@@ -24,7 +24,7 @@ sz:
     # 本地开发临时文件服务，未配置时默认关闭；本环境显式开启，实际是否注册仅由 enabled 决定。
     # 匿名读取 LOCAL DIRECT 文件，不影响上传；部署环境请使用 Nginx 并配置实际 base-url。
     dev-file-server:
-      enabled: true
+      enabled: false
     security:
       # 全局允许上传的扩展名白名单；scene.exts 只能在此范围内进一步收窄。
       allowed-exts: [ jpg, jpeg, png, gif, bmp, webp, svg, ico, pdf, doc, docx, xls, xlsx, ppt, pptx, rtf, txt, csv, zip, rar, 7z, tar, gz, mp3, wav, ogg, mp4, mov, avi, wmv ]
