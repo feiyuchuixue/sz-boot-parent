@@ -1,4 +1,114 @@
 # 更新日志
+## v2.1.1（20261031）
+
+本次更新围绕 **OSS 与 RustFS、部署配置和 Java / Node.js 安全** 展开，并同步完善官网使用与升级文档。已有项目需核对资源大小单位、本地文件公开地址及部署运行配置，具体见[升级指南](../upgrade/v2.1.1.md)和[部署指南](../deploy/deploy-quick-docker.md)。
+
+### sz-boot-parent
+
+#### OSS：公共配置写一次，场景也能各用一套连接
+
+- 公共连接集中在 `sz.oss` 中维护，多个场景共用地址、凭据和默认桶，只填写桶、签名区域等差异，减少重复配置。示例精简了不必重复填写的参数，scheme、region 等属性仍保留支持。
+- 场景支持独立配置 S3 地址和 AK/SK。同一个应用可以让头像、业务附件、归档文件连接不同对象存储，**每个场景都能拥有自己的一套 S3 连接**；原有单一存储连接可以继续使用，不要求迁移文件。
+- DIRECT 公开地址优先使用场景 `base-url`；默认连接还可以复用全局 `domain`，未配置时再从 endpoint 生成。独立连接不继承全局 domain，避免返回其他存储服务的地址。预签名和 SDK 请求始终使用各自的 endpoint。
+- 上传大小配置统一支持 `3MB / 512KB` 等带单位写法。旧场景的 `max-size: 3` 需要改为 `3MB`，否则会按 3 字节处理。
+- 补充通用富文本场景 `system.richtext` 和配置编辑器提示；静态配置、自定义场景、上传结果与文件管理统一使用生效配置，减少配置与展示不一致的问题。
+
+两种用法及配置示例见[升级指南的 OSS 章节](../upgrade/v2.1.1.md#oss-scene-connections)，实现见[场景连接解析][connection]。
+
+独立连接需完整填写场景的 endpoint、access-key、secret-key，全局 `sz.oss` 默认连接也仍须有效配置才能启用 OSS。相同连接规格会复用客户端；修改场景连接参数后需重启应用。
+
+#### 新增 RustFS 支持
+
+RustFS 已发布 [1.0 正式版](https://github.com/rustfs/rustfs/releases/tag/1.0.0)，本次增加 `RUSTFS` 类型支持，作为 MinIO 之外的自建 S3 对象存储选项。各环境的 OSS 示例已改用 RustFS；已有 MinIO 或云存储可以继续使用，无须为了升级迁移文件。
+
+#### 本地磁盘文件：区分调试入口与生产访问
+
+- 本地开发文件入口改由 `sz.resource.dev-file-server.enabled` 显式控制：本地调试的 `local` 环境设为 `true`，`dev / preview / prod` 环境应设为 `false`。该入口用于快速测试本地磁盘上传和文件展示，修复了中文、多层目录及文件名中 `+` 的处理。
+- 使用本地磁盘（含 Docker 目录挂载）保存文件的生产项目，公开图片等 LOCAL DIRECT 文件应由 Nginx 展示，减少匿名文件入口和 Java 服务承担的静态分发流量。关闭开发入口不影响 LOCAL 上传，受保护附件仍通过业务接口鉴权读取；使用 S3 OSS 的场景无需改为本地磁盘存储。
+- 加强本地文件的目录边界检查，防止通过跨场景路径或指向根目录之外的符号链接访问文件。[后端变更][backend-compare]
+
+已有项目需核对公开文件地址及历史富文本链接，迁移说明见[升级指南](../upgrade/v2.1.1.md#local-disk-files)。
+
+#### Java 证书信任安全加固
+
+针对近期 eMudhra 证书泄露风险，后端 CI 和镜像构建会移除拒绝策略中的四个根证书，并检查最终镜像，防止它们继续被 Java 信任；构建时同步记录基础镜像摘要和源码版本。Java 基线仍为 25。[代码变更][truststore-commit]、[Oracle 处置说明](https://ops.java/emudhra)
+
+已有容器必须更新镜像并重建，裸 JAR 和自定义 JDK 需处理实际使用的信任库。该措施针对本次证书信任风险，不等于全部 JDK 漏洞已修复；升级后应确认对象存储等 HTTPS 服务仍能正常连接。
+
+### sz-admin
+
+#### Node.js 24：采用安全补丁，延长维护周期
+
+前端开发和构建环境由 Node.js 20 升级到 **24.22.1**，pnpm 保持 **10.17.1**。本次固定的是 2026-10-21 发布的安全版本，包含 Brotli 解码器远程代码执行漏洞 **CVE-2026-111497**，以及 DNS、TLS 等问题的修复。[官方安全公告](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)
+
+原构建基线 Node.js 20 已于 **2026-04-30** 停止维护。Node.js 22 仍在维护期，计划于 **2027-04-30** 结束，且同批提供了安全补丁；本项目选择维护期到 **2028-04-30** 的 Node.js 24，并统一开发环境和三套 CI，避免继续使用旧运行时。[官方维护计划](https://github.com/nodejs/Release/blob/main/schedule.json)
+
+#### 前端依赖安全更新
+
+Vite 从 **7.3.5** 升级到 **7.3.7**，并更新 follow-redirects、browserslist、baseline-browser-mapping 和 postcss-selector-parser 的锁定版本，处理本次依赖安全告警。这部分与 Node.js 运行时补丁分别生效，不代表全部依赖审计已清零。[依赖与 CI 变更][frontend-compare]
+
+线上前端仍由 Nginx 提供静态页面；需要升级 Node.js 的是开发机和构建环境。
+
+### sz-deploy-v3
+
+> [!WARNING]
+>
+> **生产使用前，请先完成测试环境验证。**
+>
+> 本版本对部署配置和运维流程进行了较多调整。请先在与生产环境接近的测试环境中，验证实际使用的安装、升级、蓝绿发布、数据库及对象存储切换场景，通过后再评估生产环境的使用方式。
+>
+> 脚本检查通过不等于生产验收，也不保证零停机或数据可回滚。生产使用前请备份数据与配置、验证恢复方案并安排维护窗口，不要直接在生产环境试运行。
+
+#### 安装与运行配置分离
+
+- 首次安装读取安装配置，部署后的服务改为读取各自运行目录的 `.env`，日常升级不再依赖安装目录和旧的公共部署脚本。运行配置按字面值读取并校验，避免把配置当作 Shell 命令执行。
+- 完善 `dnf / apt / yum` 安装适配，校验所选包管理器、准备 Git，并按发行版配置 Docker 安装流程，减少安装入口与服务器环境不匹配导致的失败。
+- 多个服务支持配置容器名称和宿主端口，保留既有默认值；自定义名称或端口时，仍需同步应用连接地址和 Nginx 引用。
+
+实现见[安装与运行配置][deploy-install]、[环境文件工具][deploy-env]；完整范围见[部署仓库变更][deploy-compare]。
+
+#### 对象存储与环境切换
+
+- 新增 RustFS 部署，可通过 `OSS_PROVIDER` 选择 MinIO 或 RustFS，安装时检查端口占用并等待存储服务健康。
+- 新增 MySQL/PostgreSQL 和 MinIO/RustFS 显式切换入口。默认仅检查，使用 `--apply` 才执行变更；切换流程增加并发锁、配置备份和失败恢复处理，失败时尝试恢复原配置及部署状态。
+- 本地磁盘公开文件改为 Nginx 目录白名单，不再直接公开整个资源根目录；前端代理增加 Docker DNS 动态解析，以适应后台、WebSocket 或静态服务容器重建后的地址变化。
+
+环境切换只调整部署与连接配置，**不迁移数据库业务数据或存储对象**，也不提供普通与蓝绿模式的自动互转。`--check` 不代表数据库账号认证、目标桶、历史对象或实际文件访问已通过验证，切换前需准备目标数据，切换后仍需业务验证。
+
+实现见[环境切换脚本][deploy-ops]、[静态目录白名单][deploy-static]；使用说明见[Docker 部署指南](../deploy/deploy-quick-docker.md)。
+
+#### 蓝绿发布与基础服务修复
+
+- 蓝绿运行配置支持旧镜像、profile 和网络字段迁移，检测新旧字段冲突；发布前校验生成配置与运行配置一致，并核对容器归属。改进发布锁、活动槽位及 upstream 状态保护，失败时尝试恢复，日志增加步骤和启动信息。
+- 修复 PostgreSQL 初始化脚本对当前执行目录和默认文件权限的依赖，明确生成配置、初始化文件的权限。
+- WebSocket 服务显式挂载 `/data`，支持配置共享的后台配置目录。新增挂载不会自动迁出旧容器内的数据，已有数据需在重建前保留。
+
+已有环境升级部署脚本时，应成套同步运行入口、Compose、配套 `lib` 和蓝绿配置文件，保留现场 `.env`、profile、数据目录及部署状态；不能只替换单个脚本，也不能用重跑安装代替升级。
+
+实现见[蓝绿运行配置][deploy-bg-config]、[发布流程][deploy-bg]、[PostgreSQL 初始化][deploy-pg]、[WebSocket 挂载][deploy-ws]。
+
+### 官网文档
+
+- 新增[文档导航](../info/reading-guide.md)，按本地运行、业务开发、核心能力、部署和升级任务组织入口，便于找到当前需要的资料。
+- 完善[快速开始](../info/start.md)，补齐前后端启动顺序、数据库选择、登录验证和常见启动失败定位。
+- 完善 [Docker 部署](../deploy/deploy-quick-docker.md)与 [OSS 接入](../core/oss.md)说明，覆盖普通/蓝绿部署、镜像选择、数据库与存储切换，以及本地磁盘、RustFS、MinIO 和云存储的配置与验证。
+- 更新日志和升级指南按版本归档，支持折叠与独立阅读，最新版本默认展开；升级指南只展示人工维护的迁移步骤，`v0.x` 历史版本仅保留更新日志。[查看升级指南](../upgrade.md)
+
+[backend-compare]: https://github.com/feiyuchuixue/sz-boot-parent/compare/db322cce666c4d020fc02001e404b5241bda43fe...72aa70ac72f9debd39f4f73e15413ec767f5cca9
+[frontend-compare]: https://github.com/feiyuchuixue/sz-admin/compare/84ece4b0629ec54ab14261d327b6534560e5ef7b...5bf5aac5dd56cbfb1480842f5b03e7ece887eda7
+[config]: https://github.com/feiyuchuixue/sz-boot-parent/tree/72aa70ac/config
+[connection]: https://github.com/feiyuchuixue/sz-boot-parent/blob/72aa70ac/sz-common/sz-common-oss/src/main/java/com/sz/oss/OssSceneConnection.java
+[truststore-commit]: https://github.com/feiyuchuixue/sz-boot-parent/commit/c4fd1b82
+[deploy-compare]: https://github.com/feiyuchuixue/sz-deploy-v3/compare/b953a7c946f6f436a0ba6f0d69976355dbc0a338...34c1dfe943b7a465d22759b6b2a93d83efe3baca
+[deploy-install]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/scripts/install-config.sh
+[deploy-env]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/scripts/env-file.sh
+[deploy-ops]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/ops/ops-common.sh
+[deploy-static]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/sz-nginx-static/conf.d/default.conf
+[deploy-bg-config]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/sz-service-admin/blue-green/runtime-config.sh
+[deploy-bg]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/sz-service-admin/blue-green/deploy.sh
+[deploy-pg]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/postgres/scripts/setup.sh
+[deploy-ws]: https://github.com/feiyuchuixue/sz-deploy-v3/blob/34c1dfe/sz-service-websocket/docker-compose.yml
+
 ## v2.1.0（20260909）
 
 > [!IMPORTANT]
