@@ -10,6 +10,8 @@ sz:
     # 去除首尾空白和末尾斜杠；未带协议时使用 scheme（默认 https），已带协议时沿用 endpoint 自身协议。
     # scheme 不覆盖 endpoint 自身协议，但仍用于未带协议的 domain；未配 domain 时 DIRECT URL 沿用生效 endpoint 的协议。
     endpoint: http://192.168.56.104:9000
+    # 公开对外展示域名
+    domain: http://minioapi.example.com
     # accessKey 是访问密钥 ID；secretKey 是配对的访问密钥 Secret。
     accessKey: SZADMIN
     secretKey: Sz2026@123456
@@ -51,16 +53,16 @@ sz:
       #        exts: [svg, png, jpg, jpeg, webp, gif]
       #        max-size: 3MB
       # ========= 账户头像 - OSS DIRECT（公开访问） =========
-#      - code: admin.user.logo # 账户头像
-#        name: 账户头像
-#        type: OSS
-#        serveMode: PRESIGNED
-#        # 访问模式：DIRECT 明文直接访问（显式公开）；PROTECTED 受保护业务访问（默认）；PRESIGNED 有时效的临时访问，到期后时效无法访问。头像大部分业务中使用 DIRECT 公开访问即可；PRESIGNED 临时访问亦可；PROTECTED 需使用流blob式响应，不建议使用。
-#        serve-mode: DIRECT
-#        naming: UUID
-#        path-strategy: BIZ_DATE
-#        exts: [ svg, png, jpg, jpeg, webp, gif ]
-#        max-size: 3MB
+      #      - code: admin.user.logo # 账户头像
+      #        name: 账户头像
+      #        type: OSS
+      #        serveMode: PRESIGNED
+      #        # 访问模式：DIRECT 明文直接访问（显式公开）；PROTECTED 受保护业务访问（默认）；PRESIGNED 有时效的临时访问，到期后时效无法访问。头像大部分业务中使用 DIRECT 公开访问即可；PRESIGNED 临时访问亦可；PROTECTED 需使用流blob式响应，不建议使用。
+      #        serve-mode: DIRECT
+      #        naming: UUID
+      #        path-strategy: BIZ_DATE
+      #        exts: [ svg, png, jpg, jpeg, webp, gif ]
+      #        max-size: 3MB
       # ========= 模板文件 - LOCAL PROTECTED（经业务接口下载/预览，无需 base-url） =========
       - code: template.excel
         name: 模板文件管理 / 导入模板
